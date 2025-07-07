@@ -1,0 +1,55 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+:host {
+  @include common.flex-column;
+  @include common.full-percentage;
+}
+
+h2 {
+  @include typescale.title-medium;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--md-sys-color-primary);
+}
+
+.section {
+  @include common.flex-column;
+  border-bottom: 2px solid var(--md-sys-color-outline-variant);
+  gap: common.$spacing-large;
+  padding: common.$main-content-padding;
+
+  &:last-of-type {
+    border-bottom: none;
+    padding-bottom: calc(2 * common.$spacing-xxl);
+  }
+}
+
+.action-buttons {
+  @include common.flex-row;
+  flex-wrap: wrap;
+  gap: common.$spacing-xl;
+}

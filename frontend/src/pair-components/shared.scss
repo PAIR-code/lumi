@@ -1,0 +1,207 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+:host {
+  --component-font-family: "Google Sans Text", Helvetica, sans-serif;
+  --state-layer-opacity-hover: 0.08; /* Material 3 spec */
+  --state-layer-opacity-focus: 0.1; /* Material 3 spec */
+  --state-layer-opacity-press: 0.1; /* Material 3 spec */
+  --state-layer-opacity-drag: 0.1; /* Material 3 spec */
+  --state-layer-opacity-disabled: 0.38; /* Material 3 spec */
+}
+
+.body-size-small {
+  --pr-body-font-family: var(
+    --md-sys-typescale-body-small-font-family-name,
+    "Google Sans Text"
+  );
+  --pr-body-font-style: var(
+    --md-sys-typescale-body-small-font-family-style,
+    Regular
+  );
+  --pr-body-font-size: var(--md-sys-typescale-body-small-font-size, 14px);
+  --pr-body-font-weight: var(--md-sys-typescale-body-small-font-weight, 400);
+  --pr-body-letter-spacing: var(
+    --md-sys-typescale-body-large-letter-spacing,
+    0.4px
+  );
+  --pr-body-line-height: var(--md-sys-typescale-body-small-line-height, 18px);
+}
+
+.body-size-medium {
+  --pr-body-font-family: var(
+    --md-sys-typescale-body-medium-font-family-name,
+    "Google Sans Text"
+  );
+  --pr-body-font-style: var(
+    --md-sys-typescale-body-medium-font-family-style,
+    Regular
+  );
+  --pr-body-font-size: var(--md-sys-typescale-body-medium-font-size, 18px);
+  --pr-body-font-weight: var(--md-sys-typescale-body-medium-font-weight, 400);
+  --pr-body-letter-spacing: var(
+    --md-sys-typescale-body-large-letter-spacing,
+    0.25px
+  );
+  --pr-body-line-height: var(--md-sys-typescale-body-medium-line-height, 24px);
+}
+
+.body-size-large {
+  --pr-body-font-family: var(
+    --md-sys-typescale-body-large-font-family-name,
+    "Google Sans Text"
+  );
+  --pr-body-font-style: var(
+    --md-sys-typescale-body-large-font-family-style,
+    Regular
+  );
+  --pr-body-font-size: var(--md-sys-typescale-body-large-font-size, 24px);
+  --pr-body-font-weight: var(--md-sys-typescale-body-large-font-weight, 400);
+  --pr-body-letter-spacing: var(
+    --md-sys-typescale-body-large-letter-spacing,
+    0.5px
+  );
+  --pr-body-line-height: var(--md-sys-typescale-body-large-line-height, 30px);
+}
+
+.label-size-small {
+  --pr-label-font-family: var(
+    --md-sys-typescale-label-small-font-family-name,
+    "Google Sans"
+  );
+  --pr-label-font-style: var(
+    --md-sys-typescale-label-small-font-family-style,
+    Medium
+  );
+  --pr-label-font-size: var(--md-sys-typescale-label-small-font-size, 12px);
+  --pr-label-font-weight: var(--md-sys-typescale-label-small-font-weight, 500);
+  --pr-label-letter-spacing: var(
+    --md-sys-typescale-label-small-letter-spacing,
+    0.5px
+  );
+  --pr-label-line-height: var(--md-sys-typescale-label-small-line-height, 16px);
+}
+
+.label-size-medium {
+  --pr-label-font-family: var(
+    --md-sys-typescale-label-medium-font-family-name,
+    "Google Sans"
+  );
+  --pr-label-font-style: var(
+    --md-sys-typescale-label-medium-font-family-style,
+    Medium
+  );
+  --pr-label-font-size: var(--md-sys-typescale-label-medium-font-size, 14px);
+  --pr-label-font-weight: var(--md-sys-typescale-label-medium-font-weight, 500);
+  --pr-label-letter-spacing: var(
+    --md-sys-typescale-label-medium-letter-spacing,
+    0.5px
+  );
+  --pr-label-line-height: var(
+    --md-sys-typescale-label-medium-line-height,
+    18px
+  );
+}
+
+.label-size-large {
+  --pr-label-font-family: var(
+    --md-sys-typescale-label-large-font-family-name,
+    "Google Sans"
+  );
+  --pr-label-font-style: var(
+    --md-sys-typescale-label-large-font-family-style,
+    Medium
+  );
+  --pr-label-font-size: var(--md-sys-typescale-label-large-font-size, 18px);
+  --pr-label-font-weight: var(--md-sys-typescale-label-large-font-weight, 500);
+  --pr-label-letter-spacing: var(
+    --md-sys-typescale-label-large-letter-spacing,
+    0.1px
+  );
+  --pr-label-line-height: var(--md-sys-typescale-label-large-line-height, 24px);
+}
+
+.palette-error {
+  /* Defaults = error from GM3 Design Kit baseline color scheme */
+  --pr-palette: var(--md-sys-color-error, #ba1a1a);
+  --pr-palette-container: var(--md-sys-color-error-container, #ffdad6);
+  --pr-on-palette: var(--md-sys-color-on-error, #fff);
+  --pr-on-palette-container: var(--md-sys-color-on-error-container, #410002);
+}
+
+.palette-success {
+  /* Defaults = primary green from GM3 Design Kit baseline color scheme */
+  --pr-palette: var(--md-sys-color-success, #146C2E);
+  --pr-palette-container: var(--md-sys-color-success-container, #C4EED0);
+  --pr-on-palette: var(--md-sys-color-on-success, #FFFFFF);
+  --pr-on-palette-container: var(--md-sys-color-on-success-container, #072711);
+}
+
+.palette-primary {
+  /* Defaults = primary blue from GM3 Design Kit baseline color scheme */
+  --pr-palette: var(--md-sys-color-primary, #0856cf);
+  --pr-palette-container: var(--md-sys-color-primary-container, #dae2ff);
+  --pr-on-palette: var(--md-sys-color-on-primary, #fff);
+  --pr-on-palette-container: var(--md-sys-color-on-primary-container, #001847);
+}
+
+.palette-neutral {
+  /* Defaults = derived from GM3 Design Kit baseline color scheme */
+  --pr-palette: var(--md-sys-color-on-surface, #1b1b1f);
+  --pr-palette-container: var(--md-sys-color-on-surface-variant, #45464f);
+  --pr-on-palette: var(--md-sys-color-surface, #fefbff);
+  --pr-on-palette-container: var(--md-sys-color-surface-variant, #e1e2ec);
+}
+
+.palette-secondary {
+  /* Defaults = secondary blue from GM3 Design Kit baseline color scheme */
+  --pr-palette: var(--md-sys-color-secondary, #00639b);
+  --pr-palette-container: var(--md-sys-color-secondary-container, #cee5ff);
+  --pr-on-palette: var(--md-sys-color-on-secondary, #fff);
+  --pr-on-palette-container: var(
+    --md-sys-color-on-secondary-container,
+    #001d33
+  );
+}
+
+.palette-tertiary {
+  /* Defaults = tertiary blue from GM3 Design Kit baseline color scheme */
+  --pr-palette: var(--md-sys-color-tertiary, #156d2f);
+  --pr-palette-container: var(--md-sys-color-tertiary-container, #a1f6a8);
+  --pr-on-palette: var(--md-sys-color-on-tertiary, #fff);
+  --pr-on-palette-container: var(--md-sys-color-on-tertiary-container, #002108);
+}
+
+.padding-xsmall {
+  --pr-padding: calc(var(--md-sys-typescale-body-small-font-size, 12px) * 0.25)
+    calc(var(--md-sys-typescale-body-small-font-size, 12px) * 0.5);
+}
+
+.padding-small {
+  --pr-padding: calc(var(--md-sys-typescale-body-small-font-size, 12px) * 0.5)
+    calc(var(--md-sys-typescale-body-small-font-size, 12px) * 0.75);
+}
+
+.padding-medium {
+  --pr-padding: calc(var(--md-sys-typescale-body-medium-font-size, 18px) * 0.5)
+    calc(var(--md-sys-typescale-body-medium-font-size, 18px) * 0.75);
+}
+
+.padding-large {
+  --pr-padding: calc(var(--md-sys-typescale-body-large-font-size, 24px) * 0.5)
+    calc(var(--md-sys-typescale-body-large-font-size, 24px) * 0.75);
+}

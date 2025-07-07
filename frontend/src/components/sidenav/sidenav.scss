@@ -1,0 +1,125 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use "../../sass/colors";
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+:host {
+  @include common.flex-column;
+  flex-shrink: 0;
+}
+
+.nav-wrapper {
+  @include common.flex-column;
+  background: var(--md-sys-color-surface);
+  border-right: 1px solid var(--md-sys-color-outline-variant-high);
+  flex-shrink: 0;
+  gap: common.$spacing-small;
+  height: 100%;
+  width: common.$sidenav-width;
+
+  &.closed {
+    width: common.$sidenav-closed-width;
+  }
+}
+
+@include common.viewport-small {
+  :host {
+    display: none;
+  }
+}
+
+.experiment-nav {
+  @include common.flex-column;
+  gap: common.$spacing-small;
+  margin-left: calc(common.$spacing-xxl * 1.5);
+}
+
+.empty-message {
+  color: var(--md-sys-color-outline);
+  font-style: italic;
+  padding: common.$sidenav-padding;
+}
+
+.title {
+  @include common.flex-row-align-center;
+  @include typescale.label-large;
+  box-sizing: border-box;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0 common.$spacing-xl;
+}
+
+.nav-item-wrapper {
+  @include common.flex-row-align-center;
+  gap: common.$spacing-small;
+}
+
+.nav-item {
+  @include common.nav-item;
+
+  &.primary {
+    color: var(--md-sys-color-primary);
+  }
+
+  &.no-hover {
+    &:focus,
+    &:hover {
+      background: none;
+      cursor: default;
+    }
+  }
+}
+
+.menu-title {
+  @include common.flex-row-align-center;
+  cursor: pointer;
+  height: common.$sidenav-header-height;
+  padding: 0 common.$sidenav-padding;
+}
+
+.top {
+  @include common.flex-column;
+  flex-grow: 1;
+  gap: common.$spacing-small;
+  overflow: auto;
+  padding: common.$sidenav-padding;
+}
+
+.bottom {
+  @include common.flex-column;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  gap: common.$spacing-small;
+  overflow: auto;
+  padding: common.$sidenav-padding;
+}
+
+details {
+  @include common.flex-column;
+  gap: common.$spacing-small;
+}
+
+summary {
+  @include common.flex-row;
+  cursor: pointer;
+  gap: common.$spacing-small;
+
+  .nav-item {
+    justify-content: space-between;
+  }
+}

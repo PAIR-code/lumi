@@ -1,0 +1,291 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import "../lumi_doc/lumi_doc";
+import "../sidebar/sidebar";
+
+import { MobxLitElement } from "@adobe/lit-mobx";
+import { CSSResultGroup, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
+import { provide } from "@lit/context";
+
+import { core } from "../../core/core";
+import { FirebaseService } from "../../services/firebase.service";
+import { HistoryService } from "../../services/history.service";
+import { DocumentStateService } from "../../services/document_state.service";
+import { SnackbarService } from "../../services/snackbar.service";
+import { LumiDoc, LoadingStatus } from "../../shared/lumi_doc";
+import {
+  getArxivMetadata,
+  getLumiResponseCallable,
+  getPersonalSummaryCallable,
+} from "../../shared/callables";
+import { scrollContext, ScrollState } from "../../contexts/scroll_context";
+import {
+  FloatingPanelService,
+  SmartHighlightMenuProps,
+} from "../../services/floating_panel_service";
+import { LumiAnswer, LumiAnswerRequest } from "../../shared/api";
+
+import { styles } from "./lumi_reader.scss";
+import {
+  HighlightSelection,
+  SelectionInfo,
+} from "../../shared/selection_utils";
+import { createTemporaryAnswer } from "../../shared/answer_utils";
+
+/**
+ * The component responsible for fetching a single document and passing it
+ * to the lumi-doc component.
+ */
+@customElement("lumi-reader")
+export class LumiReader extends MobxLitElement {
+  static override styles: CSSResultGroup = [styles];
+
+  private readonly firebaseService = core.getService(FirebaseService);
+  private readonly floatingPanelService = core.getService(FloatingPanelService);
+  private readonly historyService = core.getService(HistoryService);
+  private readonly documentStateService = core.getService(DocumentStateService);
+  private readonly snackbarService = core.getService(SnackbarService);
+
+  @provide({ context: scrollContext })
+  private scrollState = new ScrollState();
+
+  @property({ type: String }) documentId = "";
+
+  private unsubscribeListener?: Unsubscribe;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.documentStateService.setScrollState(this.scrollState);
+    if (this.documentId) {
+      this.loadDocument();
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.unsubscribeListener) {
+      this.unsubscribeListener();
+    }
+  }
+
+  private async loadDocument() {
+    if (this.unsubscribeListener) {
+      this.unsubscribeListener();
+    }
+
+    const metadata = await getArxivMetadata(
+      this.firebaseService.functions,
+      this.documentId
+    );
+
+    if (!metadata || !metadata.version) {
+      this.snackbarService.show(
+        "Warning: Document metadata or version not found."
+      );
+      return;
+    }
+
+    const docPath = `arxiv_docs/${this.documentId}/versions/${metadata.version}`;
+    this.unsubscribeListener = onSnapshot(
+      doc(this.firebaseService.firestore, docPath),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data() as LumiDoc;
+          this.documentStateService.setDocument(data);
+          this.requestUpdate();
+
+          if (data.loadingStatus === LoadingStatus.SUCCESS) {
+            // Once the document is fully loaded, check for personal summary.
+            if (!this.historyService.personalSummaries.has(this.documentId)) {
+              this.fetchPersonalSummary();
+            }
+          }
+
+          const message =
+            data.loadingStatus === LoadingStatus.ERROR
+              ? `Error loading document: ${this.documentId}`
+              : "Document loaded";
+          this.snackbarService.show(message);
+        } else {
+          this.snackbarService.show(`Document ${this.documentId} not found.`);
+        }
+      },
+      (error) => {
+        this.snackbarService.show(`Error loading document: ${error.message}`);
+        console.error(error);
+      }
+    );
+  }
+
+  private async fetchPersonalSummary() {
+    const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
+    if (!currentDoc) return;
+
+    this.historyService.setPersonalSummaryLoading(true);
+    try {
+      // Filter out the current paper.
+      const pastPapers = this.historyService
+        .getPaperHistory()
+        .filter(
+          (paper) =>
+            paper.metadata.paperId !== this.documentId &&
+            paper.status === "complete"
+        );
+      const summaryAnswer = await getPersonalSummaryCallable(
+        this.firebaseService.functions,
+        currentDoc,
+        pastPapers
+      );
+
+      this.historyService.addPersonalSummary(this.documentId, summaryAnswer);
+    } catch (e) {
+      console.error("Error getting personal summary:", e);
+      this.snackbarService.show("Error: Could not generate personal summary.");
+    } finally {
+      this.historyService.setPersonalSummaryLoading(false);
+    }
+  }
+
+  private get getImageUrl() {
+    return (path: string) => this.firebaseService.getDownloadUrl(path);
+  }
+
+  private readonly handleDefine = async (
+    text: string,
+    highlightedSpans: HighlightSelection[]
+  ) => {
+    if (!this.documentStateService.lumiDocManager) return;
+
+    const request: LumiAnswerRequest = {
+      query: `What is "${text}"?`,
+      highlight: text,
+      highlightedSpans,
+    };
+
+    const tempAnswer = createTemporaryAnswer(request);
+    this.historyService.addTemporaryAnswer(tempAnswer);
+
+    try {
+      const response = await getLumiResponseCallable(
+        this.firebaseService.functions,
+        this.documentStateService.lumiDocManager.lumiDoc,
+        request
+      );
+      this.historyService.addAnswer(this.documentId, response);
+    } catch (e) {
+      console.error("Error getting Lumi response:", e);
+      this.snackbarService.show("Error: Could not get response from Lumi.");
+    } finally {
+      this.historyService.removeTemporaryAnswer(tempAnswer.id);
+    }
+  };
+
+  private readonly handleAsk = async (
+    highlightedText: string,
+    query: string,
+    highlightedSpans: HighlightSelection[]
+  ) => {
+    const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
+    if (!currentDoc) return;
+
+    const request: LumiAnswerRequest = {
+      highlight: highlightedText,
+      query: query,
+      highlightedSpans,
+    };
+
+    const tempAnswer = createTemporaryAnswer(request);
+    this.historyService.addTemporaryAnswer(tempAnswer);
+
+    try {
+      const response = await getLumiResponseCallable(
+        this.firebaseService.functions,
+        currentDoc,
+        request
+      );
+      this.historyService.addAnswer(this.documentId, response);
+    } catch (e) {
+      console.error("Error getting Lumi response:", e);
+      this.snackbarService.show("Error: Could not get response from Lumi.");
+    } finally {
+      this.historyService.removeTemporaryAnswer(tempAnswer.id);
+    }
+  };
+
+  private readonly handleTextSelection = (selectionInfo: SelectionInfo) => {
+    const props = new SmartHighlightMenuProps(
+      selectionInfo.selectedText,
+      selectionInfo.highlightSelection,
+      this.handleDefine.bind(this),
+      this.handleAsk.bind(this)
+    );
+    this.floatingPanelService.show(props, selectionInfo.lastParentSpan);
+  };
+
+  override render() {
+    const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
+
+    if (!currentDoc) return nothing;
+
+    if (
+      currentDoc.loadingStatus === LoadingStatus.LOADING ||
+      currentDoc.loadingStatus === LoadingStatus.WAITING
+    ) {
+      return html`<div class="loading-message">Loading document...</div>`;
+    }
+
+    return html`
+      <div
+        class="sidebar-wrapper"
+        @mousedown=${() => {
+          this.floatingPanelService.hide();
+        }}
+      >
+        <lumi-sidebar
+          .onTextSelection=${this.handleTextSelection.bind(this)}
+        ></lumi-sidebar>
+      </div>
+      <div
+        class="doc-wrapper"
+        @mousedown=${() => {
+          this.floatingPanelService.hide();
+          this.documentStateService.highlightManager?.clearHighlights();
+        }}
+      >
+        <lumi-doc
+          .lumiDocManager=${this.documentStateService.lumiDocManager}
+          .highlightManager=${this.documentStateService.highlightManager}
+          .collapseManager=${this.documentStateService.collapseManager}
+          .getImageUrl=${this.getImageUrl.bind(this)}
+          .onTextSelection=${this.handleTextSelection.bind(this)}
+          .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
+            this.documentStateService.focusOnSpan(highlights, "gray");
+          }}
+        ></lumi-doc>
+      </div>
+    `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "lumi-reader": LumiReader;
+  }
+}

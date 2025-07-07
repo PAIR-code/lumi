@@ -1,0 +1,107 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use "../../sass/typescale";
+
+.lumi-span-renderer-element {
+  .character {
+    // Enum classes for lumi_doc.ts/InnerTagName
+    &.b,
+    &.strong {
+      font-weight: bold;
+    }
+
+    &.i,
+    &.em {
+      font-style: italic;
+    }
+
+    &.u {
+      text-decoration: underline;
+    }
+
+    &.ref {
+      color: var(--md-sys-color-on-surface-higher);
+      cursor: pointer;
+    }
+
+    &.spanref {
+      color: var(--md-sys-color-primary);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    &.concept {
+      color: var(--md-sys-color-primary);
+    }
+
+    &.a {
+      // TODO(ellenj): Figure out better highlight colors for links vs. concepts vs. references.
+      color: var(--md-sys-color-primary);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .monospace {
+      font-family: "Roboto Mono", monospace;
+    }
+
+    &.code {
+      font-family: "Roboto Mono", monospace;
+      background-color: var(--md-sys-color-surface-container);
+    }
+
+    // Color classes (kept in sync with shared/lumi_doc.ts > HighlightColors type.
+    &.cyan {
+      background-color: var(--md-sys-color-highlight-cyan);
+    }
+
+    &.green {
+      background-color: var(--md-sys-color-highlight-green-light);
+    }
+
+    &.yellow {
+      background-color: var(--md-sys-color-highlight-yellow);
+    }
+
+    &.orange {
+      background-color: var(--md-sys-color-highlight-orange);
+    }
+
+    &.pink {
+      background-color: var(--md-sys-color-highlight-pink);
+    }
+
+    &.purple {
+      background-color: var(--md-sys-color-highlight-purple);
+    }
+
+    &.blue {
+      background-color: var(--md-sys-color-highlight-blue);
+    }
+
+    &.gray {
+      background-color: var(--md-sys-color-highlight-light-gray);
+    }
+  }
+
+  // Katex outputs both katex-mathml and katex-html tags.
+  // We only show the katex-mathml and hide katex-html.
+  .katex-html {
+    display: none;
+  }
+}

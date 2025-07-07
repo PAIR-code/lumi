@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "ts-lit-plugin"
+      }
+    ],
+    "lib": ["es2021", "dom"],
+    "target": "es2021",
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es6",
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+}

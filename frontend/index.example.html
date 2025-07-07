@@ -1,0 +1,108 @@
+<!-- Copyright 2025 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lumi</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    />
+    <% if (process.env.NODE_ENV === 'production') { %>
+    <script>
+      function addAnalyticsScript() {
+        // Create a new script element
+        var gaScript = document.createElement("script");
+
+        // Set the script source (replace with your actual gtag.js URL)
+        // TODO: Replace 'your-google-analytics-id' with real ID
+        gaScript.src = `https://www.googletagmanager.com/gtag/js?id='your-google-analytics-id'`;
+        gaScript.async = true;
+
+        // Create a script element for the config code
+        var configScript = document.createElement("script");
+
+        // TODO: Replace 'your-google-analytics-id' with real ID
+        configScript.textContent = `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'your-google-analytics-id');
+        `;
+        // Append the scripts to the head of the document
+        document.head.appendChild(gaScript);
+        document.head.appendChild(configScript);
+      }
+      // TODO: Un-comment if tracking analytics
+      // addAnalyticsScript();
+    </script>
+    <% } %>
+    <style>
+      body {
+        margin: 0;
+      }
+      .noscript {
+        align-items: center;
+        background: #eee;
+        box-sizing: border-box;
+        color: #222;
+        display: flex;
+        flex-direction: column;
+        font-family: "Inter", Helvetica, sans-serif;
+        font-size: 16px;
+        height: 100%;
+        line-height: 22px;
+        margin: 0;
+        padding: 24px;
+      }
+      .noscript section {
+        background: #fff;
+        border-radius: 8px;
+        color: #222;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 16px;
+      }
+      .noscript h1 {
+        font-size: 22px;
+        font-weight: 500;
+        line-height: 28px;
+        margin: 0;
+      }
+      .noscript p {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript class="noscript">
+      <section>
+        <h1>JavaScript required</h1>
+        <p>You'll need to enable JavaScript to use this app.</p>
+      </section>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,120 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use "../../sass/colors";
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+:host {
+  background: var(--md-sys-color-surface);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.banner {
+  @include common.flex-row-align-center;
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  gap: common.$spacing-small;
+  justify-content: space-between;
+  padding: common.$spacing-medium;
+
+  .left,
+  .right {
+    @include common.flex-row-align-center;
+    gap: common.$spacing-medium;
+  }
+}
+
+.header {
+  @include common.flex-row-align-center;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  box-sizing: border-box;
+  gap: common.$spacing-medium;
+  height: common.$header-height;
+  justify-content: space-between;
+  padding: common.$spacing-large common.$main-content-padding;
+
+  &.banner {
+    background: var(--md-sys-color-tertiary-container);
+  }
+
+  &.no-border {
+    border-color: transparent;
+  }
+
+  .left,
+  .right {
+    @include common.flex-row-align-center;
+    gap: common.$spacing-medium;
+  }
+}
+
+h1 {
+  @include typescale.title-large;
+  margin: 0;
+
+  &.short {
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}
+
+.banner {
+  h1 {
+    @include typescale.title-medium;
+  }
+}
+
+.action-button {
+  @include common.flex-row-align-center;
+  @include typescale.label-medium;
+  border: 1px solid var(--md-sys-color-primary);
+  border-radius: common.$spacing-xxl;
+  color: var(--md-sys-color-primary);
+  cursor: pointer;
+  gap: common.$spacing-small;
+  padding: common.$spacing-medium common.$spacing-large;
+
+  &:focus,
+  &:hover {
+    --pr-icon-color: var(--md-sys-color-secondary);
+    border-color: var(--md-sys-color-secondary);
+    color: var(--md-sys-color-secondary);
+  }
+}
+
+.menu-wrapper {
+  @include common.flex-column;
+  gap: common.$spacing-medium;
+  padding: common.$spacing-medium;
+}
+
+.subtitle {
+  @include typescale.label-small;
+  color: var(--md-sys-color-outline);
+}
+
+pr-button {
+  pr-icon {
+    margin-right: common.$spacing-small;
+  }
+}

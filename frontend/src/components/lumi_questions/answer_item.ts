@@ -1,0 +1,234 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import "@material/web/progress/circular-progress";
+import { MobxLitElement } from "@adobe/lit-mobx";
+import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { classMap } from "lit/directives/class-map.js";
+import { consume } from "@lit/context";
+import { scrollContext, ScrollState } from "../../contexts/scroll_context";
+import { LumiAnswer } from "../../shared/api";
+import { LumiSpan } from "../../shared/lumi_doc";
+import { getReferencedSpanIdsFromContent } from "../../shared/lumi_doc_utils";
+import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
+import { LumiDocManager } from "../../shared/lumi_doc_manager";
+
+import "../../pair-components/icon";
+import "../lumi_span/lumi_span";
+import { renderContent } from "../lumi_doc/renderers/content_renderer";
+
+import { styles } from "./answer_item.scss";
+import { styles as spanStyles } from "../lumi_span/lumi_span_renderer.scss";
+
+import {
+  getSelectionInfo,
+  HighlightSelection,
+  SelectionInfo,
+} from "../../shared/selection_utils";
+import { HighlightManager } from "../../shared/highlight_manager";
+
+/**
+ * An answer item in the Lumi questions history.
+ */
+@customElement("answer-item")
+export class AnswerItem extends MobxLitElement {
+  static override styles: CSSResultGroup = [styles, spanStyles];
+
+  @property({ type: Object }) answer!: LumiAnswer;
+  @property({ type: Boolean }) isLoading = false;
+  @property({ type: Object }) lumiDocManager?: LumiDocManager;
+  @property({ type: Object }) highlightManager?: HighlightManager;
+  @property()
+  onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
+  @property()
+  onReferenceClick: (highlightedSpans: HighlightSelection[]) => void = () => {};
+
+  @consume({ context: scrollContext })
+  private scrollContext?: ScrollState;
+
+  @state() private areReferencesShown = false;
+  @state() private referencedSpans: LumiSpan[] = [];
+
+  private toggleReferences() {
+    this.areReferencesShown = !this.areReferencesShown;
+  }
+
+  protected override updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has("answer")) {
+      if (!this.lumiDocManager) {
+        return;
+      }
+      const referencedIds = getReferencedSpanIdsFromContent(
+        this.answer.responseContent
+      );
+      this.referencedSpans = referencedIds
+        .map((id) => this.lumiDocManager!.getSpanById(id))
+        .filter((span): span is LumiSpan => span !== undefined);
+    }
+  }
+
+  private handleMouseUp(e: MouseEvent) {
+    const selection = window.getSelection();
+    if (!selection || !this.shadowRoot) {
+      return;
+    }
+
+    const selectionInfo = getSelectionInfo(selection, this.shadowRoot);
+    if (selectionInfo) {
+      this.onTextSelection(selectionInfo);
+      // Stop the event from propagating. This prevents the `md-menu` from
+      // immediately closing, as it interprets the `mouseup` event on the
+      // document as an "outside click".
+      e.stopPropagation();
+    }
+  }
+
+  private renderReferences() {
+    if (!this.areReferencesShown) {
+      return nothing;
+    }
+
+    if (this.referencedSpans.length === 0) {
+      return nothing;
+    }
+
+    return html`
+      <div class="references-panel">
+        <div class="references-content">
+          ${this.referencedSpans.map((span, i) => {
+            // Make a copy of the span and use a separate unique id.
+            const copiedSpan = { ...span, id: `${span.id}-ref` };
+            const spanContent = renderLumiSpan({ span: copiedSpan });
+            return html`
+              <div
+                class="reference-item"
+                @click=${() => this.onReferenceClick([{ spanId: span.id }])}
+              >
+                <span class="number">${i + 1}.</span>
+                <lumi-span .span=${copiedSpan}>${spanContent}</lumi-span>
+              </div>
+            `;
+          })}
+        </div>
+      </div>
+    `;
+  }
+
+  private renderHighlightedText() {
+    const highlightedSpans = this.answer.request.highlightedSpans;
+    if (
+      !this.answer.request.highlight ||
+      !highlightedSpans ||
+      highlightedSpans.length === 0
+    ) {
+      return nothing;
+    }
+
+    return html`
+      <div class="highlight" .title=${this.answer.request.highlight}>
+        <span>"${this.answer.request.highlight}"</span>
+        <pr-icon-button
+          icon="open_in_new"
+          variant="default"
+          @click=${() => {
+            this.onReferenceClick(highlightedSpans);
+          }}
+        ></pr-icon-button>
+      </div>
+    `;
+  }
+
+  private onAnswerSpanReferenceClicked(referenceId: string) {
+    this.onReferenceClick([{ spanId: referenceId }]);
+  }
+
+  private renderContent() {
+    if (this.isLoading) {
+      return html`
+        <div class="spinner">
+          <md-circular-progress indeterminate></md-circular-progress>
+        </div>
+      `;
+    }
+
+    return html`
+      <div class="answer">
+        ${this.answer.responseContent.map((content) => {
+          return renderContent({
+            content,
+            summary: null,
+            spanSummaries: new Map(),
+            focusedSpanId: null,
+            displayContentSummaries: false,
+            highlightManager: this.highlightManager!,
+            onSpanSummaryMouseEnter: () => {},
+            onSpanSummaryMouseLeave: () => {},
+            onSpanReferenceClicked:
+              this.onAnswerSpanReferenceClicked.bind(this),
+          });
+        })}
+      </div>
+    `;
+  }
+
+  override render() {
+    const classes = {
+      "history-item": true,
+    };
+
+    return html`
+      <div
+        class=${classMap(classes)}
+        @mouseup=${(e: MouseEvent) => {
+          window.setTimeout(() => {
+            this.handleMouseUp(e);
+          });
+        }}
+      >
+        ${this.renderHighlightedText()}
+        <div class="question">${this.answer.request.query}</div>
+        ${this.renderContent()}
+        ${this.referencedSpans.length > 0
+          ? html`
+              <div
+                tabindex="0"
+                class="toggle-button"
+                @click=${this.toggleReferences}
+              >
+                <span class="mentions-text"
+                  >${this.referencedSpans.length} references</span
+                >
+                <pr-icon
+                  .icon=${this.areReferencesShown
+                    ? "keyboard_arrow_up"
+                    : "keyboard_arrow_down"}
+                ></pr-icon>
+              </div>
+            `
+          : nothing}
+        ${this.renderReferences()}
+      </div>
+    `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "answer-item": AnswerItem;
+  }
+}

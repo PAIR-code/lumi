@@ -1,0 +1,144 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.button-wrapper {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.button-slot {
+  align-items: center;
+  display: flex;
+  grid-area: 1 / 1;
+}
+
+.loading-spinner-wrapper {
+  align-items: center;
+  display: flex;
+  grid-area: 1 / 1;
+  justify-content: center;
+  width: 100%;
+}
+
+.loading-spinner {
+  border-bottom: 4px solid transparent;
+  border-left: 4px solid var(--pr-color);
+  border-right: 4px solid var(--pr-color);
+  border-top: 4px solid var(--pr-color);
+  border-radius: 50%;
+  width: calc(var(--pr-button-line-height, var(--pr-body-line-height)) - 8px);
+  height: calc(var(--pr-button-line-height, var(--pr-body-line-height)) - 8px);
+  animation: loading 2s linear infinite;
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+button {
+  align-items: center;
+  background: var(--pr-button-background, var(--pr-background));
+  border: var(--pr-button-border, var(--pr-border));
+  border-radius: var(--pr-button-border-radius, var(--pr-border-radius, 8px));
+  color: var(--pr-button-color, var(--pr-color));
+  cursor: pointer;
+  display: flex;
+  font-family: var(
+    --pr-button-font-family,
+    var(--pr-body-font-family)
+  ); /* default set in shared styles */
+  font-size: var(
+    --pr-button-font-size,
+    var(--pr-body-font-size)
+  ); /* default set in shared styles */
+  font-weight: var(--pr-button-font-weight, 500);
+  justify-content: var(--pr-button-justify-content, center);
+  line-height: var(
+    --pr-button-line-height,
+    var(--pr-body-line-height)
+  ); /* default set in shared styles */
+  padding: var(
+    --pr-button-padding,
+    var(--pr-padding)
+  ); /* default set in shared styles */
+  position: relative;
+  width: var(--pr-button-width, max-content);
+}
+
+button::after {
+  background: var(--pr-button-color, var(--pr-color, #00695c));
+  border-radius: calc(
+    var(--pr-button-border-radius, var(--pr-border-radius, 8px)) - 2px
+  );
+  bottom: 0;
+  content: "";
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+button:focus:not(:disabled):after {
+  opacity: var(--state-layer-opacity-focus);
+}
+
+button:hover:not(:disabled):after {
+  opacity: var(--state-layer-opacity-hover);
+}
+
+button:disabled {
+  cursor: auto;
+  opacity: var(--state-layer-opacity-disabled);
+}
+
+.shape-round {
+  --pr-border-radius: 24px;
+}
+
+.variant-default {
+  --pr-background: inherit;
+  --pr-border: none;
+  --pr-color: var(--pr-palette);
+}
+
+.variant-filled {
+  --pr-background: var(--pr-palette);
+  --pr-border: none;
+  --pr-color: var(--pr-on-palette);
+}
+
+.variant-outlined {
+  --pr-background: inherit;
+  --pr-border: 1px solid var(--pr-palette);
+  --pr-color: var(--pr-palette);
+}
+
+.variant-tonal {
+  --pr-background: var(--pr-palette-container);
+  --pr-border: none;
+  --pr-color: var(--pr-on-palette-container);
+}

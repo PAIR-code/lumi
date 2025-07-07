@@ -1,0 +1,88 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: max-content;
+  justify-content: center;
+  gap: 4px;
+}
+
+label {
+  font-family: var(--pr-label-font-family); /* default set in shared styles */
+  font-size: var(--pr-label-font-size); /* default set in shared styles */
+  font-weight: var(--pr-label-font-weight); /* default set in shared styles */
+  line-height: var(--pr-label-line-height); /* default set in shared styles */
+}
+
+textarea {
+  align-items: center;
+  background: var(--pr-textarea-background, var(--pr-background));
+  border: var(--pr-textarea-border, var(--pr-border));
+  border-radius: var(--pr-textarea-background, var(--pr-border-radius));
+  box-sizing: border-box;
+  color: var(--pr-textarea-color, var(--pr-color));
+  display: flex;
+  font-family: var(
+    --pr-textarea-font-family,
+    var(--pr-body-font-family)
+  ); /* default set in shared styles */
+  font-size: var(
+    --pr-textarea-font-size,
+    var(--pr-body-font-size)
+  ); /* default set in shared styles */
+  font-weight: var(
+    --pr-textarea-font-weight,
+    var(--pr-body-font-weight)
+  ); /* default set in shared styles */
+  line-height: var(
+    --pr-textarea-line-height,
+    var(--pr-body-line-height)
+  ); /* default set in shared styles */
+  padding: var(
+    --pr-textarea-padding,
+    var(--pr-padding)
+  ); /* default set in shared styles */
+  resize: none;
+  text-overflow: ellipsis;
+  width: var(--pr-textarea-width, 100%);
+}
+
+textarea:focus:not(:disabled),
+textarea:hover:not(:disabled) {
+  --pr-border-color: var(--pr-palette, #00695c);
+  outline: none;
+}
+
+textarea:disabled {
+  cursor: auto;
+  opacity: var(--state-layer-opacity-disabled);
+}
+
+.variant-default {
+  --pr-border: none;
+  --pr-border-radius: 0;
+  --pr-padding: 0;
+}
+
+.variant-outlined {
+  --pr-border: 1px solid var(--pr-border-color);
+  --pr-border-color: var(--md-sys-color-outline, #757780);
+  --pr-border-radius: 8px;
+  --pr-padding: 6px;
+}

@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  // TODO(ellenj): Update security rules.
+  match /databases/{database}/documents {
+    // arXiv documents
+    match /arxiv_docs/{document_id} {
+      allow read: if true;
+      allow write: if false; // Use Cloud functions
+    }
+    match /arxiv_docs/{document_id}/versions/{version} {
+      allow read: if true;
+      allow write: if false; // Use Cloud functions
+    }
+  }
+}

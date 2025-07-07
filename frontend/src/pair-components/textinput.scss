@@ -1,0 +1,73 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label {
+  font-family: var(--pr-label-font-family); /* uses Material default */
+  font-size: var(--pr-label-font-size); /* uses Material default */
+  font-weight: var(--pr-label-font-weight); /* uses Material default */
+  line-height: var(--pr-label-line-height); /* uses Material default */
+}
+
+input {
+  align-items: center;
+  background: var(--pr-textinput-background, var(--pr-background));
+  border: var(
+    --pr-textinput-border,
+    1px solid var(--md-sys-color-outline, #757780)
+  );
+  border-radius: var(--pr-textinput-border-radius, 8px);
+  color: var(--pr-textinput-color, var(--pr-color));
+  display: flex;
+  font-family: var(
+    --pr-textinput-font-family,
+    var(--pr-body-font-family)
+  ); /* default set in shared styles */
+  font-size: var(
+    --pr-textinput-font-size,
+    var(--pr-body-font-size)
+  ); /* default set in shared styles */
+  font-weight: var(
+    --pr-textinput-font-weight,
+    var(--pr-body-font-weight)
+  ); /* default set in shared styles */
+  line-height: var(
+    --pr-textinput-line-height,
+    var(--pr-body-line-height)
+  ); /* default set in shared styles */
+  padding: var(--pr-textinput-padding, 6px); /* default set in shared styles */
+  text-overflow: ellipsis;
+  width: var(--pr-textinput-width, auto);
+}
+
+input:focus:not(:disabled),
+input:hover:not(:disabled) {
+  border-color: var(--pr-palette);
+  outline: none;
+}
+
+input:disabled,
+input:disabled:focus,
+input:disabled:hover {
+  cursor: auto;
+  opacity: var(--state-layer-opacity-disabled);
+}

@@ -1,0 +1,72 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Tooltip */
+:host {
+  --z-index: var(--pr-tooltip-z-index, 1);
+  --anchor-display-mode: var(--pr-tooltip-display, inline-block);
+}
+
+.tooltip {
+  display: var(--anchor-display-mode);
+  position: relative;
+
+  width: 100%;
+}
+
+.tooltip:hover::after {
+  visibility: visible;
+
+  background-color: var(--pr-tooltip-background, #3c4043);
+  color: var(--pr-tooltip-color, #fff);
+
+  transition-property: background-color, color;
+  transition-duration: 150ms;
+  transition-delay: var(--transition-delay);
+}
+
+.centered-horizontal::after {
+  transform: translateX(-50%);
+}
+
+.centered-vertical::after {
+  transform: translateY(-50%);
+}
+
+.tooltip::after {
+  content: attr(data-title);
+  visibility: hidden;
+
+  max-width: var(--tooltip-max-width, 232px);
+  width: var(--tooltip-width, max-content);
+  background-color: transparent;
+  color: transparent;
+  border-radius: var(--pr-tooltip-border-radius, 4px);
+  padding: 4px 8px;
+
+  position: absolute;
+  /* stylelint-disable declaration-block-no-redundant-longhand-properties --
+    Must set these properties separately since some CSS vars are not defined. */
+  top: var(--top);
+  bottom: var(--bottom);
+  left: var(--left);
+  right: var(--right);
+  /* stylelint-enable */
+  font-size: 12px;
+
+  z-index: var(--z-index);
+}

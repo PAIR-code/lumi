@@ -1,0 +1,89 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use "../../sass/colors";
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+:host {
+  @include common.flex-column;
+  gap: 24px;
+
+  align-items: center;
+  width: 100%;
+}
+
+.gallery-wrapper {
+  @include common.flex-row;
+  flex-wrap: wrap;
+  gap: common.$spacing-large;
+  max-width: 924px; // 3 gallery cards including gap
+  width: 100%;
+}
+
+.gallery-tabs {
+  @include common.flex-row;
+  align-items: center;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  padding: 0 common.$main-content-padding;
+  position: sticky;
+  top: common.$header-height;
+  width: 100%;
+}
+
+.gallery-tab {
+  @include common.flex-row;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  color: var(--md-sys-color-outline);
+  height: common.$header-height;
+  padding: 0 common.$spacing-large;
+
+  &:focus,
+  &:hover {
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  &.active {
+    color: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-primary);
+  }
+}
+
+.banner {
+  background: var(--md-sys-color-tertiary-container);
+  border-radius: common.$spacing-medium;
+  color: var(--md-sys-color-on-tertiary-container);
+  padding: common.$spacing-large;
+  width: 100%;
+}
+
+.empty-message {
+  color: var(--md-sys-color-outline);
+  font-style: italic;
+}
+
+h1 {
+  @include typescale.title-medium;
+}
+
+.controls {
+  @include common.flex-row;
+  padding: common.$spacing-xl common.$spacing-xl 28px;
+  gap: common.$spacing-medium;
+}

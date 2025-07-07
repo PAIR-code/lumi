@@ -1,0 +1,54 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { action, makeObservable, observable } from "mobx";
+import { Highlight } from "./lumi_doc";
+
+/**
+ * Manages the highlight state of spans in a document.
+ */
+export class HighlightManager {
+  @observable.shallow highlightedSpans = new Map<string, Highlight[]>();
+
+  constructor() {
+    makeObservable(this);
+  }
+
+  @action
+  addHighlights(highlights: Highlight[]) {
+    for (const highlight of highlights) {
+      const existing = this.highlightedSpans.get(highlight.spanId) || [];
+      this.highlightedSpans.set(highlight.spanId, [...existing, highlight]);
+    }
+  }
+
+  getSpanHighlights(spanId: string): Highlight[] {
+    return this.highlightedSpans.get(spanId) ?? [];
+  }
+
+  @action
+  removeHighlights(spanIds: string[]) {
+    for (const spanId of spanIds) {
+      this.highlightedSpans.delete(spanId);
+    }
+  }
+
+  @action
+  clearHighlights() {
+    this.highlightedSpans.clear();
+  }
+}
