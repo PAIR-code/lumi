@@ -18,6 +18,14 @@
 # This file containing Python cloud functions must be named main.py.
 # See https://cloud.google.com/run/docs/write-functions#python for more info.
 
+# Standard library imports
+import os
+import time
+from dataclasses import asdict
+from unittest.mock import MagicMock
+
+# Third-party library imports
+from dacite import from_dict, Config
 from firebase_admin import initialize_app, firestore
 from firebase_functions import https_fn, logger
 from firebase_functions.firestore_fn import (
@@ -27,18 +35,43 @@ from firebase_functions.firestore_fn import (
     DocumentSnapshot,
 )
 
-from dataclasses import asdict
-from dacite import from_dict, Config
-
+# Local application imports
 from answers import answers
 from import_pipeline import fetch_utils, import_pipeline, summaries, personal_summary
-from models import gemini, extract_concepts
-from shared.types import LoadingStatus, ArxivMetadata
+import main_testing_utils
+from models import extract_concepts
 from shared.api import LumiAnswerRequest
-from shared.lumi_doc import LumiDoc
-from shared.types_local_storage import PaperData
 from shared.json_utils import convert_keys
+from shared.lumi_doc import LumiDoc, LumiSummaries
+from shared.types import ArxivMetadata, LoadingStatus
+from shared.types_local_storage import PaperData
 
+
+if os.environ.get("FUNCTION_RUN_MODE") == "testing":
+
+    def import_delay(*args, **kwargs):
+        time.sleep(2)
+        return main_testing_utils.create_mock_lumidoc()
+
+    def summary_delay(*args, **kwargs):
+        time.sleep(2)
+        return LumiSummaries(
+            section_summaries=[], content_summaries=[], span_summaries=[]
+        )
+
+    import_pipeline = MagicMock()
+    import_pipeline.import_arxiv_latex_and_pdf.side_effect = import_delay
+    import_pipeline.import_arxiv_latex_and_pdf.return_value = (
+        main_testing_utils.create_mock_lumidoc()
+    )
+
+    summaries = MagicMock()
+    summaries.generate_lumi_summaries.side_effect = summary_delay
+    summaries.generate_lumi_summaries.return_value = LumiSummaries(
+        section_summaries=[], content_summaries=[], span_summaries=[]
+    )
+    extract_concepts = MagicMock()
+    extract_concepts.extract_concepts.return_value = []
 
 _ARXIV_DOCS_COLLECTION = "arxiv_docs"
 _VERSIONS_COLLECTION = "versions"
@@ -48,6 +81,7 @@ initialize_app()
 
 @on_document_written(
     timeout_sec=540,
+    memory=512,
     document=_ARXIV_DOCS_COLLECTION
     + "/{arxivId}/"
     + _VERSIONS_COLLECTION
@@ -77,6 +111,7 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
 
     after_data = event.data.after.to_dict()
     loading_status = after_data.get("loadingStatus")
+    test_config = after_data.get("testConfig", {})
 
     versioned_doc_ref = (
         db.collection(_ARXIV_DOCS_COLLECTION)
@@ -91,6 +126,10 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
         concepts = extract_concepts.extract_concepts(metadata.summary)
 
         try:
+            if os.environ.get("FUNCTION_RUN_MODE") == "testing":
+                if test_config.get("importBehavior") == "fail":
+                    raise Exception("Simulated import failure via testConfig")
+
             lumi_doc = import_pipeline.import_arxiv_latex_and_pdf(
                 arxiv_id=arxiv_id,
                 version=version,
@@ -106,6 +145,11 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
 
     elif loading_status == LoadingStatus.SUMMARIZING:
         try:
+            if os.environ.get("FUNCTION_RUN_MODE") == "testing":
+                if test_config.get("summaryBehavior") == "fail":
+                    time.sleep(2)
+                    raise Exception("Simulated summary failure via testConfig")
+
             doc = from_dict(
                 data_class=LumiDoc,
                 data=convert_keys(after_data, "camel_to_snake"),
@@ -132,6 +176,7 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
         A dictionary representation of the ArxivMetadata
     """
     arxiv_id = req.data.get("arxiv_id")
+    test_config = req.data.get("test_config")
 
     if not arxiv_id:
         raise https_fn.HttpsError(
@@ -147,12 +192,12 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
         )
     metadata = arxiv_metadata_list[0]
 
-    _try_doc_write(metadata)
+    _try_doc_write(metadata, test_config)
 
     return convert_keys(asdict(metadata), "snake_to_camel")
 
 
-def _try_doc_write(metadata: ArxivMetadata):
+def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
     """
     Attempts to write a document at the given id and version.
 
@@ -185,13 +230,14 @@ def _try_doc_write(metadata: ArxivMetadata):
             if loading_status != LoadingStatus.ERROR:
                 return
 
-        transaction.set(
-            doc_ref,
-            {
-                "loadingStatus": LoadingStatus.WAITING,
-                "metadata": convert_keys(asdict(metadata), "snake_to_camel"),
-            },
-        )
+        doc_data = {
+            "loadingStatus": LoadingStatus.WAITING,
+            "metadata": convert_keys(asdict(metadata), "snake_to_camel"),
+        }
+        if test_config and os.environ.get("FUNCTION_RUN_MODE") == "testing":
+            doc_data["testConfig"] = test_config
+
+        transaction.set(doc_ref, doc_data)
 
     _create_doc_transaction(transaction, versioned_doc_ref)
 
