@@ -107,7 +107,7 @@ export class LumiQuestions extends MobxLitElement {
     if (!docId) return nothing;
 
     const answers = this.historyService.getAnswers(docId);
-    const tempAnswers = this.historyService.getTemporaryAnswers(docId);
+    const tempAnswers = this.historyService.getTemporaryAnswers();
     const personalSummary = docId
       ? this.historyService.personalSummaries.get(docId)
       : undefined;

@@ -33,19 +33,35 @@ interface ServiceProvider {
  * History is stored per document ID in local storage.
  */
 export class HistoryService extends Service {
-  @observable.shallow answers = new Map<string, LumiAnswer[]>();
-  // Used to track answers that are still loading.
-  @observable.shallow temporaryAnswers: LumiAnswer[] = [];
-  @observable.shallow paperMetadata = new Map<string, ArxivMetadata>();
-  @observable.shallow personalSummaries = new Map<string, LumiAnswer>();
-  @observable isPersonalSummaryLoading = false;
+  answers = new Map<string, LumiAnswer[]>();
+  temporaryAnswers: LumiAnswer[] = [];
+  paperMetadata = new Map<string, ArxivMetadata>();
+  personalSummaries = new Map<string, LumiAnswer>();
+  isPersonalSummaryLoading = false;
 
   constructor(private readonly sp: ServiceProvider) {
     super();
-    makeObservable(this);
+    makeObservable(this, {
+      answers: observable.shallow,
+      temporaryAnswers: observable.shallow,
+      paperMetadata: observable.shallow,
+      personalSummaries: observable.shallow,
+      isPersonalSummaryLoading: observable,
+      isAnswerLoading: computed,
+      addAnswer: action,
+      addTemporaryAnswer: action,
+      removeTemporaryAnswer: action,
+      clearTemporaryAnswers: action,
+      addPaper: action,
+      addPersonalSummary: action,
+      addLoadingPaper: action,
+      deletePaper: action,
+      clearAllHistory: action,
+      setPersonalSummaryLoading: action,
+    });
   }
 
-  @computed get isAnswerLoading() {
+  get isAnswerLoading() {
     return this.temporaryAnswers.length > 0;
   }
 
@@ -107,7 +123,6 @@ export class HistoryService extends Service {
    * @param docId The ID of the document.
    * @param answer The LumiAnswer object to add.
    */
-  @action
   addAnswer(docId: string, answer: LumiAnswer) {
     const currentAnswers = this.getAnswers(docId);
     this.answers.set(docId, [answer, ...currentAnswers]);
@@ -119,7 +134,6 @@ export class HistoryService extends Service {
    * @param docId The ID of the document.
    * @param answer The temporary LumiAnswer object to add.
    */
-  @action
   addTemporaryAnswer(answer: LumiAnswer) {
     this.temporaryAnswers.push(answer);
   }
@@ -129,7 +143,6 @@ export class HistoryService extends Service {
    * @param docId The ID of the document.
    * @param answerId The ID of the temporary LumiAnswer object to remove.
    */
-  @action
   removeTemporaryAnswer(answerId: string) {
     const answerIndex = this.temporaryAnswers.findIndex(
       (answer) => answer.id === answerId
@@ -144,14 +157,13 @@ export class HistoryService extends Service {
    * @param docId The ID of the document.
    * @returns An array of LumiAnswer objects, or an empty array if none exist.
    */
-  getTemporaryAnswers(docId: string): LumiAnswer[] {
+  getTemporaryAnswers(): LumiAnswer[] {
     return this.temporaryAnswers;
   }
 
   /**
    * Clears all temporary answers.
    */
-  @action
   clearTemporaryAnswers() {
     this.temporaryAnswers = [];
   }
@@ -161,7 +173,6 @@ export class HistoryService extends Service {
    * @param docId The ID of the document.
    * @param summary The LumiAnswer object to add.
    */
-  @action
   addPersonalSummary(docId: string, summary: LumiAnswer) {
     this.personalSummaries.set(docId, summary);
     this.syncPaperToLocalStorage(docId);
@@ -172,7 +183,6 @@ export class HistoryService extends Service {
    * @param docId The ID of the document.
    * @param metadata The metadata of the paper.
    */
-  @action
   addLoadingPaper(docId: string, metadata: ArxivMetadata) {
     if (this.paperMetadata.has(docId)) {
       return;
@@ -195,7 +205,6 @@ export class HistoryService extends Service {
    * @param docId The ID of the document.
    * @param metadata The metadata of the paper.
    */
-  @action
   addPaper(docId: string, metadata: ArxivMetadata) {
     // If the paper already exists (i.e., it was a loading paper),
     // we just update its status. Otherwise, we create a new entry.
@@ -225,7 +234,6 @@ export class HistoryService extends Service {
    * Deletes a paper and its history.
    * @param docId The ID of the document to delete.
    */
-  @action
   deletePaper(docId: string) {
     this.paperMetadata.delete(docId);
     this.answers.delete(docId);
@@ -236,7 +244,6 @@ export class HistoryService extends Service {
   /**
    * Clears all paper history from memory and local storage.
    */
-  @action
   clearAllHistory() {
     const paperKeys = this.sp.localStorageService.listKeys(PAPER_KEY_PREFIX);
     for (const key of paperKeys) {
@@ -251,7 +258,6 @@ export class HistoryService extends Service {
    * Sets the loading state for the personal summary.
    * @param isLoading Whether the summary is currently loading.
    */
-  @action
   setPersonalSummaryLoading(isLoading: boolean) {
     this.isPersonalSummaryLoading = isLoading;
   }

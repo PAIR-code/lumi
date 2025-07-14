@@ -22,13 +22,17 @@ import { Highlight } from "./lumi_doc";
  * Manages the highlight state of spans in a document.
  */
 export class HighlightManager {
-  @observable.shallow highlightedSpans = new Map<string, Highlight[]>();
+  highlightedSpans = new Map<string, Highlight[]>();
 
   constructor() {
-    makeObservable(this);
+    makeObservable(this, {
+      highlightedSpans: observable.shallow,
+      addHighlights: action,
+      removeHighlights: action,
+      clearHighlights: action,
+    });
   }
 
-  @action
   addHighlights(highlights: Highlight[]) {
     for (const highlight of highlights) {
       const existing = this.highlightedSpans.get(highlight.spanId) || [];
@@ -40,14 +44,12 @@ export class HighlightManager {
     return this.highlightedSpans.get(spanId) ?? [];
   }
 
-  @action
   removeHighlights(spanIds: string[]) {
     for (const spanId of spanIds) {
       this.highlightedSpans.delete(spanId);
     }
   }
 
-  @action
   clearHighlights() {
     this.highlightedSpans.clear();
   }
