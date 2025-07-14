@@ -58,6 +58,15 @@ The impact of this work is **profound**, suggesting a future where AI acts as a 
 """
 
 
+TEST_SECTION_WITH_BULLETS = """Some text before the list items:
+
+*   **Bullet 1**: content
+
+*   **Bullet 2**: content
+
+"""
+
+
 class TestMarkdownUtils(unittest.TestCase):
     def test_parse_lumi_import(self):
         parsed_output = markdown_utils.parse_lumi_import(TEST_PAPER)
@@ -163,6 +172,22 @@ Hello, world again!"""
         with self.subTest("test_empty_string"):
             markdown_input = ""
             expected_html = ""
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("test_section_with_spaced_bullets"):
+            markdown_input = TEST_SECTION_WITH_BULLETS
+            expected_html = """<p>Some text before the list items:</p>
+<ul>
+<li>
+<p><strong>Bullet 1</strong>: content</p>
+</li>
+<li>
+<p><strong>Bullet 2</strong>: content</p>
+</li>
+</ul>
+"""
             self.assertEqual(
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )
