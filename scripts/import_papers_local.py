@@ -23,7 +23,7 @@ def import_papers(args):
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     main_script_path = os.path.join(
-        script_dir, "..", "functions/main_import_pdf_script.py"
+        script_dir, "..", "functions/import_test_script.py"
     )
 
     # 3. Main Loop
