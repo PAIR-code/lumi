@@ -16,9 +16,10 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
+import { makeObservable, observable, computed, action } from "mobx";
 import "../lumi_concept/lumi_concept";
 import "../lumi_questions/lumi_questions";
 import { styles } from "./sidebar.scss";
@@ -26,6 +27,8 @@ import { styles } from "./sidebar.scss";
 import { DocumentStateService } from "../../services/document_state.service";
 import { core } from "../../core/core";
 import { SelectionInfo } from "../../shared/selection_utils";
+
+const DEFAULT_CONCEPT_IS_COLLAPSED = true;
 
 /**
  * A sidebar component that displays a list of concepts.
@@ -35,6 +38,48 @@ export class LumiSidebar extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly documentStateService = core.getService(DocumentStateService);
+
+  @observable private conceptCollapsedState = new Map<string, boolean>();
+
+  @computed get areAnyConceptsCollapsed() {
+    return (
+      this.documentStateService.lumiDocManager?.lumiDoc.concepts.some(
+        (concept) =>
+          this.conceptCollapsedState.get(concept.name) ??
+          DEFAULT_CONCEPT_IS_COLLAPSED
+      ) ?? DEFAULT_CONCEPT_IS_COLLAPSED
+    );
+  }
+
+  constructor() {
+    super();
+    makeObservable(this);
+  }
+
+  protected override firstUpdated(_changedProperties: PropertyValues): void {
+    this.setAllConceptCollapsed(DEFAULT_CONCEPT_IS_COLLAPSED);
+  }
+
+  @action
+  private setAllConceptCollapsed(isCollapsed: boolean) {
+    this.documentStateService.lumiDocManager?.lumiDoc.concepts.forEach(
+      (concept) => {
+        this.conceptCollapsedState.set(concept.name, isCollapsed);
+      }
+    );
+  }
+
+  @action
+  private setConceptCollapsed(conceptName: string, isCollapsed: boolean) {
+    this.conceptCollapsedState.set(conceptName, isCollapsed);
+  }
+
+  @action
+  private toggleAllConcepts() {
+    const areAnyCollapsed = this.areAnyConceptsCollapsed;
+    const newCollapseState = areAnyCollapsed ? false : true;
+    this.setAllConceptCollapsed(newCollapseState);
+  }
 
   @property()
   onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
@@ -60,19 +105,37 @@ export class LumiSidebar extends MobxLitElement {
       return html` ${lumiQuestionsHtml} `;
     }
 
+    const toggleAllIcon = this.areAnyConceptsCollapsed
+      ? "unfold_less"
+      : "unfold_more";
+
     return html`
       ${lumiQuestionsHtml}
       <div class="divider"></div>
       <div class="lumi-concepts-container">
-        <h2 class="heading">Concepts</h2>
-        ${this.documentStateService.lumiDocManager?.lumiDoc.concepts.map(
-          (concept) =>
-            html`<lumi-concept
-              .concept=${concept}
-              .labelsToShow=${["description"]}
-              .onTextSelection=${this.onTextSelection}
-            ></lumi-concept>`
-        )}
+        <div class="header">
+          <h2 class="heading">Concepts</h2>
+          <pr-icon-button
+            variant="default"
+            .icon=${toggleAllIcon}
+            @click=${this.toggleAllConcepts}
+          ></pr-icon-button>
+        </div>
+        <div class="concepts-list">
+          ${this.documentStateService.lumiDocManager?.lumiDoc.concepts.map(
+            (concept) =>
+              html`<lumi-concept
+                .concept=${concept}
+                .labelsToShow=${["description"]}
+                .onTextSelection=${this.onTextSelection}
+                .isCollapsed=${this.conceptCollapsedState.get(concept.name) ??
+                true}
+                .setIsCollapsed=${(isCollapsed: boolean) => {
+                  this.setConceptCollapsed(concept.name, isCollapsed);
+                }}
+              ></lumi-concept>`
+          )}
+        </div>
       </div>
     `;
   }

@@ -19,25 +19,32 @@
 @use "../../sass/typescale";
 
 :host {
-    @include common.flex-column;
-    gap: common.$spacing-medium;
-    padding: common.$spacing-large common.$spacing-xl;
+  @include common.flex-column;
+  gap: common.$spacing-medium;
+  padding: common.$spacing-medium common.$spacing-large;
 
-    flex-shrink: 0;
+  flex-shrink: 0;
 
-    background: var(--md-sys-color-surface);
-    border-radius: common.$border-radius-medium;
+  background: var(--md-sys-color-surface);
+  border-radius: common.$border-radius-medium;
+}
+
+.header {
+  @include common.flex-row-align-center;
+  gap: common.$spacing-small;
+  cursor: pointer;
 }
 
 .label {
-    @include typescale.label-small;
+  @include typescale.label-small;
 }
 
 .heading {
-    @include typescale.title-small;
-    margin: 0;
+  @include typescale.title-small;
+  margin: 0;
 }
 
 .content {
-    display: block;
+  display: block;
+  padding-bottom: common.$spacing-medium;
 }
