@@ -16,17 +16,24 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { CSSResultGroup, html, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { makeObservable, observable, computed, action } from "mobx";
 import "../lumi_concept/lumi_concept";
 import "../lumi_questions/lumi_questions";
+import "../tab_component/tab_component";
+import "../table_of_contents/table_of_contents";
 import { styles } from "./sidebar.scss";
 
 import { DocumentStateService } from "../../services/document_state.service";
 import { core } from "../../core/core";
 import { SelectionInfo } from "../../shared/selection_utils";
+
+const TABS = {
+  TOC: "Table of Contents",
+  CONCEPTS: "Concepts",
+};
 
 const DEFAULT_CONCEPT_IS_COLLAPSED = true;
 
@@ -109,12 +116,13 @@ export class LumiSidebar extends MobxLitElement {
       ? "unfold_less"
       : "unfold_more";
 
-    return html`
-      ${lumiQuestionsHtml}
-      <div class="divider"></div>
-      <div class="lumi-concepts-container">
+    const concepts =
+      this.documentStateService.lumiDocManager?.lumiDoc.concepts || [];
+
+    const conceptsHtml = html`
+      <div class="concepts-container" slot=${TABS.CONCEPTS}>
         <div class="header">
-          <h2 class="heading">Concepts</h2>
+          <div class="heading">Concepts (${concepts.length + 1})</div>
           <pr-icon-button
             variant="default"
             .icon=${toggleAllIcon}
@@ -122,7 +130,7 @@ export class LumiSidebar extends MobxLitElement {
           ></pr-icon-button>
         </div>
         <div class="concepts-list">
-          ${this.documentStateService.lumiDocManager?.lumiDoc.concepts.map(
+          ${concepts.map(
             (concept) =>
               html`<lumi-concept
                 .concept=${concept}
@@ -135,6 +143,22 @@ export class LumiSidebar extends MobxLitElement {
                 }}
               ></lumi-concept>`
           )}
+        </div>
+      </div>
+    `;
+
+    const tocHtml = html`
+      <table-of-contents slot=${TABS.TOC}></table-of-contents>
+    `;
+
+    return html`
+      ${lumiQuestionsHtml}
+      <div class="divider"></div>
+      <div class="lumi-concepts-container">
+        <div class="header">
+          <tab-component .tabs=${Object.values(TABS)}>
+            ${tocHtml} ${conceptsHtml}
+          </tab-component>
         </div>
       </div>
     `;

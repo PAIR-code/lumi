@@ -38,7 +38,7 @@ $sidebar-padding: common.$spacing-xl;
   flex-grow: 1;
 
   @include common.flex-column;
-  gap: common.$spacing-large;
+  gap: common.$spacing-small;
   padding: 0 $sidebar-padding $sidebar-padding;
 
   overflow-y: auto;
@@ -55,13 +55,14 @@ $sidebar-padding: common.$spacing-xl;
   position: sticky;
   top: 0;
   background-color: var(--md-sys-color-surface-variant);
-  padding-top: common.$spacing-xl;
+  padding-top: common.$spacing-medium;
   padding-bottom: common.$spacing-medium;
   z-index: 1;
 }
 
 .heading {
-  @include typescale.title-medium;
+  @include typescale.title-small;
+  color: var(--md-sys-color-on-surface-high);
   margin: 0;
 }
 

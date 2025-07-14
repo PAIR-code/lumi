@@ -19,36 +19,41 @@
 @use "../../sass/typescale";
 
 :host {
+  width: 100%;
+
   @include common.flex-column;
-  gap: common.$spacing-medium;
-  padding: common.$spacing-medium common.$spacing-large;
-
-  flex-shrink: 0;
-
-  background: var(--md-sys-color-surface);
-  border-radius: common.$border-radius-medium;
-}
-
-.header {
-  @include common.flex-row-align-center;
   gap: common.$spacing-small;
+}
+
+.tabs-header {
+  @include common.flex-row;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.tab-button {
+  @include typescale.label-medium;
+  font-size: 12px;
+  font-weight: 400;
+
+  flex: 1;
+  padding: common.$spacing-small common.$spacing-large;
+  background: none;
+  border: none;
   cursor: pointer;
+  white-space: nowrap;
+  color: var(--md-sys-color-on-surface-higher);
+
+  &.selected {
+    color: var(--md-sys-color-primary);
+    border-bottom: 2px solid var(--md-sys-color-primary);
+    font-weight: 500;
+  }
 }
 
-.label {
-  @include typescale.label-small;
+.tab-content .tab-pane {
+  display: none;
 }
 
-.heading {
-  @include typescale.title-small;
-  margin: 0;
-  color: var(--md-sys-color-on-surface-high);
-}
-
-.content {
-  @include typescale.body-small;
-
+.tab-content .tab-pane.active {
   display: block;
-  padding-bottom: common.$spacing-medium;
-  color: var(--md-sys-color-on-surface-high);
 }
