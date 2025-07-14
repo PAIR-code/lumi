@@ -30,6 +30,12 @@ interface FormattingCounter {
   [key: string]: InnerTagMetadata;
 }
 
+function decodeHtmlEntities(encodedString: string) {
+  const textarea = document.createElement("textarea");
+  textarea.innerHTML = encodedString;
+  return textarea.value;
+}
+
 export interface LumiSpanRendererProperties {
   span: LumiSpan;
   onReferenceClicked?: (referenceId: string) => void;
@@ -170,7 +176,7 @@ export function renderLumiSpan(
           // At the end of the equation, render it using KaTeX.
           const currentEquationText = equationText;
           equationText = "";
-          return renderEquation(currentEquationText);
+          return renderEquation(decodeHtmlEntities(currentEquationText));
         }
       }
 
