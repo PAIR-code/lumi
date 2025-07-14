@@ -72,6 +72,11 @@ npm run deploy:prod
 
 To deploy the Firebase cloud functions, see functions/README.md.
 
+### 5. Local paper import and debugging
+
+The import script in scripts/import_papers_local.py can be used to import a set of papers for local debugging.
+The locally imported papers can be rendered in lumi_doc.stories.ts via Storybook.
+
 ## License and Disclaimer
 
 All software is licensed under the Apache License, Version 2.0 (Apache 2.0).

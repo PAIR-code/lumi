@@ -25,18 +25,28 @@ import { provide } from "@lit/context";
 
 // These are commented out for now so that the main app does not have syntax errors.
 // TODO(ellenj): Update the INNER_TAG type enum to allow strings to be set as the values.
-// import { paper as editFlowsPaper } from "../.examples/paper_2506.09018";
-// import { paper as heterogeneousPaper} from "../.examples/paper_2309.12864";
-// import { paper as sketchpadPaper} from "../.examples/paper_2406.09403";
+// import { paper as paper_2410_18808 } from "../.examples/paper_2410.18808";
+// import { paper as paper_2406_10252 } from "../.examples/paper_2406.10252";
+// import { paper as paper_2405_17767 } from "../.examples/paper_2405.17767";
+// import { paper as paper_2506_09018 } from "../.examples/paper_2506.09018";
+// import { paper as paper_2309_12864 } from "../.examples/paper_2309.12864";
+// import { paper as paper_2406_09403 } from "../.examples/paper_2406.09403";
+
 import "../components/lumi_doc/lumi_doc";
 import { InnerTagName, LumiDoc, LoadingStatus } from "../shared/lumi_doc";
 import { scrollContext, ScrollState } from "../contexts/scroll_context";
 import { Ref } from "lit/directives/ref";
+import { LumiDocManager } from "../shared/lumi_doc_manager";
+import { CollapseManager } from "../shared/collapse_manager";
+import { HighlightManager } from "../shared/highlight_manager";
 
 const PAPERS: { [key: string]: LumiDoc } = {
-  // '2506.09018': editFlowsPaper,
-  // '2309.12864': heterogeneousPaper,
-  // '2406.09403': sketchpadPaper,
+  // "2410.18808": paper_2410_18808,
+  // "2406.10252": paper_2406_10252,
+  // "2405.17767": paper_2405_17767,
+  // "2506.09018": paper_2506_09018,
+  // "2309.12864": paper_2309_12864,
+  // "2406.09403": paper_2406_09403,
 };
 
 const TEST_TABLE_HTML = `<table>
@@ -259,18 +269,27 @@ class MockScrollProvider extends LitElement {
 const meta = {
   title: "Components/LumiDoc",
   tags: ["autodocs"],
-  render: (args) =>
-    html` <mock-scroll-provider>
+  render: (args) => {
+    const lumiDocManager = new LumiDocManager(args.lumiDoc);
+    const collapseManager = new CollapseManager(lumiDocManager);
+    const highlightManager = new HighlightManager();
+    collapseManager.initialize();
+
+    return html` <mock-scroll-provider>
       <lumi-doc
-        .lumiDoc=${args.lumiDoc}
+        .lumiDocManager=${lumiDocManager}
+        .highlightManager=${highlightManager}
+        .collapseManager=${collapseManager}
         .getImageUrl=${(path: string) => Promise.resolve(`/${path}`)}
       ></lumi-doc>
-    </mock-scroll-provider>`,
+    </mock-scroll-provider>`;
+  },
   argTypes: {
-    // paper: {
-    //   options: Object.keys(PAPERS),
-    //   control: { type: "select" },
-    // },
+    paper: {
+      options: Object.keys(PAPERS),
+      mapping: PAPERS,
+      control: { type: "select" },
+    },
   },
 } satisfies Meta;
 
@@ -286,16 +305,17 @@ export const Default: Story = {
 
 export const UsingImportedPaper: Story = {
   args: {
-    // @ts-ignore
-    lumiDoc: Object.values(PAPERS)[0] || null,
+    paper: Object.keys(PAPERS)[0],
   },
   render: (args) => {
-    if (!args.lumiDoc) {
+    const lumiDoc = args.paper;
+
+    if (!lumiDoc) {
       return html`<p>
         No imported paper found. (These may be commented out in the story.)
       </p>`;
     }
-    return meta.render(args);
+    return meta.render({ ...args, lumiDoc });
   },
 };
 
