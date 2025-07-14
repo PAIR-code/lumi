@@ -22,6 +22,8 @@ import * as sinon from "sinon";
 import { ObservableMap } from "mobx";
 
 import { Core, core } from "../../core/core";
+import { AnalyticsService } from "../../services/analytics.service";
+import { LocalStorageService } from "../../services/local_storage.service";
 import { HomeService } from "../../services/home.service";
 import { HistoryService } from "../../services/history.service";
 import { RouterService } from "../../services/router.service";
@@ -44,17 +46,40 @@ class MockHistoryService extends HistoryService {
 class MockSnackbarService extends SnackbarService {
   override show = sinon.stub();
 }
+class MockAnalyticsService extends AnalyticsService {}
+class MockLocalStorageService extends LocalStorageService {}
 
 class MockCore extends Core {
   private readonly mockServices = new Map<any, any>();
 
   constructor() {
     super();
-    this.mockServices.set(HomeService, new MockHomeService());
-    this.mockServices.set(RouterService, new MockRouterService());
+    this.mockServices.set(LocalStorageService, new MockLocalStorageService());
     this.mockServices.set(FirebaseService, new MockFirebaseService());
-    this.mockServices.set(HistoryService, new MockHistoryService());
+    this.mockServices.set(
+      HomeService,
+      new MockHomeService({
+        firebaseService: this.mockServices.get(FirebaseService),
+      })
+    );
+    this.mockServices.set(
+      HistoryService,
+      new MockHistoryService({
+        localStorageService: this.mockServices.get(LocalStorageService),
+      })
+    );
     this.mockServices.set(SnackbarService, new MockSnackbarService());
+    this.mockServices.set(
+      RouterService,
+      new MockRouterService({
+        analyticsService: this.mockServices.get(AnalyticsService),
+        historyService: this.mockServices.get(HistoryService),
+      })
+    );
+    this.mockServices.set(
+      AnalyticsService,
+      new MockAnalyticsService(this.mockServices.get(RouterService))
+    );
   }
 
   override getService(name: any) {
