@@ -62,7 +62,7 @@ SECTION_SUMMARIES_DEFAULT_BATCH_SIZE = 50
 CONTENT_SUMMARIES_DEFAULT_BATCH_SIZE = 100
 
 # Shared prompt instructions
-_PROMPT_FORMATTING_INSTRUCTIONS = """You can use markdown for formatting, like <b>bold</b>. For any equations or variables, make sure to use $...$ for any inline math (including \sqrt)."""
+_PROMPT_FORMATTING_INSTRUCTIONS = """You can use markdown for formatting, like <b>bold</b>. For any equations or variables, make sure to use $...$ for any inline math (including \\sqrt)."""
 _PROMPT_JSON_OUTPUT_INSTRUCTIONS = """Please return the list of items and their summaries as a list of JSON objects, each with two fields: id (string) and label (string). Please use double quotes around the key/values and single quotes within the strings."""
 
 
