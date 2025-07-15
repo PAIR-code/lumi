@@ -2,7 +2,7 @@
 
 Defines cloud functions for Lumi backend.
 
-(Make sure to create and activate a virtual env in this functions directory.)
+First, create and activate a virtual env in this functions directory.
 
 To install dependencies:
 
