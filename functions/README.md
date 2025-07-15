@@ -22,14 +22,14 @@ To deploy functions:
 firebase deploy --only functions
 ```
 
-To run tests:
+To run unittests:
 
 ```
 python3 -m unittest discover -p "*_test.py"
 ```
 
-To test import locally:
+To run the integration test:
 
 ```
-python3 import_test_script [arxiv_id] [version]
+FUNCTION_RUN_MODE=testing firebase emulators:exec 'python3 -m unittest discover -p "main_integration.py"'
 ```

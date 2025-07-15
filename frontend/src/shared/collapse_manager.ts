@@ -24,11 +24,18 @@ const INITIAL_COLLAPSE_STATE = true;
  * Manages the collapse/expand state of sections in a document.
  */
 export class CollapseManager {
-  @observable.shallow sectionCollapseState = new Map<string, boolean>();
-  @observable isAbstractCollapsed = INITIAL_COLLAPSE_STATE;
+  sectionCollapseState = new Map<string, boolean>();
+  isAbstractCollapsed = INITIAL_COLLAPSE_STATE;
 
   constructor(private readonly lumiDocManager: LumiDocManager) {
-    makeObservable(this);
+    makeObservable(this, {
+      sectionCollapseState: observable.shallow,
+      isAbstractCollapsed: observable,
+      setAbstractCollapsed: action,
+      toggleSection: action,
+      setAllSectionsCollapsed: action,
+      expandToSpan: action,
+    });
   }
 
   initialize() {
@@ -36,11 +43,10 @@ export class CollapseManager {
     this.setAllSectionsCollapsed(INITIAL_COLLAPSE_STATE);
   }
 
-  @action setAbstractCollapsed(isCollapsed: boolean) {
+  setAbstractCollapsed(isCollapsed: boolean) {
     this.isAbstractCollapsed = isCollapsed;
   }
 
-  @action
   toggleSection(sectionId: string, isCollapsed: boolean) {
     this.sectionCollapseState.set(sectionId, isCollapsed);
   }
@@ -60,7 +66,6 @@ export class CollapseManager {
     return uncollapsedValue === undefined;
   }
 
-  @action
   setAllSectionsCollapsed(isCollapsed: boolean) {
     this.isAbstractCollapsed = isCollapsed;
 
@@ -74,7 +79,6 @@ export class CollapseManager {
     });
   }
 
-  @action
   expandToSpan(spanId: string) {
     let section = this.lumiDocManager.getSectionForSpan(spanId);
     while (section) {

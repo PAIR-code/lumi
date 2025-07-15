@@ -28,17 +28,22 @@ interface ServiceProvider {
 export class HomeService extends Service {
   constructor(private readonly sp: ServiceProvider) {
     super();
-    makeObservable(this);
+    makeObservable(this, {
+      documents: observable.shallow,
+      showLumiHistory: observable,
+      addDocument: action,
+      setShowLumiHistory: action,
+    });
   }
 
   // observable.shallow functions similarly to obsevable.ref except for collections.
   // I.e. this list will be made observable, but its contents will not.
-  @observable.shallow documents: LumiDoc[] = [];
+  documents: LumiDoc[] = [];
 
   // Controls which tab is visible on home page
-  @observable showLumiHistory = true;
+  showLumiHistory = true;
 
-  @action addDocument(doc: LumiDoc) {
+  addDocument(doc: LumiDoc) {
     // Avoid adding duplicates
     const paperExists = this.documents.find(
       (d) =>
@@ -50,7 +55,7 @@ export class HomeService extends Service {
     }
   }
 
-  @action setShowLumiHistory(showHistory: boolean) {
+  setShowLumiHistory(showHistory: boolean) {
     this.showLumiHistory = showHistory;
   }
 }
