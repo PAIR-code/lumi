@@ -17,8 +17,6 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-$sidebar-padding: common.$spacing-xl;
-
 :host {
   @include common.flex-column;
   @include common.full-percentage;
@@ -31,7 +29,8 @@ $sidebar-padding: common.$spacing-xl;
 }
 
 .lumi-questions-container {
-  padding: 0 $sidebar-padding $sidebar-padding;
+  padding: 0 common.$sidebar-padding common.$sidebar-padding;
+  max-height: 60%;
 }
 
 .lumi-concepts-container {
@@ -39,7 +38,7 @@ $sidebar-padding: common.$spacing-xl;
 
   @include common.flex-column;
   gap: common.$spacing-small;
-  padding: 0 $sidebar-padding $sidebar-padding;
+  padding: 0 common.$sidebar-padding common.$sidebar-padding;
 
   overflow-y: auto;
 }

@@ -18,21 +18,26 @@
 @use "../../sass/typescale";
 
 $padding-top: common.$spacing-large;
+$input-container-height: 50px;
 
 :host {
   @include common.flex-column;
   gap: common.$spacing-xl;
+  height: 100%;
 }
 
 .input-container {
   @include common.flex-row-align-center;
   gap: common.$spacing-medium;
   padding-top: $padding-top;
+  height: $input-container-height;
+  flex-shrink: 0;
 }
 
 .history-container {
   @include common.flex-column;
   gap: common.$spacing-large;
+  height: calc(100% - $input-container-height - common.$sidebar-padding);
 }
 
 .search-input {

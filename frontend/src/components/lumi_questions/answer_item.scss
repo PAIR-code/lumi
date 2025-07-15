@@ -22,11 +22,13 @@ $history-item-horizontal-padding: common.$spacing-xl;
 
 :host {
   display: block;
+  height: 100%;
 }
 
 .history-item {
   @include common.flex-column;
   gap: common.$spacing-large;
+  height: 100%;
 
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: 8px;
@@ -34,8 +36,22 @@ $history-item-horizontal-padding: common.$spacing-xl;
 
   background: var(--md-sys-color-surface);
 
-  max-height: 500px;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.question-answer-container {
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 0 common.$sidebar-padding common.$sidebar-padding
+    common.$sidebar-padding;
+  margin: -1 * common.$sidebar-padding;
+  max-height: 100%;
+
+  &.are-references-shown {
+    max-height: 60%;
+  }
 }
 
 .highlight {
@@ -54,6 +70,14 @@ $history-item-horizontal-padding: common.$spacing-xl;
 .question {
   @include typescale.title-medium;
   font-weight: 500;
+
+  position: sticky;
+  top: 0;
+  background: var(--md-sys-color-surface);
+  z-index: 1;
+
+  padding-top: common.$sidebar-padding;
+  padding-bottom: 8px;
 }
 
 .mentions-text {
@@ -67,17 +91,28 @@ $history-item-horizontal-padding: common.$spacing-xl;
 
   border-top: 1px solid var(--md-sys-color-outline-variant);
   color: var(--md-sys-color-primary);
-  padding: common.$spacing-small common.$spacing-xl;
+
+  padding: 6px common.$spacing-xl;
   margin: 0 -1 * $history-item-horizontal-padding -1 *
     $history-item-vertical-padding;
 
   cursor: pointer;
+
+  position: sticky;
+  top: 0;
+  background: var(--md-sys-color-surface);
+  z-index: 1;
 }
 
 .references-panel {
   @include common.flex-column;
   gap: common.$spacing-medium;
-  padding: common.$spacing-medium 0;
+
+  margin: -1 * common.$sidebar-padding;
+  padding: common.$sidebar-padding;
+
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 .references-header {

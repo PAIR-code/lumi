@@ -191,6 +191,11 @@ export class AnswerItem extends MobxLitElement {
       "history-item": true,
     };
 
+    const questionAnswerContainerStyles = {
+      "question-answer-container": true,
+      "are-references-shown": this.areReferencesShown,
+    };
+
     return html`
       <div
         class=${classMap(classes)}
@@ -200,9 +205,10 @@ export class AnswerItem extends MobxLitElement {
           });
         }}
       >
-        ${this.renderHighlightedText()}
-        <div class="question">${this.answer.request.query}</div>
-        ${this.renderContent()}
+        <div class=${classMap(questionAnswerContainerStyles)}>
+          <div class="question">${this.answer.request.query}</div>
+          ${this.renderContent()}
+        </div>
         ${this.referencedSpans.length > 0
           ? html`
               <div
