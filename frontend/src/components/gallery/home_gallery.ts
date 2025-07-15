@@ -51,7 +51,8 @@ export class HomeGallery extends MobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly snackbarService = core.getService(SnackbarService);
 
-  @state() private paperId: string = "2309.12864";
+  // Paper URL or ID for text input box
+  @state() private paperInput: string = "2309.12864";
   /**
    * Holds the metadata of the paper being loaded. This is used to render a
    * temporary, disabled "loading" card in the UI.
@@ -98,8 +99,13 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private async loadDocument() {
-    const paperId = this.paperId;
-    this.paperId = "";
+    // Extract arXiv ID from potential paper link
+    const paperId = this.paperInput.split('/').pop();
+    if (!paperId) {
+      // Paper ID is only empty if input was empty
+      this.snackbarService.show(`Error: No URL to parse`);
+      return;
+    }
 
     this.isLoadingMetadata = true;
     let metadata: ArxivMetadata;
@@ -124,6 +130,9 @@ export class HomeGallery extends MobxLitElement {
     } finally {
       this.isLoadingMetadata = false;
     }
+
+    // Reset paper input
+    this.paperInput = "";
 
     if (!metadata || !metadata.version) {
       this.snackbarService.show("Error: Document not found.");
@@ -241,10 +250,10 @@ export class HomeGallery extends MobxLitElement {
         <div class="controls">
           <pr-textinput
             ?disabled=${this.isLoadingDocument}
-            .value=${this.paperId}
+            .value=${this.paperInput}
             .onChange=${(e: Event) =>
-              (this.paperId = (e.target as HTMLInputElement).value)}
-            placeholder="Paper ID (e.g., 2309.12864)"
+              (this.paperInput = (e.target as HTMLInputElement).value)}
+            placeholder="Paste your arXiv paper link here"
           ></pr-textinput>
           <pr-button
             @click=${this.loadDocument}
