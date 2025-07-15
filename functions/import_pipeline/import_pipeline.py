@@ -16,9 +16,13 @@
 
 import bs4
 import re
+import os
 import tempfile
 from typing import Dict, List, Optional
 
+import nltk
+
+nltk.data.path.append(os.path.join(os.path.dirname(__file__), "nltk_data"))
 from nltk import tokenize
 
 from import_pipeline import fetch_utils
@@ -47,6 +51,8 @@ from shared.lumi_doc import (
 )
 from shared.types import ImageMetadata, ArxivMetadata
 from shared.utils import get_unique_id
+
+nltk.data.path.append(os.path.join(os.path.dirname(__file__), "nltk_data"))
 
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
 ORDERED_LIST_TAG = "ol"
@@ -100,7 +106,7 @@ def import_arxiv_latex_and_pdf(
             latex_utils.extract_tar_gz(latex_source_bytes, temp_dir)
             main_tex_file = latex_utils.find_main_tex_file(temp_dir)
             latex_string = latex_utils.inline_tex_files(
-                main_tex_file, remove_comments=True
+                main_tex_file, remove_comments=True, inline_commands=True,
             )
         except (ValueError, FileNotFoundError) as e:
             raise
@@ -273,6 +279,7 @@ def convert_to_lumi_sections(
 
     return sections
 
+
 def _parse_html_block_for_lumi_contents(
     text: str,
     original_tag_name: str,
@@ -284,23 +291,32 @@ def _parse_html_block_for_lumi_contents(
     """
     if not text.strip():
         return
-    
+
     lumi_contents: List[LumiContent] = []
 
     # Regex to find placeholders within the text segment
-    placeholder_pattern = re.compile(f"({re.escape(PLACEHOLDER_PREFIX)}.*?{re.escape(PLACEHOLDER_SUFFIX)})")
-    
+    placeholder_pattern = re.compile(
+        f"({re.escape(PLACEHOLDER_PREFIX)}.*?{re.escape(PLACEHOLDER_SUFFIX)})"
+    )
+
     current_pos = 0
     for match in placeholder_pattern.finditer(text):
         # Add text before the placeholder
         if match.start() > current_pos:
-            pre_text = text[current_pos:match.start()]
+            pre_text = text[current_pos : match.start()]
             if pre_text.strip():
                 cleaned_text, inner_tags = parse_text_and_extract_inner_tags(pre_text)
                 spans = create_lumi_spans(cleaned_text, inner_tags)
                 if spans:
-                    lumi_contents.append(LumiContent(id=get_unique_id(), text_content=TextContent(tag_name=original_tag_name, spans=spans)))
-        
+                    lumi_contents.append(
+                        LumiContent(
+                            id=get_unique_id(),
+                            text_content=TextContent(
+                                tag_name=original_tag_name, spans=spans
+                            ),
+                        )
+                    )
+
         # Add the placeholder content
         placeholder_id = match.group(1)
         if placeholder_id in placeholder_map:
@@ -315,7 +331,14 @@ def _parse_html_block_for_lumi_contents(
             cleaned_text, inner_tags = parse_text_and_extract_inner_tags(post_text)
             spans = create_lumi_spans(cleaned_text, inner_tags)
             if spans:
-                lumi_contents.append(LumiContent(id=get_unique_id(), text_content=TextContent(tag_name=original_tag_name, spans=spans)))
+                lumi_contents.append(
+                    LumiContent(
+                        id=get_unique_id(),
+                        text_content=TextContent(
+                            tag_name=original_tag_name, spans=spans
+                        ),
+                    )
+                )
 
     return lumi_contents
 
@@ -332,8 +355,12 @@ def preprocess_and_replace_figures(
         caption_text = (match.group("image_caption_text") or "").strip()
         caption_span = None
         if caption_text:
-            cleaned_caption_text, caption_inner_tags = parse_text_and_extract_inner_tags(caption_text)
-            caption_spans = create_lumi_spans(cleaned_caption_text, caption_inner_tags, skip_tokenize=True)
+            cleaned_caption_text, caption_inner_tags = (
+                parse_text_and_extract_inner_tags(caption_text)
+            )
+            caption_spans = create_lumi_spans(
+                cleaned_caption_text, caption_inner_tags, skip_tokenize=True
+            )
             if caption_spans:
                 caption_span = caption_spans[0]
 
@@ -360,8 +387,12 @@ def preprocess_and_replace_figures(
         caption_text = (match.group("html_caption_text") or "").strip()
         caption_span = None
         if caption_text:
-            cleaned_caption_text, caption_inner_tags = parse_text_and_extract_inner_tags(caption_text)
-            caption_spans = create_lumi_spans(cleaned_caption_text, caption_inner_tags, skip_tokenize=True)
+            cleaned_caption_text, caption_inner_tags = (
+                parse_text_and_extract_inner_tags(caption_text)
+            )
+            caption_spans = create_lumi_spans(
+                cleaned_caption_text, caption_inner_tags, skip_tokenize=True
+            )
             if caption_spans:
                 caption_span = caption_spans[0]
 
@@ -375,11 +406,14 @@ def preprocess_and_replace_figures(
 
     # Process HTML figures first, then images. This avoids issues if one pattern could match part of another.
     # The order here is important.
-    processed_html = import_tags.HTML_FIGURE_PATTERN.sub(html_figure_replacer, raw_markdown_string)
-    processed_html = import_tags.IMAGE_AND_CAPTION_PATTERN.sub(image_replacer, processed_html)
+    processed_html = import_tags.HTML_FIGURE_PATTERN.sub(
+        html_figure_replacer, raw_markdown_string
+    )
+    processed_html = import_tags.IMAGE_AND_CAPTION_PATTERN.sub(
+        image_replacer, processed_html
+    )
 
     return processed_html
-
 
 
 def _get_list_content_from_tag(tag: bs4.Tag) -> Optional[LumiContent]:
@@ -401,14 +435,11 @@ def _get_list_content_from_tag(tag: bs4.Tag) -> Optional[LumiContent]:
                 # (There can only be one nested sublist per list item.)
                 if child_node.name in DEFAULT_LIST_TAGS and subListContent is None:
                     nested_lumi_content_obj = _get_list_content_from_tag(child_node)
-                    if (
-                        nested_lumi_content_obj
-                        and nested_lumi_content_obj.list_content
-                    ):
+                    if nested_lumi_content_obj and nested_lumi_content_obj.list_content:
                         subListContent = nested_lumi_content_obj.list_content
                 else:
                     # Otherwise, we add the child node to the raw html content.
-                    raw_li_content_html += str(child_node)
+                    raw_li_content_html += str(child_node.get_text())
 
             cleaned_li_text, li_inner_tags = parse_text_and_extract_inner_tags(
                 raw_li_content_html
@@ -473,7 +504,6 @@ def parse_text_and_extract_inner_tags(raw_content: str) -> (str, List[InnerTag])
             tag_inner_content_raw = ""
             if "content" in earliest_match.groupdict():
                 tag_inner_content_raw = earliest_match.group("content")
-
 
             # Recursively parse the content of the tag
             (
@@ -572,9 +602,8 @@ def create_lumi_spans(
                     tag_end_absolute - sentence_start_in_cleaned,
                 )
 
-                if (
-                    tag_start_relative <= tag_end_relative
-                    and tag_end_relative < len(sentence_text)
+                if tag_start_relative <= tag_end_relative and tag_end_relative < len(
+                    sentence_text
                 ):
                     tags_relative_to_sentence.append(
                         InnerTag(

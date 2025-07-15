@@ -46,12 +46,14 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
         self.maxDiff = None
         markdown_input = f"Some text {import_tags.L_IMG_START_PREFIX}fig1.png{import_tags.L_IMG_END} and more text {import_tags.L_HTML_START_PREFIX}T1{import_tags.L_HTML_END}<div>...</div>{import_tags.L_HTML_START_PREFIX}T1{import_tags.L_HTML_END}{import_tags.L_HTML_CAP_START_PREFIX}T1{import_tags.L_HTML_CAP_END}Cap{import_tags.L_HTML_CAP_START_PREFIX}T1{import_tags.L_HTML_CAP_END}"
         placeholder_map = {}
-        
+
         # The mock needs to provide enough unique IDs for all calls within preprocess_and_replace_figures.
         # In this case: 1 for the HTML figure, 1 for its caption, and 1 for the image.
         mock_get_unique_id.side_effect = ["html_id_1", "caption_id_1", "image_id_1"]
 
-        processed_markdown = import_pipeline.preprocess_and_replace_figures(markdown_input, "file_id", placeholder_map)
+        processed_markdown = import_pipeline.preprocess_and_replace_figures(
+            markdown_input, "file_id", placeholder_map
+        )
 
         # Check the processed HTML string
         expected_markdown = "Some text [[LUMI_PLACEHOLDER_image_id_1]] and more text [[LUMI_PLACEHOLDER_html_id_1]]"
@@ -59,7 +61,7 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
 
         # Check the placeholder map
         self.assertEqual(len(placeholder_map), 2)
-        
+
         html_placeholder_id = "[[LUMI_PLACEHOLDER_html_id_1]]"
         image_placeholder_id = "[[LUMI_PLACEHOLDER_image_id_1]]"
 
@@ -74,7 +76,6 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
         self.assertEqual(html_content.caption.text, "Cap")
         self.assertEqual(html_content.caption.id, "caption_id_1")
 
-
         # Validate ImageContent
         image_content = placeholder_map[image_placeholder_id].image_content
         self.assertIsNotNone(image_content)
@@ -84,7 +85,7 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
 
 class ImportPipelineTest(unittest.TestCase):
     @parameterized.expand(
-        [  
+        [
             # BASIC TESTS
             (
                 "single_paragraph",
@@ -362,6 +363,37 @@ class ImportPipelineTest(unittest.TestCase):
                             )
                         ],
                     )
+                ],
+                {},
+            ),
+            (
+                "list_with_list_item_with_p_tag",
+                "<ul><li><p>content</p></li></ul>",
+                [
+                    LumiSection(
+                        id="123",
+                        heading=Heading(heading_level=0, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                list_content=ListContent(
+                                    is_ordered=False,
+                                    list_items=[
+                                        ListItem(
+                                            spans=[
+                                                LumiSpan(
+                                                    id="123",
+                                                    text="content",
+                                                    inner_tags=[],
+                                                ),
+                                            ],
+                                            subListContent=None,
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ],
+                    ),
                 ],
                 {},
             ),
@@ -687,7 +719,7 @@ class ImportPipelineTest(unittest.TestCase):
                     ),
                 ],
                 {},
-            ), 
+            ),
             (
                 "only_reference_tag_in_paragraph",
                 f"<p>{import_tags.L_CITATION_START_PREFIX}id-7{import_tags.L_CITATION_END}OnlyRef{import_tags.L_CITATION_START_PREFIX}id-7{import_tags.L_CITATION_END}</p>",
@@ -1005,27 +1037,25 @@ class ImportPipelineTest(unittest.TestCase):
                     "[[LUMI_PLACEHOLDER_123]]": LumiContent(
                         id="123",
                         image_content=ImageContent(
-                                    latex_path="fig1.png",
-                                    storage_path="file_id/images/fig1.png",
-                                    alt_text="",
-                                    caption=LumiSpan(
-                                        id="123",
-                                        text="A bold caption.",
-                                        inner_tags=[
-                                            InnerTag(
-                                                tag_name=InnerTagName.BOLD,
-                                                metadata={},
-                                                position=Position(
-                                                    start_index=2, end_index=5
-                                                ),
-                                                children=[],
-                                            )
-                                        ],
-                                    ),
-                                    width=0.0,
-                                    height=0.0,
-                                ),
+                            latex_path="fig1.png",
+                            storage_path="file_id/images/fig1.png",
+                            alt_text="",
+                            caption=LumiSpan(
+                                id="123",
+                                text="A bold caption.",
+                                inner_tags=[
+                                    InnerTag(
+                                        tag_name=InnerTagName.BOLD,
+                                        metadata={},
+                                        position=Position(start_index=2, end_index=5),
+                                        children=[],
+                                    )
+                                ],
                             ),
+                            width=0.0,
+                            height=0.0,
+                        ),
+                    ),
                 },
             ),
             # HTML Figure Content Tests
@@ -1229,15 +1259,28 @@ class ImportPipelineTest(unittest.TestCase):
         mock_fetch_utils.fetch_latex_source.return_value = b"latex_source_bytes"
         mock_latex_utils.inline_tex_files.return_value = "inlined_latex_string"
         mock_gemini.format_pdf_with_latex.return_value = "model_output"
-        
+
         # Mock the returned LumiDoc to have an image
-        mock_image_content = ImageContent(latex_path="fig1.png", storage_path="1234.5678/images/fig1.png", alt_text="", width=0, height=0, caption=None)
+        mock_image_content = ImageContent(
+            latex_path="fig1.png",
+            storage_path="1234.5678/images/fig1.png",
+            alt_text="",
+            width=0,
+            height=0,
+            caption=None,
+        )
         mock_doc = LumiDoc(
-            markdown="", abstract=None, sections=[
-                LumiSection(id="s1", heading=Heading(0, ""), contents=[
-                    LumiContent(id="c1", image_content=mock_image_content)
-                ])
-            ], references=[], concepts=[]
+            markdown="",
+            abstract=None,
+            sections=[
+                LumiSection(
+                    id="s1",
+                    heading=Heading(0, ""),
+                    contents=[LumiContent(id="c1", image_content=mock_image_content)],
+                )
+            ],
+            references=[],
+            concepts=[],
         )
         mock_convert_to_doc.return_value = mock_doc
 
@@ -1281,12 +1324,11 @@ class ImportPipelineTest(unittest.TestCase):
             concepts=concepts,
             file_id=arxiv_id,
         )
-        
+
         # Assert that image extraction from latex source is called with the right args
         mock_image_utils.extract_images_from_latex_source.assert_called_once()
         _, kwargs = mock_image_utils.extract_images_from_latex_source.call_args
-        self.assertEqual(kwargs['image_contents'], [mock_image_content])
-
+        self.assertEqual(kwargs["image_contents"], [mock_image_content])
 
         self.assertIsInstance(result, LumiDoc)
         self.assertEqual(result, mock_doc)

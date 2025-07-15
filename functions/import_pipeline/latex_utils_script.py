@@ -21,35 +21,48 @@ import tempfile
 
 # Add the project root to sys.path to allow imports like 'functions.import_pipeline.fetch_utils'
 script_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(script_dir, '..'))
+project_root = os.path.abspath(os.path.join(script_dir, ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from import_pipeline import fetch_utils, latex_utils
 
+
 def print_dir_structure(startpath):
     """Prints the directory structure."""
     print(f"\n--- Directory Structure of {startpath} ---")
     for root, dirs, files in os.walk(startpath):
-        level = root.replace(startpath, '').count(os.sep)
-        indent = ' ' * 4 * (level)
-        print(f'{indent}{os.path.basename(root)}/')
-        subindent = ' ' * 4 * (level + 1)
+        level = root.replace(startpath, "").count(os.sep)
+        indent = " " * 4 * (level)
+        print(f"{indent}{os.path.basename(root)}/")
+        subindent = " " * 4 * (level + 1)
         for f in files:
-            print(f'{subindent}{f}')
+            print(f"{subindent}{f}")
     print("--------------------------------------------------\n")
+
 
 def main():
     """
     Main function to fetch, extract, and process an arXiv LaTeX source.
-    
+
     Takes an arXiv ID as a command-line argument, fetches the .tar.gz source,
     extracts it to a temporary directory, finds the main .tex file, inlines
     all includes, and prints the result.
     """
-    parser = argparse.ArgumentParser(description="Fetch and process arXiv LaTeX source.")
-    parser.add_argument("arxiv_id", type=str, help="The arXiv ID of the paper (e.g., '2310.06825').")
-    parser.add_argument("--version", type=str, default="1", help="The version of the paper.")
+    parser = argparse.ArgumentParser(
+        description="Fetch and process arXiv LaTeX source."
+    )
+    parser.add_argument(
+        "arxiv_id", type=str, help="The arXiv ID of the paper (e.g., '2310.06825')."
+    )
+    parser.add_argument(
+        "--version", type=str, default="1", help="The version of the paper."
+    )
+    parser.add_argument(
+        "--inline-commands",
+        action="store_true",
+        help="If set, expands custom command definitions.",
+    )
     args = parser.parse_args()
 
     temp_dir = tempfile.mkdtemp()
@@ -75,13 +88,16 @@ def main():
         # 4. Inline all \input and \include statements
         print("Inlining .tex files...")
         try:
-            inlined_content = latex_utils.inline_tex_files(main_tex_path, remove_comments=True)
+            inlined_content = latex_utils.inline_tex_files(
+                main_tex_path,
+                remove_comments=True,
+                inline_commands=args.inline_commands,
+            )
             print("Inlining complete.")
         except FileNotFoundError as e:
             print(f"Error: A file to be included could not be found: {e}")
             sys.exit(1)
 
-        
         print("\n--- Inlined LaTeX Content (first 500 chars) ---")
         print(inlined_content[:500])
         print("...")
@@ -95,7 +111,7 @@ def main():
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(inlined_content)
         print(f"\nSuccessfully wrote inlined content to: {output_filename}")
-        
+
     finally:
         # 5. Clean up the temporary directory
         print(f"Cleaning up temporary directory: {temp_dir}")
