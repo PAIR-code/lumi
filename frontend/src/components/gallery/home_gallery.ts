@@ -246,10 +246,16 @@ export class HomeGallery extends MobxLitElement {
         this.historyService.getPaperHistory()
       );
 
+      const autoFocus = () => {
+        // Only auto-focus chat input if on desktop
+        return navigator.maxTouchPoints === 0;
+      };
+
       return html`
         <div class="paper-input">
           <pr-textarea
             ?disabled=${this.isLoadingDocument}
+            ?focused=${autoFocus}
             size="large"
             .value=${this.paperInput}
             .onChange=${(e: Event) =>
