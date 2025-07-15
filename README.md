@@ -32,6 +32,15 @@ npm run start
 
 Then, view the app at http://localhost:4200.
 
+### Storybook Stories
+To view [Storybook](https://storybook.js.org/docs) stories for Lumi:
+
+```
+npm run storybook
+```
+
+Then, view the stories at http://localhost:6006.
+
 ### Local paper import and debugging
 
 The import script in `scripts/import_papers_local.py` can be used to import a
