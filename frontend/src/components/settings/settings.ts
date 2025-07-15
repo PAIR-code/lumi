@@ -22,6 +22,7 @@ import { CSSResultGroup, html } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import { core } from "../../core/core";
+import { HistoryService } from "../../services/history.service";
 import { SettingsService } from "../../services/settings.service";
 
 import { ColorMode } from "../../shared/types";
@@ -32,10 +33,28 @@ import { styles } from "./settings.scss";
 @customElement("settings-page")
 export class Settings extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
+
+  private readonly historyService = core.getService(HistoryService);
   private readonly settingsService = core.getService(SettingsService);
 
   override render() {
-    return html` <div class="settings">${this.renderColorModeSection()}</div> `;
+    return html`
+      <div class="settings">
+        <div class="section">
+          <pr-button
+            @click=${() => this.historyService.clearAllHistory()}
+            ?disabled=${this.historyService.getPaperHistory().length === 0}
+            color="secondary"
+            variant="outlined"
+          >
+            Clear reading history
+          </pr-button>
+        </div>
+        <div class="section">
+          <p>Terms of service to be added here.</p>
+        </div>
+      </div>
+    `;
   }
 
   private renderColorModeSection() {

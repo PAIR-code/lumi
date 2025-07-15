@@ -277,13 +277,6 @@ export class HomeGallery extends MobxLitElement {
         ${this.renderEmptyMessage(historyItems)}
       </div>
       <div class="history-controls">
-        <pr-button
-          @click=${() => this.historyService.clearAllHistory()}
-          ?disabled=${historyItems.length === 0}
-          variant="tonal"
-        >
-          Clear history
-        </pr-button>
       </div>
     `;
   }
