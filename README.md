@@ -2,47 +2,17 @@
 
 Lumi is a web app with AI-powered features to help you quickly read and understand arXiv papers.
 
-Note: Lumi is under active development, features are not yet final.
+Note: Lumi is under active development! Features are not yet final.
 
 ## Running Locally
 
-### 1. Install dependencies in functions
+### Set up Firebase functions and emulators
 
-See functions/README
+Follow instructions in
+[`functions/README.md`](https://github.com/PAIR-code/lumi/tree/main/functions)
+to install relevant dependencies and run local emulators.
 
-### 2. Start Firebase emulators
-
-If you haven't already, copy examples to create local configuration files:
-
-```bash
-# Defines the Firebase project ID
-# (can leave example placeholders in while running emulators)
-cp .firebaserc.example .firebaserc
-
-# Defines the Firebase project web API key
-# (can leave example placeholders in while running emulators)
-cp frontend/firebase_config.example.ts frontend/firebase_config.ts
-```
-
-> [Use this manual for creating and using a Firebase API key](https://firebase.google.com/docs/projects/api-keys#test-vs-prod-keys). Once the key is created, there should be a generated JSON configuration object in your Firebase project's settings page under the "General" tab. Then copy paste the contents of the JSON object to `frontend/firebase_config.ts`.
-
-Next, make sure you have [Firebase CLI](https://firebase.google.com/docs/cli/) set up:
-
-```bash
-npm install -g firebase-tools
-firebase login
-```
-
-Then, run the emulators:
-
-```
-firebase emulators:start --project my-project-id
-```
-
-Finally, access the emulator suite (e.g., auth, Firestore) at
-http://localhost:4000.
-
-### 3. Start frontend web app
+### Start frontend web app
 
 ```bash
 cd frontend  # If navigating from top level
@@ -62,20 +32,35 @@ npm run start
 
 Then, view the app at http://localhost:4200.
 
-### 4. Deploying the app
+### Storybook Stories
+To view [Storybook](https://storybook.js.org/docs) stories for Lumi:
 
-To deploy the app, add an [app.yaml](https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js) configuration and [set your Google Cloud project](https://cloud.google.com/sdk/gcloud/reference/config/set).
+```
+npm run storybook
+```
+
+Then, view the stories at http://localhost:6006.
+
+### Local paper import and debugging
+
+The import script in `scripts/import_papers_local.py` can be used to import a
+set of papers for local debugging.
+
+The locally imported papers can be rendered in `lumi_doc.stories.ts`
+via Storybook.
+
+## Deploying the app
+
+To deploy the web app via App Engine, add an
+[app.yaml](https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js)
+configuration and
+[set your Google Cloud project](https://cloud.google.com/sdk/gcloud/reference/config/set).
 
 ```bash
 npm run deploy:prod
 ```
 
 To deploy the Firebase cloud functions, see functions/README.md.
-
-### 5. Local paper import and debugging
-
-The import script in scripts/import_papers_local.py can be used to import a set of papers for local debugging.
-The locally imported papers can be rendered in lumi_doc.stories.ts via Storybook.
 
 ## License and Disclaimer
 
