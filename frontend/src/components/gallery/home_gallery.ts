@@ -16,8 +16,8 @@
  */
 
 import "./gallery_card";
-import "../../pair-components/textinput";
-import "@material/web/iconbutton/icon-button";
+import "../../pair-components/textarea";
+import "../../pair-components/icon_button";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
@@ -52,7 +52,7 @@ export class HomeGallery extends MobxLitElement {
   private readonly snackbarService = core.getService(SnackbarService);
 
   // Paper URL or ID for text input box
-  @state() private paperInput: string = "2309.12864";
+  @state() private paperInput: string = "";
   /**
    * Holds the metadata of the paper being loaded. This is used to render a
    * temporary, disabled "loading" card in the UI.
@@ -247,20 +247,23 @@ export class HomeGallery extends MobxLitElement {
       );
 
       return html`
-        <div class="controls">
-          <pr-textinput
+        <div class="paper-input">
+          <pr-textarea
             ?disabled=${this.isLoadingDocument}
+            size="large"
             .value=${this.paperInput}
             .onChange=${(e: Event) =>
               (this.paperInput = (e.target as HTMLInputElement).value)}
             placeholder="Paste your arXiv paper link here"
-          ></pr-textinput>
-          <pr-button
+          ></pr-textarea>
+          <pr-icon-button
+            icon="arrow_forward"
+            variant="tonal"
             @click=${this.loadDocument}
             .loading=${this.isLoadingDocument}
-            ?disabled=${this.isLoadingDocument}
-            >Load document</pr-button
-          >
+            ?disabled=${this.isLoadingDocument || !this.paperInput}
+            >
+          </pr-icon-button>
         </div>
         <div class="gallery-wrapper">
           ${historyItems.map((item) => {
