@@ -30,18 +30,13 @@ export class HomeService extends Service {
     super();
     makeObservable(this, {
       documents: observable.shallow,
-      showLumiHistory: observable,
       addDocument: action,
-      setShowLumiHistory: action,
     });
   }
 
   // observable.shallow functions similarly to obsevable.ref except for collections.
   // I.e. this list will be made observable, but its contents will not.
   documents: LumiDoc[] = [];
-
-  // Controls which tab is visible on home page
-  showLumiHistory = true;
 
   addDocument(doc: LumiDoc) {
     // Avoid adding duplicates
@@ -53,9 +48,5 @@ export class HomeService extends Service {
     if (!paperExists) {
       this.documents.push(doc);
     }
-  }
-
-  setShowLumiHistory(showHistory: boolean) {
-    this.showLumiHistory = showHistory;
   }
 }

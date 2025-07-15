@@ -241,108 +241,61 @@ export class HomeGallery extends MobxLitElement {
       `;
     };
 
-    if (this.homeService.showLumiHistory) {
-      const historyItems = sortPaperDataByTimestamp(
-        this.historyService.getPaperHistory()
-      );
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    );
 
-      const autoFocus = () => {
-        // Only auto-focus chat input if on desktop
-        return navigator.maxTouchPoints === 0;
-      };
-
-      return html`
-        <div class="paper-input">
-          <pr-textarea
-            ?disabled=${this.isLoadingDocument}
-            ?focused=${autoFocus}
-            size="large"
-            .value=${this.paperInput}
-            .onChange=${(e: Event) =>
-              (this.paperInput = (e.target as HTMLInputElement).value)}
-            placeholder="Paste your arXiv paper link here"
-          ></pr-textarea>
-          <pr-icon-button
-            icon="arrow_forward"
-            variant="tonal"
-            @click=${this.loadDocument}
-            .loading=${this.isLoadingDocument}
-            ?disabled=${this.isLoadingDocument || !this.paperInput}
-            >
-          </pr-icon-button>
-        </div>
-        <div class="gallery-wrapper">
-          ${historyItems.map((item) => {
-            return renderHistoryItem(item);
-          })}
-          ${this.renderEmptyMessage(historyItems)}
-        </div>
-        <div class="history-controls">
-          <pr-button
-            @click=${() => this.historyService.clearAllHistory()}
-            ?disabled=${historyItems.length === 0}
-            variant="tonal"
-          >
-            Clear history
-          </pr-button>
-        </div>
-      `;
-    }
+    const autoFocus = () => {
+      // Only auto-focus chat input if on desktop
+      return navigator.maxTouchPoints === 0;
+    };
 
     return html`
+      <div class="paper-input">
+        <pr-textarea
+          ?disabled=${this.isLoadingDocument}
+          ?focused=${autoFocus}
+          size="large"
+          .value=${this.paperInput}
+          .onChange=${(e: Event) =>
+            (this.paperInput = (e.target as HTMLInputElement).value)}
+          placeholder="Paste your arXiv paper link here"
+        ></pr-textarea>
+        <pr-icon-button
+          icon="arrow_forward"
+          variant="tonal"
+          @click=${this.loadDocument}
+          .loading=${this.isLoadingDocument}
+          ?disabled=${this.isLoadingDocument || !this.paperInput}
+          >
+        </pr-icon-button>
+      </div>
       <div class="gallery-wrapper">
-        ${this.homeService.documents.map((doc) => renderDocument(doc))}
-        ${this.renderEmptyMessage(this.homeService.documents)}
+        ${historyItems.map((item) => {
+          return renderHistoryItem(item);
+        })}
+        ${this.renderEmptyMessage(historyItems)}
+      </div>
+      <div class="history-controls">
+        <pr-button
+          @click=${() => this.historyService.clearAllHistory()}
+          ?disabled=${historyItems.length === 0}
+          variant="tonal"
+        >
+          Clear history
+        </pr-button>
       </div>
     `;
   }
 
   private renderEmptyMessage(documents: unknown[]) {
     if (documents.length > 0 || this.isLoadingDocument) return nothing;
-    const message = this.homeService.showLumiHistory
-      ? "No reading history"
-      : "No documents loaded";
-    return html`<div class="empty-message">${message}</div>`;
-  }
-}
-
-/** Tabs for home/landing page */
-@customElement("home-gallery-tabs")
-export class HomeGalleryTabs extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles];
-  private readonly homeService = core.getService(HomeService);
-
-  override render() {
-    return html`
-      <div class="gallery-tabs">
-        <div
-          class="gallery-tab ${this.homeService.showLumiHistory
-            ? "active"
-            : ""}"
-          @click=${() => {
-            this.homeService.setShowLumiHistory(true);
-          }}
-        >
-          Reading history
-        </div>
-        <div
-          class="gallery-tab ${!this.homeService.showLumiHistory
-            ? "active"
-            : ""}"
-          @click=${() => {
-            this.homeService.setShowLumiHistory(false);
-          }}
-        >
-          All papers
-        </div>
-      </div>
-    `;
+    return html`<div class="empty-message">No reading history yet</div>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "home-gallery": HomeGallery;
-    "home-gallery-tabs": HomeGalleryTabs;
   }
 }
