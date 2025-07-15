@@ -51,7 +51,10 @@ via Storybook.
 
 ## Deploying the app
 
-To deploy the app via App Engine, add an [app.yaml](https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js) configuration and [set your Google Cloud project](https://cloud.google.com/sdk/gcloud/reference/config/set).
+To deploy the web app via App Engine, add an
+[app.yaml](https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js)
+configuration and
+[set your Google Cloud project](https://cloud.google.com/sdk/gcloud/reference/config/set).
 
 ```bash
 npm run deploy:prod
