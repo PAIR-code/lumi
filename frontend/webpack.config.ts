@@ -14,108 +14,98 @@
  * limitations under the License.
  */
 
-import CopyWebpackPlugin from 'copy-webpack-plugin';
-import {Configuration} from 'webpack';
-import {GitRevisionPlugin} from 'git-revision-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import * as path from 'path';
-import * as webpack from 'webpack';
+import { GitRevisionPlugin } from "git-revision-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import * as path from "path";
+import * as webpack from "webpack";
 
-const gitRevisionPlugin = new GitRevisionPlugin({branch: true});
+const gitRevisionPlugin = new GitRevisionPlugin({ branch: true });
 
-export default (
-  env: Record<string, string>,
-  argv: {mode?: string},
-): Configuration => {
-  const isProd = argv.mode === 'production';
-
-  return {
-    entry: './src/index.ts',
-    module: {
-      rules: [
-        {
-          test: /\.tsx?$/,
-          use: 'ts-loader',
-          exclude: /node_modules/,
-        },
-        {
-          test: /\.css$/,
-          loader: path.resolve(__dirname, './lit-css-loader.js'),
-        },
-        {
-          test: /\.scss$/,
-          exclude: /node_modules/,
-          use: [
-            {
-              loader: './lit-css-loader.js',
-            },
-            {
-              loader: 'sass-loader',
-              options: {
-                api: 'modern-compiler',
-                sassOptions: {
-                  outputStyle: 'compressed',
-                },
+const config: webpack.Configuration = {
+  entry: "./src/index.ts",
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,
+        loader: path.resolve(__dirname, "./lit-css-loader.js"),
+      },
+      {
+        test: /\.scss$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "./lit-css-loader.js",
+          },
+          {
+            loader: "sass-loader",
+            options: {
+              api: "modern-compiler",
+              sassOptions: {
+                outputStyle: "compressed",
               },
             },
-          ],
-        },
-      ],
-    },
-    plugins: [
-      new HtmlWebpackPlugin({
-        template: './index.html',
-        filename: 'index.html',
-        favicon: './favicon.png',
-        // Prepend an optional prefix path to the base URL of referenced assets in index.html
-        base: process.env.URL_PREFIX ?? '/',
-      }),
-      new webpack.DefinePlugin({
-        'process.env.URL_PREFIX': process.env.URL_PREFIX ?? "'/'",
-        GIT_VERSION: JSON.stringify(gitRevisionPlugin.version()),
-        GIT_COMMIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
-        GIT_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
-        GIT_LAST_COMMIT_DATETIME: JSON.stringify(
-          gitRevisionPlugin.lastcommitdatetime(),
-        ),
-      }),
-      new webpack.ProvidePlugin({
-        process: 'process/browser',
-      }),
+          },
+        ],
+      },
     ],
-    resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
-      fallback: {
-        crypto: require.resolve('crypto-browserify'),
-        buffer: require.resolve('buffer/'),
-        stream: require.resolve('stream-browserify'),
-        events: require.resolve('events/'),
-        vm: require.resolve('vm-browserify'),
-      },
-      alias: {
-        process: 'process/browser',
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./index.html",
+      filename: "index.html",
+      favicon: "./favicon.png",
+      // Prepend an optional prefix path to the base URL of referenced assets in index.html
+      base: process.env.URL_PREFIX ?? "/",
+    }),
+    new webpack.DefinePlugin({
+      "process.env.URL_PREFIX": process.env.URL_PREFIX ?? "'/'",
+      GIT_VERSION: JSON.stringify(gitRevisionPlugin.version()),
+      GIT_COMMIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
+      GIT_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+      GIT_LAST_COMMIT_DATETIME: JSON.stringify(
+        gitRevisionPlugin.lastcommitdatetime()
+      ),
+    }),
+    new webpack.ProvidePlugin({
+      process: "process/browser",
+    }),
+  ],
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+    fallback: {
+      crypto: require.resolve("crypto-browserify"),
+      buffer: require.resolve("buffer/"),
+      stream: require.resolve("stream-browserify"),
+      events: require.resolve("events/"),
+      vm: require.resolve("vm-browserify"),
+    },
+    alias: {
+      process: "process/browser",
+    },
+  },
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist"),
+  },
+  // @ts-expect-error "devServer" does not exist in type "Configuration", but it works
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "dist"),
+    },
+    client: {
+      overlay: {
+        runtimeErrors: false,
       },
     },
-    output: {
-      filename: isProd ? 'bundle.[contenthash].js' : 'bundle.js', // cache busting in prod
-      path: path.resolve(__dirname, 'dist'),
-      clean: true,
-    },
-    // @ts-expect-error "devServer" does not exist in type "Configuration", but it works
-    devServer: {
-      static: {
-        directory: path.join(__dirname, 'dist'),
-      },
-      client: {
-        overlay: {
-          runtimeErrors: false,
-        },
-      },
-      compress: true,
-      allowedHosts: 'all',
-      port: 4200,
-    },
-    // enable external sourcemaps in prod, for debugging
-    devtool: isProd ? 'source-map' : 'eval-source-map',
-  };
+    compress: true,
+    allowedHosts: "all",
+    port: 4201,
+  },
 };
+
+export default config;
