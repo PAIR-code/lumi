@@ -35,7 +35,7 @@ export class AnalyticsService extends Service {
   }
 
   trackButtonClick(buttonClick: ButtonClick) {
-    if (gtag && typeof gtag === "function") {
+    if (typeof gtag === "function") {
       // Track as page view for now
       gtag("event", "page_view", {
         page_title: buttonClick,
@@ -45,7 +45,7 @@ export class AnalyticsService extends Service {
   }
 
   trackPageView(page: Pages, path: string) {
-    if (gtag && typeof gtag === "function") {
+    if (typeof gtag === "function") {
       gtag("event", "page_view", {
         page_title: page,
         page_location: path,
