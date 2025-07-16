@@ -39,8 +39,8 @@ import { MdDialog } from "@material/web/dialog/dialog";
 import { HistoryService } from "../../services/history.service";
 
 const TABS = {
-  TOC: "Table of Contents",
   CONCEPTS: "Concepts",
+  TOC: "Table of Contents",
 };
 
 const DEFAULT_CONCEPT_IS_COLLAPSED = true;
@@ -207,7 +207,7 @@ export class LumiSidebar extends MobxLitElement {
       <div class="lumi-concepts-container">
         <div class="header">
           <tab-component .tabs=${Object.values(TABS)}>
-            ${tocHtml} ${conceptsHtml}
+            ${conceptsHtml} ${tocHtml}
           </tab-component>
         </div>
       </div>
