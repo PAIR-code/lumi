@@ -14,3 +14,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+$item-border-radius: 8px;
+$tab-spacing: 20px;
+
+.toc-container {
+  background: var(--md-sys-color-surface);
+  border-radius: $item-border-radius;
+  border: 1px solid var(--md-sys-color-outline-variant);
+
+  margin: common.$spacing-large 0;
+}
+
+.toc-list {
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    width: 100%;
+  }
+
+  button {
+    @include typescale.label-small;
+    &:not(.level-1) {
+      font-weight: 400;
+    }
+
+    width: 100%;
+
+    background: none;
+    border: none;
+    padding: 6px common.$spacing-large;
+    border-radius: $item-border-radius 0 0 $item-border-radius;
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+
+    &:hover {
+      background: var(--md-sys-color-tertiary-container-lowest);
+    }
+  }
+
+  .level-1 {
+    font-weight: bold;
+  }
+
+  .level {
+    padding-left: $tab-spacing;
+  }
+}

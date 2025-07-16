@@ -29,6 +29,8 @@ import { styles } from "./sidebar.scss";
 import { DocumentStateService } from "../../services/document_state.service";
 import { core } from "../../core/core";
 import { SelectionInfo } from "../../shared/selection_utils";
+import { consume } from "@lit/context";
+import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 
 const TABS = {
   TOC: "Table of Contents",
@@ -46,6 +48,8 @@ export class LumiSidebar extends MobxLitElement {
 
   private readonly documentStateService = core.getService(DocumentStateService);
 
+  @consume({ context: scrollContext, subscribe: true })
+  private scrollContext?: ScrollState;
   @observable private conceptCollapsedState = new Map<string, boolean>();
 
   @computed get areAnyConceptsCollapsed() {
@@ -148,7 +152,13 @@ export class LumiSidebar extends MobxLitElement {
     `;
 
     const tocHtml = html`
-      <table-of-contents slot=${TABS.TOC}></table-of-contents>
+      <table-of-contents
+        .sections=${this.documentStateService.lumiDocManager?.lumiDoc.sections}
+        .onSectionClicked=${(sectionId: string) => {
+          this.scrollContext?.scrollToSection(sectionId);
+        }}
+        slot=${TABS.TOC}
+      ></table-of-contents>
     `;
 
     return html`

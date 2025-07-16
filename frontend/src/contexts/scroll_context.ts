@@ -24,6 +24,7 @@ import { Ref } from "lit/directives/ref.js";
  */
 export class ScrollState {
   private spanMap = new Map<string, Ref<HTMLElement>>();
+  private sectionMap = new Map<string, Ref<HTMLElement>>();
 
   registerSpan = (id: string, element: Ref<HTMLElement>) => {
     this.spanMap.set(id, element);
@@ -39,6 +40,23 @@ export class ScrollState {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
     } else {
       console.warn(`[ScrollContext] Span with id "${id}" not found.`);
+    }
+  };
+
+  registerSection = (id: string, element: Ref<HTMLElement>) => {
+    this.sectionMap.set(id, element);
+  };
+
+  unregisterSection = (id: string) => {
+    this.sectionMap.delete(id);
+  };
+
+  scrollToSection = (id: string) => {
+    const element = this.sectionMap.get(id)?.value;
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      console.warn(`[ScrollContext] Section with id "${id}" not found.`);
     }
   };
 }

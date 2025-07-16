@@ -16,16 +16,61 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement } from "lit/decorators.js";
+import { CSSResultGroup, html, HTMLTemplateResult, nothing } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import { styles } from "./table_of_contents.scss";
+import { LumiSection } from "../../shared/lumi_doc";
+import { classMap } from "lit/directives/class-map.js";
 
 @customElement("table-of-contents")
 export class TableOfContents extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
+  @property({ type: Array }) sections: LumiSection[] = [];
+  @property({ attribute: false }) onSectionClicked: (
+    sectionId: string
+  ) => void = () => {};
+
+  private renderSections(
+    sections: LumiSection[]
+  ): HTMLTemplateResult | typeof nothing {
+    if (!sections || sections.length === 0) {
+      return nothing;
+    }
+
+    return html`
+      <ul class="toc-list">
+        ${sections.map((section: LumiSection) => {
+          const listClasses = {
+            ["level"]: true,
+          };
+
+          const buttonClasses = {
+            [`level-${section.heading.headingLevel}`]: true,
+          };
+
+          return html`
+            <li class=${classMap(listClasses)}>
+              <button
+                class=${classMap(buttonClasses)}
+                @click=${() => {
+                  this.onSectionClicked(section.id);
+                }}
+              >
+                ${section.heading.text}
+              </button>
+              ${section.subSections && this.renderSections(section.subSections)}
+            </li>
+          `;
+        })}
+      </ul>
+    `;
+  }
+
   override render() {
-    return html`<div></div>`;
+    return html`<div class="toc-container">
+      ${this.renderSections(this.sections)}
+    </div>`;
   }
 }
 
