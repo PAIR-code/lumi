@@ -215,6 +215,18 @@ export class HomeGallery extends MobxLitElement {
       this.historyService.getPaperHistory()
     );
 
+    return html`
+      ${this.renderLinkInput()}
+      <div class="preview-gallery">
+        ${historyItems.map((item) => {
+          return renderHistoryItem(item);
+        })}
+        ${this.renderEmptyMessage(historyItems)}
+      </div>
+    `;
+  }
+
+  private renderLinkInput() {
     const autoFocus = () => {
       // Only auto-focus chat input if on desktop
       return navigator.maxTouchPoints === 0;
@@ -246,12 +258,6 @@ export class HomeGallery extends MobxLitElement {
           ?disabled=${this.isLoadingDocument || !this.paperInput}
         >
         </pr-icon-button>
-      </div>
-      <div class="gallery-wrapper">
-        ${historyItems.map((item) => {
-          return renderHistoryItem(item);
-        })}
-        ${this.renderEmptyMessage(historyItems)}
       </div>
     `;
   }

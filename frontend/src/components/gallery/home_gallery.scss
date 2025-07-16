@@ -24,44 +24,6 @@
   gap: common.$spacing-xl;
 }
 
-.gallery-wrapper {
-  @include common.flex-row;
-  flex-wrap: wrap;
-  gap: common.$spacing-large;
-  max-width: common.$info-content-max-width;
-  width: 100%;
-}
-
-.gallery-tabs {
-  @include common.flex-row;
-  align-items: center;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  padding: 0 common.$main-content-padding;
-  position: sticky;
-  top: common.$header-height;
-  width: 100%;
-}
-
-.gallery-tab {
-  @include common.flex-row;
-  align-items: center;
-  border-bottom: 2px solid transparent;
-  color: var(--md-sys-color-outline);
-  height: common.$header-height;
-  padding: 0 common.$spacing-large;
-
-  &:focus,
-  &:hover {
-    cursor: pointer;
-    color: var(--md-sys-color-on-surface);
-  }
-
-  &.active {
-    color: var(--md-sys-color-primary);
-    border-color: var(--md-sys-color-primary);
-  }
-}
-
 .banner {
   background: var(--md-sys-color-tertiary-container);
   border-radius: common.$spacing-medium;
