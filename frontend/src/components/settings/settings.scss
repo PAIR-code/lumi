@@ -38,13 +38,12 @@ a {
 
 .section {
   @include common.flex-column;
-  border-bottom: 2px solid var(--md-sys-color-outline-variant);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
   gap: common.$spacing-large;
-  padding: common.$main-content-padding;
+  padding: common.$main-content-padding 0;
 
   &:last-of-type {
     border-bottom: none;
-    padding-bottom: calc(2 * common.$spacing-xxl);
   }
 }
 

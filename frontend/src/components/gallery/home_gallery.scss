@@ -31,7 +31,7 @@
   @include common.flex-row;
   flex-wrap: wrap;
   gap: common.$spacing-large;
-  max-width: 924px; // 3 gallery cards including gap
+  max-width: common.$info-content-max-width;
   width: 100%;
 }
 
@@ -82,8 +82,20 @@ h1 {
   @include typescale.title-medium;
 }
 
-.controls {
-  @include common.flex-row;
-  padding: common.$spacing-xl common.$spacing-xl 28px;
+.paper-input {
+  @include common.flex-row-align-center;
+  border: 2px solid var(--md-sys-color-outline-variant);
+  border-radius: common.$spacing-medium;
+  max-width: common.$info-content-max-width;
+  padding: common.$spacing-large;
   gap: common.$spacing-medium;
+  width: 100%;
+
+  pr-textarea {
+    flex-grow: 1;
+  }
+
+  pr-icon-button {
+    flex-shrink: 1;
+  }
 }

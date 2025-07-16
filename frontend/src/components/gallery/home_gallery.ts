@@ -16,8 +16,8 @@
  */
 
 import "./gallery_card";
-import "../../pair-components/textinput";
-import "@material/web/iconbutton/icon-button";
+import "../../pair-components/textarea";
+import "../../pair-components/icon_button";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
@@ -51,7 +51,8 @@ export class HomeGallery extends MobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly snackbarService = core.getService(SnackbarService);
 
-  @state() private paperId: string = "2309.12864";
+  // Paper URL or ID for text input box
+  @state() private paperInput: string = "";
   /**
    * Holds the metadata of the paper being loaded. This is used to render a
    * temporary, disabled "loading" card in the UI.
@@ -98,8 +99,13 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private async loadDocument() {
-    const paperId = this.paperId;
-    this.paperId = "";
+    // Extract arXiv ID from potential paper link
+    const paperId = this.paperInput.split('/').pop();
+    if (!paperId) {
+      // Paper ID is only empty if input was empty
+      this.snackbarService.show(`Error: No URL to parse`);
+      return;
+    }
 
     this.isLoadingMetadata = true;
     let metadata: ArxivMetadata;
@@ -124,6 +130,9 @@ export class HomeGallery extends MobxLitElement {
     } finally {
       this.isLoadingMetadata = false;
     }
+
+    // Reset paper input
+    this.paperInput = "";
 
     if (!metadata || !metadata.version) {
       this.snackbarService.show("Error: Document not found.");
@@ -232,99 +241,54 @@ export class HomeGallery extends MobxLitElement {
       `;
     };
 
-    if (this.homeService.showLumiHistory) {
-      const historyItems = sortPaperDataByTimestamp(
-        this.historyService.getPaperHistory()
-      );
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    );
 
-      return html`
-        <div class="controls">
-          <pr-textinput
-            ?disabled=${this.isLoadingDocument}
-            .value=${this.paperId}
-            .onChange=${(e: Event) =>
-              (this.paperId = (e.target as HTMLInputElement).value)}
-            placeholder="Paper ID (e.g., 2309.12864)"
-          ></pr-textinput>
-          <pr-button
-            @click=${this.loadDocument}
-            .loading=${this.isLoadingDocument}
-            ?disabled=${this.isLoadingDocument}
-            >Load document</pr-button
-          >
-        </div>
-        <div class="gallery-wrapper">
-          ${historyItems.map((item) => {
-            return renderHistoryItem(item);
-          })}
-          ${this.renderEmptyMessage(historyItems)}
-        </div>
-        <div class="history-controls">
-          <pr-button
-            @click=${() => this.historyService.clearAllHistory()}
-            ?disabled=${historyItems.length === 0}
-            variant="tonal"
-          >
-            Clear history
-          </pr-button>
-        </div>
-      `;
-    }
+    const autoFocus = () => {
+      // Only auto-focus chat input if on desktop
+      return navigator.maxTouchPoints === 0;
+    };
 
     return html`
+      <div class="paper-input">
+        <pr-textarea
+          ?disabled=${this.isLoadingDocument}
+          ?focused=${autoFocus}
+          size="large"
+          .value=${this.paperInput}
+          .onChange=${(e: Event) =>
+            (this.paperInput = (e.target as HTMLInputElement).value)}
+          placeholder="Paste your arXiv paper link here"
+        ></pr-textarea>
+        <pr-icon-button
+          icon="arrow_forward"
+          variant="tonal"
+          @click=${this.loadDocument}
+          .loading=${this.isLoadingDocument}
+          ?disabled=${this.isLoadingDocument || !this.paperInput}
+          >
+        </pr-icon-button>
+      </div>
       <div class="gallery-wrapper">
-        ${this.homeService.documents.map((doc) => renderDocument(doc))}
-        ${this.renderEmptyMessage(this.homeService.documents)}
+        ${historyItems.map((item) => {
+          return renderHistoryItem(item);
+        })}
+        ${this.renderEmptyMessage(historyItems)}
+      </div>
+      <div class="history-controls">
       </div>
     `;
   }
 
   private renderEmptyMessage(documents: unknown[]) {
     if (documents.length > 0 || this.isLoadingDocument) return nothing;
-    const message = this.homeService.showLumiHistory
-      ? "No reading history"
-      : "No documents loaded";
-    return html`<div class="empty-message">${message}</div>`;
-  }
-}
-
-/** Tabs for home/landing page */
-@customElement("home-gallery-tabs")
-export class HomeGalleryTabs extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles];
-  private readonly homeService = core.getService(HomeService);
-
-  override render() {
-    return html`
-      <div class="gallery-tabs">
-        <div
-          class="gallery-tab ${this.homeService.showLumiHistory
-            ? "active"
-            : ""}"
-          @click=${() => {
-            this.homeService.setShowLumiHistory(true);
-          }}
-        >
-          Reading history
-        </div>
-        <div
-          class="gallery-tab ${!this.homeService.showLumiHistory
-            ? "active"
-            : ""}"
-          @click=${() => {
-            this.homeService.setShowLumiHistory(false);
-          }}
-        >
-          All papers
-        </div>
-      </div>
-    `;
+    return html`<div class="empty-message">No reading history yet</div>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "home-gallery": HomeGallery;
-    "home-gallery-tabs": HomeGalleryTabs;
   }
 }
