@@ -36,18 +36,6 @@ export enum ColorMode {
   DARK = "dark",
 }
 
-/** Gallery item (rendered as card). */
-export interface GalleryItem {
-  title: string;
-  description: string;
-  creator: string;
-  date: string;
-  version: string;
-  isPublic: boolean;
-  isStarred: boolean;
-  tags: string[];
-}
-
 /** Focus State */
 export enum FocusState {
   DEFAULT = "default",
