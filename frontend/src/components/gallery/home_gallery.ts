@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import "./gallery_card";
 import "../../pair-components/textarea";
 import "../../pair-components/icon_button";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
+import { classMap } from "lit/directives/class-map.js";
 
 import { core } from "../../core/core";
 import { HomeService } from "../../services/home.service";
@@ -32,7 +32,6 @@ import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
 
 import { LumiDoc, LoadingStatus, ArxivMetadata } from "../../shared/lumi_doc";
-import { GalleryItem } from "../../shared/types";
 import {
   requestArxivDocImportCallable,
   RequestArxivDocImportResult,
@@ -184,45 +183,9 @@ export class HomeGallery extends MobxLitElement {
   }
 
   override render() {
-    const renderDocument = (document: LumiDoc) => {
-      const item: GalleryItem = {
-        title: document.metadata?.title ?? "Untitled Paper",
-        description: document.metadata?.summary ?? "",
-        creator: document.metadata?.authors.join(", ") ?? "Unknown Author",
-        date: document.metadata?.publishedTimestamp ?? "",
-        version: document.metadata?.version ?? "",
-        isPublic: true,
-        isStarred: false,
-        tags: [],
-      };
-
-      const navigate = () => {
-        if (document.metadata) {
-          this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
-            document_id: document.metadata.paperId,
-          });
-        }
-      };
-
-      return html`
-        <gallery-card .item=${item} @click=${navigate}></gallery-card>
-      `;
-    };
-
     const renderHistoryItem = (paperData: PaperData) => {
       const { metadata } = paperData;
       const isLoading = paperData?.status === "loading";
-
-      const item: GalleryItem = {
-        title: metadata.title,
-        description: metadata.summary,
-        creator: metadata.authors.join(", "),
-        date: metadata.publishedTimestamp,
-        version: metadata.version,
-        isPublic: true,
-        isStarred: false,
-        tags: [],
-      };
 
       const navigate = () => {
         if (!isLoading) {
@@ -232,18 +195,19 @@ export class HomeGallery extends MobxLitElement {
         }
       };
 
-      // TODO(ellenj): Update gallery card to take in a callback or slot to delete the paper.
+      // TODO(vivcodes): Add callback or slot to paper-card for deletion
       const deletePaper = (e: Event) => {
         e.stopPropagation();
         this.historyService.deletePaper(metadata.paperId);
       };
 
       return html`
-        <gallery-card .item=${item} ?disabled=${isLoading} @click=${navigate}>
-          <md-icon-button slot="actions" @click=${deletePaper}>
-            <md-icon>delete</md-icon>
-          </md-icon-button>
-        </gallery-card>
+        <paper-card
+          .metadata=${metadata}
+          ?disabled=${isLoading}
+          @click=${navigate}
+        >
+        </paper-card>
       `;
     };
 
@@ -289,7 +253,6 @@ export class HomeGallery extends MobxLitElement {
         })}
         ${this.renderEmptyMessage(historyItems)}
       </div>
-      <div class="history-controls"></div>
     `;
   }
 
@@ -299,8 +262,36 @@ export class HomeGallery extends MobxLitElement {
   }
 }
 
+/** Paper preview card */
+@customElement("paper-card")
+export class PaperCard extends MobxLitElement {
+  static override styles: CSSResultGroup = [styles];
+
+  @property() metadata: ArxivMetadata | null = null;
+  @property({ type: Boolean }) disabled = false;
+
+  override render() {
+    if (!this.metadata) {
+      return nothing;
+    }
+
+    const classes = { "preview-item": true, disabled: this.disabled };
+
+    return html`
+      <div class=${classMap(classes)}>
+        <div class="preview-image"></div>
+        <div class="preview-content">
+          <div class="preview-title">${this.metadata.title}</div>
+          <div class="preview-description">${this.metadata.summary}</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     "home-gallery": HomeGallery;
+    "paper-card": PaperCard;
   }
 }
