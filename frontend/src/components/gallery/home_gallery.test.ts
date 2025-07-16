@@ -34,7 +34,6 @@ import { HomeGallery } from "./home_gallery";
 import "./home_gallery";
 
 class MockHomeService extends HomeService {
-  override showLumiHistory = true;
   override documents = [];
 }
 class MockRouterService extends RouterService {}

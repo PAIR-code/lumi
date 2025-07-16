@@ -30,9 +30,10 @@ cp index.example.html index.html
 npm run start
 ```
 
-Then, view the app at http://localhost:4200.
+Then, view the app at http://localhost:4201.
 
 ### Storybook Stories
+
 To view [Storybook](https://storybook.js.org/docs) stories for Lumi:
 
 ```
