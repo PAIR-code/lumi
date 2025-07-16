@@ -24,9 +24,8 @@ class LoadingStatus(StrEnum):
     """
 
     UNSET = "UNSET"
-    WAITING = "WAITING"
-    LOADING = "IN_PROGRESS"
-    SUMMARIZING = "SUMMARIZING"
+    WAITING = "WAITING" # Importing paper into LumiDoc
+    SUMMARIZING = "SUMMARIZING" # Loading summaries after paper is imported
     SUCCESS = "SUCCESS"
     ERROR_DOCUMENT_LOAD = "ERROR_DOCUMENT_LOAD"
     ERROR_DOCUMENT_LOAD_INVALID_RESPONSE = "ERROR_DOCUMENT_LOAD_INVALID_RESPONSE"

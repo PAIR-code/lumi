@@ -214,8 +214,9 @@ export interface ArxivMetadata {
 
 export enum LoadingStatus {
   UNSET = "UNSET",
+  // Importing paper into LumiDoc
   WAITING = "WAITING",
-  LOADING = "IN_PROGRESS",
+  // Loading summaries after paper has been imported
   SUMMARIZING = "SUMMARIZING",
   SUCCESS = "SUCCESS",
   ERROR_DOCUMENT_LOAD = "ERROR_DOCUMENT_LOAD",
