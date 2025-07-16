@@ -183,16 +183,22 @@ export class HomeGallery extends MobxLitElement {
   }
 
   override render() {
-    const renderHistoryItem = (paperData: PaperData) => {
-      const { metadata } = paperData;
-      const isLoading = paperData?.status === "loading";
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    ).map(item => item.metadata);
 
+    return html`
+      ${this.renderLinkInput()}
+      ${this.renderCollection(historyItems)}
+    `;
+  }
+
+  private renderCollection(items: ArxivMetadata[]) {
+    const renderItem = (metadata: ArxivMetadata) => {
       const navigate = () => {
-        if (!isLoading) {
-          this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
-            document_id: metadata.paperId,
-          });
-        }
+        this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
+          document_id: metadata.paperId,
+        });
       };
 
       // TODO(vivcodes): Add callback or slot to paper-card for deletion
@@ -204,24 +210,21 @@ export class HomeGallery extends MobxLitElement {
       return html`
         <paper-card
           .metadata=${metadata}
-          ?disabled=${isLoading}
           @click=${navigate}
         >
         </paper-card>
       `;
     };
-
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    );
+    const renderEmpty = () => {
+      return html`
+        <div class="empty-message">No papers available</div>
+      `;
+    };
 
     return html`
-      ${this.renderLinkInput()}
       <div class="preview-gallery">
-        ${historyItems.map((item) => {
-          return renderHistoryItem(item);
-        })}
-        ${this.renderEmptyMessage(historyItems)}
+        ${items.map(item => renderItem(item))}
+        ${items.length === 0 ? renderEmpty() : nothing}
       </div>
     `;
   }
@@ -260,11 +263,6 @@ export class HomeGallery extends MobxLitElement {
         </pr-icon-button>
       </div>
     `;
-  }
-
-  private renderEmptyMessage(documents: unknown[]) {
-    if (documents.length > 0 || this.isLoadingDocument) return nothing;
-    return html`<div class="empty-message">No reading history yet</div>`;
   }
 }
 
