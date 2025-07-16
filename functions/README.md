@@ -10,6 +10,12 @@ To install dependencies:
 pip install -r requirements.txt
 ```
 
+Create an api_config.py file and add your API key (see TODOs in example file).
+
+```
+cp api_config.example.py api_config.py
+```
+
 To run emulator:
 
 ```
