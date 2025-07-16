@@ -269,6 +269,7 @@ export class PaperCard extends MobxLitElement {
 
   @property() metadata: ArxivMetadata | null = null;
   @property({ type: Boolean }) disabled = false;
+  @property({ type: Number }) summaryMaxCharacters = 250;
 
   override render() {
     if (!this.metadata) {
@@ -277,12 +278,17 @@ export class PaperCard extends MobxLitElement {
 
     const classes = { "preview-item": true, disabled: this.disabled };
 
+    // If summary is over max characters, abbreviate
+    const summary = this.metadata.summary.length <= this.summaryMaxCharacters ?
+      this.metadata.summary :
+      `${this.metadata.summary.slice(0, this.summaryMaxCharacters)}...`;
+
     return html`
       <div class=${classMap(classes)}>
         <div class="preview-image"></div>
         <div class="preview-content">
           <div class="preview-title">${this.metadata.title}</div>
-          <div class="preview-description">${this.metadata.summary}</div>
+          <div class="preview-description">${summary}</div>
         </div>
       </div>
     `;
