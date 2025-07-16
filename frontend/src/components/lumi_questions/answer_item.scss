@@ -39,12 +39,22 @@ $history-item-horizontal-padding: common.$spacing-xl;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+
+  &.is-collapsed {
+    height: auto;
+
+    .answer,
+    .toggle-button,
+    .references-panel {
+      display: none;
+    }
+  }
 }
 
 .question-answer-container {
   flex-shrink: 0;
   overflow-y: auto;
-  padding: 0 common.$sidebar-padding common.$sidebar-padding
+  padding: 0 common.$sidebar-padding common.$spacing-medium
     common.$sidebar-padding;
   margin: -1 * common.$sidebar-padding;
   max-height: 100%;
@@ -68,6 +78,7 @@ $history-item-horizontal-padding: common.$spacing-xl;
 }
 
 .question {
+  @include common.flex-row-align-center;
   @include typescale.title-medium;
   font-weight: 500;
 
@@ -78,6 +89,10 @@ $history-item-horizontal-padding: common.$spacing-xl;
 
   padding-top: common.$sidebar-padding;
   padding-bottom: 8px;
+
+  .toggle-answer-button {
+    margin-right: common.$spacing-medium;
+  }
 }
 
 .mentions-text {

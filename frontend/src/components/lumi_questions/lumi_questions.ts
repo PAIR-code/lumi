@@ -39,6 +39,7 @@ import {
   HighlightSelection,
   SelectionInfo,
 } from "../../shared/selection_utils";
+import { classMap } from "lit/directives/class-map.js";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
@@ -134,8 +135,12 @@ export class LumiQuestions extends MobxLitElement {
 
     const showSeeAllButton = !this.isHistoryShowAll && allAnswers.length > 1;
 
+    const historyContainerClasses = classMap({
+      "history-container": true,
+      "is-history-show-all": this.isHistoryShowAll,
+    });
     return html`
-      <div class="history-container">
+      <div class=${historyContainerClasses}>
         ${answersToRender.map(
           (answer: LumiAnswer) => html`
             <answer-item

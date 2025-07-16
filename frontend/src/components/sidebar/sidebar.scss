@@ -23,14 +23,16 @@
   background-color: var(--md-sys-color-surface-variant);
 }
 
-.history-view-active.lumi-questions-container {
-  flex-grow: 1;
-  overflow-y: auto;
-}
-
 .lumi-questions-container {
   padding: 0 common.$sidebar-padding common.$sidebar-padding;
   max-height: 60%;
+}
+
+.history-view-active.lumi-questions-container {
+  flex-grow: 1;
+
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 .lumi-concepts-container {
