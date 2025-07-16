@@ -51,7 +51,7 @@ $tab-spacing: 20px;
     border-radius: $item-border-radius 0 0 $item-border-radius;
     font-size: inherit;
     font-family: inherit;
-    color: inherit;
+    color: var(--md-sys-color-on-surface-high);
     cursor: pointer;
     text-align: left;
 

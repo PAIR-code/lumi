@@ -24,7 +24,7 @@
 }
 
 .lumi-questions-container {
-  padding: 0 common.$sidebar-padding common.$sidebar-padding;
+  padding: common.$sidebar-padding;
   max-height: 60%;
 }
 
@@ -70,4 +70,8 @@
 .concepts-list {
   @include common.flex-column;
   gap: common.$spacing-large;
+}
+
+.dialog-explanation {
+  @include typescale.body-medium;
 }

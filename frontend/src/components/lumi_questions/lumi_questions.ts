@@ -30,7 +30,7 @@ import { createTemporaryAnswer } from "../../shared/answer_utils";
 import "./answer_item";
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
-import "../../pair-components/textinput";
+import "../../pair-components/textarea";
 import "../../pair-components/icon";
 
 import { styles } from "./lumi_questions.scss";
@@ -57,46 +57,6 @@ export class LumiQuestions extends MobxLitElement {
   @property({ type: Object }) setHistoryVisible?: (isVisible: boolean) => void;
   @property() onTextSelection: (selectionInfo: SelectionInfo) => void =
     () => {};
-
-  @state() private query = "";
-
-  private async handleSearch() {
-    const lumiDoc = this.documentStateService.lumiDocManager?.lumiDoc;
-
-    if (!this.query || !lumiDoc || this.historyService.isAnswerLoading) {
-      return;
-    }
-
-    const docId = this.routerService.getActiveRouteParams()["document_id"];
-
-    const request: LumiAnswerRequest = {
-      query: this.query,
-      // TODO(ellenj): Update question-answering to make use of history.
-      history: [],
-    };
-
-    const tempAnswer = createTemporaryAnswer(request);
-    this.historyService.addTemporaryAnswer(tempAnswer);
-    const queryToClear = this.query;
-
-    try {
-      const response = await getLumiResponseCallable(
-        this.firebaseService.functions,
-        lumiDoc,
-        request
-      );
-      this.historyService.addAnswer(docId, response);
-      this.query = "";
-    } catch (e) {
-      console.error("Error getting Lumi response:", e);
-      // TODO(ellenj): Show error to user with a toast.
-    } finally {
-      this.historyService.removeTemporaryAnswer(tempAnswer.id);
-      if (this.query === queryToClear) {
-        this.query = "";
-      }
-    }
-  }
 
   private onReferenceClick(highlightedSpans: HighlightSelection[]) {
     this.documentStateService.focusOnSpan(highlightedSpans);
@@ -138,6 +98,7 @@ export class LumiQuestions extends MobxLitElement {
     const historyContainerClasses = classMap({
       "history-container": true,
       "is-history-show-all": this.isHistoryShowAll,
+      "show-see-all-button": showSeeAllButton,
     });
     return html`
       <div class=${historyContainerClasses}>
@@ -194,28 +155,7 @@ export class LumiQuestions extends MobxLitElement {
       return html` ${this.renderBackButton()} ${this.renderHistory()} `;
     }
 
-    return html`
-      <div class="input-container">
-        <pr-textinput
-          .value=${this.query}
-          .onChange=${(e: InputEvent) =>
-            (this.query = (e.target as HTMLInputElement).value)}
-          .onKeydown=${(e: KeyboardEvent) => {
-            if (e.key === "Enter") this.handleSearch();
-          }}
-          placeholder="Ask Lumi"
-          class="search-input"
-          ?disabled=${isLoading}
-        ></pr-textinput>
-        <pr-icon-button
-          icon="search"
-          ?disabled=${!this.query || isLoading}
-          .loading=${isLoading}
-          @click=${this.handleSearch}
-        ></pr-icon-button>
-      </div>
-      ${this.renderHistory()}
-    `;
+    return html` ${this.renderHistory()} `;
   }
 }
 

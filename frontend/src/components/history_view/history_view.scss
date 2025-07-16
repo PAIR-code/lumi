@@ -1,0 +1,58 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+:host {
+  display: block;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+ul.papers {
+  @include common.flex-column;
+  gap: common.$spacing-medium;
+
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.paper {
+  @include common.flex-column;
+  gap: common.$spacing-medium;
+
+  background: var(--md-sys-color-surface);
+  border-radius: 12px;
+
+  padding: common.$spacing-large;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.paper:last-child {
+  border-bottom: none;
+}
+
+.title {
+  @include typescale.body-large;
+  font-weight: 500;
+}
+
+.authors {
+  @include typescale.body-small;
+  color: var(--md-sys-color-on-surface-variant);
+}
