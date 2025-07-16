@@ -75,7 +75,6 @@ main {
   @include common.flex-column;
   align-items: center;
   background: var(--md-sys-color-surface);
-  height: 100vh;
   flex-grow: 1;
   overflow: auto;
 }
