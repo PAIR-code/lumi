@@ -14,41 +14,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @use "../../sass/common";
 @use "../../sass/typescale";
 
 :host {
+  display: block;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+ul.papers {
   @include common.flex-column;
   gap: common.$spacing-medium;
-  padding: common.$spacing-medium common.$spacing-large;
 
-  flex-shrink: 0;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.paper {
+  @include common.flex-column;
+  gap: common.$spacing-medium;
 
   background: var(--md-sys-color-surface);
-  border-radius: common.$border-radius-medium;
+  border-radius: 12px;
+
+  padding: common.$spacing-large;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
 
-.header {
-  @include common.flex-row-align-center;
-  gap: common.$spacing-small;
-  cursor: pointer;
+.paper:last-child {
+  border-bottom: none;
 }
 
-.label {
-  @include typescale.label-small;
+.title {
+  @include typescale.body-large;
+  font-weight: 500;
 }
 
-.heading {
-  @include typescale.title-small;
-  margin: 0;
-  color: var(--md-sys-color-on-surface-high);
-}
-
-.content {
+.authors {
   @include typescale.body-small;
-
-  display: block;
-  padding-bottom: common.$spacing-medium;
-  color: var(--md-sys-color-on-surface-high);
+  color: var(--md-sys-color-on-surface-variant);
 }

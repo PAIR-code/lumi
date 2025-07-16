@@ -17,22 +17,27 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-$padding-top: common.$spacing-large;
+$input-container-height: 50px;
+$lumi-questions-gap: common.$spacing-xl;
+$button-height: 32px;
 
 :host {
   @include common.flex-column;
-  gap: common.$spacing-xl;
-}
-
-.input-container {
-  @include common.flex-row-align-center;
-  gap: common.$spacing-medium;
-  padding-top: $padding-top;
+  gap: $lumi-questions-gap;
+  height: 100%;
 }
 
 .history-container {
   @include common.flex-column;
   gap: common.$spacing-large;
+
+  &:not(.is-history-show-all) {
+    height: calc(100% - $button-height - $lumi-questions-gap);
+
+    &:not(.show-see-all-button) {
+      height: calc(100%);
+    }
+  }
 }
 
 .search-input {
@@ -45,13 +50,12 @@ $padding-top: common.$spacing-large;
 
 .back-button-container {
   background: var(--md-sys-color-surface-variant);
-  padding-top: $padding-top;
 
   @include common.flex-row-align-center;
   gap: common.$spacing-medium;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 2; // Above answer sticky headings.
 
   span {
     @include typescale.label-large;

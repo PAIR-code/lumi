@@ -17,25 +17,46 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-$history-item-vertical-padding: common.$spacing-large;
-$history-item-horizontal-padding: common.$spacing-xl;
+$history-item-vertical-padding: common.$spacing-medium;
+$history-item-horizontal-padding: common.$spacing-large;
 
 :host {
   display: block;
+  height: 100%;
 }
 
 .history-item {
   @include common.flex-column;
-  gap: common.$spacing-large;
+  height: 100%;
 
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: 8px;
-  padding: common.$spacing-large common.$spacing-xl;
 
   background: var(--md-sys-color-surface);
 
-  max-height: 500px;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &.is-collapsed {
+    height: auto;
+
+    .answer,
+    .toggle-button,
+    .references-panel {
+      display: none;
+    }
+  }
+}
+
+.question-answer-container {
+  flex-shrink: 0;
+  overflow-y: auto;
+  max-height: 100%;
+
+  &.are-references-shown {
+    max-height: 60%;
+  }
 }
 
 .highlight {
@@ -52,8 +73,24 @@ $history-item-horizontal-padding: common.$spacing-xl;
 }
 
 .question {
+  @include common.flex-row-align-center;
   @include typescale.title-medium;
   font-weight: 500;
+
+  position: sticky;
+  top: 0;
+  background: var(--md-sys-color-surface);
+  z-index: 1;
+
+  padding: $history-item-vertical-padding $history-item-horizontal-padding;
+
+  .toggle-answer-button {
+    margin-right: common.$spacing-medium;
+  }
+}
+
+.answer {
+  padding: 0 $history-item-horizontal-padding $history-item-vertical-padding;
 }
 
 .mentions-text {
@@ -67,17 +104,27 @@ $history-item-horizontal-padding: common.$spacing-xl;
 
   border-top: 1px solid var(--md-sys-color-outline-variant);
   color: var(--md-sys-color-primary);
-  padding: common.$spacing-small common.$spacing-xl;
-  margin: 0 -1 * $history-item-horizontal-padding -1 *
-    $history-item-vertical-padding;
+
+  padding: 6px $history-item-horizontal-padding;
 
   cursor: pointer;
+
+  position: sticky;
+  top: 0;
+  background: var(--md-sys-color-surface);
+  z-index: 1;
+
+  white-space: nowrap;
 }
 
 .references-panel {
   @include common.flex-column;
   gap: common.$spacing-medium;
-  padding: common.$spacing-medium 0;
+
+  padding: $history-item-vertical-padding $history-item-horizontal-padding;
+
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 .references-header {

@@ -17,29 +17,30 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-$sidebar-padding: common.$spacing-xl;
-
 :host {
   @include common.flex-column;
   @include common.full-percentage;
   background-color: var(--md-sys-color-surface-variant);
 }
 
-.history-view-active.lumi-questions-container {
-  flex-grow: 1;
-  overflow-y: auto;
+.lumi-questions-container {
+  padding: common.$sidebar-padding;
+  max-height: 60%;
 }
 
-.lumi-questions-container {
-  padding: 0 $sidebar-padding $sidebar-padding;
+.history-view-active.lumi-questions-container {
+  flex-grow: 1;
+
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 .lumi-concepts-container {
   flex-grow: 1;
 
   @include common.flex-column;
-  gap: 20px;
-  padding: $sidebar-padding;
+  gap: common.$spacing-small;
+  padding: 0 common.$sidebar-padding common.$sidebar-padding;
 
   overflow-y: auto;
 }
@@ -48,7 +49,29 @@ $sidebar-padding: common.$spacing-xl;
   border: 1px solid var(--md-sys-color-outline-variant);
 }
 
+.header {
+  @include common.flex-row;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: var(--md-sys-color-surface-variant);
+  padding-top: common.$spacing-medium;
+  padding-bottom: common.$spacing-medium;
+  z-index: 1;
+}
+
 .heading {
-  @include typescale.title-medium;
+  @include typescale.title-small;
+  color: var(--md-sys-color-on-surface-high);
   margin: 0;
+}
+
+.concepts-list {
+  @include common.flex-column;
+  gap: common.$spacing-large;
+}
+
+.dialog-explanation {
+  @include typescale.body-medium;
 }

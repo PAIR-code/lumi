@@ -23,7 +23,11 @@
 }
 
 .sidebar-wrapper {
-  max-width: 350px;
+  min-width: 280px;
+  max-width: 400px;
+  width: 35%;
+
+  flex-shrink: 0;
 }
 
 .doc-wrapper {

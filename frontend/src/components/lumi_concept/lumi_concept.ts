@@ -16,7 +16,7 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
+import { CSSResultGroup, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import { LumiConcept, LumiSpan } from "../../shared/lumi_doc";
@@ -24,6 +24,7 @@ import { getSelectionInfo, SelectionInfo } from "../../shared/selection_utils";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 
 import "../lumi_span/lumi_span";
+import "../../pair-components/icon_button";
 
 import { styles } from "./lumi_concept.scss";
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
@@ -39,6 +40,14 @@ export class LumiConceptViz extends MobxLitElement {
   @property({ type: Object }) labelsToShow: string[] = [];
   @property()
   onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
+
+  @property({ type: Boolean }) isCollapsed = true;
+  @property()
+  setIsCollapsed: (isCollapsed: boolean) => void = () => {};
+
+  private toggleCollapse() {
+    this.setIsCollapsed(!this.isCollapsed);
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -64,8 +73,15 @@ export class LumiConceptViz extends MobxLitElement {
   }
 
   override render() {
-    return html` <h2 class="heading">${this.concept.name}</h2>
-      ${this.renderContents()}`;
+    const icon = this.isCollapsed ? "chevron_right" : "expand_more";
+
+    return html`
+      <div class="header" @click=${this.toggleCollapse}>
+        <pr-icon-button variant="default" .icon=${icon}></pr-icon-button>
+        <h2 class="heading">${this.concept.name}</h2>
+      </div>
+      ${this.isCollapsed ? nothing : this.renderContents()}
+    `;
   }
 
   private renderContents() {

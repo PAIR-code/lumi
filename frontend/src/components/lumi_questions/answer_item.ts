@@ -62,10 +62,15 @@ export class AnswerItem extends MobxLitElement {
   private scrollContext?: ScrollState;
 
   @state() private areReferencesShown = false;
+  @state() private isAnswerCollapsed = false;
   @state() private referencedSpans: LumiSpan[] = [];
 
   private toggleReferences() {
     this.areReferencesShown = !this.areReferencesShown;
+  }
+
+  private toggleAnswer() {
+    this.isAnswerCollapsed = !this.isAnswerCollapsed;
   }
 
   protected override updated(_changedProperties: PropertyValues): void {
@@ -79,6 +84,12 @@ export class AnswerItem extends MobxLitElement {
       this.referencedSpans = referencedIds
         .map((id) => this.lumiDocManager!.getSpanById(id))
         .filter((span): span is LumiSpan => span !== undefined);
+    }
+
+    if (_changedProperties.has("isLoading")) {
+      if (this.isLoading) {
+        this.isAnswerCollapsed = false;
+      }
     }
   }
 
@@ -191,18 +202,38 @@ export class AnswerItem extends MobxLitElement {
       "history-item": true,
     };
 
+    const questionAnswerContainerStyles = {
+      "question-answer-container": true,
+      "are-references-shown": this.areReferencesShown,
+    };
+
+    const historyItemClasses = {
+      "history-item": true,
+      "is-collapsed": this.isAnswerCollapsed,
+    };
+
     return html`
       <div
-        class=${classMap(classes)}
+        class=${classMap(historyItemClasses)}
         @mouseup=${(e: MouseEvent) => {
           window.setTimeout(() => {
             this.handleMouseUp(e);
           });
         }}
       >
-        ${this.renderHighlightedText()}
-        <div class="question">${this.answer.request.query}</div>
-        ${this.renderContent()}
+        <div class=${classMap(questionAnswerContainerStyles)}>
+          <div class="question">
+            <pr-icon-button
+              class="toggle-answer-button"
+              icon=${this.isAnswerCollapsed ? "chevron_right" : "expand_more"}
+              variant="default"
+              @click=${this.toggleAnswer}
+              ?disabled=${this.isLoading}
+            ></pr-icon-button>
+            <span>${this.answer.request.query}</span>
+          </div>
+          ${this.renderContent()}
+        </div>
         ${this.referencedSpans.length > 0
           ? html`
               <div

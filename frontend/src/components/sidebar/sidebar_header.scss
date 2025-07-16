@@ -14,41 +14,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @use "../../sass/common";
 @use "../../sass/typescale";
 
 :host {
-  @include common.flex-column;
+  display: block;
+}
+
+.default-content {
+  @include common.flex-row-align-center;
+  justify-content: space-between;
+  width: 100%;
+  padding: common.$spacing-medium common.$sidebar-padding;
+}
+
+.input-container {
+  @include common.flex-row-align-center;
+  padding: common.$spacing-medium common.$sidebar-padding;
+
+  max-width: common.$info-content-max-width;
   gap: common.$spacing-medium;
-  padding: common.$spacing-medium common.$spacing-large;
+  width: 100%;
 
   flex-shrink: 0;
 
-  background: var(--md-sys-color-surface);
-  border-radius: common.$border-radius-medium;
+  pr-textarea {
+    flex-grow: 1;
+  }
+
+  pr-icon-button {
+    flex-shrink: 1;
+  }
 }
 
-.header {
-  @include common.flex-row-align-center;
+.header-container {
+  @include common.flex-row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left-container {
+  @include common.flex-row;
+  align-items: center;
   gap: common.$spacing-small;
-  cursor: pointer;
 }
 
-.label {
-  @include typescale.label-small;
-}
-
-.heading {
-  @include typescale.title-small;
-  margin: 0;
-  color: var(--md-sys-color-on-surface-high);
-}
-
-.content {
-  @include typescale.body-small;
-
-  display: block;
-  padding-bottom: common.$spacing-medium;
-  color: var(--md-sys-color-on-surface-high);
+.title {
+  @include typescale.title-large;
 }

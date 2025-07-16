@@ -174,7 +174,7 @@ export class LumiReader extends MobxLitElement {
     if (!this.documentStateService.lumiDocManager) return;
 
     const request: LumiAnswerRequest = {
-      query: `What is "${text}"?`,
+      query: `Explain "${text}"`,
       highlight: text,
       highlightedSpans,
     };

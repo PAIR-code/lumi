@@ -61,6 +61,10 @@ import { LumiDocManager } from "../../shared/lumi_doc_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
 import { HighlightManager } from "../../shared/highlight_manager";
 
+import { createRef, ref, Ref } from "lit/directives/ref.js";
+import { scrollContext, ScrollState } from "../../contexts/scroll_context";
+import { consume } from "@lit/context";
+
 /**
  * Displays a Lumi Document.
  */
@@ -75,6 +79,9 @@ export class LumiDocViz extends MobxLitElement {
     referencesRendererStyles,
   ];
 
+  @consume({ context: scrollContext, subscribe: true })
+  private scrollContext?: ScrollState;
+
   @property({ type: Object }) lumiDocManager!: LumiDocManager;
   @property({ type: Object }) collapseManager!: CollapseManager;
   @property({ type: Object }) highlightManager!: HighlightManager;
@@ -85,6 +92,8 @@ export class LumiDocViz extends MobxLitElement {
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void = () => {};
 
   @state() hoveredSpanId: string | null = null;
+
+  private sectionRefs = new Map<string, Ref<HTMLElement>>();
 
   get lumiDoc() {
     return this.lumiDocManager.lumiDoc;
@@ -136,6 +145,18 @@ export class LumiDocViz extends MobxLitElement {
     }
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.updateComplete.then(() => {
+      for (const [id, ref] of this.sectionRefs.entries()) {
+        if (ref.value) {
+          this.scrollContext?.registerSection(id, ref);
+        }
+      }
+    });
+  }
+
   override render() {
     const publishedTimestamp =
       this.lumiDocManager.lumiDoc.metadata?.publishedTimestamp;
@@ -181,21 +202,27 @@ export class LumiDocViz extends MobxLitElement {
             const isCollapsed = this.collapseManager?.getCollapseState(
               section.id
             );
+            const sectionRef = createRef<HTMLElement>();
+            this.sectionRefs.set(section.id, sectionRef);
 
-            return renderSection({
-              section,
-              summaryMaps: this.summaryMaps,
-              hoverFocusedSpanId: this.hoveredSpanId,
-              isCollapsed: isCollapsed,
-              onCollapseChange: (isCollapsed: boolean) => {
-                this.collapseManager!.toggleSection(section.id, isCollapsed);
-              },
-              getImageUrl: this.getImageUrl,
-              onSpanSummaryMouseEnter: this.onSpanSummaryMouseEnter.bind(this),
-              onSpanSummaryMouseLeave: this.onSpanSummaryMouseLeave.bind(this),
-              highlightManager: this.highlightManager,
-              onFocusOnSpan: this.onFocusOnSpan,
-            });
+            return html`<div ${ref(sectionRef)}>
+              ${renderSection({
+                section,
+                summaryMaps: this.summaryMaps,
+                hoverFocusedSpanId: this.hoveredSpanId,
+                isCollapsed: isCollapsed,
+                onCollapseChange: (isCollapsed: boolean) => {
+                  this.collapseManager!.toggleSection(section.id, isCollapsed);
+                },
+                getImageUrl: this.getImageUrl,
+                onSpanSummaryMouseEnter:
+                  this.onSpanSummaryMouseEnter.bind(this),
+                onSpanSummaryMouseLeave:
+                  this.onSpanSummaryMouseLeave.bind(this),
+                highlightManager: this.highlightManager,
+                onFocusOnSpan: this.onFocusOnSpan,
+              })}
+            </div>`;
           })}
           ${renderReferences({
             references: this.lumiDoc.references,
