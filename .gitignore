@@ -196,7 +196,6 @@ frontend/storybook-static/
 # Image bucket for local testing
 local_image_bucket/*
 !local_image_bucket/README.md
-local_image_bucket
 
 # GCA
 GEMINI.md
