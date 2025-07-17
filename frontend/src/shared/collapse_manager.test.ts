@@ -121,28 +121,37 @@ describe("CollapseManager", () => {
     });
   });
 
-  describe("areAllSectionsCollapsed", () => {
-    it("should return true after initialization", () => {
+  describe("getOverallCollapseState", () => {
+    it("should return 'collapsed' after initialization", () => {
       collapseManager.initialize();
-      expect(collapseManager.areAllSectionsCollapsed()).to.be.true;
+      expect(collapseManager.getOverallCollapseState()).to.equal("collapsed");
     });
 
-    it("should return false if the abstract is expanded", () => {
+    it("should return 'indeterminate' if the abstract is expanded", () => {
       collapseManager.initialize();
       collapseManager.setAbstractCollapsed(false);
-      expect(collapseManager.areAllSectionsCollapsed()).to.be.false;
+      expect(collapseManager.getOverallCollapseState()).to.equal(
+        "indeterminate"
+      );
     });
 
-    it("should return false if any section is expanded", () => {
+    it("should return 'indeterminate' if any section is expanded", () => {
       collapseManager.initialize();
       collapseManager.toggleSection("sec1", false);
-      expect(collapseManager.areAllSectionsCollapsed()).to.be.false;
+      expect(collapseManager.getOverallCollapseState()).to.equal(
+        "indeterminate"
+      );
     });
 
-    it("should return true if all sections are collapsed manually", () => {
+    it("should return 'collapsed' if all sections are collapsed manually", () => {
       collapseManager.setAllSectionsCollapsed(false);
       collapseManager.setAllSectionsCollapsed(true);
-      expect(collapseManager.areAllSectionsCollapsed()).to.be.true;
+      expect(collapseManager.getOverallCollapseState()).to.equal("collapsed");
+    });
+
+    it("should return 'expanded' if all sections are expanded", () => {
+      collapseManager.setAllSectionsCollapsed(false);
+      expect(collapseManager.getOverallCollapseState()).to.equal("expanded");
     });
   });
 

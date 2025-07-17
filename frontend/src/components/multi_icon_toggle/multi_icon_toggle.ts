@@ -65,7 +65,11 @@ export class MultiIconToggle extends MobxLitElement {
     return html`
       <div class="container">
         <div class=${collapseClasses} @click=${this.handleCollapseAll}>
-          <pr-icon icon="list" variant="default" title="Collapse all"></pr-icon>
+          <pr-icon
+            icon="list"
+            variant="default"
+            title="Collapse into summaries"
+          ></pr-icon>
         </div>
         <div class=${indeterminateClasses}>
           <pr-icon
@@ -79,7 +83,7 @@ export class MultiIconToggle extends MobxLitElement {
           <pr-icon
             icon="article"
             variant="default"
-            title="Expand all"
+            title="Expand full paper"
           ></pr-icon>
         </div>
       </div>

@@ -50,6 +50,7 @@ import { renderReferences } from "./renderers/references_renderer";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
+import "../multi_icon_toggle/multi_icon_toggle";
 
 import { styles } from "./lumi_doc.scss";
 import { styles as sectionRendererStyles } from "./renderers/section_renderer.scss";
@@ -174,8 +175,20 @@ export class LumiDocViz extends MobxLitElement {
       >
         <div class="lumi-doc-content">
           <div class="title-section">
+            <div class="collapse-toggle-container">
+            <multi-icon-toggle
+              .selection=${this.collapseManager.getOverallCollapseState()}
+              @onCollapseAll=${() => {
+                this.collapseManager.setAllSectionsCollapsed(true);
+              }}
+              @onExpandAll=${() => {
+                this.collapseManager.setAllSectionsCollapsed(false);
+              }}
+            >
+            </div>
+            </multi-icon-toggle>
             <h1 class="main-column title">
-              ${this.renderCollapseButton()} ${this.lumiDoc.metadata?.title}
+              ${this.lumiDoc.metadata?.title}
               <pr-icon-button
                 icon="open_in_new"
                 title="Open in arXiv"
@@ -227,28 +240,6 @@ export class LumiDocViz extends MobxLitElement {
             references: this.lumiDoc.references,
           })}
         </div>
-      </div>
-    `;
-  }
-
-  private renderCollapseButton() {
-    const handleCollapseClicked = () => {
-      const newCollapseValue = !this.collapseManager.areAllSectionsCollapsed();
-      this.collapseManager.setAllSectionsCollapsed(newCollapseValue);
-    };
-    const icon = this.collapseManager.areAllSectionsCollapsed()
-      ? "collapse_all"
-      : "expand_all";
-
-    return html`
-      <div class="collapse-button-container">
-        <pr-icon-button
-          class="collapse-all-button"
-          icon=${icon}
-          color="secondary"
-          variant="default"
-          @click=${handleCollapseClicked}
-        ></pr-icon-button>
       </div>
     `;
   }

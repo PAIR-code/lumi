@@ -55,14 +55,16 @@
     padding: common.$spacing-large;
   }
 
-  .collapse-button-container {
-    @include common.flex-row-align-center;
-    justify-content: end;
-    grid-column: common.$summary-grid-col;
-  }
-
   .main-column {
     grid-column: common.$content-grid-col;
+  }
+
+  .collapse-toggle-container {
+    @include common.flex-row-align-center;
+    justify-content: end;
+    margin-right: common.$spacing-xl;
+
+    grid-column: common.$non-summary-grid-col;
   }
 }
 

@@ -20,6 +20,9 @@ import { LumiDoc } from "./lumi_doc";
 import { LumiDocManager } from "./lumi_doc_manager";
 
 const INITIAL_COLLAPSE_STATE = true;
+
+export type CollapseState = "collapsed" | "expanded" | "indeterminate";
+
 /**
  * Manages the collapse/expand state of sections in a document.
  */
@@ -55,15 +58,23 @@ export class CollapseManager {
     return this.sectionCollapseState.get(id) ?? false;
   }
 
-  areAllSectionsCollapsed() {
-    if (!this.isAbstractCollapsed) return false;
+  getOverallCollapseState(): CollapseState {
+    const allStates = [
+      this.isAbstractCollapsed,
+      ...this.sectionCollapseState.values(),
+    ];
 
-    // Check if any section is not collapsed.
-    const uncollapsedValue = Array.from(
-      this.sectionCollapseState.values()
-    ).find((isCollapsed) => !isCollapsed);
-    // If we can't find an uncollapsed section, it means all are collapsed.
-    return uncollapsedValue === undefined;
+    const allCollapsed = allStates.every((isCollapsed) => isCollapsed);
+    if (allCollapsed) {
+      return "collapsed";
+    }
+
+    const allExpanded = allStates.every((isCollapsed) => !isCollapsed);
+    if (allExpanded) {
+      return "expanded";
+    }
+
+    return "indeterminate";
   }
 
   setAllSectionsCollapsed(isCollapsed: boolean) {

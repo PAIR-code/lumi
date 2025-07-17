@@ -30,14 +30,23 @@
 
 .button-outer {
   padding: common.$spacing-small;
+  --pr-icon-color: var(--md-sys-color-on-surface-highest);
 
-  &.clickable:hover {
+  &.clickable {
+    --pr-icon-color: var(--md-sys-color-on-surface-high);
     cursor: pointer;
+  }
+
+  &.clickable:hover:not(.selected) {
     background-color: var(--md-sys-color-secondary-container-lowest);
   }
 
   &.selected {
-    --pr-icon-button-unselected-color: var(--md-sys-color-primary);
+    --pr-icon-color: var(--md-sys-color-primary);
     background-color: var(--md-sys-color-secondary-container);
+  }
+
+  &:not(.clickable) {
+    cursor: default;
   }
 }

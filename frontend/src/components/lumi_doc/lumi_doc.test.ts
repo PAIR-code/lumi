@@ -25,6 +25,7 @@ import { CollapseManager } from "../../shared/collapse_manager";
 import { HighlightManager } from "../../shared/highlight_manager";
 
 import "./lumi_doc";
+import "../multi_icon_toggle/multi_icon_toggle";
 
 class MockLumiDocManager extends LumiDocManager {
   constructor(lumiDoc: any) {
@@ -80,7 +81,7 @@ describe("lumi-doc", () => {
     expect(title!.textContent).to.contain("Test Paper");
   });
 
-  it("calls setAllSectionsCollapsed when the collapse button is clicked", async () => {
+  it("calls setAllSectionsCollapsed(true) when the collapse icon is clicked", async () => {
     const setAllSectionsCollapsed = sinon.spy(
       collapseManager,
       "setAllSectionsCollapsed"
@@ -95,12 +96,41 @@ describe("lumi-doc", () => {
       { modules: [] }
     );
 
-    const collapseButton = el.shadowRoot!.querySelector(
-      ".collapse-all-button"
+    const toggle = el.shadowRoot!.querySelector(
+      "multi-icon-toggle"
     ) as HTMLElement;
-    collapseButton.click();
+    const collapseIcon = toggle.shadowRoot!.querySelector(
+      'pr-icon[icon="list"]'
+    )!.parentElement as HTMLElement;
+    collapseIcon.click();
 
-    expect(setAllSectionsCollapsed.calledOnce).to.be.true;
+    expect(setAllSectionsCollapsed.calledOnceWith(true)).to.be.true;
+  });
+
+  it("calls setAllSectionsCollapsed(false) when the expand icon is clicked", async () => {
+    const setAllSectionsCollapsed = sinon.spy(
+      collapseManager,
+      "setAllSectionsCollapsed"
+    );
+
+    const el = await fixture(
+      html`<lumi-doc
+        .lumiDocManager=${lumiDocManager}
+        .collapseManager=${collapseManager}
+        .highlightManager=${highlightManager}
+      ></lumi-doc>`,
+      { modules: [] }
+    );
+
+    const toggle = el.shadowRoot!.querySelector(
+      "multi-icon-toggle"
+    ) as HTMLElement;
+    const expandIcon = toggle.shadowRoot!.querySelector(
+      'pr-icon[icon="article"]'
+    )!.parentElement as HTMLElement;
+    expandIcon.click();
+
+    expect(setAllSectionsCollapsed.calledOnceWith(false)).to.be.true;
   });
 
   it("opens arXiv link in a new tab when the open_in_new icon is clicked", async () => {
