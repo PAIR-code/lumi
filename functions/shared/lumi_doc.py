@@ -89,6 +89,7 @@ class LumiSection:
     id: str
     heading: Heading
     contents: List["LumiContent"]
+    sub_sections: Optional[List["LumiSection"]] = None
 
 
 @dataclass
@@ -140,6 +141,7 @@ class LumiSpan:
     text: str
     inner_tags: List["InnerTag"]
 
+
 class InnerTagName(StrEnum):
     BOLD = "b"
     ITALIC = "i"
@@ -152,6 +154,7 @@ class InnerTagName(StrEnum):
     CONCEPT = "concept"
     A = "a"
     CODE = "code"
+
 
 @dataclass
 class InnerTag:

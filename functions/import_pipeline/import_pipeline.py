@@ -106,7 +106,9 @@ def import_arxiv_latex_and_pdf(
             latex_utils.extract_tar_gz(latex_source_bytes, temp_dir)
             main_tex_file = latex_utils.find_main_tex_file(temp_dir)
             latex_string = latex_utils.inline_tex_files(
-                main_tex_file, remove_comments=True, inline_commands=True,
+                main_tex_file,
+                remove_comments=True,
+                inline_commands=True,
             )
         except (ValueError, FileNotFoundError) as e:
             raise
@@ -179,7 +181,7 @@ def convert_model_output_to_lumi_doc(
     if parsed_data.get("abstract"):
         abstract_html = markdown_utils.markdown_to_html(parsed_data.get("abstract"))
         abstract_sections = convert_to_lumi_sections(
-            abstract_html, file_id=file_id, placeholder_map=placeholder_map
+            abstract_html, placeholder_map=placeholder_map
         )
         if len(abstract_sections) > 1:
             # TODO(ellenj): Consider raising error
@@ -191,7 +193,7 @@ def convert_model_output_to_lumi_doc(
     if parsed_data.get("content"):
         content_html = markdown_utils.markdown_to_html(parsed_data.get("content"))
         lumi_sections = convert_to_lumi_sections(
-            content_html, file_id=file_id, placeholder_map=placeholder_map
+            content_html, placeholder_map=placeholder_map
         )
 
     lumi_references = []
@@ -222,42 +224,88 @@ def convert_model_output_to_lumi_doc(
 
 
 def convert_to_lumi_sections(
-    html: str, file_id: str, placeholder_map: Dict[str, LumiContent]
+    html: str, placeholder_map: Dict[str, LumiContent]
 ) -> List[LumiSection]:
-    """Converts HTML string to Lumi Sections."""
-    soup = bs4.BeautifulSoup(html, "html.parser")
-    sections = []
+    """
+    Converts an HTML string into a hierarchical list of LumiSection objects.
 
-    current_section = LumiSection(
-        id=get_unique_id(),
-        heading=Heading(heading_level=0, text=""),
-        contents=[],
-    )
+    This function parses an HTML string and builds a tree of sections based on
+    heading tags (<h1>, <h2>, etc.). It uses a stack-based approach to manage
+    the current nesting level. Content tags (like <p>, <ul>) are appended to the
+    `contents` of the current section at the top of the stack.
+
+    Args:
+        html: The input HTML string to parse.
+        placeholder_map: A dictionary mapping placeholder strings to pre-parsed
+                         LumiContent objects (e.g., for images or tables).
+
+    Returns:
+        A list of top-level LumiSection objects. Each section may contain
+        nested sub-sections.
+    """
+    soup = bs4.BeautifulSoup(html, "html.parser")
+
+    # root_sections holds the list of top-level sections (e.g., H1s) to be returned.
+    root_sections: List[LumiSection] = []
+
+    # section_stack keeps track of the current hierarchy of sections. The last
+    # element is the current section being populated.
+    section_stack: List[LumiSection] = []
 
     visited_tags = set()
 
     for tag in soup.recursiveChildGenerator():
-        if (
-            tag.name == "h1"
-            or tag.name == "h2"
-            or tag.name == "h3"
-            or tag.name == "h4"
-            or tag.name == "h5"
-            or tag.name == "h6"
-        ):
-            # Start a new section.
-            if current_section.contents:
-                sections.append(current_section)
+        # Check if the tag is a heading (h1, h2, etc.)
+        if tag.name and tag.name.startswith("h") and tag.name[1:].isdigit():
             heading_level = int(tag.name[1:])
-            heading_text = "".join(tag.find_all(text=True))
-            current_section = LumiSection(
+            heading_text = "".join(tag.find_all(text=True, recursive=False))
+
+            new_section = LumiSection(
                 id=get_unique_id(),
                 heading=Heading(heading_level=heading_level, text=heading_text),
                 contents=[],
+                sub_sections=[],
             )
+
+            # Adjust the stack to find the correct parent for the new section.
+            # Pop sections from the stack until the top section is a valid parent
+            # (i.e., its heading level is less than the new section's).
+            while (
+                section_stack
+                and section_stack[-1].heading.heading_level >= heading_level
+            ):
+                section_stack.pop()
+
+            if section_stack:
+                # If the stack is not empty, the new section is a sub-section.
+                parent_section = section_stack[-1]
+                if parent_section.sub_sections is None:
+                    parent_section.sub_sections = []
+                parent_section.sub_sections.append(new_section)
+            else:
+                # If the stack is empty, it's a new top-level section.
+                root_sections.append(new_section)
+
+            # Push the new section onto the stack, making it the current section.
+            section_stack.append(new_section)
+
+        # Process content tags (p, ul, ol, etc.)
         elif tag not in visited_tags and tag.name in TAGS_TO_PROCESS:
+            if not section_stack:
+                # If content appears before any heading, create a default section to hold it.
+                # This section has a heading level of 0.
+                default_section = LumiSection(
+                    id=get_unique_id(),
+                    heading=Heading(heading_level=0, text=""),
+                    contents=[],
+                    sub_sections=[],
+                )
+                section_stack.append(default_section)
+                root_sections.append(default_section)
+
+            # Add content to the current section (the one at the top of the stack).
+            current_section = section_stack[-1]
             if tag.name in DEFAULT_TEXT_TAGS:
-                # This will parse the html block, extracting any TextContent.
                 new_contents: List[LumiContent] = _parse_html_block_for_lumi_contents(
                     tag.decode_contents(), tag.name, placeholder_map
                 )
@@ -269,15 +317,13 @@ def convert_to_lumi_sections(
                 if new_content:
                     current_section.contents.append(new_content)
 
+            # Mark the tag and its descendants as visited to avoid processing them again.
             visited_tags.add(tag)
             if hasattr(tag, "descendants"):
                 for descendant in tag.descendants:
                     visited_tags.add(descendant)
 
-    if current_section.contents:
-        sections.append(current_section)
-
-    return sections
+    return root_sections
 
 
 def _parse_html_block_for_lumi_contents(

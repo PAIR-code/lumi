@@ -75,7 +75,7 @@ def generate_lumi_answer(
 
     # Parse the markdown response to create LumiContent objects.
     response_sections = import_pipeline.convert_to_lumi_sections(
-        html_response, file_id="answer", placeholder_map={}
+        html_response, placeholder_map={}
     )
 
     response_content: List[LumiContent] = []

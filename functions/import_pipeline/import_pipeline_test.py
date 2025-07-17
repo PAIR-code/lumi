@@ -84,6 +84,120 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
 
 
 class ImportPipelineTest(unittest.TestCase):
+    @patch.object(import_pipeline, "get_unique_id")
+    def test_nested_headings(self, mock_get_unique_id):
+        """Tests that headings are nested correctly into sub_sections."""
+        self.maxDiff = None
+        # This test will fail until the nesting logic is implemented.
+        # It's added first as per the user's request.
+        html_input = (
+            "<h1>Title 1</h1>"
+            "<h2>Subtitle 1.1</h2>"
+            "<p>Content 1.1</p>"
+            "<h3>Sub-subtitle 1.1.1</h3>"
+            "<p>Content 1.1.1</p>"
+            "<h2>Subtitle 1.2</h2>"
+            "<p>Content 1.2</p>"
+            "<h1>Title 2</h1>"
+            "<p>Content 2</p>"
+        )
+
+        # Mock get_unique_id to return predictable IDs for easier comparison
+        mock_get_unique_id.return_value = "uid"
+
+        expected_sections = [
+            LumiSection(
+                id="uid",
+                heading=Heading(heading_level=1, text="Title 1"),
+                contents=[],
+                sub_sections=[
+                    LumiSection(
+                        id="uid",
+                        heading=Heading(heading_level=2, text="Subtitle 1.1"),
+                        contents=[
+                            LumiContent(
+                                id="uid",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="uid", text="Content 1.1", inner_tags=[]
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                        sub_sections=[
+                            LumiSection(
+                                id="uid",
+                                heading=Heading(
+                                    heading_level=3, text="Sub-subtitle 1.1.1"
+                                ),
+                                contents=[
+                                    LumiContent(
+                                        id="uid",
+                                        text_content=TextContent(
+                                            tag_name="p",
+                                            spans=[
+                                                LumiSpan(
+                                                    id="uid",
+                                                    text="Content 1.1.1",
+                                                    inner_tags=[],
+                                                )
+                                            ],
+                                        ),
+                                    )
+                                ],
+                                sub_sections=[],
+                            )
+                        ],
+                    ),
+                    LumiSection(
+                        id="uid",
+                        heading=Heading(heading_level=2, text="Subtitle 1.2"),
+                        contents=[
+                            LumiContent(
+                                id="uid",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="uid", text="Content 1.2", inner_tags=[]
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                        sub_sections=[],
+                    ),
+                ],
+            ),
+            LumiSection(
+                id="uid",
+                heading=Heading(heading_level=1, text="Title 2"),
+                contents=[
+                    LumiContent(
+                        id="uid",
+                        text_content=TextContent(
+                            tag_name="p",
+                            spans=[LumiSpan(id="uid", text="Content 2", inner_tags=[])],
+                        ),
+                    )
+                ],
+                sub_sections=[],
+            ),
+        ]
+
+        # Call convert_to_lumi_sections directly
+        converted_sections = import_pipeline.convert_to_lumi_sections(
+            html_input, placeholder_map={}
+        )
+
+        # Assert that the document is as expected.
+        self.assertEqual(len(expected_sections), len(converted_sections))
+        self.assertEqual(asdict(expected_sections[0]), asdict(converted_sections[0]))
+        self.assertEqual(asdict(expected_sections[1]), asdict(converted_sections[1]))
+
     @parameterized.expand(
         [
             # BASIC TESTS
@@ -93,6 +207,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -119,6 +234,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -150,6 +266,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=2, text="Heading"),
                         contents=[
                             LumiContent(
@@ -177,6 +294,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -223,6 +341,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -288,6 +407,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -333,6 +453,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -372,6 +493,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -404,6 +526,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -439,6 +562,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -474,6 +598,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -509,6 +634,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -544,6 +670,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -581,6 +708,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -616,6 +744,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -683,6 +812,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -726,6 +856,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -761,6 +892,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -797,6 +929,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -846,6 +979,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -901,6 +1035,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -946,6 +1081,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -1004,6 +1140,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -1065,6 +1202,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=1, text="heading"),
                         contents=[
                             LumiContent(
@@ -1117,6 +1255,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
+                        sub_sections=[],
                         heading=Heading(heading_level=0, text=""),
                         contents=[
                             LumiContent(
@@ -1160,7 +1299,7 @@ class ImportPipelineTest(unittest.TestCase):
 
         # Call convert_to_lumi_sections directly
         converted_sections = import_pipeline.convert_to_lumi_sections(
-            html, "file_id", placeholder_map=placeholder_map
+            html, placeholder_map=placeholder_map
         )
 
         # Assert that the document is as expected.
