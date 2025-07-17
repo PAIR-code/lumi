@@ -19,12 +19,11 @@
 @use "../../../sass/typescale";
 
 .references-renderer-container {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  @include common.lumi-doc-grid;
 }
 
 .references {
-  grid-column: 2;
+  grid-column: common.$content-grid-col;
 
   @include common.flex-column;
   gap: common.$spacing-xl;

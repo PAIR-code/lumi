@@ -172,17 +172,10 @@ function renderSectionSummaryPanel(
       ${section.contents
         .filter((content) => content.imageContent)
         .map((content) => {
-          return renderContent({
-            content,
-            getImageUrl,
-            summary: summaryMaps?.contentSummariesMap.get(content.id) ?? null,
-            spanSummaries: new Map(),
-            focusedSpanId: "",
-            displayContentSummaries: true,
-            onSpanSummaryMouseEnter: () => {},
-            onSpanSummaryMouseLeave: () => {},
-            highlightManager,
-          });
+          return html`<lumi-image-content
+            .getImageUrl=${getImageUrl}
+            .imageContent=${content.imageContent}
+          ></lumi-image-content>`;
         })}
     </div> `;
 }
@@ -321,11 +314,13 @@ export function renderSection(
 
   return html`<div class="section-renderer-container">
     <div class="section-container">
-      <div class="hide-button-container">
-        ${renderSectionSummary(props)}
-        ${renderHideButton(isCollapsed, onCollapseChange)}
+      <div class="heading-row">
+        <div class="hide-button-container">
+          ${renderHideButton(isCollapsed, onCollapseChange)}
+        </div>
+        ${renderHeading(section)}
       </div>
-      ${renderHeading(section)} ${renderContents(props)}
+      ${renderContents(props)}
     </div>
   </div>`;
 }

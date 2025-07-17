@@ -277,10 +277,10 @@ export function renderContent(props: ContentRendererProperties) {
 
   return html`
     <div class="content-renderer-container">
-      ${renderLeftAnnotation(props)}
       <div class=${classMap(classesObject)} @click=${onContentClick}>
         ${renderMainContent(props)}
       </div>
+      ${renderLeftAnnotation(props)}
     </div>
   `;
 }

@@ -331,6 +331,15 @@
   }
 }
 
+// LumiDoc Content Grid
+@mixin lumi-doc-grid {
+  display: grid;
+  grid-template-columns: 0.5fr 2fr 0.5fr;
+}
+
+$content-grid-col: 2;
+$summary-grid-col: 3;
+
 /** Constants. */
 $spacing-xs: 2px;
 $spacing-small: 4px;

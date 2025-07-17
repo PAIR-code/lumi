@@ -20,15 +20,15 @@
 
 .content-renderer-container {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 0 24px;
+  grid-template-columns: 2fr 1fr;
+  gap: 0 common.$spacing-medium;
 
   .left-annotation {
-    grid-column: 1;
+    grid-column: 2;
   }
 
   .main-content {
-    grid-column: 2;
+    grid-column: 1;
   }
 
   .left-annotation {
@@ -36,7 +36,7 @@
     flex-direction: column;
     justify-content: flex-start;
     flex-shrink: 0;
-    align-items: flex-end;
+    align-items: flex-start;
 
     margin-top: 16px;
 
@@ -87,7 +87,7 @@
   .span-summary {
     color: var(--md-sys-color-on-surface-highest);
 
-    text-align: right;
+    text-align: left;
     max-width: 220px;
 
     border-radius: common.$spacing-small;
@@ -99,7 +99,7 @@
 
   .summary {
     max-width: 220px;
-    text-align: right;
+    text-align: left;
     cursor: pointer;
   }
 

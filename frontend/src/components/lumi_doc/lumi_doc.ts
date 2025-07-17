@@ -174,9 +174,8 @@ export class LumiDocViz extends MobxLitElement {
       >
         <div class="lumi-doc-content">
           <div class="title-section">
-            ${this.renderCollapseButton()}
             <h1 class="main-column title">
-              ${this.lumiDoc.metadata?.title}
+              ${this.renderCollapseButton()} ${this.lumiDoc.metadata?.title}
               <pr-icon-button
                 icon="open_in_new"
                 title="Open in arXiv"

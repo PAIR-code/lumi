@@ -19,12 +19,11 @@
 @use "../../../sass/typescale";
 
 .abstract-renderer-container {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  @include common.lumi-doc-grid;
 }
 
 .abstract {
-  grid-column: 2;
+  grid-column: common.$content-grid-col;
 
   display: flex;
   flex-direction: column;

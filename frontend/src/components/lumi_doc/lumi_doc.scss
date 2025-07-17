@@ -41,8 +41,7 @@
 }
 
 .title-section {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  @include common.lumi-doc-grid;
 
   .title {
     @include common.flex-row-align-center;
@@ -59,11 +58,11 @@
   .collapse-button-container {
     @include common.flex-row-align-center;
     justify-content: end;
-    grid-column: 1;
+    grid-column: common.$summary-grid-col;
   }
 
   .main-column {
-    grid-column: 2;
+    grid-column: common.$content-grid-col;
   }
 }
 
