@@ -19,7 +19,7 @@ import { action, makeObservable, observable } from "mobx";
 import { LumiDoc } from "./lumi_doc";
 import { LumiDocManager } from "./lumi_doc_manager";
 
-const INITIAL_COLLAPSE_STATE = true;
+const INITIAL_COLLAPSE_STATE = false;
 
 export type CollapseState = "collapsed" | "expanded" | "indeterminate";
 
