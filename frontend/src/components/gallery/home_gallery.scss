@@ -75,6 +75,7 @@ h1 {
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: common.$spacing-small;
   gap: common.$spacing-large;
+  height: 100%;
   max-width: calc(common.$info-content-max-width / 2);
   padding: common.$spacing-large;
   transition: all .25s ease-out;
