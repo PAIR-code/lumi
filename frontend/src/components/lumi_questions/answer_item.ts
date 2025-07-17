@@ -29,6 +29,7 @@ import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { LumiDocManager } from "../../shared/lumi_doc_manager";
 
 import "../../pair-components/icon";
+import "../../pair-components/icon_button";
 import "../lumi_span/lumi_span";
 import { renderContent } from "../lumi_doc/renderers/content_renderer";
 
@@ -57,6 +58,7 @@ export class AnswerItem extends MobxLitElement {
   onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
   @property()
   onReferenceClick: (highlightedSpans: HighlightSelection[]) => void = () => {};
+  @property() onDismiss?: (answerId: string) => void;
 
   @consume({ context: scrollContext })
   private scrollContext?: ScrollState;
@@ -197,6 +199,25 @@ export class AnswerItem extends MobxLitElement {
     `;
   }
 
+  private renderCancelButton() {
+    if (!this.onDismiss) return nothing;
+
+    return html`
+      <pr-icon-button
+        class="dismiss-button"
+        icon="close"
+        variant="default"
+        title="Close"
+        @click=${() => {
+          if (this.onDismiss) {
+            this.onDismiss(this.answer.id);
+          }
+        }}
+        ?hidden=${this.isLoading}
+      ></pr-icon-button>
+    `;
+  }
+
   override render() {
     const classes = {
       "history-item": true,
@@ -230,7 +251,10 @@ export class AnswerItem extends MobxLitElement {
               @click=${this.toggleAnswer}
               ?disabled=${this.isLoading}
             ></pr-icon-button>
-            <span>${this.answer.request.query}</span>
+            <span class="question-text" title=${this.answer.request.query}
+              >${this.answer.request.query}</span
+            >
+            ${this.renderCancelButton()}
           </div>
           ${this.renderContent()}
         </div>
@@ -241,14 +265,14 @@ export class AnswerItem extends MobxLitElement {
                 class="toggle-button"
                 @click=${this.toggleReferences}
               >
-                <span class="mentions-text"
-                  >${this.referencedSpans.length} references</span
-                >
                 <pr-icon
                   .icon=${this.areReferencesShown
                     ? "keyboard_arrow_up"
                     : "keyboard_arrow_down"}
                 ></pr-icon>
+                <span class="mentions-text"
+                  >${this.referencedSpans.length} references</span
+                >
               </div>
             `
           : nothing}

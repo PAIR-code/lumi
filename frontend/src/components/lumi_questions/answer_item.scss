@@ -87,6 +87,10 @@ $history-item-horizontal-padding: common.$spacing-large;
   .toggle-answer-button {
     margin-right: common.$spacing-medium;
   }
+
+  .question-text {
+    @include common.overflow-ellipsis;
+  }
 }
 
 .answer {
@@ -100,7 +104,7 @@ $history-item-horizontal-padding: common.$spacing-large;
 
 .toggle-button {
   @include common.flex-row-align-center;
-  justify-content: space-between;
+  gap: common.$spacing-medium;
 
   border-top: 1px solid var(--md-sys-color-outline-variant);
   color: var(--md-sys-color-primary);

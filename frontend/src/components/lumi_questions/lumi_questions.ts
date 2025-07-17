@@ -20,12 +20,8 @@ import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import { core } from "../../core/core";
-import { FirebaseService } from "../../services/firebase.service";
 import { HistoryService } from "../../services/history.service";
-import { RouterService } from "../../services/router.service";
-import { LumiAnswer, LumiAnswerRequest } from "../../shared/api";
-import { getLumiResponseCallable } from "../../shared/callables";
-import { createTemporaryAnswer } from "../../shared/answer_utils";
+import { LumiAnswer } from "../../shared/api";
 
 import "./answer_item";
 import "../lumi_span/lumi_span";
@@ -40,6 +36,7 @@ import {
   SelectionInfo,
 } from "../../shared/selection_utils";
 import { classMap } from "lit/directives/class-map.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
@@ -49,37 +46,76 @@ export class LumiQuestions extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly documentStateService = core.getService(DocumentStateService);
-  private readonly firebaseService = core.getService(FirebaseService);
   private readonly historyService = core.getService(HistoryService);
-  private readonly routerService = core.getService(RouterService);
 
   @property({ type: Boolean }) isHistoryShowAll = false;
   @property({ type: Object }) setHistoryVisible?: (isVisible: boolean) => void;
   @property() onTextSelection: (selectionInfo: SelectionInfo) => void =
     () => {};
+  @state() private dismissedAnswers = new Set<string>();
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    const docId = this.getDocId();
+    if (!docId) return;
+
+    const answers = this.historyService.getAnswers(docId);
+    answers.forEach((answer) => {
+      this.dismissedAnswers.add(answer.id);
+    });
+  }
 
   private onReferenceClick(highlightedSpans: HighlightSelection[]) {
     this.documentStateService.focusOnSpan(highlightedSpans);
   }
 
-  private renderHistory() {
-    const docId =
-      this.documentStateService.lumiDocManager?.lumiDoc.metadata?.paperId;
-    if (!docId) return nothing;
+  private onDismiss(answerId: string) {
+    this.dismissedAnswers.add(answerId);
+    this.requestUpdate();
+  }
 
+  private getAnswersToRender(docId: string): {
+    answers: LumiAnswer[];
+    canDismiss: boolean;
+  } {
     const answers = this.historyService.getAnswers(docId);
     const tempAnswers = this.historyService.getTemporaryAnswers();
     const personalSummary = docId
       ? this.historyService.personalSummaries.get(docId)
       : undefined;
-    const isSummaryLoading = this.historyService.isPersonalSummaryLoading;
 
     let allAnswers = [...tempAnswers, ...answers];
+
+    const latestAnswer = allAnswers.length > 0 ? allAnswers[0] : null;
+    const isLatestAnswerDismissed = latestAnswer
+      ? this.dismissedAnswers.has(latestAnswer.id)
+      : false;
+
     if (personalSummary) {
       allAnswers.push(personalSummary);
     }
 
-    if (allAnswers.length === 0 && !isSummaryLoading) {
+    if (this.isHistoryShowAll)
+      return { answers: allAnswers, canDismiss: false };
+    if (!isLatestAnswerDismissed && latestAnswer)
+      return { answers: [latestAnswer], canDismiss: true };
+    if (personalSummary)
+      return { answers: [personalSummary], canDismiss: false };
+    return { answers: [], canDismiss: false };
+  }
+
+  private getDocId() {
+    return this.documentStateService.lumiDocManager?.lumiDoc.metadata?.paperId;
+  }
+
+  private renderHistory() {
+    const docId = this.getDocId();
+    if (!docId) return nothing;
+
+    const { answers: answersToRender, canDismiss } =
+      this.getAnswersToRender(docId);
+    const isSummaryLoading = this.historyService.isPersonalSummaryLoading;
+    if (answersToRender.length === 0 && !isSummaryLoading) {
       return nothing;
     }
 
@@ -89,11 +125,9 @@ export class LumiQuestions extends MobxLitElement {
       </div>`;
     }
 
-    const answersToRender = this.isHistoryShowAll
-      ? allAnswers
-      : allAnswers.slice(0, 1);
-
-    const showSeeAllButton = !this.isHistoryShowAll && allAnswers.length > 1;
+    const showSeeAllButton =
+      !this.isHistoryShowAll &&
+      this.historyService.getAnswers(docId).length > 1;
 
     const historyContainerClasses = classMap({
       "history-container": true,
@@ -102,18 +136,21 @@ export class LumiQuestions extends MobxLitElement {
     });
     return html`
       <div class=${historyContainerClasses}>
-        ${answersToRender.map(
-          (answer: LumiAnswer) => html`
+        ${answersToRender.map((answer: LumiAnswer) => {
+          const onDismiss = canDismiss ? this.onDismiss.bind(this) : undefined;
+
+          return html`
             <answer-item
               .onTextSelection=${this.onTextSelection}
               .onReferenceClick=${this.onReferenceClick.bind(this)}
+              .onDismiss=${ifDefined(onDismiss)}
               .answer=${answer}
               .isLoading=${answer.isLoading || false}
               .lumiDocManager=${this.documentStateService.lumiDocManager}
               .highlightManager=${this.documentStateService.highlightManager}
             ></answer-item>
-          `
-        )}
+          `;
+        })}
       </div>
       ${showSeeAllButton
         ? html`
