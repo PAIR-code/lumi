@@ -41,7 +41,7 @@ export class DocumentStateService extends Service {
     this.isHistoryShowAll = isVisible;
   }
 
-  @observable isMobileSidebarCollapsed = false;
+  @observable isMobileSidebarCollapsed = true;
   @action toggleMobileSidebarCollapsed() {
     this.isMobileSidebarCollapsed = !this.isMobileSidebarCollapsed;
   }
