@@ -21,7 +21,7 @@ import { ScrollState } from "../contexts/scroll_context";
 import { HighlightManager } from "../shared/highlight_manager";
 import { CollapseManager } from "../shared/collapse_manager";
 import { LumiDocManager } from "../shared/lumi_doc_manager";
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { HighlightSelection } from "../shared/selection_utils";
 
 /**
@@ -37,8 +37,13 @@ export class DocumentStateService extends Service {
   private scrollState?: ScrollState;
 
   @observable isHistoryShowAll = false;
-  setHistoryShowAll(isVisible: boolean) {
+  @action setHistoryShowAll(isVisible: boolean) {
     this.isHistoryShowAll = isVisible;
+  }
+
+  @observable isMobileSidebarCollapsed = false;
+  @action toggleMobileSidebarCollapsed() {
+    this.isMobileSidebarCollapsed = !this.isMobileSidebarCollapsed;
   }
 
   constructor() {

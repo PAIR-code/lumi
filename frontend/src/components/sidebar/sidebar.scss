@@ -23,6 +23,33 @@
   background-color: var(--md-sys-color-surface-variant);
 }
 
+.contents-mobile {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+
+  @include common.viewport-small {
+    display: flex;
+  }
+
+  .mobile-collapse-button {
+    background: var(--md-sys-color-secondary-container-high);
+    border-top: common.$border;
+    cursor: pointer;
+  }
+}
+
+.contents-desktop {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+
+  @include common.viewport-small {
+    display: none;
+  }
+}
+
 .lumi-questions-container {
   padding: common.$sidebar-padding;
   max-height: 60%;
@@ -35,14 +62,22 @@
   overflow-y: auto;
 }
 
-.lumi-concepts-container {
+.tabs-container {
   flex-grow: 1;
 
   @include common.flex-column;
   gap: common.$spacing-small;
   padding: 0 common.$sidebar-padding common.$sidebar-padding;
 
+  &.mobile {
+    padding: 0;
+  }
+
   overflow-y: auto;
+
+  &.is-mobile-sidebar-collapsed {
+    overflow: hidden;
+  }
 }
 
 .divider {
@@ -65,6 +100,18 @@
   @include typescale.title-small;
   color: var(--md-sys-color-on-surface-high);
   margin: 0;
+}
+
+.concepts-container {
+  @include common.viewport-small {
+    padding: 0 common.$sidebar-padding common.$sidebar-padding;
+  }
+}
+
+.toc-container {
+  @include common.viewport-small {
+    padding: 0 common.$sidebar-padding;
+  }
 }
 
 .concepts-list {

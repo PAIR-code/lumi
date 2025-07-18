@@ -18,7 +18,7 @@
 import "@material/web/dialog/dialog";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, PropertyValues } from "lit";
+import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { makeObservable, observable, computed, action } from "mobx";
@@ -38,6 +38,12 @@ import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { MdDialog } from "@material/web/dialog/dialog";
 import { HistoryService } from "../../services/history.service";
 
+const MOBILE_TABS = {
+  ANSWERS: "Ask Lumi",
+  CONCEPTS: "Concepts",
+  TOC: "Table of Contents",
+};
+
 const TABS = {
   CONCEPTS: "Concepts",
   TOC: "Table of Contents",
@@ -56,6 +62,8 @@ export class LumiSidebar extends MobxLitElement {
   private readonly historyService = core.getService(HistoryService);
 
   @query("md-dialog") private readonly dialog!: MdDialog;
+  @query(".tabs-container.mobile")
+  private readonly tabsContainer!: HTMLDivElement;
 
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
@@ -135,14 +143,14 @@ export class LumiSidebar extends MobxLitElement {
     `;
   }
 
-  override render() {
+  private renderQuestions() {
     const classes = {
       "history-view-active": this.documentStateService.isHistoryShowAll,
       "lumi-questions-container": true,
     };
 
-    const lumiQuestionsHtml = html`
-      <div class=${classMap(classes)}>
+    return html`
+      <div class=${classMap(classes)} slot=${MOBILE_TABS.ANSWERS}>
         <lumi-questions
           .onTextSelection=${this.onTextSelection}
           .isHistoryShowAll=${this.documentStateService.isHistoryShowAll}
@@ -151,19 +159,17 @@ export class LumiSidebar extends MobxLitElement {
         ></lumi-questions>
       </div>
     `;
+  }
 
-    if (this.documentStateService.isHistoryShowAll) {
-      return html` ${lumiQuestionsHtml} `;
-    }
+  private renderConcepts() {
+    const concepts =
+      this.documentStateService.lumiDocManager?.lumiDoc.concepts || [];
 
     const toggleAllIcon = this.areAnyConceptsCollapsed
       ? "unfold_less"
       : "unfold_more";
 
-    const concepts =
-      this.documentStateService.lumiDocManager?.lumiDoc.concepts || [];
-
-    const conceptsHtml = html`
+    return html`
       <div class="concepts-container" slot=${TABS.CONCEPTS}>
         <div class="header">
           <div class="heading">Concepts (${concepts.length + 1})</div>
@@ -190,28 +196,103 @@ export class LumiSidebar extends MobxLitElement {
         </div>
       </div>
     `;
+  }
 
-    const tocHtml = html`
-      <table-of-contents
-        .sections=${this.documentStateService.lumiDocManager?.lumiDoc.sections}
-        .onSectionClicked=${(sectionId: string) => {
-          this.scrollContext?.scrollToSection(sectionId);
-        }}
-        slot=${TABS.TOC}
-      ></table-of-contents>
+  private renderToc() {
+    return html`
+      <div class="toc-container" slot=${TABS.TOC}>
+        <table-of-contents
+          .sections=${this.documentStateService.lumiDocManager?.lumiDoc
+            .sections}
+          .onSectionClicked=${(sectionId: string) => {
+            this.scrollContext?.scrollToSection(sectionId);
+          }}
+        ></table-of-contents>
+      </div>
     `;
+  }
+
+  private renderContentsDesktop() {
+    if (this.documentStateService.isHistoryShowAll) {
+      return html` <div class="contents-desktop">
+        ${this.renderQuestions()}
+      </div>`;
+    }
 
     return html`
-      ${this.renderHeader()} ${lumiQuestionsHtml}
-      <div class="divider"></div>
-      <div class="lumi-concepts-container">
-        <div class="header">
+      <div class="contents-desktop">
+        ${this.renderHeader()} ${this.renderQuestions()}
+        <div class="divider"></div>
+        <div class="tabs-container">
           <tab-component .tabs=${Object.values(TABS)}>
-            ${conceptsHtml} ${tocHtml}
+            ${this.renderConcepts()} ${this.renderToc()}
           </tab-component>
         </div>
+        ${this.renderHistoryDialog()}
       </div>
-      ${this.renderHistoryDialog()}
+    `;
+  }
+
+  private renderMobileCollapseButton() {
+    const icon = this.documentStateService.isMobileSidebarCollapsed
+      ? "keyboard_arrow_down"
+      : "keyboard_arrow_up";
+    return html`
+      <div
+        class="mobile-collapse-button"
+        @click=${() => {
+          this.tabsContainer.scrollTop = 0;
+          this.documentStateService.toggleMobileSidebarCollapsed();
+        }}
+      >
+        <pr-icon icon=${icon}></pr-icon>
+      </div>
+    `;
+  }
+
+  private renderMobileTabContents() {
+    if (this.documentStateService.isMobileSidebarCollapsed) return nothing;
+
+    return html`
+      ${this.renderQuestions()} ${this.renderConcepts()} ${this.renderToc()}
+    `;
+  }
+
+  private renderContentsMobile() {
+    if (this.documentStateService.isHistoryShowAll) {
+      return html`<div class="contents-mobile">${this.renderQuestions()}</div>`;
+    }
+
+    const tabsContainerClasses = classMap({
+      ["tabs-container"]: true,
+      ["mobile"]: true,
+      ["is-mobile-sidebar-collapsed"]:
+        this.documentStateService.isMobileSidebarCollapsed,
+    });
+
+    return html`
+      <div class="contents-mobile">
+        ${this.renderHeader()}
+        <div class=${tabsContainerClasses}>
+          <tab-component
+            @tab-selected=${() => {
+              if (this.documentStateService.isMobileSidebarCollapsed) {
+                this.documentStateService.toggleMobileSidebarCollapsed();
+              }
+            }}
+            .tabs=${Object.values(MOBILE_TABS)}
+          >
+            ${this.renderMobileTabContents()}
+          </tab-component>
+        </div>
+        ${this.renderMobileCollapseButton()} ${this.renderHistoryDialog()}
+      </div>
+    `;
+  }
+
+  override render() {
+    return html`
+      ${this.renderContentsDesktop()} ${this.renderContentsMobile()}
     `;
   }
 }

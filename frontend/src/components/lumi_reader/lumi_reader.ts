@@ -48,6 +48,7 @@ import {
   SelectionInfo,
 } from "../../shared/selection_utils";
 import { createTemporaryAnswer } from "../../shared/answer_utils";
+import { classMap } from "lit/directives/class-map.js";
 
 /**
  * The component responsible for fetching a single document and passing it
@@ -251,9 +252,15 @@ export class LumiReader extends MobxLitElement {
       return html`<div class="loading-message">Loading document...</div>`;
     }
 
+    const sidebarWrapperClasses = classMap({
+      ["sidebar-wrapper"]: true,
+      ["is-mobile-sidebar-collapsed"]:
+        this.documentStateService.isMobileSidebarCollapsed,
+    });
+
     return html`
       <div
-        class="sidebar-wrapper"
+        class=${sidebarWrapperClasses}
         @mousedown=${() => {
           this.floatingPanelService.hide();
         }}
