@@ -335,6 +335,25 @@
 @mixin lumi-doc-grid {
   display: grid;
   grid-template-columns: 0.5fr 2fr 0.5fr;
+
+  @include viewport-small {
+    grid-template-columns: 0.05fr 2fr 0.05fr;
+  }
+}
+
+// Fonts
+@mixin lumi-paper-text-font {
+  font-family: "Lora", "Georgia", "Serif";
+}
+
+@mixin lumi-paper-text {
+  @include typescale.body-large;
+  @include lumi-paper-text-font;
+
+  @include viewport-small {
+    @include typescale.body-medium;
+    @include lumi-paper-text-font;
+  }
 }
 
 $non-summary-grid-col: 1;
@@ -366,3 +385,5 @@ $panel-width: 240px;
 $document-content-horizontal-padding: $spacing-large;
 
 $sidebar-padding: $spacing-xl;
+
+$mobile-header-font-size: 24px;

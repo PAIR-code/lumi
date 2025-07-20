@@ -85,7 +85,7 @@
   .heading-text {
     @include common.flex-row-align-center;
     padding: 0 common.$document-content-horizontal-padding;
-    @include typescale.lumi-paper-text-font;
+    @include common.lumi-paper-text-font;
 
     margin: 0 0 0 common.$spacing-medium;
 
@@ -96,7 +96,6 @@
 }
 
 .section-container {
-  @include common.lumi-doc-grid;
   grid-gap: common.$spacing-medium;
 
   .hide-button-container {
@@ -105,10 +104,6 @@
 
     position: relative;
     left: 20px;
-  }
-
-  .heading-text {
-    grid-column: common.$content-grid-col;
   }
 
   .collapse-summaries,
@@ -122,5 +117,16 @@
 
   .subsection {
     grid-column: 2 / 4;
+  }
+
+  @include common.lumi-doc-grid;
+
+  .heading-text {
+    grid-column: common.$content-grid-col;
+
+    font-size: 28px;
+    @include common.viewport-small {
+      font-size: common.$mobile-header-font-size;
+    }
   }
 }

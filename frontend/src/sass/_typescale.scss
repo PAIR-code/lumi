@@ -262,12 +262,3 @@
   font-weight: var(--md-sys-typescale-label-small-font-weight);
   line-height: var(--md-sys-typescale-label-small-line-height);
 }
-
-@mixin lumi-paper-text-font {
-  font-family: "Lora", "Georgia", "Serif";
-}
-
-@mixin lumi-paper-text {
-  @include body-large;
-  @include lumi-paper-text-font;
-}

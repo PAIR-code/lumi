@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { html, nothing, TemplateResult } from "lit";
+import { html, LitElement, nothing, TemplateResult } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 import {
   ListContent,
@@ -30,8 +30,10 @@ import { HighlightManager } from "../../../shared/highlight_manager";
 import { HighlightSelection } from "../../../shared/selection_utils";
 
 import "../../lumi_span/lumi_span";
+import { CollapseManager } from "../../../shared/collapse_manager";
 
 export interface SectionRendererProperties {
+  parentComponent: LitElement;
   section: LumiSection;
   summaryMaps: LumiSummaryMaps | null;
   hoverFocusedSpanId: string | null;
@@ -41,6 +43,7 @@ export interface SectionRendererProperties {
   onSpanSummaryMouseEnter: (spanIds: string[]) => void;
   onSpanSummaryMouseLeave: () => void;
   highlightManager: HighlightManager;
+  collapseManager: CollapseManager;
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void;
 }
 
@@ -128,8 +131,7 @@ function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
 function renderSectionSummaryPanel(
   props: SectionRendererProperties
 ): TemplateResult {
-  const { summaryMaps, section, getImageUrl, highlightManager, onFocusOnSpan } =
-    props;
+  const { summaryMaps, section, getImageUrl, onFocusOnSpan } = props;
   const summary = summaryMaps?.sectionSummariesMap.get(section.id);
   const classesObject: { [key: string]: boolean } = {
     "section-summary": true,
@@ -200,6 +202,7 @@ function renderContents(props: SectionRendererProperties): TemplateResult {
     onSpanSummaryMouseEnter,
     onSpanSummaryMouseLeave,
     highlightManager,
+    collapseManager,
   } = props;
   if (isCollapsed) {
     return renderSectionSummaryPanel(props);
@@ -222,15 +225,16 @@ function renderContents(props: SectionRendererProperties): TemplateResult {
       });
 
       return renderContent({
+        parentComponent: props.parentComponent,
         content,
         getImageUrl,
         summary: summaryMaps?.contentSummariesMap.get(content.id) ?? null,
         spanSummaries,
         focusedSpanId: hoverFocusedSpanId,
-        displayContentSummaries: true,
         onSpanSummaryMouseEnter,
         onSpanSummaryMouseLeave,
         highlightManager,
+        collapseManager,
       });
     })}
     ${renderSubsections(props)}
@@ -247,6 +251,7 @@ function renderSubsections(
     onSpanSummaryMouseEnter,
     onSpanSummaryMouseLeave,
     onFocusOnSpan,
+    collapseManager,
   } = props;
   if (!section.subSections) return nothing;
 
@@ -255,6 +260,7 @@ function renderSubsections(
     (subSection) =>
       html`<div class="subsection">
         ${renderSection({
+          parentComponent: props.parentComponent,
           section: subSection,
           summaryMaps: summaryMaps,
           hoverFocusedSpanId: null,
@@ -264,6 +270,7 @@ function renderSubsections(
           onSpanSummaryMouseEnter,
           onSpanSummaryMouseLeave,
           highlightManager: props.highlightManager,
+          collapseManager,
           onFocusOnSpan,
         })}
       </div>`

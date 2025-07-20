@@ -25,18 +25,42 @@
 }
 
 .lumi-doc {
-  @include common.flex-row;
-  justify-content: center;
-
-  padding: 0 20px;
+  @include common.flex-column;
+  align-items: center;
 
   @include common.full-percentage;
+  overflow-y: auto;
 
   .lumi-doc-content {
     @include common.flex-column;
-    gap: 40px;
+    gap: 24px;
 
     max-width: 1000px;
+    height: 100%;
+  }
+
+  padding: 0 20px;
+
+  @include common.viewport-small {
+    padding: 0;
+  }
+}
+
+.collapse-toggle-container {
+  @include common.flex-row-align-center;
+  justify-content: center;
+
+  width: 100%;
+
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--md-sys-color-surface);
+
+  padding: 24px 0;
+
+  @include common.viewport-small {
+    padding: common.$spacing-medium 0;
   }
 }
 
@@ -51,20 +75,21 @@
   .title,
   .authors,
   .date {
-    @include typescale.lumi-paper-text-font;
+    @include common.lumi-paper-text-font;
+  }
+
+  .authors,
+  .date {
     padding: common.$spacing-large;
+  }
+
+  .title {
+    margin: 0;
+    padding: 0 common.$spacing-large;
   }
 
   .main-column {
     grid-column: common.$content-grid-col;
-  }
-
-  .collapse-toggle-container {
-    @include common.flex-row-align-center;
-    justify-content: end;
-    margin-right: common.$spacing-xl;
-
-    grid-column: common.$non-summary-grid-col;
   }
 }
 

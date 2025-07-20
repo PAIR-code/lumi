@@ -55,6 +55,7 @@ import "../multi_icon_toggle/multi_icon_toggle";
 import { styles } from "./lumi_doc.scss";
 import { styles as sectionRendererStyles } from "./renderers/section_renderer.scss";
 import { styles as contentRendererStyles } from "./renderers/content_renderer.scss";
+import { styles as contentSummaryRendererStyles } from "./renderers/content_summary_renderer.scss";
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 import { styles as abstractRendererStyles } from "./renderers/abstract_renderer.scss";
 import { styles as referencesRendererStyles } from "./renderers/references_renderer.scss";
@@ -75,6 +76,7 @@ export class LumiDocViz extends MobxLitElement {
     styles,
     sectionRendererStyles,
     contentRendererStyles,
+    contentSummaryRendererStyles,
     spanRendererStyles,
     abstractRendererStyles,
     referencesRendererStyles,
@@ -173,20 +175,20 @@ export class LumiDocViz extends MobxLitElement {
           });
         }}
       >
+        <div class="collapse-toggle-container">
+          <multi-icon-toggle
+            .selection=${this.collapseManager.getOverallCollapseState()}
+            @onCollapseAll=${() => {
+              this.collapseManager.setAllSectionsCollapsed(true);
+            }}
+            @onExpandAll=${() => {
+              this.collapseManager.setAllSectionsCollapsed(false);
+            }}
+          >
+          </multi-icon-toggle>
+        </div>
         <div class="lumi-doc-content">
           <div class="title-section">
-            <div class="collapse-toggle-container">
-            <multi-icon-toggle
-              .selection=${this.collapseManager.getOverallCollapseState()}
-              @onCollapseAll=${() => {
-                this.collapseManager.setAllSectionsCollapsed(true);
-              }}
-              @onExpandAll=${() => {
-                this.collapseManager.setAllSectionsCollapsed(false);
-              }}
-            >
-            </div>
-            </multi-icon-toggle>
             <h1 class="main-column title">
               ${this.lumiDoc.metadata?.title}
               <pr-icon-button
@@ -219,6 +221,7 @@ export class LumiDocViz extends MobxLitElement {
 
             return html`<div ${ref(sectionRef)}>
               ${renderSection({
+                parentComponent: this,
                 section,
                 summaryMaps: this.summaryMaps,
                 hoverFocusedSpanId: this.hoveredSpanId,
@@ -232,6 +235,7 @@ export class LumiDocViz extends MobxLitElement {
                 onSpanSummaryMouseLeave:
                   this.onSpanSummaryMouseLeave.bind(this),
                 highlightManager: this.highlightManager,
+                collapseManager: this.collapseManager,
                 onFocusOnSpan: this.onFocusOnSpan,
               })}
             </div>`;

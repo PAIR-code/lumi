@@ -15,19 +15,8 @@
  * limitations under the License.
  */
 
-@use "../../../sass/common";
-@use "../../../sass/typescale";
+import { VIEWPORT_SMALL_MAX_HEIGHT } from "./constants";
 
-.references-renderer-container {
-  @include common.lumi-doc-grid;
-}
-
-.references {
-  grid-column: common.$content-grid-col;
-
-  @include common.flex-column;
-  gap: common.$spacing-xl;
-  padding-bottom: 50px;
-
-  @include common.lumi-paper-text-font;
+export function isViewportSmall() {
+  return window.innerWidth < VIEWPORT_SMALL_MAX_HEIGHT;
 }

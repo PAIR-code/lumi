@@ -23,7 +23,7 @@ import { classMap } from "lit/directives/class-map.js";
 import { consume } from "@lit/context";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { LumiAnswer } from "../../shared/api";
-import { LumiSpan } from "../../shared/lumi_doc";
+import { LumiContent, LumiSpan } from "../../shared/lumi_doc";
 import { getReferencedSpanIdsFromContent } from "../../shared/lumi_doc_utils";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { LumiDocManager } from "../../shared/lumi_doc_manager";
@@ -42,6 +42,7 @@ import {
   SelectionInfo,
 } from "../../shared/selection_utils";
 import { HighlightManager } from "../../shared/highlight_manager";
+import { CollapseManager } from "../../shared/collapse_manager";
 
 /**
  * An answer item in the Lumi questions history.
@@ -54,6 +55,7 @@ export class AnswerItem extends MobxLitElement {
   @property({ type: Boolean }) isLoading = false;
   @property({ type: Object }) lumiDocManager?: LumiDocManager;
   @property({ type: Object }) highlightManager?: HighlightManager;
+  @property({ type: Object }) collapseManager?: CollapseManager;
   @property()
   onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
   @property()
@@ -181,14 +183,15 @@ export class AnswerItem extends MobxLitElement {
 
     return html`
       <div class="answer">
-        ${this.answer.responseContent.map((content) => {
+        ${this.answer.responseContent.map((content: LumiContent) => {
           return renderContent({
+            parentComponent: this,
             content,
             summary: null,
             spanSummaries: new Map(),
             focusedSpanId: null,
-            displayContentSummaries: false,
             highlightManager: this.highlightManager!,
+            collapseManager: this.collapseManager!,
             onSpanSummaryMouseEnter: () => {},
             onSpanSummaryMouseLeave: () => {},
             onSpanReferenceClicked:
