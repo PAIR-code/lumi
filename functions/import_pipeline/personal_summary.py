@@ -39,7 +39,7 @@ def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData]) -> LumiAnsw
 
     # Parse the markdown response to create LumiContent objects.
     response_sections = import_pipeline.convert_to_lumi_sections(
-        html_response, file_id="personal-summary", placeholder_map={}
+        html_response, placeholder_map={}
     )
 
     response_content: List[LumiContent] = []
@@ -48,9 +48,13 @@ def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData]) -> LumiAnsw
 
     # If parsing fails or returns no content, create a single raw span as a fallback.
     if not response_content:
-        fallback_span = LumiSpan(id=get_unique_id(), text=markdown_response, inner_tags=[])
+        fallback_span = LumiSpan(
+            id=get_unique_id(), text=markdown_response, inner_tags=[]
+        )
         fallback_text_content = TextContent(tag_name="p", spans=[fallback_span])
-        fallback_content = LumiContent(id=get_unique_id(), text_content=fallback_text_content)
+        fallback_content = LumiContent(
+            id=get_unique_id(), text_content=fallback_text_content
+        )
         response_content = [fallback_content]
 
     request = LumiAnswerRequest(query="Personalized Summary")
