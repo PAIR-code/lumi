@@ -45,6 +45,7 @@ export interface SectionRendererProperties {
   highlightManager: HighlightManager;
   collapseManager: CollapseManager;
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void;
+  isSubsection: boolean;
 }
 
 function renderHeading(section: LumiSection): TemplateResult | typeof nothing {
@@ -272,6 +273,7 @@ function renderSubsections(
           highlightManager: props.highlightManager,
           collapseManager,
           onFocusOnSpan,
+          isSubsection: true,
         })}
       </div>`
   )}`;
@@ -301,6 +303,7 @@ function renderHideButton(
   `;
 }
 
+// TODO(ellenj): Consider re-adding section summaries to the gutter, otherwise remove this.
 function renderSectionSummary(props: SectionRendererProperties) {
   if (props.isCollapsed) {
     return nothing;
@@ -319,8 +322,13 @@ export function renderSection(
     return nothing;
   }
 
+  const sectionContainerClasses = {
+    ["section-container"]: true,
+    ["is-subsection"]: props.isSubsection,
+  };
+
   return html`<div class="section-renderer-container">
-    <div class="section-container">
+    <div class=${classMap(sectionContainerClasses)}>
       <div class="heading-row">
         <div class="hide-button-container">
           ${renderHideButton(isCollapsed, onCollapseChange)}

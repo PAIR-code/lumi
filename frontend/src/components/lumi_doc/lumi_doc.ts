@@ -237,6 +237,7 @@ export class LumiDocViz extends MobxLitElement {
                 highlightManager: this.highlightManager,
                 collapseManager: this.collapseManager,
                 onFocusOnSpan: this.onFocusOnSpan,
+                isSubsection: false,
               })}
             </div>`;
           })}

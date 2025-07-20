@@ -121,6 +121,10 @@
 
   @include common.lumi-doc-grid;
 
+  &.is-subsection {
+    @include common.flex-column;
+  }
+
   .heading-text {
     grid-column: common.$content-grid-col;
 
