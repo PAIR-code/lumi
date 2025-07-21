@@ -193,7 +193,9 @@ function getSpansFromListContent(content: ListContent) {
   return spans;
 }
 
-function renderContents(props: SectionRendererProperties): TemplateResult {
+function renderContents(
+  props: SectionRendererProperties
+): TemplateResult | typeof nothing {
   const {
     section,
     isCollapsed,
@@ -265,8 +267,10 @@ function renderSubsections(
           section: subSection,
           summaryMaps: summaryMaps,
           hoverFocusedSpanId: null,
-          isCollapsed: false,
-          onCollapseChange: () => {},
+          isCollapsed: props.collapseManager.getCollapseState(subSection.id),
+          onCollapseChange: (isCollapsed: boolean) => {
+            props.collapseManager.toggleSection(subSection.id, isCollapsed);
+          },
           getImageUrl,
           onSpanSummaryMouseEnter,
           onSpanSummaryMouseLeave,
