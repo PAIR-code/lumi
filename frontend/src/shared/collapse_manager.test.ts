@@ -38,6 +38,7 @@ const mockLumiDoc: LumiDoc = {
           imageContent: null,
           htmlFigureContent: null,
           listContent: null,
+          figureContent: null,
         },
       ],
       subSections: [
@@ -54,6 +55,7 @@ const mockLumiDoc: LumiDoc = {
               imageContent: null,
               htmlFigureContent: null,
               listContent: null,
+              figureContent: null,
             },
           ],
         },

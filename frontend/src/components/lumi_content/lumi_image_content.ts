@@ -20,59 +20,127 @@ import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 
-import { ImageContent } from "../../shared/lumi_doc";
+import { FigureContent, ImageContent, LumiSpan } from "../../shared/lumi_doc";
 import "../lumi_span/lumi_span";
 
 import { styles } from "./lumi_image_content.scss";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
+import { makeObservable, observable } from "mobx";
+
+function isFigureContent(
+  content: ImageContent | FigureContent
+): content is FigureContent {
+  return "images" in content;
+}
 
 /**
  * An image visualization in the Lumi visualization.
+ * Can render a single image or a group of subfigures.
  */
 @customElement("lumi-image-content")
 export class LumiImageContent extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  @property({ type: Object }) imageContent!: ImageContent;
+  @property({ type: Object }) content!: ImageContent | FigureContent;
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
 
-  @state() private imageUrl: string | null = null;
+  @observable.shallow private imageUrls = new Map<string, string>();
+  @state() private isLoading = true;
 
-  private async fetchImageUrl() {
-    if (this.getImageUrl && this.imageContent.storagePath) {
-      this.imageUrl = await this.getImageUrl(this.imageContent.storagePath);
-    } else {
-      this.imageUrl = null;
+  constructor() {
+    super();
+    makeObservable(this);
+  }
+
+  private async fetchImageUrls() {
+    if (!this.getImageUrl || !this.content) {
+      this.isLoading = false;
+      return;
     }
+
+    this.isLoading = true;
+
+    this.imageUrls.clear();
+    const imageContents = isFigureContent(this.content)
+      ? this.content.images
+      : [this.content];
+
+    await Promise.all(
+      imageContents.map(async (image) => {
+        if (image.storagePath) {
+          const url = await this.getImageUrl!(image.storagePath);
+          this.imageUrls.set(image.storagePath, url);
+        }
+      })
+    );
+
+    this.isLoading = false;
   }
 
   override updated(changedProperties: Map<string, unknown>) {
     if (
-      changedProperties.has("imageContent") ||
+      changedProperties.has("content") ||
       changedProperties.has("getImageUrl")
     ) {
-      this.fetchImageUrl();
+      this.fetchImageUrls();
     }
   }
 
-  private renderCaption(): TemplateResult | typeof nothing {
-    if (!this.imageContent.caption) {
+  private renderCaption(
+    caption?: LumiSpan | null
+  ): TemplateResult | typeof nothing {
+    if (!caption) {
       return nothing;
     }
     return html`
       <figcaption>
-        <lumi-span .span=${this.imageContent.caption}
-          >${renderLumiSpan({ span: this.imageContent.caption })}</lumi-span
+        <lumi-span .span=${caption}
+          >${renderLumiSpan({ span: caption })}</lumi-span
         >
       </figcaption>
     `;
   }
 
+  private renderSingleImage(imageContent: ImageContent): TemplateResult {
+    const imageUrl = imageContent.storagePath
+      ? this.imageUrls.get(imageContent.storagePath)
+      : undefined;
+
+    return html`
+      <img src=${ifDefined(imageUrl)} alt=${ifDefined(imageContent.altText)} />
+      ${this.renderCaption(imageContent.caption)}
+    `;
+  }
+
   override render() {
-    return html` <div class="image-container">
-      <img src=${ifDefined(this.imageUrl ?? undefined)} />
-      ${this.renderCaption()}
-    </div>`;
+    if (this.isLoading) {
+      return html`<div>Loading image...</div>`;
+    }
+
+    if (isFigureContent(this.content)) {
+      const figureContent = this.content;
+      return html`
+        <figure class="figure-group">
+          <div class="subfigures-container">
+            ${figureContent.images.map(
+              (image) => html`
+                <figure class="subfigure">
+                  ${this.renderSingleImage(image)}
+                </figure>
+              `
+            )}
+          </div>
+          ${this.renderCaption(figureContent.caption)}
+        </figure>
+      `;
+    } else {
+      const imageContent = this.content;
+      return html`
+        <figure class="single-image">
+          ${this.renderSingleImage(imageContent)}
+        </figure>
+      `;
+    }
   }
 }
 

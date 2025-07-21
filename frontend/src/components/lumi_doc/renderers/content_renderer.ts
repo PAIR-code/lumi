@@ -151,7 +151,13 @@ function renderMainContent(props: ContentRendererProperties) {
   }
   if (content.imageContent) {
     return html`<lumi-image-content
-      .imageContent=${content.imageContent}
+      .content=${content.imageContent}
+      .getImageUrl=${getImageUrl}
+    ></lumi-image-content>`;
+  }
+  if (content.figureContent) {
+    return html`<lumi-image-content
+      .content=${content.figureContent}
       .getImageUrl=${getImageUrl}
     ></lumi-image-content>`;
   }

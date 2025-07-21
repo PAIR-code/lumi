@@ -48,6 +48,7 @@ from shared.lumi_doc import (
     Position,
     ImageContent,
     HtmlFigureContent,
+    FigureContent,
 )
 from shared.types import ImageMetadata, ArxivMetadata
 from shared.utils import get_unique_id
@@ -155,6 +156,8 @@ def _collect_image_contents(doc: LumiDoc) -> List[ImageContent]:
         for content in contents:
             if content.image_content:
                 image_contents.append(content.image_content)
+            if content.figure_content:
+                image_contents.extend(content.figure_content.images)
 
     if doc.abstract:
         collect_from_contents(doc.abstract.contents)
@@ -394,53 +397,77 @@ def preprocess_and_replace_figures(
 ) -> str:
     """Finds all figure blocks, replaces them with placeholders, and stores them in a map."""
 
-    def image_replacer(match: re.Match) -> str:
-        id = get_unique_id()
-        placeholder_id = f"{PLACEHOLDER_PREFIX}{id}{PLACEHOLDER_SUFFIX}"
-        image_path = match.group("image_path")
-        caption_text = (match.group("image_caption_text") or "").strip()
-        caption_span = None
-        if caption_text:
-            cleaned_caption_text, caption_inner_tags = (
-                parse_text_and_extract_inner_tags(caption_text)
-            )
-            caption_spans = create_lumi_spans(
-                cleaned_caption_text, caption_inner_tags, skip_tokenize=True
-            )
-            if caption_spans:
-                caption_span = caption_spans[0]
+    def _get_placeholder_id(uid: str):
+        return f"{PLACEHOLDER_PREFIX}{uid}{PLACEHOLDER_SUFFIX}"
+
+    def _create_caption_span(caption_text: str) -> Optional[LumiSpan]:
+        """Helper to create a LumiSpan for a caption."""
+        if not caption_text:
+            return None
+        cleaned_caption_text, caption_inner_tags = parse_text_and_extract_inner_tags(
+            caption_text
+        )
+        caption_spans = create_lumi_spans(
+            cleaned_caption_text, caption_inner_tags, skip_tokenize=True
+        )
+        return caption_spans[0] if caption_spans else None
+
+    def _create_image_content(image_path: str, caption_text: str):
+        caption_span = _create_caption_span(caption_text)
 
         flattened_filename = image_path.replace("/", STORAGE_PATH_DELIMETER)
         storage_path = f"{file_id}/images/{flattened_filename}"
 
+        return ImageContent(
+            latex_path=image_path,
+            storage_path=storage_path,
+            alt_text="",
+            caption=caption_span,
+            width=0.0,
+            height=0.0,
+        )
+
+    def image_replacer(match: re.Match) -> str:
+        id = get_unique_id()
+        placeholder_id = _get_placeholder_id(id)
+        image_path = match.group("image_path")
+        caption_text = (match.group("image_caption_text") or "").strip()
+
+        placeholder_map[placeholder_id] = LumiContent(
+            id=id, image_content=_create_image_content(image_path, caption_text)
+        )
+        return placeholder_id
+
+    def figure_replacer(match: re.Match) -> str:
+        """Handles [[l-fig-start...]] blocks."""
+        id = get_unique_id()
+        placeholder_id = _get_placeholder_id(id)
+
+        figure_content_raw = match.group("figure_content")
+        main_caption_text = (match.group("main_caption_text") or "").strip()
+        main_caption_span = _create_caption_span(main_caption_text)
+
+        # Find all image tags within the figure block
+        sub_images: List[ImageContent] = []
+        for img_match in import_tags.IMAGE_AND_CAPTION_PATTERN.finditer(
+            figure_content_raw
+        ):
+            image_path = img_match.group("image_path")
+            caption_text = (img_match.group("image_caption_text") or "").strip()
+            sub_images.append(_create_image_content(image_path, caption_text))
+
         placeholder_map[placeholder_id] = LumiContent(
             id=id,
-            image_content=ImageContent(
-                latex_path=image_path,
-                storage_path=storage_path,
-                alt_text="",
-                caption=caption_span,
-                width=0.0,
-                height=0.0,
-            ),
+            figure_content=FigureContent(images=sub_images, caption=main_caption_span),
         )
         return placeholder_id
 
     def html_figure_replacer(match: re.Match) -> str:
         id = get_unique_id()
-        placeholder_id = f"{PLACEHOLDER_PREFIX}{id}{PLACEHOLDER_SUFFIX}"
+        placeholder_id = _get_placeholder_id(id)
         html_content = match.group("html_content")
         caption_text = (match.group("html_caption_text") or "").strip()
-        caption_span = None
-        if caption_text:
-            cleaned_caption_text, caption_inner_tags = (
-                parse_text_and_extract_inner_tags(caption_text)
-            )
-            caption_spans = create_lumi_spans(
-                cleaned_caption_text, caption_inner_tags, skip_tokenize=True
-            )
-            if caption_spans:
-                caption_span = caption_spans[0]
+        caption_span = _create_caption_span(caption_text)
 
         placeholder_map[placeholder_id] = LumiContent(
             id=id,
@@ -450,10 +477,12 @@ def preprocess_and_replace_figures(
         )
         return placeholder_id
 
-    # Process HTML figures first, then images. This avoids issues if one pattern could match part of another.
-    # The order here is important.
+    # The order here is important. Process complex containers (figures) before simple ones (images).
+    processed_html = import_tags.FIGURE_PATTERN.sub(
+        figure_replacer, raw_markdown_string
+    )
     processed_html = import_tags.HTML_FIGURE_PATTERN.sub(
-        html_figure_replacer, raw_markdown_string
+        html_figure_replacer, processed_html
     )
     processed_html = import_tags.IMAGE_AND_CAPTION_PATTERN.sub(
         image_replacer, processed_html
