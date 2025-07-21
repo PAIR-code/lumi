@@ -82,10 +82,17 @@ def _extract_spans_from_list(list_content) -> List[LumiSpan]:
 def get_all_spans_from_doc(document: LumiDoc) -> List[LumiSpan]:
     """Extracts all LumiSpan objects from a LumiDoc by iterating through its contents."""
     all_spans = []
-    for section in document.sections:
-        for content in section.contents:
-            if content.text_content:
-                all_spans.extend(content.text_content.spans)
-            elif content.list_content:
-                all_spans.extend(_extract_spans_from_list(content.list_content))
+
+    def _extract_spans_from_sections(sections):
+        for section in sections:
+            for content in section.contents:
+                if content.text_content:
+                    all_spans.extend(content.text_content.spans)
+                elif content.list_content:
+                    all_spans.extend(_extract_spans_from_list(content.list_content))
+            if section.sub_sections:
+                _extract_spans_from_sections(section.sub_sections)
+
+    _extract_spans_from_sections(document.sections)
+
     return all_spans
