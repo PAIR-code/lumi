@@ -29,6 +29,8 @@ from import_pipeline.summaries import (
     _generate_section_summaries_prompt,
     _get_generate_content_summaries_prompt,
     _select_abstract_excerpt_prompt,
+    _get_all_sections_with_text,
+    _get_all_contents_with_text,
     AbstractExcerptSchema,
     LabelSchema,
 )
@@ -93,14 +95,8 @@ class SummariesTest(unittest.TestCase):
                 LabelSchema(id="sec2", label="Summary for Section Two")
             ]
 
-            section_strings = []
-            for section in self.mock_document.sections:
-                formatted_section = "{{ id: {id}, text: {text}}}".format(
-                    id=section.id,
-                    text=_get_text_from_section(section),
-                )
-                section_strings.append(formatted_section)
-            expected_prompt = _generate_section_summaries_prompt(section_strings)
+            section_data = _get_all_sections_with_text(self.mock_document)
+            expected_prompt = _generate_section_summaries_prompt(section_data)
 
             options = FetchLumiSummariesRequestOptions(include_section_summaries=True)
             summaries = generate_lumi_summaries(self.mock_document, options)
@@ -131,16 +127,8 @@ class SummariesTest(unittest.TestCase):
             ]
 
             # Manually construct the expected prompt for content summaries
-            content_strings = []
-            for section in self.mock_document.sections:
-                for content in section.contents:
-                    if content.text_content or content.list_content:
-                        formatted_content = "{{ id: {id}, text: {text}}}".format(
-                            id=content.id,
-                            text=_get_text_from_content(content),
-                        )
-                        content_strings.append(formatted_content)
-            expected_prompt = _get_generate_content_summaries_prompt(content_strings)
+            content_data = _get_all_contents_with_text(self.mock_document)
+            expected_prompt = _get_generate_content_summaries_prompt(content_data)
 
             options = FetchLumiSummariesRequestOptions(include_content_summaries=True)
             summaries = generate_lumi_summaries(self.mock_document, options)
