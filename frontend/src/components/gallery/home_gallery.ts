@@ -34,6 +34,7 @@ import { SnackbarService } from "../../services/snackbar.service";
 import { LumiDoc, LoadingStatus, ArxivMetadata } from "../../shared/lumi_doc";
 import { GalleryItem } from "../../shared/types";
 import { requestArxivDocImportCallable } from "../../shared/callables";
+import { extractArxivId } from "../../shared/string_utils";
 
 import { styles } from "./home_gallery.scss";
 import { makeObservable, observable, ObservableMap } from "mobx";
@@ -100,10 +101,10 @@ export class HomeGallery extends MobxLitElement {
 
   private async loadDocument() {
     // Extract arXiv ID from potential paper link
-    const paperId = this.paperInput.split('/').pop();
+    const paperId = extractArxivId(this.paperInput);
     if (!paperId) {
-      // Paper ID is only empty if input was empty
-      this.snackbarService.show(`Error: No URL to parse`);
+      // Paper ID is only empty if input was empty or invalid
+      this.snackbarService.show(`Error: Invalid arXiv URL or ID`);
       return;
     }
 
