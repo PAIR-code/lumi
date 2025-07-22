@@ -102,6 +102,7 @@ export interface TextContent {
 
 export interface ImageContent {
   storagePath: string;
+  latexPath: string;
   caption: LumiSpan | null | undefined;
   altText: string;
   width: number;

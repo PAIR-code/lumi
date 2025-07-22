@@ -16,12 +16,14 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
+import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import DOMPurify from "dompurify";
 
 import { HtmlFigureContent } from "../../shared/lumi_doc";
+
+import { renderKatexInHtml } from "./lumi_html_figure_utils";
 
 import { styles } from "./lumi_html_figure_content.scss";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
@@ -35,6 +37,17 @@ export class LumiHtmlFigureContent extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   @property({ type: Object }) content!: HtmlFigureContent;
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+
+    // After the component has rendered, find and replace LaTeX expressions.
+    if (changedProperties.has("content")) {
+      const container = this.shadowRoot?.querySelector(".html-container");
+      if (!container) return;
+      renderKatexInHtml(container);
+    }
+  }
 
   private renderSanitizedHtml() {
     if (!this.content?.html) {

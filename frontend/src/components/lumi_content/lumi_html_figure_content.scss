@@ -58,3 +58,9 @@ figcaption {
   font-style: italic;
   color: var(--md-sys-color-on-surface-variant);
 }
+
+// Katex outputs both katex-mathml and katex-html tags.
+// We only show the katex-mathml and hide katex-html.
+.katex-html {
+  display: none;
+}
