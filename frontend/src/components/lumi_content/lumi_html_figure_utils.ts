@@ -16,8 +16,39 @@
  */
 import katex from "katex";
 
-export function renderKatexInHtml(container: Element) {
-  // Use a TreeWalker to efficiently find all text nodes.
+export const PLACEHOLDER_PREFIX = "__LATEX_PLACEHOLDER_";
+
+// Captures content (.*?) between $ and $
+const KATEK_REGEX = /\$(.*?)\$/g;
+
+/**
+ * Pre-processes an HTML string to find LaTeX expressions, replace them with
+ * placeholders, and return the modified string along with the extracted LaTeX.
+ * This prevents the browser from misinterpreting HTML tags inside LaTeX.
+ * @param html The raw HTML string.
+ * @returns An object containing the processed HTML and an array of LaTeX strings.
+ */
+export function preprocessHtmlForKatex(html: string): {
+  html: string;
+  latex: string[];
+} {
+  const latex: string[] = [];
+  let i = 0;
+  const processedHtml = html.replace(KATEK_REGEX, (match, expression) => {
+    latex.push(expression);
+    return `${PLACEHOLDER_PREFIX}${i++}__`;
+  });
+
+  return { html: processedHtml, latex };
+}
+
+/**
+ * Finds placeholders in a container element and renders the corresponding
+ * LaTeX expressions into them.
+ * @param container The element to search within.
+ * @param latex An array of LaTeX strings corresponding to the placeholders.
+ */
+export function renderKatexInHtml(container: Element, latex: string[]) {
   const walker = document.createTreeWalker(
     container,
     NodeFilter.SHOW_TEXT,
@@ -25,44 +56,54 @@ export function renderKatexInHtml(container: Element) {
   );
   let node;
   const nodesToProcess: Node[] = [];
-  // Collect all text nodes first, as modifying the DOM while iterating can be problematic.
   while ((node = walker.nextNode())) {
     nodesToProcess.push(node);
   }
 
-  // Regex to find content between $...$
-  const katexRegex = /\$(.*?)\$/g;
+  // Matches prefix_{index}__, capturing the index.
+  const placeholderRegex = new RegExp(
+    `${PLACEHOLDER_PREFIX}(\\d+)__`,
+    /* find all matches */ "g"
+  );
 
   nodesToProcess.forEach((textNode) => {
-    if (textNode.textContent && textNode.textContent.includes("$")) {
+    if (
+      textNode.textContent &&
+      textNode.textContent.includes(PLACEHOLDER_PREFIX)
+    ) {
       const parent = textNode.parentNode;
       if (!parent) return;
 
-      const fragments = textNode.textContent.split(katexRegex);
-      // If there are no matches, fragments will have 1 element.
-      // For each match, it will add two more elements (the latex, and the text after).
-      // e.g., "text $$a$$ text" -> ["text ", "a", " text"]
+      const fragments = textNode.textContent.split(placeholderRegex);
       if (fragments.length > 1) {
         const newNodes = document.createDocumentFragment();
-        fragments.forEach((fragment, i) => {
+        // The split results in an array like:
+        // ["text before", "0", "text between", "1", "text after"]
+        for (let i = 0; i < fragments.length; i++) {
+          const fragment = fragments[i];
           if (i % 2 === 1) {
-            const span = document.createElement("span");
-            try {
-              katex.render(fragment, span, {
-                throwOnError: false,
-                displayMode: false,
-              });
-              newNodes.appendChild(span);
-            } catch (e) {
-              console.error("KaTeX rendering failed:", e);
-              newNodes.appendChild(document.createTextNode(`$${fragment}$`));
+            // This is a placeholder index (e.g., "0", "1").
+            const latexIndex = parseInt(fragment, 10);
+            const expression = latex[latexIndex];
+            if (expression !== undefined) {
+              const span = document.createElement("span");
+              try {
+                katex.render(expression, span, {
+                  throwOnError: false,
+                  displayMode: false,
+                });
+                newNodes.appendChild(span);
+              } catch (e) {
+                console.error("KaTeX rendering failed:", e);
+                // Revert to expression text on failure.
+                newNodes.appendChild(document.createTextNode(expression));
+              }
             }
           } else if (fragment) {
             // This is regular text.
             newNodes.appendChild(document.createTextNode(fragment));
           }
-        });
-        // Replace the original text node with the new set of nodes.
+        }
         parent.replaceChild(newNodes, textNode);
       }
     }

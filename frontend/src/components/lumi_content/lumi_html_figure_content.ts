@@ -23,7 +23,10 @@ import DOMPurify from "dompurify";
 
 import { HtmlFigureContent } from "../../shared/lumi_doc";
 
-import { renderKatexInHtml } from "./lumi_html_figure_utils";
+import {
+  preprocessHtmlForKatex,
+  renderKatexInHtml,
+} from "./lumi_html_figure_utils";
 
 import { styles } from "./lumi_html_figure_content.scss";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
@@ -37,24 +40,31 @@ export class LumiHtmlFigureContent extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   @property({ type: Object }) content!: HtmlFigureContent;
+  private katexExpressions: string[] = [];
 
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
 
-    // After the component has rendered, find and replace LaTeX expressions.
-    if (changedProperties.has("content")) {
+    // After the component has rendered, find and replace LaTeX placeholders.
+    if (changedProperties.has("content") && this.katexExpressions.length > 0) {
       const container = this.shadowRoot?.querySelector(".html-container");
       if (!container) return;
-      renderKatexInHtml(container);
+      renderKatexInHtml(container, this.katexExpressions);
     }
   }
 
-  private renderSanitizedHtml() {
+  private preprocessAndRenderSanitizedHtml() {
     if (!this.content?.html) {
+      this.katexExpressions = [];
       return nothing;
     }
+    // Pre-process the HTML to replace LaTeX with placeholders.
+    const { html: processedHtml, latex: katexExpressions } =
+      preprocessHtmlForKatex(this.content.html);
+    this.katexExpressions = katexExpressions;
+
     // Sanitize the HTML to prevent XSS attacks.
-    const sanitizedHtml = DOMPurify.sanitize(this.content.html);
+    const sanitizedHtml = DOMPurify.sanitize(processedHtml);
     return unsafeHTML(sanitizedHtml);
   }
 
@@ -75,7 +85,9 @@ export class LumiHtmlFigureContent extends MobxLitElement {
   override render() {
     return html`
       <figure class="figure-content">
-        <div class="html-container">${this.renderSanitizedHtml()}</div>
+        <div class="html-container">
+          ${this.preprocessAndRenderSanitizedHtml()}
+        </div>
         ${this.renderCaption()}
       </figure>
     `;
