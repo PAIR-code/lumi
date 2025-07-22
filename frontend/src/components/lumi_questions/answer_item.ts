@@ -128,7 +128,10 @@ export class AnswerItem extends MobxLitElement {
           ${this.referencedSpans.map((span, i) => {
             // Make a copy of the span and use a separate unique id.
             const copiedSpan = { ...span, id: `${span.id}-ref` };
-            const spanContent = renderLumiSpan({ span: copiedSpan });
+            const spanContent = renderLumiSpan({
+              span: copiedSpan,
+              references: this.lumiDocManager?.lumiDoc.references,
+            });
             return html`
               <div
                 class="reference-item"
@@ -187,6 +190,7 @@ export class AnswerItem extends MobxLitElement {
           return renderContent({
             parentComponent: this,
             content,
+            references: this.lumiDocManager?.lumiDoc.references,
             summary: null,
             spanSummaries: new Map(),
             focusedSpanId: null,

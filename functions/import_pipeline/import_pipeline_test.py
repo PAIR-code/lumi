@@ -584,7 +584,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.CONCEPT,
                                                     metadata={"id": "C1"},
                                                     position=Position(
-                                                        start_index=10, end_index=21
+                                                        start_index=10, end_index=22
                                                     ),
                                                     children=[],
                                                 )
@@ -600,7 +600,7 @@ class ImportPipelineTest(unittest.TestCase):
             ),
             (
                 "paragraph_with_reference_tag",
-                f"<p>Sentence ends with a reference.{import_tags.L_CITATION_START_PREFIX}Author2023Title{import_tags.L_CITATION_END}End{import_tags.L_CITATION_START_PREFIX}Author2023Title{import_tags.L_CITATION_END}</p>",
+                f"<p>Sentence ends with a reference.{import_tags.L_CITATION_START_PREFIX}Author2023Title{import_tags.L_CITATION_END}</p>",
                 [
                     LumiSection(
                         id="123",
@@ -614,13 +614,13 @@ class ImportPipelineTest(unittest.TestCase):
                                     spans=[
                                         LumiSpan(
                                             id="123",
-                                            text="Sentence ends with a reference.End",
+                                            text="Sentence ends with a reference.",
                                             inner_tags=[
                                                 InnerTag(
                                                     tag_name=InnerTagName.REFERENCE,
                                                     metadata={"id": "Author2023Title"},
                                                     position=Position(
-                                                        start_index=31, end_index=33
+                                                        start_index=31, end_index=31
                                                     ),
                                                     children=[],
                                                 )
@@ -656,7 +656,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.UNDERLINE,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=8, end_index=17
+                                                        start_index=8, end_index=18
                                                     ),
                                                     children=[],
                                                 )
@@ -692,7 +692,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.MATH,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=16, end_index=38
+                                                        start_index=16, end_index=39
                                                     ),
                                                     children=[],
                                                 )
@@ -730,7 +730,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                         "href": "https://google.com"
                                                     },
                                                     position=Position(
-                                                        start_index=10, end_index=13
+                                                        start_index=10, end_index=14
                                                     ),
                                                     children=[],
                                                 )
@@ -766,7 +766,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.CODE,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=8, end_index=18
+                                                        start_index=8, end_index=19
                                                     ),
                                                     children=[],
                                                 )
@@ -802,7 +802,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.UNDERLINE,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=1, end_index=1
+                                                        start_index=1, end_index=2
                                                     ),
                                                     children=[],
                                                 ),
@@ -810,7 +810,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.MATH,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=3, end_index=3
+                                                        start_index=3, end_index=4
                                                     ),
                                                     children=[],
                                                 ),
@@ -818,7 +818,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=5, end_index=5
+                                                        start_index=5, end_index=6
                                                     ),
                                                     children=[],
                                                 ),
@@ -826,7 +826,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.CONCEPT,
                                                     metadata={"id": "C3"},
                                                     position=Position(
-                                                        start_index=7, end_index=7
+                                                        start_index=7, end_index=8
                                                     ),
                                                     children=[],
                                                 ),
@@ -834,7 +834,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.ITALIC,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=9, end_index=9
+                                                        start_index=9, end_index=10
                                                     ),
                                                     children=[],
                                                 ),
@@ -850,7 +850,7 @@ class ImportPipelineTest(unittest.TestCase):
             ),
             (
                 "multiple_reference_tags_in_paragraph",
-                f"<p>Ref {import_tags.L_CITATION_START_PREFIX}id-4{import_tags.L_CITATION_END}One{import_tags.L_CITATION_START_PREFIX}id-4{import_tags.L_CITATION_END} and ref {import_tags.L_CITATION_START_PREFIX}id-5{import_tags.L_CITATION_END}Two{import_tags.L_CITATION_START_PREFIX}id-5{import_tags.L_CITATION_END}.</p>",
+                f"<p>Ref{import_tags.L_CITATION_START_PREFIX}id-4{import_tags.L_CITATION_END} and ref{import_tags.L_CITATION_START_PREFIX}id-5{import_tags.L_CITATION_END}.</p>",
                 [
                     LumiSection(
                         id="123",
@@ -864,13 +864,13 @@ class ImportPipelineTest(unittest.TestCase):
                                     spans=[
                                         LumiSpan(
                                             id="123",
-                                            text="Ref One and ref Two.",
+                                            text="Ref and ref.",
                                             inner_tags=[
                                                 InnerTag(
                                                     tag_name=InnerTagName.REFERENCE,
                                                     metadata={"id": "id-4"},
                                                     position=Position(
-                                                        start_index=4, end_index=6
+                                                        start_index=3, end_index=3
                                                     ),
                                                     children=[],
                                                 ),
@@ -878,46 +878,10 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.REFERENCE,
                                                     metadata={"id": "id-5"},
                                                     position=Position(
-                                                        start_index=16, end_index=18
+                                                        start_index=11, end_index=11
                                                     ),
                                                     children=[],
                                                 ),
-                                            ],
-                                        )
-                                    ],
-                                ),
-                            )
-                        ],
-                    ),
-                ],
-                {},
-            ),
-            (
-                "only_reference_tag_in_paragraph",
-                f"<p>{import_tags.L_CITATION_START_PREFIX}id-7{import_tags.L_CITATION_END}OnlyRef{import_tags.L_CITATION_START_PREFIX}id-7{import_tags.L_CITATION_END}</p>",
-                [
-                    LumiSection(
-                        id="123",
-                        sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
-                        contents=[
-                            LumiContent(
-                                id="123",
-                                text_content=TextContent(
-                                    tag_name="p",
-                                    spans=[
-                                        LumiSpan(
-                                            id="123",
-                                            text="OnlyRef",
-                                            inner_tags=[
-                                                InnerTag(
-                                                    tag_name=InnerTagName.REFERENCE,
-                                                    metadata={"id": "id-7"},
-                                                    position=Position(
-                                                        start_index=0, end_index=6
-                                                    ),
-                                                    children=[],
-                                                )
                                             ],
                                         )
                                     ],
@@ -950,7 +914,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.SPAN_REFERENCE,
                                                     metadata={"id": "s1"},
                                                     position=Position(
-                                                        start_index=0, end_index=11
+                                                        start_index=0, end_index=12
                                                     ),
                                                     children=[],
                                                 )
@@ -987,7 +951,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=13, end_index=20
+                                                        start_index=13, end_index=21
                                                     ),
                                                     children=[],
                                                 )
@@ -1001,7 +965,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=0, end_index=18
+                                                        start_index=0, end_index=19
                                                     ),
                                                     children=[],
                                                 )
@@ -1037,7 +1001,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=7, end_index=24
+                                                        start_index=7, end_index=25
                                                     ),
                                                     children=[],
                                                 )
@@ -1051,7 +1015,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=0, end_index=17
+                                                        start_index=0, end_index=18
                                                     ),
                                                     children=[],
                                                 )
@@ -1093,7 +1057,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=0, end_index=3
+                                                        start_index=0, end_index=4
                                                     ),
                                                     children=[
                                                         InnerTag(
@@ -1101,7 +1065,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                             metadata={"id": "C1"},
                                                             position=Position(
                                                                 start_index=0,
-                                                                end_index=3,
+                                                                end_index=4,
                                                             ),
                                                             children=[],
                                                         )
@@ -1139,7 +1103,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
-                                                        start_index=0, end_index=3
+                                                        start_index=0, end_index=4
                                                     ),
                                                     children=[
                                                         InnerTag(
@@ -1147,7 +1111,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                             metadata={},
                                                             position=Position(
                                                                 start_index=0,
-                                                                end_index=3,
+                                                                end_index=4,
                                                             ),
                                                             children=[
                                                                 InnerTag(
@@ -1157,7 +1121,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                                     },
                                                                     position=Position(
                                                                         start_index=1,
-                                                                        end_index=3,
+                                                                        end_index=4,
                                                                     ),
                                                                     children=[],
                                                                 )
@@ -1199,7 +1163,7 @@ class ImportPipelineTest(unittest.TestCase):
                                                 tag_name=InnerTagName.BOLD,
                                                 metadata={},
                                                 position=Position(
-                                                    start_index=2, end_index=5
+                                                    start_index=2, end_index=6
                                                 ),
                                                 children=[],
                                             )
@@ -1226,7 +1190,7 @@ class ImportPipelineTest(unittest.TestCase):
                                     InnerTag(
                                         tag_name=InnerTagName.BOLD,
                                         metadata={},
-                                        position=Position(start_index=2, end_index=5),
+                                        position=Position(start_index=2, end_index=6),
                                         children=[],
                                     )
                                 ],
@@ -1381,7 +1345,7 @@ class ImportPipelineTest(unittest.TestCase):
                         InnerTag(
                             tag_name=InnerTagName.BOLD,
                             metadata={},
-                            position=Position(start_index=10, end_index=13),
+                            position=Position(start_index=10, end_index=14),
                             children=[],
                         )
                     ],
@@ -1396,7 +1360,7 @@ class ImportPipelineTest(unittest.TestCase):
                         InnerTag(
                             tag_name=InnerTagName.ITALIC,
                             metadata={},
-                            position=Position(start_index=11, end_index=16),
+                            position=Position(start_index=11, end_index=17),
                             children=[],
                         )
                     ],

@@ -106,7 +106,7 @@ class SummariesTest(unittest.TestCase):
             self.assertEqual(summaries.section_summaries[0].summary.text, "Summary for Section One")
             self.assertEqual(len(summaries.section_summaries[0].summary.inner_tags), 1)
             self.assertEqual(summaries.section_summaries[0].summary.inner_tags[0].tag_name, InnerTagName.BOLD)
-            self.assertEqual(summaries.section_summaries[0].summary.inner_tags[0].position, Position(start_index=12, end_index=22))
+            self.assertEqual(summaries.section_summaries[0].summary.inner_tags[0].position, Position(start_index=12, end_index=23))
             
             self.assertEqual(summaries.section_summaries[1].id, "sec2")
             self.assertEqual(summaries.section_summaries[1].summary.text, "Summary for Section Two")

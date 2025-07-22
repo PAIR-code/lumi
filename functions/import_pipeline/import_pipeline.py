@@ -588,7 +588,7 @@ def parse_text_and_extract_inner_tags(raw_content: str) -> (str, List[InnerTag])
 
             cleaned_text_content += tag_inner_content_cleaned
             current_position_cleaned += len(tag_inner_content_cleaned)
-            tag_end_index = current_position_cleaned - 1
+            tag_end_index = current_position_cleaned
 
             metadata = earliest_match_tag_definition["metadata_extractor"](
                 earliest_match
@@ -666,18 +666,20 @@ def create_lumi_spans(
             tag_end_absolute = inner_tag.position.end_index
 
             if (
-                tag_start_absolute < sentence_end_in_cleaned
+                tag_start_absolute <= sentence_end_in_cleaned
                 and tag_end_absolute >= sentence_start_in_cleaned
             ):
                 tag_start_relative = max(
                     0, tag_start_absolute - sentence_start_in_cleaned
                 )
                 tag_end_relative = min(
-                    len(sentence_text) - 1,
+                    len(sentence_text),
                     tag_end_absolute - sentence_start_in_cleaned,
                 )
 
-                if tag_start_relative <= tag_end_relative and tag_end_relative < len(
+                # For zero-length tags, tag_end_relative can be equal to len(sentence_text)
+                # if the tag is at the very end.
+                if tag_start_relative <= tag_end_relative and tag_end_relative <= len(
                     sentence_text
                 ):
                     tags_relative_to_sentence.append(

@@ -20,6 +20,7 @@ import { classMap } from "lit/directives/class-map.js";
 import {
   ListContent,
   LumiContent,
+  LumiReference,
   LumiSpan,
   LumiSummary,
   TextContent,
@@ -37,6 +38,7 @@ import { CollapseManager } from "../../../shared/collapse_manager";
 export interface ContentRendererProperties {
   parentComponent: LitElement;
   content: LumiContent;
+  references?: LumiReference[];
   summary: LumiSummary | null;
   spanSummaries: Map<string, LumiSummary>;
   focusedSpanId: string | null;
@@ -60,6 +62,7 @@ function renderSpans(
       span,
       monospace,
       highlights,
+      references: props.references,
       onSpanReferenceClicked: props.onSpanReferenceClicked,
     });
 

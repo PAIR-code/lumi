@@ -19,6 +19,7 @@ import { classMap } from "lit/directives/class-map.js";
 import {
   ListContent,
   LumiContent,
+  LumiReference,
   LumiSection,
   LumiSpan,
   LumiSummary,
@@ -35,6 +36,7 @@ import { CollapseManager } from "../../../shared/collapse_manager";
 export interface SectionRendererProperties {
   parentComponent: LitElement;
   section: LumiSection;
+  references: LumiReference[];
   summaryMaps: LumiSummaryMaps | null;
   hoverFocusedSpanId: string | null;
   isCollapsed: boolean;
@@ -125,7 +127,11 @@ function getSpanIdsFromContent(content: LumiContent): string[] {
 function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
   const highlights = props.highlightManager.getSpanHighlights(span.id);
   return html`<lumi-span .span=${span}
-    >${renderLumiSpan({ span, highlights })}</lumi-span
+    >${renderLumiSpan({
+      span,
+      highlights,
+      references: props.references,
+    })}</lumi-span
   >`;
 }
 
@@ -206,6 +212,7 @@ function renderContents(
     onSpanSummaryMouseLeave,
     highlightManager,
     collapseManager,
+    references,
   } = props;
   if (isCollapsed) {
     return renderSectionSummaryPanel(props);
@@ -230,6 +237,7 @@ function renderContents(
       return renderContent({
         parentComponent: props.parentComponent,
         content,
+        references,
         getImageUrl,
         summary: summaryMaps?.contentSummariesMap.get(content.id) ?? null,
         spanSummaries,
@@ -255,6 +263,7 @@ function renderSubsections(
     onSpanSummaryMouseLeave,
     onFocusOnSpan,
     collapseManager,
+    references,
   } = props;
   if (!section.subSections) return nothing;
 
@@ -265,6 +274,7 @@ function renderSubsections(
         ${renderSection({
           parentComponent: props.parentComponent,
           section: subSection,
+          references,
           summaryMaps: summaryMaps,
           hoverFocusedSpanId: null,
           isCollapsed: props.collapseManager.getCollapseState(subSection.id),

@@ -94,7 +94,7 @@ L_REFERENCES_PATTERN = re.compile(rf"{re.escape(L_REFERENCES_START)}(.*?){re.esc
 #  - (?P=id):
 #       - (?P=id): matches the exact same text as previously matched by the named group 'id'
 L_CONCEPT_PATTERN = re.compile(rf"{re.escape(L_CONCEPT_START_PREFIX)}(?P<id>.*?){re.escape(L_CONCEPT_END)}(?P<content>.*?){re.escape(L_CONCEPT_START_PREFIX)}(?P=id){re.escape(L_CONCEPT_END)}", re.DOTALL)
-L_CITATION_PATTERN = re.compile(rf"{re.escape(L_CITATION_START_PREFIX)}(?P<id>.*?){re.escape(L_CITATION_END)}(?P<content>.*?){re.escape(L_CITATION_START_PREFIX)}(?P=id){re.escape(L_CITATION_END)}", re.DOTALL)
+L_CITATION_PATTERN = re.compile(rf"{re.escape(L_CITATION_START_PREFIX)}(?P<id>.*?){re.escape(L_CITATION_END)}", re.DOTALL)
 S_REF_PATTERN = re.compile(rf"{re.escape(S_REF_START_PREFIX)}(?P<id>.*?){re.escape(S_REF_END)}(?P<content>.*?){re.escape(S_REF_END_GENERIC)}", re.DOTALL)
 
 

@@ -223,6 +223,7 @@ export class LumiDocViz extends MobxLitElement {
               ${renderSection({
                 parentComponent: this,
                 section,
+                references: this.lumiDoc.references,
                 summaryMaps: this.summaryMaps,
                 hoverFocusedSpanId: this.hoveredSpanId,
                 isCollapsed: isCollapsed,
