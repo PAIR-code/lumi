@@ -127,11 +127,13 @@
   }
 
   .equation {
+    padding: 0 common.$spacing-xs;
+
     &.display {
       display: block;
       width: 100%;
       text-align: center;
-      padding: common.$spacing-medium;
+      padding: common.$spacing-xl 0;
 
       overflow-y: auto;
     }
