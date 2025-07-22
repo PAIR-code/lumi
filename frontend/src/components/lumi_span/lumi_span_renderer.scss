@@ -63,6 +63,9 @@
 
     &.code {
       font-family: "Roboto Mono", monospace;
+      font-size: 14px;
+      padding: common.$spacing-xs 0;
+
       background-color: var(--md-sys-color-surface-container);
     }
 
