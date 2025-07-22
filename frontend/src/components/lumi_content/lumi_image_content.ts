@@ -26,6 +26,7 @@ import "../lumi_span/lumi_span";
 import { styles } from "./lumi_image_content.scss";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { makeObservable, observable } from "mobx";
+import { classMap } from "lit/directives/class-map.js";
 
 function isFigureContent(
   content: ImageContent | FigureContent
@@ -122,13 +123,17 @@ export class LumiImageContent extends MobxLitElement {
       return html`
         <figure class="figure-group">
           <div class="subfigures-container">
-            ${figureContent.images.map(
-              (image) => html`
-                <figure class="subfigure">
+            ${figureContent.images.map((image) => {
+              const subFigureClasses = classMap({
+                ["subfigure"]: true,
+                ["is-only-image"]: figureContent.images.length === 1,
+              });
+              return html`
+                <figure class=${subFigureClasses}>
                   ${this.renderSingleImage(image)}
                 </figure>
-              `
-            )}
+              `;
+            })}
           </div>
           ${this.renderCaption(figureContent.caption)}
         </figure>

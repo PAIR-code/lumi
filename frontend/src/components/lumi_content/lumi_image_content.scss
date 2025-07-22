@@ -56,7 +56,10 @@
 
   .subfigure {
     @include common.flex-column-align-center;
-    max-width: 45%; /* Or adjust as needed */
+
+    &:not(.is-only-image) {
+      max-width: 45%;
+    }
   }
 
   img {
