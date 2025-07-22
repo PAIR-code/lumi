@@ -125,4 +125,15 @@
 
     cursor: pointer;
   }
+
+  .equation {
+    &.display {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: common.$spacing-medium;
+
+      overflow-y: auto;
+    }
+  }
 }

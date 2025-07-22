@@ -49,8 +49,18 @@ export interface LumiSpanRendererProperties {
   monospace?: boolean;
 }
 
-function renderEquation(equationText: string): TemplateResult {
-  return html`<span ${renderKatex(equationText)}></span>`;
+function renderEquation(
+  equationText: string,
+  hasDisplayMathTag: boolean
+): TemplateResult {
+  const equationClasses = classMap({
+    ["equation"]: true,
+    ["display"]: hasDisplayMathTag,
+  });
+  return html`<span
+    class=${equationClasses}
+    ${renderKatex(equationText)}
+  ></span>`;
 }
 
 function renderFormattedCharacter(
@@ -227,26 +237,34 @@ export function renderLumiSpan(
         templates.push(...insertions.get(index)!);
       }
 
+      const hasBasicMathTag =
+        formattingCounters[index][InnerTagName.MATH] != null;
+      const hasDisplayMathTag =
+        formattingCounters[index][InnerTagName.MATH_DISPLAY] != null;
+      const hasMathTag = hasBasicMathTag || hasDisplayMathTag;
+
       // Special handling for LaTeX math equations.
-      if (
-        formattingCounters[index] &&
-        formattingCounters[index][InnerTagName.MATH]
-      ) {
+      if (formattingCounters[index] && hasMathTag) {
         equationText += char;
         // If the next character is also part of the equation, do nothing yet.
         // We accumulate the full equation string first.
         const nextIndex = index + 1;
+        const tagToCheck = hasBasicMathTag
+          ? InnerTagName.MATH
+          : InnerTagName.MATH_DISPLAY;
         if (
           nextIndex < spanText.length &&
           formattingCounters[nextIndex] &&
-          formattingCounters[nextIndex][InnerTagName.MATH]
+          formattingCounters[nextIndex][tagToCheck]
         ) {
           return templates; // Return only insertions for now
         } else {
           // At the end of the equation, render it using KaTeX.
           const currentEquationText = equationText;
           equationText = "";
-          templates.push(renderEquation(currentEquationText));
+          templates.push(
+            renderEquation(currentEquationText, hasDisplayMathTag)
+          );
           return templates;
         }
       }

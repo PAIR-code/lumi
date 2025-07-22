@@ -225,6 +225,11 @@ TAG_DEFINITIONS = [
         "metadata_extractor": lambda m: {},
     },
     {
+        "name": InnerTagName.MATH_DISPLAY,
+        "pattern": re.compile(r"\$\$(?P<content>.*?)\$\$", re.DOTALL),
+        "metadata_extractor": lambda m: {},
+    },
+    {
         "name": InnerTagName.MATH,
         "pattern": re.compile(r"\$(?P<content>.*?)\$", re.DOTALL),
         "metadata_extractor": lambda m: {},

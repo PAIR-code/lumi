@@ -42,7 +42,10 @@ def _rejoin_split_sentences(
         return []
 
     math_tags = [
-        tag for tag in inner_tags if tag.tag_name == InnerTagName.MATH
+        tag
+        for tag in inner_tags
+        if tag.tag_name == InnerTagName.MATH
+        or tag.tag_name == InnerTagName.MATH_DISPLAY
     ]
     if not math_tags:
         return sentences
@@ -109,7 +112,5 @@ def tokenize_sentences(cleaned_text: str, inner_tags: List[InnerTag]) -> List[st
     """
     initial_sentences = tokenize.sent_tokenize(cleaned_text)
 
-    rejoined = _rejoin_split_sentences(
-        initial_sentences, cleaned_text, inner_tags
-    )
+    rejoined = _rejoin_split_sentences(initial_sentences, cleaned_text, inner_tags)
     return rejoined

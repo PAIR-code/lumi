@@ -28,10 +28,10 @@ from shared.lumi_doc import LumiConcept
 
 PDF_IMPORT_FORMATTING_INSTRUCTIONS = rf"""Within these structural tags (but do NOT add any tags within header text), apply the following detailed markdown formatting rules:
 *   **Formatting Preservation:** Crucially, preserve all bold and italic formatting from the original PDF.
-*   **Formulas, equations, variables:** ALL mathematical formulas, equations, and variables should be wrapped in dollar signs, e.g., `$formula$`. 
+*   **Formulas, equations, variables:** ALL mathematical formulas, equations, and variables should be wrapped in single or double dollar signs, e.g., `$formula$` or `$$long equation$$`, following the dollar signs used in the original latex. 
         Try to convert latex equations into something supported by KaTeX html rendering. 
-        \begin{{equation}} and \end{{equation}} should be replaced with $ and $
-        \begin{{align}} and \end{{align}} with equations inside should also instead by wrapped in $ and $
+        \begin{{equation}} and \end{{equation}} should be replaced with $$ and $$
+        \begin{{align}} and \end{{align}} with equations inside should also instead by wrapped in $$ and $$
 
 *   **Headings:** Maintain the hierarchical header structure from the file, using `#` or `##` markdown headers. Do *not* use `*header*` style. Assume most academic papers will start with "Abstract" and "Introduction" as the first major headers (though "Abstract" will be wrapped in its own `{import_tags.L_ABSTRACT_START}` block). Maintain any numbering (e.g., "I. INTRODUCTION", "A. CONTRIBUTIONS").
 *   **Figures with Subfigures:** For figures that contain subfigures (like in the LaTeX `figure*` environment with `\begin{{subfigure\}}` contained within `\begin{{figure\}}`), use the following structure:
@@ -88,7 +88,7 @@ Optional content
 
 ## Subheading 1
 
-This is a sentence with a citation [[l-cit-citation1]][index][[l-cit-citation1]].
+This is a sentence with a citation [[l-cit-citation1]].
 
 1) Some bullets
 2) Bullet number 2
