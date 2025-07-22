@@ -16,6 +16,7 @@
 
 import bs4
 import re
+import html
 from typing import Dict, List, Optional
 
 from shared import import_tags
@@ -41,6 +42,15 @@ TAGS_TO_PROCESS = DEFAULT_TEXT_TAGS + DEFAULT_LIST_TAGS
 STORAGE_PATH_DELIMETER = "__"
 PLACEHOLDER_PREFIX = "[[LUMI_PLACEHOLDER_"
 PLACEHOLDER_SUFFIX = "]]"
+
+
+# All text extracted from bs4 must be unescaped.
+def _unescape(text: str):
+    return html.unescape(text)
+
+
+def _get_text(tag: bs4.Tag):
+    return _unescape(tag.decode_contents())
 
 
 def convert_to_lumi_sections(
@@ -78,7 +88,7 @@ def convert_to_lumi_sections(
         # Check if the tag is a heading (h1, h2, etc.)
         if tag.name and tag.name.startswith("h") and tag.name[1:].isdigit():
             heading_level = int(tag.name[1:])
-            heading_text = "".join(tag.find_all(text=True, recursive=False))
+            heading_text = _get_text(tag)
 
             new_section = LumiSection(
                 id=get_unique_id(),
@@ -127,7 +137,7 @@ def convert_to_lumi_sections(
             current_section = section_stack[-1]
             if tag.name in DEFAULT_TEXT_TAGS:
                 new_contents: List[LumiContent] = _parse_html_block_for_lumi_contents(
-                    tag.decode_contents(), tag.name, placeholder_map
+                    _get_text(tag), tag.name, placeholder_map
                 )
                 if new_contents:
                     current_section.contents.extend(new_contents)
@@ -232,7 +242,7 @@ def _get_list_content_from_tag(tag: bs4.Tag) -> Optional[LumiContent]:
                         subListContent = nested_lumi_content_obj.list_content
                 else:
                     # Otherwise, we add the child node to the raw html content.
-                    raw_li_content_html += str(child_node.get_text())
+                    raw_li_content_html += _unescape(child_node.get_text())
 
             cleaned_li_text, li_inner_tags = parse_text_and_extract_inner_tags(
                 raw_li_content_html
