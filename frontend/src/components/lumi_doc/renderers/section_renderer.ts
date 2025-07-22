@@ -352,11 +352,13 @@ export function renderSection(
 
   return html`<div class="section-renderer-container">
     <div class=${classMap(sectionContainerClasses)}>
-      <div class="heading-row">
-        <div class="hide-button-container">
-          ${renderHideButton(isCollapsed, onCollapseChange)}
+      <div class="heading-row-container">
+        <div class="heading-row">
+          <div class="hide-button-container">
+            ${renderHideButton(isCollapsed, onCollapseChange)}
+          </div>
+          ${renderHeading(section)}
         </div>
-        ${renderHeading(section)}
       </div>
       ${renderContents(props)}
     </div>
