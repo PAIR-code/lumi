@@ -16,13 +16,7 @@
 
 import bs4
 import re
-import os
 from typing import Dict, List, Optional
-
-import nltk
-
-nltk.data.path.append(os.path.join(os.path.dirname(__file__), "nltk_data"))
-from nltk import tokenize
 
 from shared import import_tags
 from shared.lumi_doc import (
@@ -37,8 +31,7 @@ from shared.lumi_doc import (
     Position,
 )
 from shared.utils import get_unique_id
-
-nltk.data.path.append(os.path.join(os.path.dirname(__file__), "nltk_data"))
+from import_pipeline.tokenize import tokenize_sentences
 
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
 ORDERED_LIST_TAG = "ol"
@@ -358,7 +351,7 @@ def create_lumi_spans(
 
     sentences = []
     if not skip_tokenize:
-        sentences = tokenize.sent_tokenize(cleaned_text)
+        sentences = tokenize_sentences(cleaned_text, all_inner_tags)
 
     if not sentences or skip_tokenize:
         # If tokenization results in no sentences, but there is text or tags,
