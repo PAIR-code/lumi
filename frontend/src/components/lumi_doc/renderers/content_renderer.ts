@@ -48,6 +48,10 @@ export interface ContentRendererProperties {
   highlightManager: HighlightManager;
   collapseManager: CollapseManager;
   onSpanReferenceClicked?: (referenceId: string) => void;
+  onPaperReferenceClick?: (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => void;
 }
 
 function renderSpans(
@@ -64,6 +68,7 @@ function renderSpans(
       highlights,
       references: props.references,
       onSpanReferenceClicked: props.onSpanReferenceClicked,
+      onPaperReferenceClick: props.onPaperReferenceClick,
     });
 
     const { focusState } = getFocusState(props.focusedSpanId, [span.id]);

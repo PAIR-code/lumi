@@ -29,7 +29,7 @@ import { FirebaseService } from "../../services/firebase.service";
 import { HistoryService } from "../../services/history.service";
 import { DocumentStateService } from "../../services/document_state.service";
 import { SnackbarService } from "../../services/snackbar.service";
-import { LumiDoc, LoadingStatus } from "../../shared/lumi_doc";
+import { LumiDoc, LoadingStatus, LumiReference } from "../../shared/lumi_doc";
 import {
   getArxivMetadata,
   getLumiResponseCallable,
@@ -38,6 +38,7 @@ import {
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import {
   FloatingPanelService,
+  ReferenceTooltipProps,
   SmartHighlightMenuProps,
 } from "../../services/floating_panel_service";
 import { LumiAnswer, LumiAnswerRequest } from "../../shared/api";
@@ -240,6 +241,14 @@ export class LumiReader extends MobxLitElement {
     this.floatingPanelService.show(props, selectionInfo.lastParentSpan);
   };
 
+  private readonly handlePaperReferenceClick = (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => {
+    const props = new ReferenceTooltipProps(reference);
+    this.floatingPanelService.show(props, target);
+  };
+
   override render() {
     const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
 
@@ -285,6 +294,7 @@ export class LumiReader extends MobxLitElement {
           .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
             this.documentStateService.focusOnSpan(highlights, "gray");
           }}
+          .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
         ></lumi-doc>
       </div>
     `;

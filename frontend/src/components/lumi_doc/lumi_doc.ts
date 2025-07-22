@@ -66,6 +66,7 @@ import { HighlightManager } from "../../shared/highlight_manager";
 import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { consume } from "@lit/context";
+import { LumiReference } from "../../shared/lumi_doc";
 
 /**
  * Displays a Lumi Document.
@@ -93,6 +94,10 @@ export class LumiDocViz extends MobxLitElement {
   onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
   @property()
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void = () => {};
+  @property() onPaperReferenceClick: (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => void = () => {};
 
   @state() hoveredSpanId: string | null = null;
 
@@ -238,6 +243,7 @@ export class LumiDocViz extends MobxLitElement {
                 highlightManager: this.highlightManager,
                 collapseManager: this.collapseManager,
                 onFocusOnSpan: this.onFocusOnSpan,
+                onPaperReferenceClick: this.onPaperReferenceClick,
                 isSubsection: false,
               })}
             </div>`;

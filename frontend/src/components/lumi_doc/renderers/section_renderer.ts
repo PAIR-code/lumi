@@ -47,6 +47,10 @@ export interface SectionRendererProperties {
   highlightManager: HighlightManager;
   collapseManager: CollapseManager;
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void;
+  onPaperReferenceClick: (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => void;
   isSubsection: boolean;
 }
 
@@ -131,6 +135,7 @@ function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
       span,
       highlights,
       references: props.references,
+      onPaperReferenceClick: props.onPaperReferenceClick,
     })}</lumi-span
   >`;
 }
@@ -213,6 +218,7 @@ function renderContents(
     highlightManager,
     collapseManager,
     references,
+    onPaperReferenceClick,
   } = props;
   if (isCollapsed) {
     return renderSectionSummaryPanel(props);
@@ -246,6 +252,7 @@ function renderContents(
         onSpanSummaryMouseLeave,
         highlightManager,
         collapseManager,
+        onPaperReferenceClick,
       });
     })}
     ${renderSubsections(props)}
@@ -264,6 +271,7 @@ function renderSubsections(
     onFocusOnSpan,
     collapseManager,
     references,
+    onPaperReferenceClick,
   } = props;
   if (!section.subSections) return nothing;
 
@@ -287,6 +295,7 @@ function renderSubsections(
           highlightManager: props.highlightManager,
           collapseManager,
           onFocusOnSpan,
+          onPaperReferenceClick,
           isSubsection: true,
         })}
       </div>`

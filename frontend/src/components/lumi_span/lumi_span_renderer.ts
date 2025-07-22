@@ -33,7 +33,7 @@ interface FormattingCounter {
 
 interface InlineCitation {
   index: number;
-  id: string;
+  reference: LumiReference;
 }
 
 function decodeHtmlEntities(encodedString: string) {
@@ -47,6 +47,10 @@ export interface LumiSpanRendererProperties {
   references?: LumiReference[];
   onReferenceClicked?: (referenceId: string) => void;
   onSpanReferenceClicked?: (referenceId: string) => void;
+  onPaperReferenceClick?: (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => void;
   highlights?: Highlight[];
   monospace?: boolean;
 }
@@ -101,7 +105,7 @@ function renderNonformattedCharacters(value: string): TemplateResult {
 
 function createInsertionsMap(props: LumiSpanRendererProperties) {
   new Map<number, TemplateResult[]>();
-  const { span, references } = props;
+  const { span, references, onPaperReferenceClick } = props;
   const insertions = new Map<number, TemplateResult[]>();
 
   if (!references) return insertions;
@@ -118,7 +122,10 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
       refIds.forEach((refId) => {
         const refIndex = references.findIndex((ref) => ref.id === refId);
         if (refIndex !== -1) {
-          citations.push({ index: refIndex + 1, id: references[refIndex].id });
+          citations.push({
+            index: refIndex + 1,
+            reference: references[refIndex],
+          });
         }
       });
 
@@ -128,9 +135,14 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
             return html`<span
               class="inline-citation"
               tabindex="0"
-              @click=${() => {
-                // TODO(ellenj): Update this to open citation in tooltip.
-                console.log(citation.id);
+              @click=${(e: MouseEvent) => {
+                if (onPaperReferenceClick) {
+                  e.stopPropagation();
+                  onPaperReferenceClick(
+                    citation.reference,
+                    e.currentTarget as HTMLElement
+                  );
+                }
               }}
               >${citation.index}</span
             >`;
