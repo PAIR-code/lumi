@@ -18,31 +18,30 @@
 import { expect } from "@esm-bundle/chai";
 import * as sinon from "sinon";
 import { renderKatexInHtml } from "./lumi_html_figure_utils";
-
-// Mock katex since it's a dependency that relies on browser APIs not in test env
-// and we're not testing katex itself, but our usage of it.
-const katex = {
-  render: (str: string, el: HTMLElement) => {
-    if (str.includes("\\invalid")) {
-      throw new Error("Invalid KaTeX");
-    }
-    el.innerHTML = `K[${str}]`;
-  },
-};
-
-// Make the mock available globally for the utils file.
-(globalThis as any).katex = katex;
+import katex from "katex";
 
 describe("renderKatexInHtml", () => {
   let container: HTMLElement;
+  let katexRenderStub: sinon.SinonStub;
 
   beforeEach(() => {
     container = document.createElement("div");
     document.body.appendChild(container);
+
+    katexRenderStub = sinon.stub(katex, "render");
+    katexRenderStub.callsFake((str: string, el: HTMLElement) => {
+      if (str.includes("\\invalid")) {
+        throw new Error("Invalid KaTeX");
+      }
+      // Simulate the rendering output
+      el.innerHTML = `K[${str}]`;
+    });
   });
 
   afterEach(() => {
     document.body.removeChild(container);
+
+    sinon.restore();
   });
 
   it("should render a simple KaTeX expression", () => {
