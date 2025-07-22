@@ -68,15 +68,10 @@
     }
   }
 
-  .heading-row-container {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-  }
-
   .heading-row {
     @include common.flex-row-align-center;
     gap: common.$spacing-medium;
-    grid-column: 1;
+    grid-column: common.$content-grid-col;
   }
 
   .section-summary {
