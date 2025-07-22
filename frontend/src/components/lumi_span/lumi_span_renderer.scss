@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+@use "../../sass/common";
 @use "../../sass/typescale";
 
 .lumi-span-renderer-element {
@@ -103,5 +104,22 @@
   // We only show the katex-mathml and hide katex-html.
   .katex-html {
     display: none;
+  }
+
+  .citation-marker {
+    display: inline-flex;
+    gap: common.$spacing-small;
+    padding: 0 common.$spacing-xs;
+  }
+
+  .inline-citation {
+    background: var(--md-sys-color-gray-container);
+    color: var(--md-sys-color-on-gray-container-soft);
+
+    @include typescale.body-small;
+    padding: 0 common.$spacing-small;
+    border-radius: 4px;
+
+    cursor: pointer;
   }
 }

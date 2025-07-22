@@ -23,11 +23,17 @@ import {
   Highlight,
   InnerTagMetadata,
   InnerTagName,
+  LumiReference,
   LumiSpan,
 } from "../../shared/lumi_doc";
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;
+}
+
+interface InlineCitation {
+  index: number;
+  id: string;
 }
 
 function decodeHtmlEntities(encodedString: string) {
@@ -38,6 +44,7 @@ function decodeHtmlEntities(encodedString: string) {
 
 export interface LumiSpanRendererProperties {
   span: LumiSpan;
+  references?: LumiReference[];
   onReferenceClicked?: (referenceId: string) => void;
   onSpanReferenceClicked?: (referenceId: string) => void;
   highlights?: Highlight[];
@@ -58,6 +65,11 @@ function renderFormattedCharacter(
     classesObject[key] = true;
   });
 
+  // REFERENCE tags are handled by the insertions map now.
+  if (classesObject[InnerTagName.REFERENCE]) {
+    return html``;
+  }
+
   if (classesObject[InnerTagName.A]) {
     const metadata = classesAndMetadata[InnerTagName.A];
     const href = metadata["href"] || "#";
@@ -68,13 +80,6 @@ function renderFormattedCharacter(
   }
 
   const onClick = () => {
-    if (Object.keys(classesObject).includes(InnerTagName.REFERENCE)) {
-      const metadata = classesAndMetadata[InnerTagName.REFERENCE];
-      if (metadata["id"] && props.onReferenceClicked) {
-        props.onReferenceClicked(metadata["id"]);
-      }
-    }
-
     if (Object.keys(classesObject).includes(InnerTagName.SPAN_REFERENCE)) {
       const metadata = classesAndMetadata[InnerTagName.SPAN_REFERENCE];
       if (metadata["id"] && props.onSpanReferenceClicked) {
@@ -94,6 +99,56 @@ function renderNonformattedCharacters(value: string): TemplateResult {
     .map((character) => html`<span>${character}</span>`)}`;
 }
 
+function createInsertionsMap(props: LumiSpanRendererProperties) {
+  new Map<number, TemplateResult[]>();
+  const { span, references } = props;
+  const insertions = new Map<number, TemplateResult[]>();
+
+  if (!references) return insertions;
+
+  // Pre-process REFERENCE tags to create an insertions map.
+  span.innerTags.forEach((innerTag) => {
+    if (
+      innerTag.tagName === InnerTagName.REFERENCE &&
+      innerTag.metadata["id"]
+    ) {
+      const refIds = innerTag.metadata["id"].split(",").map((s) => s.trim());
+      const citations: InlineCitation[] = [];
+
+      refIds.forEach((refId) => {
+        const refIndex = references.findIndex((ref) => ref.id === refId);
+        if (refIndex !== -1) {
+          citations.push({ index: refIndex + 1, id: references[refIndex].id });
+        }
+      });
+
+      if (citations.length > 0) {
+        const citationTemplate = html`<span class="citation-marker"
+          >${citations.map((citation) => {
+            return html`<span
+              class="inline-citation"
+              tabindex="0"
+              @click=${() => {
+                // TODO(ellenj): Update this to open citation in tooltip.
+                console.log(citation.id);
+              }}
+              >${citation.index}</span
+            >`;
+          })}</span
+        >`;
+
+        const insertionIndex = innerTag.position.startIndex;
+        if (!insertions.has(insertionIndex)) {
+          insertions.set(insertionIndex, []);
+        }
+        insertions.get(insertionIndex)!.push(citationTemplate);
+      }
+    }
+  });
+
+  return insertions;
+}
+
 /**
  * Renders the content of a LumiSpan, including text and inner tags.
  * This logic was extracted from the `lumi-span` component to allow for
@@ -102,13 +157,15 @@ function renderNonformattedCharacters(value: string): TemplateResult {
 export function renderLumiSpan(
   props: LumiSpanRendererProperties
 ): TemplateResult {
-  const { span, highlights = [], monospace = false } = props;
+  const { span, highlights = [], monospace = false, references = [] } = props;
   const spanText = span.text;
   const hasHighlight = highlights.length > 0;
 
-  // If there are no inner tags or highlights, we can just return
-  // the plain text.
-  if (!hasHighlight && !span.innerTags.length) {
+  const insertions = createInsertionsMap(props);
+
+  // If there are no inner tags or highlights, and no insertions,
+  // we can just return the plain text.
+  if (!hasHighlight && !span.innerTags.length && insertions.size === 0) {
     return renderNonformattedCharacters(span.text);
   }
 
@@ -124,7 +181,7 @@ export function renderLumiSpan(
   // with the tag's name and metadata.
   span.innerTags.forEach((innerTag) => {
     const position = innerTag.position;
-    for (let i = position.startIndex; i <= position.endIndex; i++) {
+    for (let i = position.startIndex; i < position.endIndex + 1; i++) {
       const currentCounter = formattingCounters[i];
       if (currentCounter) {
         currentCounter[innerTag.tagName] = {
@@ -156,7 +213,14 @@ export function renderLumiSpan(
   // based on the formatting counters we built above.
   const partsTemplateResults = spanText
     .split("")
-    .map((char: string, index: number) => {
+    .flatMap((char: string, index: number) => {
+      const templates: TemplateResult[] = [];
+
+      // Prepend any insertions for the current index.
+      if (insertions.has(index)) {
+        templates.push(...insertions.get(index)!);
+      }
+
       // Special handling for LaTeX math equations.
       if (
         formattingCounters[index] &&
@@ -171,21 +235,33 @@ export function renderLumiSpan(
           formattingCounters[nextIndex] &&
           formattingCounters[nextIndex][InnerTagName.MATH]
         ) {
-          return nothing;
+          return templates; // Return only insertions for now
         } else {
           // At the end of the equation, render it using KaTeX.
           const currentEquationText = equationText;
           equationText = "";
-          return renderEquation(decodeHtmlEntities(currentEquationText));
+          templates.push(
+            renderEquation(decodeHtmlEntities(currentEquationText))
+          );
+          return templates;
         }
       }
 
       // For regular characters, render them with their associated formatting.
-      return renderFormattedCharacter(props, char, {
-        character: {},
-        ...formattingCounters[index],
-      });
+      templates.push(
+        renderFormattedCharacter(props, char, {
+          character: {},
+          ...formattingCounters[index],
+        })
+      );
+
+      return templates;
     });
+
+  // Add any insertions at the very end of the span.
+  if (insertions.has(spanText.length)) {
+    partsTemplateResults.push(...insertions.get(spanText.length)!);
+  }
 
   // Wrap all the character parts in a single parent span.
   const spanClasses = { monospace, "lumi-span-renderer-element": true };

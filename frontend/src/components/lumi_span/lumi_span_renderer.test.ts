@@ -141,4 +141,35 @@ describe("renderLumiSpan", () => {
     expect(miE).to.exist;
     expect(miE!.textContent).to.equal("E");
   });
+
+  it("renders a span with an reference", async () => {
+    const span: LumiSpan = {
+      id: "s2",
+      text: "Sentence",
+      innerTags: [
+        {
+          tagName: InnerTagName.REFERENCE,
+          position: { startIndex: 8, endIndex: 8 },
+          metadata: { id: "ref1, ref2" },
+        },
+      ],
+    };
+
+    const el = await fixture(
+      html`<div>
+        ${renderLumiSpan({
+          span,
+          references: [
+            { id: "ref1", span: { id: "ref-s1", text: "", innerTags: [] } },
+            { id: "ref2", span: { id: "ref-s2", text: "", innerTags: [] } },
+          ],
+        })}
+      </div>`,
+      {
+        modules: ["./lumi_span_renderer.ts"],
+      }
+    );
+
+    expect(el.textContent).to.include("Sentence12");
+  });
 });
