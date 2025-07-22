@@ -28,6 +28,7 @@ from shared.lumi_doc import (
     LumiAbstract,
     LumiConcept,
     LumiDoc,
+    LumiSection,
     LumiContent,
     LumiSpan,
     ImageContent,
@@ -141,12 +142,16 @@ def _collect_image_contents(doc: LumiDoc) -> List[ImageContent]:
             if content.figure_content:
                 image_contents.extend(content.figure_content.images)
 
+    def collect_from_sections(sections: List[LumiSection]):
+        for section in sections:
+            collect_from_contents(section.contents)
+            if section.sub_sections:
+                collect_from_sections(section.sub_sections)
+
     if doc.abstract:
         collect_from_contents(doc.abstract.contents)
 
-    for section in doc.sections:
-        collect_from_contents(section.contents)
-
+    collect_from_sections(doc.sections)
     return image_contents
 
 
