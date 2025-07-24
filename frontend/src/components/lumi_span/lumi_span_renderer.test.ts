@@ -43,7 +43,7 @@ describe("renderLumiSpan", () => {
       innerTags: [
         {
           tagName: InnerTagName.BOLD,
-          position: { startIndex: 6, endIndex: 9 },
+          position: { startIndex: 6, endIndex: 10 },
           metadata: {},
         },
       ],
@@ -68,7 +68,7 @@ describe("renderLumiSpan", () => {
       innerTags: [
         {
           tagName: InnerTagName.A,
-          position: { startIndex: 2, endIndex: 5 },
+          position: { startIndex: 2, endIndex: 6 },
           metadata: { href: "https://www.google.com" },
         },
       ],
@@ -119,7 +119,7 @@ describe("renderLumiSpan", () => {
       innerTags: [
         {
           tagName: InnerTagName.MATH,
-          position: { startIndex: 13, endIndex: 18 },
+          position: { startIndex: 13, endIndex: 19 },
           metadata: {},
         },
       ],
@@ -171,5 +171,43 @@ describe("renderLumiSpan", () => {
     );
 
     expect(el.textContent).to.include("Sentence12");
+  });
+
+  it("renders a span with nested bold and italic tags", async () => {
+    const span: LumiSpan = {
+      id: "s1",
+      text: "This is bold and italic text.",
+      innerTags: [
+        {
+          tagName: InnerTagName.BOLD,
+          position: { startIndex: 8, endIndex: 24 },
+          metadata: {},
+          children: [
+            {
+              tagName: InnerTagName.ITALIC,
+              position: { startIndex: 9, endIndex: 15 }, // "italic" relative to "bold and italic"
+              metadata: {},
+            },
+          ],
+        },
+      ],
+    };
+
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
+      modules: ["./lumi_span_renderer.ts", "./lumi_span_utils.ts"],
+    });
+
+    const boldEls = el.querySelectorAll("span.b");
+    expect(boldEls.length).to.equal(16); // "bold and italic".length
+
+    const italicEls = el.querySelectorAll("span.i");
+    expect(italicEls.length).to.equal(6); // "italic".length
+
+    const boldAndItalicEls = el.querySelectorAll("span.b.i");
+    expect(boldAndItalicEls.length).to.equal(6);
+
+    expect(el.textContent).to.equal("This is bold and italic text.");
+    expect(boldAndItalicEls[0].textContent).to.equal("i");
+    expect(boldAndItalicEls[5].textContent).to.equal("c");
   });
 });
