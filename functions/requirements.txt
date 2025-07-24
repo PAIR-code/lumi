@@ -51,6 +51,7 @@ MarkupSafe==3.0.2
 mistletoe==1.4.0
 msgpack==1.1.0
 multidict==6.4.4
+nanoid==2.0.0
 nltk==3.9.1
 numpy==2.3.0
 opencv-python-headless==4.11.0.86

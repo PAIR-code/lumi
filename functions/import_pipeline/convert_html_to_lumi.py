@@ -18,6 +18,7 @@ import bs4
 import re
 import html
 from typing import Dict, List, Optional
+import copy
 
 from shared import import_tags
 from shared.lumi_doc import (
@@ -377,6 +378,10 @@ def create_lumi_spans(
             )
         return lumi_spans
 
+    # Track the absolute inner tag indices against the full cleaned text.
+    # This is used to determine the correct final inner_tag child indices.
+    inner_tag_absolute_start_indices = {}
+
     cleaned_text_search_offset = 0
     for sentence_text in sentences:
         # Locate the first index of sentence_text within cleaned_text (after the offset)
@@ -389,7 +394,7 @@ def create_lumi_spans(
         sentence_end_in_cleaned = sentence_start_in_cleaned + len(sentence_text)
 
         tags_relative_to_sentence: List[InnerTag] = []
-        for inner_tag in all_inner_tags:
+        for inner_tag_index, inner_tag in enumerate(all_inner_tags):
             tag_start_absolute = inner_tag.position.start_index
             tag_end_absolute = inner_tag.position.end_index
 
@@ -397,6 +402,11 @@ def create_lumi_spans(
                 tag_start_absolute <= sentence_end_in_cleaned
                 and tag_end_absolute >= sentence_start_in_cleaned
             ):
+                if inner_tag_index not in inner_tag_absolute_start_indices:
+                    inner_tag_absolute_start_indices[inner_tag_index] = (
+                        tag_start_absolute
+                    )
+
                 tag_start_relative = max(
                     0, tag_start_absolute - sentence_start_in_cleaned
                 )
@@ -410,6 +420,27 @@ def create_lumi_spans(
                 if tag_start_relative <= tag_end_relative and tag_end_relative <= len(
                     sentence_text
                 ):
+                    children = []
+                    child_tag_offset = (
+                        sentence_start_in_cleaned
+                        - inner_tag_absolute_start_indices[inner_tag_index]
+                    )
+                    # TODO(ellenj): We need to process the offsets of the children recursively.
+                    for child in inner_tag.children:
+                        new_child = copy.deepcopy(child)
+                        new_child.position.start_index = (
+                            child.position.start_index - child_tag_offset
+                        )
+                        new_child.position.end_index = (
+                            child.position.end_index - child_tag_offset
+                        )
+
+                        if (
+                            new_child.position.start_index >= 0
+                            and new_child.position.end_index <= len(sentence_text)
+                        ):
+                            children.append(new_child)
+
                     tags_relative_to_sentence.append(
                         InnerTag(
                             tag_name=inner_tag.tag_name,
@@ -418,8 +449,7 @@ def create_lumi_spans(
                                 start_index=tag_start_relative,
                                 end_index=tag_end_relative,
                             ),
-                            # Children are preserved as they are not position-dependent
-                            children=inner_tag.children,
+                            children=children,
                         )
                     )
 
