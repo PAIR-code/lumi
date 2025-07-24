@@ -178,6 +178,7 @@ export interface InnerTag {
   tagName: InnerTagName;
   position: Position;
   metadata: InnerTagMetadata;
+  children?: InnerTag[];
 }
 
 export interface LumiReference {
