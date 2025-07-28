@@ -15,10 +15,11 @@
 # Standard library imports
 import unittest
 from dataclasses import asdict
-from unittest.mock import patch, ANY
+from unittest.mock import patch, ANY, MagicMock
 
 # Third-party library imports
 from functions_framework import create_app
+from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
 # Local application imports
 # This patch must be applied before importing 'main'
@@ -100,14 +101,21 @@ class TestMainGetLumiResponse(unittest.TestCase):
             "get_lumi_response", "main.py"
         ).test_client()
 
+    @patch("main.firestore")
     @patch("main.answers")
-    def test_get_lumi_response(self, mock_answers_module):
+    def test_get_lumi_response(self, mock_answers_module, mock_firestore):
         # Arrange: Mock the business logic to return a LumiAnswer instance.
         mock_request_obj = LumiAnswerRequest(query="What is the abstract?")
         mock_answer_obj = LumiAnswer(
             id="answer1", request=mock_request_obj, response_content=[], timestamp=456
         )
         mock_answers_module.generate_lumi_answer.return_value = mock_answer_obj
+
+        # Arrange: Mock Firestore client
+        mock_db = MagicMock()
+        mock_firestore.client.return_value = mock_db
+        mock_collection = MagicMock()
+        mock_db.collection.return_value = mock_collection
 
         # Arrange: Create mock data objects.
         mock_doc_obj = main_testing_utils.create_mock_lumidoc()
@@ -138,6 +146,17 @@ class TestMainGetLumiResponse(unittest.TestCase):
         expected_result = convert_keys(asdict(mock_answer_obj), "snake_to_camel")
         self.assertIn("result", response_data)
         self.assertEqual(response_data["result"], expected_result)
+
+        # Assert: Check that the logging function was called correctly
+        mock_firestore.client.assert_called_once()
+        mock_db.collection.assert_called_once_with("query_logs")
+        expected_log_data = {
+            "created_timestamp": SERVER_TIMESTAMP,
+            "answer": asdict(mock_answer_obj),
+            "arxiv_id": mock_doc_obj.metadata.paper_id,
+            "version": str(mock_doc_obj.metadata.version),
+        }
+        mock_collection.add.assert_called_once_with(expected_log_data)
 
 
 class TestMainGetArxivMetadata(unittest.TestCase):

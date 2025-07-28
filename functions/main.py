@@ -34,13 +34,14 @@ from firebase_functions.firestore_fn import (
     Change,
     DocumentSnapshot,
 )
+from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
 # Local application imports
 from answers import answers
 from import_pipeline import fetch_utils, import_pipeline, summaries, personal_summary
 import main_testing_utils
 from models import extract_concepts
-from shared.api import LumiAnswerRequest
+from shared.api import LumiAnswerRequest, QueryLog, LumiAnswer
 from shared.json_utils import convert_keys
 from shared.lumi_doc import LumiDoc, LumiSummaries
 from shared.types import ArxivMetadata, LoadingStatus
@@ -75,8 +76,14 @@ if os.environ.get("FUNCTION_RUN_MODE") == "testing":
 
 _ARXIV_DOCS_COLLECTION = "arxiv_docs"
 _VERSIONS_COLLECTION = "versions"
+_LOGS_QUERY_COLLECTION = "query_logs"
 
 initialize_app()
+
+
+def _is_locally_emulated() -> bool:
+    """Returns True if the function is running in the local emulator."""
+    return os.environ.get("FUNCTIONS_EMULATOR") == "true"
 
 
 @on_document_written(
@@ -263,6 +270,34 @@ def get_arxiv_metadata(req: https_fn.CallableRequest) -> dict:
     return convert_keys(asdict(metadata), "snake_to_camel")
 
 
+def _log_query(doc: LumiDoc, lumi_answer: LumiAnswer):
+    """
+    Logs a query to the `logs_query` collection in Firestore.
+
+    Args:
+        doc (LumiDoc): The document related to the query.
+        lumi_request (LumiAnswerRequest): The user's request.
+    """
+    try:
+        db = firestore.client()
+        query_log = QueryLog(
+            created_timestamp=SERVER_TIMESTAMP,
+            answer=lumi_answer,
+            arxiv_id=doc.metadata.paper_id,
+            version=doc.metadata.version,
+        )
+        log_data = asdict(query_log)
+
+        db.collection(_LOGS_QUERY_COLLECTION).add(log_data)
+        logger.info(
+            f"Logged query for doc {doc.metadata.paper_id}v{doc.metadata.version}"
+        )
+    except Exception as e:
+        logger.error(
+            f"Failed to log query for doc {doc.metadata.paper_id}v{doc.metadata.version}: {e}"
+        )
+
+
 @https_fn.on_call(timeout_sec=120)
 def get_lumi_response(req: https_fn.CallableRequest) -> dict:
     """
@@ -295,6 +330,10 @@ def get_lumi_response(req: https_fn.CallableRequest) -> dict:
     )
 
     lumi_answer = answers.generate_lumi_answer(doc, lumi_request)
+
+    if not _is_locally_emulated():
+        _log_query(doc, lumi_answer)
+
     return convert_keys(asdict(lumi_answer), "snake_to_camel")
 
 

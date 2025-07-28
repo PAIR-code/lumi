@@ -14,7 +14,7 @@
 # ==============================================================================
 
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Any, List, Optional
 from shared.lumi_doc import LumiContent, Position
 
 
@@ -33,7 +33,6 @@ class LumiAnswerRequest:
     query: Optional[str] = None
     highlight: Optional[str] = None
     highlighted_spans: Optional[List[HighlightSelection]] = None
-    highlighted_span_id: Optional[str] = None
 
 
 @dataclass
@@ -44,3 +43,15 @@ class LumiAnswer:
     request: LumiAnswerRequest
     response_content: List[LumiContent]
     timestamp: int
+
+
+@dataclass
+class QueryLog:
+    """Schema for logging user queries to Firestore."""
+
+    created_timestamp: (
+        Any  # Firestore timestamp created with firestore_v1.SERVER_TIMESTAMP
+    )
+    answer: LumiAnswer
+    arxiv_id: str
+    version: str
