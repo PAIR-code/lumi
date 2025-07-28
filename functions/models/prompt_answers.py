@@ -41,8 +41,6 @@ _LUMI_ANSWER_BASE_PROMPT = (
     + r"""
 Here are the sentences from the document:
 {spans_string}
-
-{history_string}
 """
 )
 

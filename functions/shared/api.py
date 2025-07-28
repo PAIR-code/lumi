@@ -32,7 +32,6 @@ class LumiAnswerRequest:
 
     query: Optional[str] = None
     highlight: Optional[str] = None
-    history: Optional[List["LumiAnswer"]] = None
     highlighted_spans: Optional[List[HighlightSelection]] = None
     highlighted_span_id: Optional[str] = None
 
