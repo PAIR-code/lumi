@@ -112,20 +112,10 @@ def _is_locally_emulated() -> bool:
     + _VERSIONS_COLLECTION
     + "/{version}",
 )
-def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None:
+def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) -> None:
     """
-    Handles the import and summarization of a document in a two-step process.
-    This function is triggered by any write to a versioned document.
-
-    Step 1 (WAITING -> SUMMARIZING):
-    - Triggered when `loading_status` is `WAITING`.
-    - Imports the PDF and LaTeX source, converting it to a LumiDoc.
-    - Updates the Firestore document with the LumiDoc data and sets `loading_status` to `SUMMARIZING`.
-
-    Step 2 (SUMMARIZING -> SUCCESS/ERROR):
-    - Triggered when `loading_status` is `SUMMARIZING`.
-    - Generates summaries for the existing LumiDoc data.
-    - Updates the document with summaries and sets `loading_status` to `SUCCESS`.
+    Depending on loading status, add LumiDoc data and/or write metadata.
+    Triggered by any write to a versioned arXiv document.
     """
     db = firestore.client()
     arxiv_id = event.params["arxivId"]
@@ -136,7 +126,6 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
 
     after_data = event.data.after.to_dict()
     loading_status = after_data.get("loadingStatus")
-    test_config = after_data.get("testConfig", {})
 
     versioned_doc_ref = (
         db.collection(_ARXIV_DOCS_COLLECTION)
@@ -146,57 +135,88 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
     )
 
     if loading_status == LoadingStatus.WAITING:
-        metadata_dict = after_data.get("metadata", {})
-        metadata = ArxivMetadata(**convert_keys(metadata_dict, "camel_to_snake"))
-        concepts = extract_concepts.extract_concepts(metadata.summary)
-
-        try:
-            if os.environ.get("FUNCTION_RUN_MODE") == "testing":
-                if test_config.get("importBehavior") == "fail":
-                    raise Exception("Simulated import failure via testConfig")
-
-            lumi_doc = import_pipeline.import_arxiv_latex_and_pdf(
-                arxiv_id=arxiv_id,
-                version=version,
-                concepts=concepts,
-                metadata=metadata,
-            )
-            lumi_doc.loading_status = LoadingStatus.SUMMARIZING
-            lumi_doc_json = convert_keys(asdict(lumi_doc), "snake_to_camel")
-            versioned_doc_ref.update(lumi_doc_json)
-        except Exception as e:
-            logger.error(f"Error importing doc {arxiv_id}v{version}: {e}")
-            versioned_doc_ref.update(
-                {
-                    "loadingStatus": LoadingStatus.ERROR,
-                    "loadingError": f"Error importing document: {e}",
-                }
-            )
-
+        # TODO: Write metadata to collection
+        # Import source as LumiDoc
+        _add_lumi_doc(versioned_doc_ref, after_data)
     elif loading_status == LoadingStatus.SUMMARIZING:
-        try:
-            if os.environ.get("FUNCTION_RUN_MODE") == "testing":
-                if test_config.get("summaryBehavior") == "fail":
-                    time.sleep(2)
-                    raise Exception("Simulated summary failure via testConfig")
+        # Add summaries to existing LumiDoc data
+        _add_summaries_to_lumi_doc(versioned_doc_ref, after_data)
 
-            doc = from_dict(
-                data_class=LumiDoc,
-                data=convert_keys(after_data, "camel_to_snake"),
-                config=Config(check_types=False),
-            )
-            doc.summaries = summaries.generate_lumi_summaries(doc)
-            doc.loading_status = LoadingStatus.SUCCESS
-            lumi_doc_json = convert_keys(asdict(doc), "snake_to_camel")
-            versioned_doc_ref.update(lumi_doc_json)
-        except Exception as e:
-            logger.error(f"Error summarizing doc {arxiv_id}v{version}: {e}")
-            versioned_doc_ref.update(
-                {
-                    "loadingStatus": LoadingStatus.ERROR,
-                    "loadingError": f"Error summarizing document: {e}",
-                }
-            )
+
+def _add_lumi_doc(versioned_doc_ref, doc_data):
+    """
+    Takes in doc reference, doc data in dict (TypeScript) form.
+    Loading status changes from WAITING -> SUMMARIZING.
+
+    - Confirms that `loading_status` is `WAITING`.
+    - Imports the PDF and LaTeX source, converting it to a LumiDoc.
+    - Updates the Firestore document with the LumiDoc data and sets `loading_status` to `SUMMARIZING`.
+    """
+    metadata_dict = doc_data.get("metadata", {})
+    metadata = ArxivMetadata(**convert_keys(metadata_dict, "camel_to_snake"))
+    arxiv_id = metadata.paper_id
+    version = metadata.version
+    concepts = extract_concepts.extract_concepts(metadata.summary)
+
+    try:
+        if os.environ.get("FUNCTION_RUN_MODE") == "testing":
+            test_config = doc_data.get("testConfig", {})
+            if test_config.get("importBehavior") == "fail":
+                raise Exception("Simulated import failure via testConfig")
+
+        lumi_doc = import_pipeline.import_arxiv_latex_and_pdf(
+            arxiv_id=arxiv_id,
+            version=version,
+            concepts=concepts,
+            metadata=metadata,
+        )
+        lumi_doc.loading_status = LoadingStatus.SUMMARIZING
+        lumi_doc_json = convert_keys(asdict(lumi_doc), "snake_to_camel")
+        versioned_doc_ref.update(lumi_doc_json)
+    except Exception as e:
+        logger.error(f"Error importing doc {arxiv_id}v{version}: {e}")
+        versioned_doc_ref.update({
+            "loadingStatus": LoadingStatus.ERROR,
+            "loadingError": f"Error importing document: {e}",
+        })
+
+
+def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
+    """
+    Takes in doc reference, doc data in dict (TypeScript) form.
+    Loading status changes from SUMMARIZING -> SUCCESS/ERROR.
+
+    - Triggered when `loading_status` is `SUMMARIZING`.
+    - Generates summaries for the existing LumiDoc data.
+    - Updates the document with summaries and sets `loading_status` to `SUCCESS`.
+    """
+    metadata_dict = doc_data.get("metadata", {})
+    metadata = ArxivMetadata(**convert_keys(metadata_dict, "camel_to_snake"))
+    arxiv_id = metadata.paper_id
+    version = metadata.version
+
+    try:
+        if os.environ.get("FUNCTION_RUN_MODE") == "testing":
+            test_config = doc_data.get("testConfig", {})
+            if test_config.get("summaryBehavior") == "fail":
+                time.sleep(2)
+                raise Exception("Simulated summary failure via testConfig")
+
+        doc = from_dict(
+            data_class=LumiDoc,
+            data=convert_keys(doc_data, "camel_to_snake"),
+            config=Config(check_types=False),
+        )
+        doc.summaries = summaries.generate_lumi_summaries(doc)
+        doc.loading_status = LoadingStatus.SUCCESS
+        lumi_doc_json = convert_keys(asdict(doc), "snake_to_camel")
+        versioned_doc_ref.update(lumi_doc_json)
+    except Exception as e:
+        logger.error(f"Error summarizing doc {arxiv_id}v{version}: {e}")
+        versioned_doc_ref.update({
+            "loadingStatus": LoadingStatus.ERROR,
+            "loadingError": f"Error summarizing document: {e}",
+        })
 
 
 @https_fn.on_call()
