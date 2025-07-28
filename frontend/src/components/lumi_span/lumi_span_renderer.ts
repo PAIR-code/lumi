@@ -60,7 +60,7 @@ function renderEquation(
   });
   return html`<span
     class=${equationClasses}
-    ${renderKatex(equationText)}
+    ${renderKatex(equationText, hasDisplayMathTag)}
   ></span>`;
 }
 
