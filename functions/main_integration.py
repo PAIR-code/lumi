@@ -32,6 +32,18 @@ from shared.lumi_doc import ArxivMetadata
 from shared.types import LoadingStatus
 
 
+def _make_mock_metadata():
+    return ArxivMetadata(
+        paper_id="1234.5678",
+        version="1",
+        authors=["Test Author"],
+        title="Test Title",
+        summary="Test summary.",
+        updated_timestamp="2023-01-01T00:00:00Z",
+        published_timestamp="2023-01-01T00:00:00Z",
+    )
+
+
 class TestMainRequestArxivDocImport(unittest.TestCase):
     # @patch("firebase_admin.initialize_app")
     def setUp(self):
@@ -43,10 +55,13 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
         self.db = firestore.client()
 
         # This patch affects the on_call function which runs in the test process.
-        self.fetch_patcher = patch("main.fetch_utils.fetch_arxiv_metadata")
-        self.mock_fetch = self.fetch_patcher.start()
+        self.fetch_metadata_patcher = patch("main.fetch_utils.fetch_arxiv_metadata")
+        self.mock_fetch_metadata = self.fetch_metadata_patcher.start()
+        self.fetch_license_patcher = patch("main.fetch_utils.check_arxiv_license")
+        self.mock_fetch_license = self.fetch_license_patcher.start()
         # Ensure the patch is stopped after the test
-        self.addCleanup(self.fetch_patcher.stop)
+        self.addCleanup(self.fetch_metadata_patcher.stop)
+        self.addCleanup(self.fetch_license_patcher.stop)
 
         # The mocks for the triggered function (on_document_written) are
         # controlled by the global `FUNCTION_RUN_MODE` flag in main.py and
@@ -93,16 +108,8 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
     def test_request_arxiv_doc_import_integration(self):
         # Arrange
         # Mock dependencies of BOTH functions
-        mock_metadata = ArxivMetadata(
-            paper_id="1234.5678",
-            version="1",
-            authors=["Test Author"],
-            title="Test Title",
-            summary="Test summary.",
-            updated_timestamp="2023-01-01T00:00:00Z",
-            published_timestamp="2023-01-01T00:00:00Z",
-        )
-        self.mock_fetch.return_value = [mock_metadata]
+        mock_metadata = _make_mock_metadata()
+        self.mock_fetch_metadata.return_value = [mock_metadata]
 
         payload = {"arxiv_id": "1234.5678"}
 
@@ -138,16 +145,8 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
 
     def test_request_arxiv_doc_import_import_fails(self):
         # Arrange
-        mock_metadata = ArxivMetadata(
-            paper_id="1234.5678",
-            version="1",
-            authors=["Test Author"],
-            title="Test Title",
-            summary="Test summary.",
-            updated_timestamp="2023-01-01T00:00:00Z",
-            published_timestamp="2023-01-01T00:00:00Z",
-        )
-        self.mock_fetch.return_value = [mock_metadata]
+        mock_metadata = _make_mock_metadata()
+        self.mock_fetch_metadata.return_value = [mock_metadata]
 
         # Pass a test_config to instruct the triggered function to fail.
         payload = {
@@ -180,16 +179,8 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
 
     def test_request_arxiv_doc_import_summarize_fails(self):
         # Arrange
-        mock_metadata = ArxivMetadata(
-            paper_id="1234.5678",
-            version="1",
-            authors=["Test Author"],
-            title="Test Title",
-            summary="Test summary.",
-            updated_timestamp="2023-01-01T00:00:00Z",
-            published_timestamp="2023-01-01T00:00:00Z",
-        )
-        self.mock_fetch.return_value = [mock_metadata]
+        mock_metadata = _make_mock_metadata()
+        self.mock_fetch_metadata.return_value = [mock_metadata]
 
         # Pass a test_config to instruct the triggered function to fail.
         payload = {

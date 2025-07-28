@@ -219,3 +219,54 @@ class TestMainGetArxivMetadata(unittest.TestCase):
         response_data = response.get_json()
         self.assertIn("error", response_data)
         self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
+
+
+class TestMainRequestArxivDocImport(unittest.TestCase):
+    @patch("firebase_admin.initialize_app")
+    def setUp(self, initialize_app_mock):
+        self.client = create_app("request_arxiv_doc_import", "main.py").test_client()
+
+    @patch("main._try_doc_write")
+    @patch("main.fetch_utils.fetch_arxiv_metadata")
+    @patch("main.fetch_utils.check_arxiv_license")
+    def test_request_arxiv_doc_import_success(
+        self, mock_check_license, mock_fetch_metadata, mock_try_doc_write
+    ):
+        # Arrange
+        mock_check_license.return_value = None
+        mock_metadata = main_testing_utils.create_mock_arxiv_metadata()
+        mock_fetch_metadata.return_value = [mock_metadata]
+        payload = {"arxiv_id": "1234.5678"}
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        mock_check_license.assert_called_once_with("1234.5678")
+        mock_fetch_metadata.assert_called_once_with(arxiv_ids=["1234.5678"])
+        mock_try_doc_write.assert_called_once_with(mock_metadata, None)
+        response_data = response.get_json()
+        expected_result = {
+            "metadata": convert_keys(asdict(mock_metadata), "snake_to_camel"),
+            "error": None,
+        }
+        self.assertEqual(response_data["result"], expected_result)
+
+    @patch("main.fetch_utils.check_arxiv_license")
+    def test_request_arxiv_doc_import_license_failure(self, mock_check_license):
+        # Arrange
+        error_message = "No valid license found."
+        mock_check_license.side_effect = ValueError(error_message)
+        payload = {"arxiv_id": "1234.5678"}
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        mock_check_license.assert_called_once_with("1234.5678")
+        response_data = response.get_json()
+        self.assertEqual(
+            response_data["result"], {"error": error_message, "metadata": None}
+        )

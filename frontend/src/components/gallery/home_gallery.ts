@@ -33,7 +33,10 @@ import { SnackbarService } from "../../services/snackbar.service";
 
 import { LumiDoc, LoadingStatus, ArxivMetadata } from "../../shared/lumi_doc";
 import { GalleryItem } from "../../shared/types";
-import { requestArxivDocImportCallable } from "../../shared/callables";
+import {
+  requestArxivDocImportCallable,
+  RequestArxivDocImportResult,
+} from "../../shared/callables";
 import { extractArxivId } from "../../shared/string_utils";
 
 import { styles } from "./home_gallery.scss";
@@ -109,7 +112,7 @@ export class HomeGallery extends MobxLitElement {
     }
 
     this.isLoadingMetadata = true;
-    let metadata: ArxivMetadata;
+    let response: RequestArxivDocImportResult;
 
     const existingPapers = this.historyService.getPaperHistory();
     const foundPaper = existingPapers.find(
@@ -119,22 +122,24 @@ export class HomeGallery extends MobxLitElement {
       this.snackbarService.show("Paper already loaded.");
     }
 
-    this.snackbarService.show(
-      "Starting import - this may take several minutes..."
-    );
-
     try {
-      metadata = await this.requestDocument(paperId);
+      response = await this.requestDocument(paperId);
     } catch (error) {
-      this.snackbarService.show("Error: Document not found.");
+      this.snackbarService.show(`Error: ${(error as Error).message}`);
       return;
     } finally {
       this.isLoadingMetadata = false;
     }
 
+    if (response.error) {
+      this.snackbarService.show(`Error: ${response.error}`);
+      return;
+    }
+
     // Reset paper input
     this.paperInput = "";
 
+    const metadata = response.metadata;
     if (!metadata || !metadata.version) {
       this.snackbarService.show("Error: Document not found.");
       return;

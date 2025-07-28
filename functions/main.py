@@ -21,7 +21,8 @@
 # Standard library imports
 import os
 import time
-from dataclasses import asdict
+from typing import Optional
+from dataclasses import asdict, dataclass
 from unittest.mock import MagicMock
 
 # Third-party library imports
@@ -46,7 +47,6 @@ from shared.json_utils import convert_keys
 from shared.lumi_doc import LumiDoc, LumiSummaries
 from shared.types import ArxivMetadata, LoadingStatus
 from shared.types_local_storage import PaperData
-
 
 if os.environ.get("FUNCTION_RUN_MODE") == "testing":
 
@@ -79,6 +79,12 @@ _VERSIONS_COLLECTION = "versions"
 _LOGS_QUERY_COLLECTION = "query_logs"
 
 initialize_app()
+
+
+@dataclass
+class RequestArxivDocImportResult:
+    metadata: Optional[ArxivMetadata] = None
+    error: Optional[str] = None
 
 
 def _is_locally_emulated() -> bool:
@@ -180,7 +186,7 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
         req (https_fn.CallableRequest): The request, containing the arxiv_id.
 
     Returns:
-        A dictionary representation of the ArxivMetadata
+        A dictionary representation of the RequestArxivDocImportResult object.
     """
     arxiv_id = req.data.get("arxiv_id")
     test_config = req.data.get("test_config")
@@ -190,6 +196,18 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
             https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
             "Must specify arxiv_id parameter.",
         )
+
+    try:
+        fetch_utils.check_arxiv_license(arxiv_id)
+    except ValueError as e:
+        logger.error(f"License check failed for {arxiv_id}: {e}")
+        result = RequestArxivDocImportResult(error=str(e))
+        return asdict(result)
+    except Exception as e:
+        logger.error(
+            f"An unexpected error occurred during license check for {arxiv_id}: {e}"
+        )
+        raise https_fn.HttpsError(https_fn.FunctionsErrorCode.INTERNAL, str(e))
 
     # We need to request the latest paper version from the arXiv API.
     arxiv_metadata_list = fetch_utils.fetch_arxiv_metadata(arxiv_ids=[arxiv_id])
@@ -201,7 +219,10 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
 
     _try_doc_write(metadata, test_config)
 
-    return convert_keys(asdict(metadata), "snake_to_camel")
+    result = RequestArxivDocImportResult(
+        metadata=convert_keys(asdict(metadata), "snake_to_camel")
+    )
+    return asdict(result)
 
 
 def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
