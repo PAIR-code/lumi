@@ -245,6 +245,10 @@ export class LumiDocViz extends MobxLitElement {
           })}
           ${renderReferences({
             references: this.lumiDoc.references,
+            isCollapsed: this.collapseManager.areReferencesCollapsed,
+            onCollapseChange: (isCollapsed: boolean) => {
+              this.collapseManager.setReferencesCollapsed(isCollapsed);
+            },
           })}
         </div>
       </div>
