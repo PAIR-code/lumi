@@ -109,7 +109,7 @@ export class LumiDocViz extends MobxLitElement {
     super();
   }
 
-  private handleMouseUp(e: MouseEvent) {
+  private handleMouseOrTouchUp(e: Event) {
     const selection = window.getSelection();
     if (!selection || !this.shadowRoot) {
       return;
@@ -164,9 +164,14 @@ export class LumiDocViz extends MobxLitElement {
     return html`
       <div
         class="lumi-doc"
+        @touchend=${(e: TouchEvent) => {
+          window.setTimeout(() => {
+            this.handleMouseOrTouchUp(e);
+          });
+        }}
         @mouseup=${(e: MouseEvent) => {
           window.setTimeout(() => {
-            this.handleMouseUp(e);
+            this.handleMouseOrTouchUp(e);
           });
         }}
       >
