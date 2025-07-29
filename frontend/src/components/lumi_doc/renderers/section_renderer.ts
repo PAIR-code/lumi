@@ -262,40 +262,19 @@ function renderContents(
 function renderSubsections(
   props: SectionRendererProperties
 ): TemplateResult | typeof nothing {
-  const {
-    section,
-    getImageUrl,
-    summaryMaps,
-    onSpanSummaryMouseEnter,
-    onSpanSummaryMouseLeave,
-    onFocusOnSpan,
-    collapseManager,
-    references,
-    onPaperReferenceClick,
-  } = props;
+  const { section } = props;
   if (!section.subSections) return nothing;
 
-  // TODO(ellenj): Implement separate collapse states for subsections.
   return html`${section.subSections.map(
     (subSection) =>
       html`<div class="subsection">
         ${renderSection({
-          parentComponent: props.parentComponent,
+          ...props,
           section: subSection,
-          references,
-          summaryMaps: summaryMaps,
-          hoverFocusedSpanId: null,
           isCollapsed: props.collapseManager.getCollapseState(subSection.id),
           onCollapseChange: (isCollapsed: boolean) => {
             props.collapseManager.toggleSection(subSection.id, isCollapsed);
           },
-          getImageUrl,
-          onSpanSummaryMouseEnter,
-          onSpanSummaryMouseLeave,
-          highlightManager: props.highlightManager,
-          collapseManager,
-          onFocusOnSpan,
-          onPaperReferenceClick,
           isSubsection: true,
         })}
       </div>`
