@@ -41,19 +41,23 @@ def create_mock_lumidoc() -> LumiDoc:
     )
 
 
+def create_mock_arxiv_metadata() -> ArxivMetadata:
+    return ArxivMetadata(
+        paper_id="past.paper",
+        version="2",
+        authors=["Past Author"],
+        title="A Past Paper",
+        summary="This is a summary of a past paper.",
+        updated_timestamp="2022-01-01T00:00:00Z",
+        published_timestamp="2022-01-01T00:00:00Z",
+    )
+
+
 def create_mock_paper_data() -> List[PaperData]:
     """Creates a list of mock PaperData objects for testing."""
     return [
         PaperData(
-            metadata=ArxivMetadata(
-                paper_id="past.paper",
-                version="2",
-                authors=["Past Author"],
-                title="A Past Paper",
-                summary="This is a summary of a past paper.",
-                updated_timestamp="2022-01-01T00:00:00Z",
-                published_timestamp="2022-01-01T00:00:00Z",
-            ),
+            metadata=create_mock_arxiv_metadata(),
             history=[
                 LumiAnswer(
                     id="ans1",

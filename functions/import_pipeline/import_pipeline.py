@@ -36,6 +36,7 @@ from shared.lumi_doc import (
     FigureContent,
 )
 from shared.types import ArxivMetadata
+from shared.constants import MAX_LATEX_CHARACTER_COUNT
 from shared.utils import get_unique_id
 
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
@@ -96,6 +97,9 @@ def import_arxiv_latex_and_pdf(
             )
         except (ValueError, FileNotFoundError) as e:
             raise
+
+        if len(latex_string) > MAX_LATEX_CHARACTER_COUNT:
+            raise ValueError(f"Document is too long")
 
         if existing_model_output_file:
             with open(existing_model_output_file, "r") as file:
