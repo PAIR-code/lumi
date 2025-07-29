@@ -22,6 +22,15 @@ import {
   LumiSection,
   LumiSpan,
 } from "./lumi_doc";
+import { LumiSummaryMaps } from "./lumi_summary_maps";
+
+function makeEmptySummaries() {
+  return {
+    sectionSummaries: [],
+    contentSummaries: [],
+    spanSummaries: [],
+  };
+}
 
 /**
  * A helper class for manipulating a LumiDoc.
@@ -31,15 +40,24 @@ export class LumiDocManager {
   private readonly spanMap = new Map<string, LumiSpan>();
   private readonly spanToSectionMap = new Map<string, LumiSection>();
   private readonly sectionToParentMap = new Map<string, LumiSection>();
+  private readonly innerSummaryMaps: LumiSummaryMaps;
   private readonly innerLumiDoc: LumiDoc;
 
   constructor(lumiDoc: LumiDoc) {
     this.innerLumiDoc = lumiDoc;
+    this.innerSummaryMaps = new LumiSummaryMaps(
+      this.innerLumiDoc.summaries ?? makeEmptySummaries()
+    );
+
     this.initializeMaps(this.innerLumiDoc);
   }
 
   get lumiDoc() {
     return this.innerLumiDoc;
+  }
+
+  get summaryMaps() {
+    return this.innerSummaryMaps;
   }
 
   /**

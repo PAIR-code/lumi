@@ -58,6 +58,12 @@ export class DocumentStateService extends Service {
     this.collapseManager.initialize();
   }
 
+  clearDocument() {
+    this.highlightManager = undefined;
+    this.lumiDocManager = undefined;
+    this.collapseManager = undefined;
+  }
+
   setScrollState(scrollState: ScrollState) {
     this.scrollState = scrollState;
   }
