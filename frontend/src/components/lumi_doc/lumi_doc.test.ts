@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { csrFixture as fixture } from "@lit-labs/testing/fixtures.js";
-import { html } from "lit";
+import { fixture, html } from "@open-wc/testing";
 import { expect } from "@esm-bundle/chai";
 import * as sinon from "sinon";
 
@@ -72,8 +71,7 @@ describe("lumi-doc", () => {
         .lumiDocManager=${lumiDocManager}
         .collapseManager=${collapseManager}
         .highlightManager=${highlightManager}
-      ></lumi-doc>`,
-      { modules: [] }
+      ></lumi-doc>`
     );
 
     const title = el.shadowRoot!.querySelector("h1");
@@ -92,8 +90,7 @@ describe("lumi-doc", () => {
         .lumiDocManager=${lumiDocManager}
         .collapseManager=${collapseManager}
         .highlightManager=${highlightManager}
-      ></lumi-doc>`,
-      { modules: [] }
+      ></lumi-doc>`
     );
 
     const toggle = el.shadowRoot!.querySelector(
@@ -118,8 +115,7 @@ describe("lumi-doc", () => {
         .lumiDocManager=${lumiDocManager}
         .collapseManager=${collapseManager}
         .highlightManager=${highlightManager}
-      ></lumi-doc>`,
-      { modules: [] }
+      ></lumi-doc>`
     );
 
     const toggle = el.shadowRoot!.querySelector(
@@ -140,8 +136,7 @@ describe("lumi-doc", () => {
         .lumiDocManager=${lumiDocManager}
         .collapseManager=${collapseManager}
         .highlightManager=${highlightManager}
-      ></lumi-doc>`,
-      { modules: [] }
+      ></lumi-doc>`
     );
 
     const openInNewButton = el.shadowRoot!.querySelector(

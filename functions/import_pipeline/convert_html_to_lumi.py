@@ -18,6 +18,7 @@ import bs4
 import re
 import html
 from typing import Dict, List, Optional
+import copy
 
 from shared import import_tags
 from shared.lumi_doc import (
@@ -344,6 +345,47 @@ def parse_text_and_extract_inner_tags(raw_content: str) -> (str, List[InnerTag])
     return cleaned_text_content, inner_tags
 
 
+def _adjust_tags_for_sentence(
+    tags: List[InnerTag],
+    parent_absolute_start: int,
+    sentence_start_in_cleaned: int,
+    sentence_len: int,
+) -> List[InnerTag]:
+    """Recursively adjusts tags and their children to be relative to a single sentence span."""
+    sentence_end_in_cleaned = sentence_start_in_cleaned + sentence_len
+
+    result_tags = []
+    for tag in tags:
+        tag_absolute_start = parent_absolute_start + tag.position.start_index
+        tag_absolute_end = parent_absolute_start + tag.position.end_index
+
+        # Check for overlap
+        if (
+            tag_absolute_start <= sentence_end_in_cleaned
+            and tag_absolute_end >= sentence_start_in_cleaned
+        ):
+            new_tag = copy.deepcopy(tag)
+
+            # Adjust position to be relative to the sentence
+            new_tag.position.start_index = max(
+                0, tag_absolute_start - sentence_start_in_cleaned
+            )
+            new_tag.position.end_index = min(
+                sentence_len, tag_absolute_end - sentence_start_in_cleaned
+            )
+
+            if new_tag.children:
+                # Recurse for children, passing the parent's absolute start position
+                new_tag.children = _adjust_tags_for_sentence(
+                    new_tag.children,
+                    tag_absolute_start,  # Children positions are relative to this new parent tag's start index
+                    sentence_start_in_cleaned,
+                    sentence_len,
+                )
+            result_tags.append(new_tag)
+    return result_tags
+
+
 def create_lumi_spans(
     cleaned_text: str, all_inner_tags: List[InnerTag], skip_tokenize=False
 ) -> List[LumiSpan]:
@@ -386,42 +428,11 @@ def create_lumi_spans(
         if sentence_start_in_cleaned == -1:
             # Should not happen if sentences are derived from cleaned_text
             continue
-        sentence_end_in_cleaned = sentence_start_in_cleaned + len(sentence_text)
+        sentence_len = len(sentence_text)
 
-        tags_relative_to_sentence: List[InnerTag] = []
-        for inner_tag in all_inner_tags:
-            tag_start_absolute = inner_tag.position.start_index
-            tag_end_absolute = inner_tag.position.end_index
-
-            if (
-                tag_start_absolute <= sentence_end_in_cleaned
-                and tag_end_absolute >= sentence_start_in_cleaned
-            ):
-                tag_start_relative = max(
-                    0, tag_start_absolute - sentence_start_in_cleaned
-                )
-                tag_end_relative = min(
-                    len(sentence_text),
-                    tag_end_absolute - sentence_start_in_cleaned,
-                )
-
-                # For zero-length tags, tag_end_relative can be equal to len(sentence_text)
-                # if the tag is at the very end.
-                if tag_start_relative <= tag_end_relative and tag_end_relative <= len(
-                    sentence_text
-                ):
-                    tags_relative_to_sentence.append(
-                        InnerTag(
-                            tag_name=inner_tag.tag_name,
-                            metadata=inner_tag.metadata.copy(),
-                            position=Position(
-                                start_index=tag_start_relative,
-                                end_index=tag_end_relative,
-                            ),
-                            # Children are preserved as they are not position-dependent
-                            children=inner_tag.children,
-                        )
-                    )
+        tags_relative_to_sentence = _adjust_tags_for_sentence(
+            all_inner_tags, 0, sentence_start_in_cleaned, sentence_len
+        )
 
         lumi_spans.append(
             LumiSpan(
@@ -430,6 +441,6 @@ def create_lumi_spans(
                 inner_tags=tags_relative_to_sentence,
             )
         )
-        cleaned_text_search_offset = sentence_end_in_cleaned
+        cleaned_text_search_offset = sentence_start_in_cleaned + sentence_len
 
     return lumi_spans

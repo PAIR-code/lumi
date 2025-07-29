@@ -35,19 +35,19 @@ class KatexDirective extends Directive {
     }
   }
 
-  render(equationText: string) {
+  render(equationText: string, displayMode: boolean) {
     // This method is primarily for directives that return a value to be rendered.
     // We will perform our side-effect in the `update` method.
   }
 
   // The `update` method is the core. Lit calls it when the element is first
   // rendered and whenever the directive's value changes.
-  update(part: ElementPart, [equationText]: [string]) {
+  update(part: ElementPart, [equationText, displayMode]: [string, boolean]) {
     // `part.element` is the DOM element the directive is attached to.
     // By the time `update` is called, this element is guaranteed to exist.
     katex.render(equationText, part.element as HTMLElement, {
       throwOnError: false,
-      displayMode: false,
+      displayMode,
     });
   }
 }

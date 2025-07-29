@@ -33,7 +33,10 @@ import { SnackbarService } from "../../services/snackbar.service";
 
 import { LumiDoc, LoadingStatus, ArxivMetadata } from "../../shared/lumi_doc";
 import { GalleryItem } from "../../shared/types";
-import { requestArxivDocImportCallable } from "../../shared/callables";
+import {
+  requestArxivDocImportCallable,
+  RequestArxivDocImportResult,
+} from "../../shared/callables";
 import { extractArxivId } from "../../shared/string_utils";
 
 import { styles } from "./home_gallery.scss";
@@ -70,7 +73,6 @@ export class HomeGallery extends MobxLitElement {
     makeObservable(this);
   }
 
-  // TODO(ellenj): Implement error handling.
   get isLoadingDocument(): boolean {
     return this.unsubscribeListeners.size > 0 || this.isLoadingMetadata;
   }
@@ -109,7 +111,7 @@ export class HomeGallery extends MobxLitElement {
     }
 
     this.isLoadingMetadata = true;
-    let metadata: ArxivMetadata;
+    let response: RequestArxivDocImportResult;
 
     const existingPapers = this.historyService.getPaperHistory();
     const foundPaper = existingPapers.find(
@@ -119,22 +121,24 @@ export class HomeGallery extends MobxLitElement {
       this.snackbarService.show("Paper already loaded.");
     }
 
-    this.snackbarService.show(
-      "Starting import - this may take several minutes..."
-    );
-
     try {
-      metadata = await this.requestDocument(paperId);
+      response = await this.requestDocument(paperId);
     } catch (error) {
-      this.snackbarService.show("Error: Document not found.");
+      this.snackbarService.show(`Error: ${(error as Error).message}`);
       return;
     } finally {
       this.isLoadingMetadata = false;
     }
 
+    if (response.error) {
+      this.snackbarService.show(`Error: ${response.error}`);
+      return;
+    }
+
     // Reset paper input
     this.paperInput = "";
 
+    const metadata = response.metadata;
     if (!metadata || !metadata.version) {
       this.snackbarService.show("Error: Document not found.");
       return;
@@ -170,7 +174,7 @@ export class HomeGallery extends MobxLitElement {
             this.historyService.deletePaper(paperId);
             this.unsubscribeListeners.get(paperId)?.();
             this.unsubscribeListeners.delete(paperId);
-            this.snackbarService.show("Error loading document.");
+            this.snackbarService.show(`${data.loadingError}`);
           }
         }
       }
@@ -268,7 +272,7 @@ export class HomeGallery extends MobxLitElement {
           @click=${this.loadDocument}
           .loading=${this.isLoadingDocument}
           ?disabled=${this.isLoadingDocument || !this.paperInput}
-          >
+        >
         </pr-icon-button>
       </div>
       <div class="gallery-wrapper">
@@ -277,8 +281,7 @@ export class HomeGallery extends MobxLitElement {
         })}
         ${this.renderEmptyMessage(historyItems)}
       </div>
-      <div class="history-controls">
-      </div>
+      <div class="history-controls"></div>
     `;
   }
 

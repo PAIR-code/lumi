@@ -993,6 +993,84 @@ class ImportPipelineTest(unittest.TestCase):
                 {},
             ),
             (
+                "bold_with_sentence_break_containing_math",
+                "<p><strong>Proposition 4.1.</strong> <b>Let there. offset $text$</b></p>",
+                [
+                    LumiSection(
+                        id="123",
+                        heading=Heading(heading_level=0, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="Proposition 4.1.",
+                                            inner_tags=[
+                                                InnerTag(
+                                                    tag_name=InnerTagName.STRONG,
+                                                    metadata={},
+                                                    position=Position(
+                                                        start_index=0, end_index=16
+                                                    ),
+                                                    children=[],
+                                                )
+                                            ],
+                                        ),
+                                        LumiSpan(
+                                            id="123",
+                                            text="Let there.",
+                                            inner_tags=[
+                                                InnerTag(
+                                                    tag_name=InnerTagName.BOLD,
+                                                    metadata={},
+                                                    position=Position(
+                                                        start_index=0, end_index=10
+                                                    ),
+                                                    children=[],
+                                                )
+                                            ],
+                                        ),
+                                        LumiSpan(
+                                            id="123",
+                                            text="offset text",
+                                            inner_tags=[
+                                                InnerTag(
+                                                    tag_name=InnerTagName.BOLD,
+                                                    metadata={},
+                                                    position=Position(
+                                                        start_index=0, end_index=11
+                                                    ),
+                                                    children=[
+                                                        InnerTag(
+                                                            tag_name=InnerTagName.MATH,
+                                                            metadata={},
+                                                            position=Position(
+                                                                start_index=7,
+                                                                end_index=11,
+                                                            ),
+                                                            children=[],
+                                                        )
+                                                    ],
+                                                )
+                                            ],
+                                        ),
+                                    ],
+                                ),
+                                image_content=None,
+                                figure_content=None,
+                                html_figure_content=None,
+                                list_content=None,
+                            )
+                        ],
+                        sub_sections=[],
+                    )
+                ],
+                {},
+            ),
+            (
                 "complex_nesting_bold_underline_concept",
                 f"<p><b><u>t{import_tags.L_CONCEPT_START_PREFIX}C1{import_tags.L_CONCEPT_END}ext{import_tags.L_CONCEPT_START_PREFIX}C1{import_tags.L_CONCEPT_END}</u></b></p>",
                 [

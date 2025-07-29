@@ -15,7 +15,11 @@
 
 import unittest
 from unittest.mock import patch, MagicMock
-from import_pipeline.fetch_utils import fetch_arxiv_metadata, ArxivMetadata
+from import_pipeline.fetch_utils import (
+    fetch_arxiv_metadata,
+    ArxivMetadata,
+    check_arxiv_license,
+)
 
 
 ARXIV_METADATA_XML = """<?xml version="1.0" encoding="UTF-8"?>
@@ -143,6 +147,84 @@ providing insight into the problem domain and the proposed solution's novelty.""
 
         with self.assertRaises(Exception) as context:
             fetch_arxiv_metadata("test_arxiv_id")
+
+    @patch("requests.get")
+    def test_check_arxiv_license_valid(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = """
+            <html><body>
+                <a href="http://creativecommons.org/licenses/by/4.0/"></a>
+            </body></html>
+        """
+        mock_get.return_value = mock_response
+        # Should not raise an exception
+        check_arxiv_license("test_id")
+
+    @patch("requests.get")
+    def test_check_arxiv_license_no_license(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = "<html><body></body></html>"
+        mock_get.return_value = mock_response
+        with self.assertRaisesRegex(ValueError, "No valid license found."):
+            check_arxiv_license("test_id")
+
+    @patch("requests.get")
+    def test_check_arxiv_license_invalid_license(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = """
+            <html><body>
+                <a href="http://example.com/license"></a>
+            </body></html>
+        """
+        mock_get.return_value = mock_response
+        with self.assertRaisesRegex(ValueError, "No valid license found."):
+            check_arxiv_license("test_id")
+
+    @patch("requests.get")
+    def test_check_arxiv_license_multiple_licenses(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = """
+            <html><body>
+                <a href="http://creativecommons.org/licenses/by/4.0/"></a>
+                <a href="http://creativecommons.org/licenses/by-sa/4.0/"></a>
+            </body></html>
+        """
+        mock_get.return_value = mock_response
+        # Should not raise an exception
+        check_arxiv_license("test_id")
+
+    @patch("requests.get")
+    def test_check_arxiv_license_has_invalid_license(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = """
+            <html><body>
+                <a href="http://creativecommons.org/licenses/by/4.0/"></a>
+                <a href="https://arxiv.org/licenses/nonexclusive-distrib/1.0/"></a>
+            </body></html>
+        """
+        mock_get.return_value = mock_response
+        with self.assertRaisesRegex(
+            ValueError, "Paper has a non-exclusive license and cannot be processed."
+        ):
+            check_arxiv_license("test_id")
+
+    @patch("requests.get")
+    def test_check_arxiv_license_flexible_url(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = """
+            <html><body>
+                <a href="https://creativecommons.org/licenses/by/4.0/legalcode"></a>
+            </body></html>
+        """
+        mock_get.return_value = mock_response
+        # Should not raise an exception
+        check_arxiv_license("test_id")
 
 
 if __name__ == "__main__":

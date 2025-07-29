@@ -26,6 +26,7 @@ import {
   LumiReference,
   LumiSpan,
 } from "../../shared/lumi_doc";
+import { flattenTags } from "./lumi_span_utils";
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;
@@ -59,7 +60,7 @@ function renderEquation(
   });
   return html`<span
     class=${equationClasses}
-    ${renderKatex(equationText)}
+    ${renderKatex(equationText, hasDisplayMathTag)}
   ></span>`;
 }
 
@@ -177,11 +178,13 @@ export function renderLumiSpan(
   const spanText = span.text;
   const hasHighlight = highlights.length > 0;
 
+  const allInnerTags = flattenTags(span.innerTags || []);
+
   const insertions = createInsertionsMap(props);
 
   // If there are no inner tags or highlights, and no insertions,
   // we can just return the plain text.
-  if (!hasHighlight && !span.innerTags.length && insertions.size === 0) {
+  if (!hasHighlight && !allInnerTags.length && insertions.size === 0) {
     return renderNonformattedCharacters(span.text);
   }
 
@@ -195,9 +198,9 @@ export function renderLumiSpan(
   // Iterate through each `innerTag` (e.g., bold, italic, link) defined in the
   // span. For each tag, mark all characters within its start and end indices
   // with the tag's name and metadata.
-  span.innerTags.forEach((innerTag) => {
+  allInnerTags.forEach((innerTag) => {
     const position = innerTag.position;
-    for (let i = position.startIndex; i < position.endIndex + 1; i++) {
+    for (let i = position.startIndex; i < position.endIndex; i++) {
       const currentCounter = formattingCounters[i];
       if (currentCounter) {
         currentCounter[innerTag.tagName] = {
