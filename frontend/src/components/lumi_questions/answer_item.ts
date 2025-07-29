@@ -251,16 +251,18 @@ export class AnswerItem extends MobxLitElement {
       >
         <div class=${classMap(questionAnswerContainerStyles)}>
           <div class="question">
-            <pr-icon-button
-              class="toggle-answer-button"
-              icon=${this.isAnswerCollapsed ? "chevron_right" : "expand_more"}
-              variant="default"
-              @click=${this.toggleAnswer}
-              ?disabled=${this.isLoading}
-            ></pr-icon-button>
-            <span class="question-text" title=${this.answer.request.query}
-              >${this.answer.request.query}</span
-            >
+            <div class="left">
+              <pr-icon-button
+                class="toggle-answer-button"
+                icon=${this.isAnswerCollapsed ? "chevron_right" : "expand_more"}
+                variant="default"
+                @click=${this.toggleAnswer}
+                ?disabled=${this.isLoading}
+              ></pr-icon-button>
+              <span class="question-text" title=${this.answer.request.query}
+                >${this.answer.request.query}</span
+              >
+            </div>
             ${this.renderCancelButton()}
           </div>
           ${this.renderContent()}

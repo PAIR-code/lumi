@@ -74,6 +74,8 @@ $history-item-horizontal-padding: common.$spacing-large;
 
 .question {
   @include common.flex-row-align-center;
+  justify-content: space-between;
+
   @include typescale.title-medium;
   font-weight: 500;
 
@@ -83,6 +85,10 @@ $history-item-horizontal-padding: common.$spacing-large;
   z-index: 1;
 
   padding: $history-item-vertical-padding $history-item-horizontal-padding;
+
+  .left {
+    @include common.flex-row-align-center;
+  }
 
   .toggle-answer-button {
     margin-right: common.$spacing-medium;
