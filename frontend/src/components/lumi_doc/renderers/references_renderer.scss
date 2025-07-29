@@ -20,14 +20,24 @@
 
 .references-renderer-container {
   @include common.lumi-doc-grid;
-}
 
-.references {
-  grid-column: common.$content-grid-col;
+  .references {
+    grid-column: common.$content-grid-col;
 
-  @include common.flex-column;
-  gap: common.$spacing-xl;
-  padding-bottom: 50px;
+    @include common.flex-column;
+    gap: common.$spacing-xl;
+    padding-bottom: 50px;
 
-  @include common.lumi-paper-text-font;
+    @include common.lumi-paper-text-font;
+
+    .header {
+      @include common.flex-row-align-center;
+      @include common.lumi-paper-text-font;
+      margin: 0;
+
+      @include common.viewport-small {
+        font-size: common.$mobile-header-font-size;
+      }
+    }
+  }
 }
