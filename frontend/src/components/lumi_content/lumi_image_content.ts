@@ -114,6 +114,8 @@ export class LumiImageContent extends MobxLitElement {
   }
 
   override render() {
+    if (!this.content) return nothing;
+
     if (this.isLoading) {
       return html`<div>Loading image...</div>`;
     }
