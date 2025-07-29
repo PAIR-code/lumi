@@ -15,37 +15,43 @@
  * limitations under the License.
  */
 
-import { html, nothing, TemplateResult } from "lit";
+import { html, LitElement, nothing, TemplateResult } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 import {
   ListContent,
   LumiContent,
+  LumiReference,
   LumiSpan,
   LumiSummary,
   TextContent,
 } from "../../../shared/lumi_doc";
 import { FocusState } from "../../../shared/types";
-import {
-  renderLumiSpan,
-  LumiSpanRendererProperties,
-} from "../../lumi_span/lumi_span_renderer";
+import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import "../../lumi_span/lumi_span";
 
 import "../../lumi_content/lumi_image_content";
 import "../../lumi_content/lumi_html_figure_content";
 import { HighlightManager } from "../../../shared/highlight_manager";
+import { renderContentSummary } from "./content_summary_renderer";
+import { CollapseManager } from "../../../shared/collapse_manager";
 
 export interface ContentRendererProperties {
+  parentComponent: LitElement;
   content: LumiContent;
+  references?: LumiReference[];
   summary: LumiSummary | null;
   spanSummaries: Map<string, LumiSummary>;
   focusedSpanId: string | null;
-  displayContentSummaries: boolean;
   getImageUrl?: (path: string) => Promise<string>;
   onSpanSummaryMouseEnter: (spanIds: string[]) => void;
   onSpanSummaryMouseLeave: () => void;
   highlightManager: HighlightManager;
+  collapseManager: CollapseManager;
   onSpanReferenceClicked?: (referenceId: string) => void;
+  onPaperReferenceClick?: (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => void;
 }
 
 function renderSpans(
@@ -60,7 +66,9 @@ function renderSpans(
       span,
       monospace,
       highlights,
+      references: props.references,
       onSpanReferenceClicked: props.onSpanReferenceClicked,
+      onPaperReferenceClick: props.onPaperReferenceClick,
     });
 
     const { focusState } = getFocusState(props.focusedSpanId, [span.id]);
@@ -80,105 +88,6 @@ function getFocusState(focusedSpanId: string | null, spanIds: string[]) {
     ? FocusState.UNFOCUSED
     : FocusState.DEFAULT;
   return { isFocused, hasFocus, focusState };
-}
-
-function renderSpanSummaries(props: ContentRendererProperties) {
-  // Only render sentence-level summaries if there is more
-  // than 1 sentence in the content.
-  if (!props.spanSummaries || props.spanSummaries.size <= 1) {
-    return nothing;
-  }
-
-  // Don't render span summaries for list content
-  if (props.content.listContent) {
-    return nothing;
-  }
-
-  const summariesToSpanIds = new Map<string, string[]>();
-  props.spanSummaries.forEach((summary) => {
-    const existingIds = summariesToSpanIds.get(summary.summary.text);
-    if (existingIds) {
-      existingIds.push(summary.id);
-    } else {
-      summariesToSpanIds.set(summary.summary.text, [summary.id]);
-    }
-  });
-
-  return html`
-    ${Array.from(summariesToSpanIds.entries()).map((summaryEntry) => {
-      const [summaryText, spanIds] = summaryEntry;
-      // Find the first summary that matches the text to use as a representative
-      const summary = Array.from(props.spanSummaries.values()).find(
-        (s) => s.summary.text === summaryText
-      );
-      if (!summary) return nothing;
-
-      const { isFocused, hasFocus, focusState } = getFocusState(
-        props.focusedSpanId,
-        spanIds
-      );
-
-      const classesObject: { [key: string]: boolean } = {
-        "span-summary": true,
-        "focused-span": isFocused,
-        "unfocused-span": hasFocus && !isFocused,
-      };
-
-      const handleSummaryMouseEnter = () => {
-        props.onSpanSummaryMouseEnter(spanIds);
-      };
-
-      const handleSummaryMouseLeave = () => {
-        props.onSpanSummaryMouseLeave();
-      };
-
-      return html` <div
-        @mouseenter=${handleSummaryMouseEnter}
-        @mouseleave=${handleSummaryMouseLeave}
-        class=${classMap(classesObject)}
-      >
-        <lumi-span
-          .classMap=${{ "span-summary-text": true }}
-          .span=${summary.summary}
-          .focusState=${focusState}
-          >${renderLumiSpan({ span: summary.summary })}</lumi-span
-        >
-      </div>`;
-    })}
-  `;
-}
-
-function renderLeftAnnotation(props: ContentRendererProperties) {
-  if (!props.displayContentSummaries || props.content.imageContent) {
-    return nothing;
-  }
-
-  const classesObject: { [key: string]: boolean } = {
-    "left-annotation": true,
-  };
-
-  const summaryClassesObject: { [key: string]: boolean } = {
-    summary: true,
-    "has-focused-span": !!props.focusedSpanId,
-  };
-
-  return html`<div class=${classMap(classesObject)}>
-    <div class="inner-summary">
-      <div class=${classMap(summaryClassesObject)}>
-        ${props.summary
-          ? html`<lumi-span
-              .classMap=${{
-                "summary-span": true,
-                "left-annotation-summary-text": true,
-              }}
-              .span=${props.summary.summary}
-              >${renderLumiSpan({ span: props.summary.summary })}</lumi-span
-            >`
-          : nothing}
-      </div>
-      <div class="span-summaries">${renderSpanSummaries(props)}</div>
-    </div>
-  </div>`;
 }
 
 function renderListContent(
@@ -250,7 +159,13 @@ function renderMainContent(props: ContentRendererProperties) {
   }
   if (content.imageContent) {
     return html`<lumi-image-content
-      .imageContent=${content.imageContent}
+      .content=${content.imageContent}
+      .getImageUrl=${getImageUrl}
+    ></lumi-image-content>`;
+  }
+  if (content.figureContent) {
+    return html`<lumi-image-content
+      .content=${content.figureContent}
       .getImageUrl=${getImageUrl}
     ></lumi-image-content>`;
   }
@@ -269,18 +184,34 @@ export function renderContent(props: ContentRendererProperties) {
     e.preventDefault();
   };
 
-  const classesObject: { [key: string]: boolean } = {
+  const mainContentClassesObject: { [key: string]: boolean } = {
     "main-content": true,
     "pre-container": props.content.textContent?.tagName === "pre",
     "code-container": props.content.textContent?.tagName === "code",
   };
 
+  const isCollapsed = props.collapseManager.getMobileSummaryCollapseState(
+    props.content.id
+  );
+
+  const contentRendererContainerClassesObject: { [key: string]: boolean } = {
+    ["content-renderer-container"]: true,
+    ["collapsed"]: isCollapsed,
+  };
+
   return html`
-    <div class="content-renderer-container">
-      ${renderLeftAnnotation(props)}
-      <div class=${classMap(classesObject)} @click=${onContentClick}>
+    <div class=${classMap(contentRendererContainerClassesObject)}>
+      <div class=${classMap(mainContentClassesObject)} @click=${onContentClick}>
         ${renderMainContent(props)}
       </div>
+      ${renderContentSummary({
+        ...props,
+        isCollapsed,
+        onCollapseChange: () => {
+          props.collapseManager.toggleMobileSummaryCollapse(props.content.id);
+          props.parentComponent.requestUpdate();
+        },
+      })}
     </div>
   `;
 }

@@ -16,9 +16,9 @@
  */
 
 import { expect } from "@esm-bundle/chai";
-import { csrFixture as fixture } from "@lit-labs/testing/fixtures.js";
-import { html } from "lit";
-import { getSelectionInfo, SelectionInfo } from "./selection_utils";
+import { fixture, html } from "@open-wc/testing";
+
+import { getSelectionInfo } from "./selection_utils";
 import "./lumi_doc";
 
 class MockLumiSpan extends HTMLElement {}
@@ -53,10 +53,7 @@ function createCharacterSpans(text: string): HTMLSpanElement {
 describe("getSelectionInfo", () => {
   it("should return selection info for a partial selection within a single lumi-span", async () => {
     // 1. Create a fixture with our mock <lumi-span> element.
-    const el = await fixture(
-      html` <parent-with-shadow></parent-with-shadow> `,
-      { modules: [] }
-    );
+    const el = await fixture(html` <parent-with-shadow></parent-with-shadow> `);
     const lumiSpan = document.createElement("lumi-span");
     lumiSpan.id = "test-span-1";
     const textContent = "This is some test text.";
@@ -89,9 +86,7 @@ describe("getSelectionInfo", () => {
   });
 
   it("should return null if selection is empty", async () => {
-    const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`);
     const selection = window.getSelection()!;
     selection.removeAllRanges(); // Ensure it's empty
     const selectionInfo = getSelectionInfo(selection, el.shadowRoot!);
@@ -99,9 +94,7 @@ describe("getSelectionInfo", () => {
   });
 
   it("should return null if getComposedRanges returns an empty array", async () => {
-    const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`);
     const selection = window.getSelection()!;
     selection.removeAllRanges();
 
@@ -113,9 +106,7 @@ describe("getSelectionInfo", () => {
   });
 
   it("should return selection info for a selection spanning multiple lumi-spans", async () => {
-    const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`);
 
     // LumiSpan 1
     const lumiSpan1 = document.createElement("lumi-span");

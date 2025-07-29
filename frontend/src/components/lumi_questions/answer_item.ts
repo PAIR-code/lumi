@@ -23,12 +23,13 @@ import { classMap } from "lit/directives/class-map.js";
 import { consume } from "@lit/context";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { LumiAnswer } from "../../shared/api";
-import { LumiSpan } from "../../shared/lumi_doc";
+import { LumiContent, LumiSpan } from "../../shared/lumi_doc";
 import { getReferencedSpanIdsFromContent } from "../../shared/lumi_doc_utils";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { LumiDocManager } from "../../shared/lumi_doc_manager";
 
 import "../../pair-components/icon";
+import "../../pair-components/icon_button";
 import "../lumi_span/lumi_span";
 import { renderContent } from "../lumi_doc/renderers/content_renderer";
 
@@ -41,6 +42,7 @@ import {
   SelectionInfo,
 } from "../../shared/selection_utils";
 import { HighlightManager } from "../../shared/highlight_manager";
+import { CollapseManager } from "../../shared/collapse_manager";
 
 /**
  * An answer item in the Lumi questions history.
@@ -53,10 +55,12 @@ export class AnswerItem extends MobxLitElement {
   @property({ type: Boolean }) isLoading = false;
   @property({ type: Object }) lumiDocManager?: LumiDocManager;
   @property({ type: Object }) highlightManager?: HighlightManager;
+  @property({ type: Object }) collapseManager?: CollapseManager;
   @property()
   onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
   @property()
   onReferenceClick: (highlightedSpans: HighlightSelection[]) => void = () => {};
+  @property() onDismiss?: (answerId: string) => void;
 
   @consume({ context: scrollContext })
   private scrollContext?: ScrollState;
@@ -124,7 +128,10 @@ export class AnswerItem extends MobxLitElement {
           ${this.referencedSpans.map((span, i) => {
             // Make a copy of the span and use a separate unique id.
             const copiedSpan = { ...span, id: `${span.id}-ref` };
-            const spanContent = renderLumiSpan({ span: copiedSpan });
+            const spanContent = renderLumiSpan({
+              span: copiedSpan,
+              references: this.lumiDocManager?.lumiDoc.references,
+            });
             return html`
               <div
                 class="reference-item"
@@ -179,14 +186,16 @@ export class AnswerItem extends MobxLitElement {
 
     return html`
       <div class="answer">
-        ${this.answer.responseContent.map((content) => {
+        ${this.answer.responseContent.map((content: LumiContent) => {
           return renderContent({
+            parentComponent: this,
             content,
+            references: this.lumiDocManager?.lumiDoc.references,
             summary: null,
             spanSummaries: new Map(),
             focusedSpanId: null,
-            displayContentSummaries: false,
             highlightManager: this.highlightManager!,
+            collapseManager: this.collapseManager!,
             onSpanSummaryMouseEnter: () => {},
             onSpanSummaryMouseLeave: () => {},
             onSpanReferenceClicked:
@@ -194,6 +203,25 @@ export class AnswerItem extends MobxLitElement {
           });
         })}
       </div>
+    `;
+  }
+
+  private renderCancelButton() {
+    if (!this.onDismiss) return nothing;
+
+    return html`
+      <pr-icon-button
+        class="dismiss-button"
+        icon="close"
+        variant="default"
+        title="Close"
+        @click=${() => {
+          if (this.onDismiss) {
+            this.onDismiss(this.answer.id);
+          }
+        }}
+        ?hidden=${this.isLoading}
+      ></pr-icon-button>
     `;
   }
 
@@ -230,7 +258,10 @@ export class AnswerItem extends MobxLitElement {
               @click=${this.toggleAnswer}
               ?disabled=${this.isLoading}
             ></pr-icon-button>
-            <span>${this.answer.request.query}</span>
+            <span class="question-text" title=${this.answer.request.query}
+              >${this.answer.request.query}</span
+            >
+            ${this.renderCancelButton()}
           </div>
           ${this.renderContent()}
         </div>
@@ -241,14 +272,14 @@ export class AnswerItem extends MobxLitElement {
                 class="toggle-button"
                 @click=${this.toggleReferences}
               >
-                <span class="mentions-text"
-                  >${this.referencedSpans.length} references</span
-                >
                 <pr-icon
                   .icon=${this.areReferencesShown
                     ? "keyboard_arrow_up"
                     : "keyboard_arrow_down"}
                 ></pr-icon>
+                <span class="mentions-text"
+                  >${this.referencedSpans.length} references</span
+                >
               </div>
             `
           : nothing}

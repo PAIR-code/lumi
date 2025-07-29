@@ -19,12 +19,11 @@
 @use "../../../sass/typescale";
 
 .abstract-renderer-container {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  @include common.lumi-doc-grid;
 }
 
 .abstract {
-  grid-column: 2;
+  grid-column: common.$content-grid-col;
 
   display: flex;
   flex-direction: column;
@@ -38,12 +37,16 @@
 
   .abstract-header {
     @include common.flex-row-align-center;
-    @include typescale.lumi-paper-text-font;
+    @include common.lumi-paper-text-font;
     margin: 0;
+
+    @include common.viewport-small {
+      font-size: common.$mobile-header-font-size;
+    }
   }
 }
 
 .abstract-content {
-  @include typescale.lumi-paper-text;
   display: inline;
+  @include common.lumi-paper-text;
 }

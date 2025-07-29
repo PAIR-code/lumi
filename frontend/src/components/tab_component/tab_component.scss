@@ -28,6 +28,11 @@
 .tabs-header {
   @include common.flex-row;
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
+
+  position: sticky;
+  top: 0;
+  background-color: var(--md-sys-color-surface-variant);
+  z-index: 2; // Above sticky headers in tab content
 }
 
 .tab-button {

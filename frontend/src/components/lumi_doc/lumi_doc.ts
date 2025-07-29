@@ -50,10 +50,12 @@ import { renderReferences } from "./renderers/references_renderer";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
+import "../multi_icon_toggle/multi_icon_toggle";
 
 import { styles } from "./lumi_doc.scss";
 import { styles as sectionRendererStyles } from "./renderers/section_renderer.scss";
 import { styles as contentRendererStyles } from "./renderers/content_renderer.scss";
+import { styles as contentSummaryRendererStyles } from "./renderers/content_summary_renderer.scss";
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 import { styles as abstractRendererStyles } from "./renderers/abstract_renderer.scss";
 import { styles as referencesRendererStyles } from "./renderers/references_renderer.scss";
@@ -64,6 +66,7 @@ import { HighlightManager } from "../../shared/highlight_manager";
 import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { consume } from "@lit/context";
+import { LumiReference } from "../../shared/lumi_doc";
 
 /**
  * Displays a Lumi Document.
@@ -74,6 +77,7 @@ export class LumiDocViz extends MobxLitElement {
     styles,
     sectionRendererStyles,
     contentRendererStyles,
+    contentSummaryRendererStyles,
     spanRendererStyles,
     abstractRendererStyles,
     referencesRendererStyles,
@@ -90,6 +94,10 @@ export class LumiDocViz extends MobxLitElement {
   onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
   @property()
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void = () => {};
+  @property() onPaperReferenceClick: (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => void = () => {};
 
   @state() hoveredSpanId: string | null = null;
 
@@ -172,9 +180,20 @@ export class LumiDocViz extends MobxLitElement {
           });
         }}
       >
+        <div class="collapse-toggle-container">
+          <multi-icon-toggle
+            .selection=${this.collapseManager.getOverallCollapseState()}
+            @onCollapseAll=${() => {
+              this.collapseManager.setAllSectionsCollapsed(true);
+            }}
+            @onExpandAll=${() => {
+              this.collapseManager.setAllSectionsCollapsed(false);
+            }}
+          >
+          </multi-icon-toggle>
+        </div>
         <div class="lumi-doc-content">
           <div class="title-section">
-            ${this.renderCollapseButton()}
             <h1 class="main-column title">
               ${this.lumiDoc.metadata?.title}
               <pr-icon-button
@@ -207,7 +226,9 @@ export class LumiDocViz extends MobxLitElement {
 
             return html`<div ${ref(sectionRef)}>
               ${renderSection({
+                parentComponent: this,
                 section,
+                references: this.lumiDoc.references,
                 summaryMaps: this.summaryMaps,
                 hoverFocusedSpanId: this.hoveredSpanId,
                 isCollapsed: isCollapsed,
@@ -220,7 +241,10 @@ export class LumiDocViz extends MobxLitElement {
                 onSpanSummaryMouseLeave:
                   this.onSpanSummaryMouseLeave.bind(this),
                 highlightManager: this.highlightManager,
+                collapseManager: this.collapseManager,
                 onFocusOnSpan: this.onFocusOnSpan,
+                onPaperReferenceClick: this.onPaperReferenceClick,
+                isSubsection: false,
               })}
             </div>`;
           })}
@@ -228,28 +252,6 @@ export class LumiDocViz extends MobxLitElement {
             references: this.lumiDoc.references,
           })}
         </div>
-      </div>
-    `;
-  }
-
-  private renderCollapseButton() {
-    const handleCollapseClicked = () => {
-      const newCollapseValue = !this.collapseManager.areAllSectionsCollapsed();
-      this.collapseManager.setAllSectionsCollapsed(newCollapseValue);
-    };
-    const icon = this.collapseManager.areAllSectionsCollapsed()
-      ? "collapse_all"
-      : "expand_all";
-
-    return html`
-      <div class="collapse-button-container">
-        <pr-icon-button
-          class="collapse-all-button"
-          icon=${icon}
-          color="secondary"
-          variant="default"
-          @click=${handleCollapseClicked}
-        ></pr-icon-button>
       </div>
     `;
   }

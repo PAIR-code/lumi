@@ -14,9 +14,7 @@
 # ==============================================================================
 
 import re
-import json
 from mistletoe import Document, HtmlRenderer
-from shared import lumi_doc
 from shared import import_tags
 
 
@@ -56,7 +54,9 @@ def parse_lumi_import(model_output_string: str) -> dict:
     # Use re.finditer to get match objects, which allows accessing specific groups
     references_list = []
     if "references" in parsed_data:
-        for match in re.finditer(import_tags.L_REFERENCE_ITEM_PATTERN, parsed_data["references"]):
+        for match in re.finditer(
+            import_tags.L_REFERENCE_ITEM_PATTERN, parsed_data["references"]
+        ):
             ref_id = match.group(1)  # The N from reference-id-N
             ref_content = match.group(2).strip()  # The actual reference text
             references_list.append({"id": ref_id, "content": ref_content})
@@ -75,7 +75,8 @@ def markdown_to_html(markdown: str) -> str:
     Returns:
         str: The converted html string.
     """
+    escaped_markdown = markdown.replace("_", "\\_")
     with HtmlRenderer() as renderer:
-        doc = Document(markdown)
+        doc = Document(escaped_markdown)
         html = renderer.render(doc)
         return html

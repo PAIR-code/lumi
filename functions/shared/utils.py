@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-import uuid
+from nanoid import generate
 
 
 def get_unique_id() -> str:
     """Returns a unique id string"""
-    return uuid.uuid4().hex
+    return generate(alphabet="1234567890abcdef", size=8)

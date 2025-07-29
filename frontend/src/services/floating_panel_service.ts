@@ -18,6 +18,7 @@
 import { action, makeObservable, observable } from "mobx";
 import { Service } from "./service";
 import { HighlightSelection } from "../shared/selection_utils";
+import { LumiReference } from "../shared/lumi_doc";
 
 /** Base class for all floating panel content props. */
 export abstract class FloatingPanelContentProps {}
@@ -40,6 +41,14 @@ export class SmartHighlightMenuProps extends FloatingPanelContentProps {
     super();
   }
 }
+
+/** Props for the ReferenceTooltip component. */
+export class ReferenceTooltipProps extends FloatingPanelContentProps {
+  constructor(public reference: LumiReference) {
+    super();
+  }
+}
+
 /** Additional floating panel content components should define their props here. */
 
 /**

@@ -21,7 +21,8 @@
 # Standard library imports
 import os
 import time
-from dataclasses import asdict
+from typing import Optional
+from dataclasses import asdict, dataclass
 from unittest.mock import MagicMock
 
 # Third-party library imports
@@ -34,18 +35,18 @@ from firebase_functions.firestore_fn import (
     Change,
     DocumentSnapshot,
 )
+from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
 # Local application imports
 from answers import answers
 from import_pipeline import fetch_utils, import_pipeline, summaries, personal_summary
 import main_testing_utils
 from models import extract_concepts
-from shared.api import LumiAnswerRequest
+from shared.api import LumiAnswerRequest, QueryLog, LumiAnswer
 from shared.json_utils import convert_keys
 from shared.lumi_doc import LumiDoc, LumiSummaries
 from shared.types import ArxivMetadata, LoadingStatus
 from shared.types_local_storage import PaperData
-
 
 if os.environ.get("FUNCTION_RUN_MODE") == "testing":
 
@@ -75,8 +76,20 @@ if os.environ.get("FUNCTION_RUN_MODE") == "testing":
 
 _ARXIV_DOCS_COLLECTION = "arxiv_docs"
 _VERSIONS_COLLECTION = "versions"
+_LOGS_QUERY_COLLECTION = "query_logs"
 
 initialize_app()
+
+
+@dataclass
+class RequestArxivDocImportResult:
+    metadata: Optional[ArxivMetadata] = None
+    error: Optional[str] = None
+
+
+def _is_locally_emulated() -> bool:
+    """Returns True if the function is running in the local emulator."""
+    return os.environ.get("FUNCTIONS_EMULATOR") == "true"
 
 
 @on_document_written(
@@ -141,7 +154,12 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
             versioned_doc_ref.update(lumi_doc_json)
         except Exception as e:
             logger.error(f"Error importing doc {arxiv_id}v{version}: {e}")
-            versioned_doc_ref.update({"loadingStatus": LoadingStatus.ERROR})
+            versioned_doc_ref.update(
+                {
+                    "loadingStatus": LoadingStatus.ERROR,
+                    "loadingError": f"Error importing document: {e}",
+                }
+            )
 
     elif loading_status == LoadingStatus.SUMMARIZING:
         try:
@@ -161,7 +179,12 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
             versioned_doc_ref.update(lumi_doc_json)
         except Exception as e:
             logger.error(f"Error summarizing doc {arxiv_id}v{version}: {e}")
-            versioned_doc_ref.update({"loadingStatus": LoadingStatus.ERROR})
+            versioned_doc_ref.update(
+                {
+                    "loadingStatus": LoadingStatus.ERROR,
+                    "loadingError": f"Error summarizing document: {e}",
+                }
+            )
 
 
 @https_fn.on_call()
@@ -173,7 +196,7 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
         req (https_fn.CallableRequest): The request, containing the arxiv_id.
 
     Returns:
-        A dictionary representation of the ArxivMetadata
+        A dictionary representation of the RequestArxivDocImportResult object.
     """
     arxiv_id = req.data.get("arxiv_id")
     test_config = req.data.get("test_config")
@@ -183,6 +206,18 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
             https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
             "Must specify arxiv_id parameter.",
         )
+
+    try:
+        fetch_utils.check_arxiv_license(arxiv_id)
+    except ValueError as e:
+        logger.error(f"License check failed for {arxiv_id}: {e}")
+        result = RequestArxivDocImportResult(error=str(e))
+        return asdict(result)
+    except Exception as e:
+        logger.error(
+            f"An unexpected error occurred during license check for {arxiv_id}: {e}"
+        )
+        raise https_fn.HttpsError(https_fn.FunctionsErrorCode.INTERNAL, str(e))
 
     # We need to request the latest paper version from the arXiv API.
     arxiv_metadata_list = fetch_utils.fetch_arxiv_metadata(arxiv_ids=[arxiv_id])
@@ -194,7 +229,10 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
 
     _try_doc_write(metadata, test_config)
 
-    return convert_keys(asdict(metadata), "snake_to_camel")
+    result = RequestArxivDocImportResult(
+        metadata=convert_keys(asdict(metadata), "snake_to_camel")
+    )
+    return asdict(result)
 
 
 def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
@@ -263,6 +301,34 @@ def get_arxiv_metadata(req: https_fn.CallableRequest) -> dict:
     return convert_keys(asdict(metadata), "snake_to_camel")
 
 
+def _log_query(doc: LumiDoc, lumi_answer: LumiAnswer):
+    """
+    Logs a query to the `logs_query` collection in Firestore.
+
+    Args:
+        doc (LumiDoc): The document related to the query.
+        lumi_request (LumiAnswerRequest): The user's request.
+    """
+    try:
+        db = firestore.client()
+        query_log = QueryLog(
+            created_timestamp=SERVER_TIMESTAMP,
+            answer=lumi_answer,
+            arxiv_id=doc.metadata.paper_id,
+            version=doc.metadata.version,
+        )
+        log_data = asdict(query_log)
+
+        db.collection(_LOGS_QUERY_COLLECTION).add(log_data)
+        logger.info(
+            f"Logged query for doc {doc.metadata.paper_id}v{doc.metadata.version}"
+        )
+    except Exception as e:
+        logger.error(
+            f"Failed to log query for doc {doc.metadata.paper_id}v{doc.metadata.version}: {e}"
+        )
+
+
 @https_fn.on_call(timeout_sec=120)
 def get_lumi_response(req: https_fn.CallableRequest) -> dict:
     """
@@ -295,6 +361,10 @@ def get_lumi_response(req: https_fn.CallableRequest) -> dict:
     )
 
     lumi_answer = answers.generate_lumi_answer(doc, lumi_request)
+
+    if not _is_locally_emulated():
+        _log_query(doc, lumi_answer)
+
     return convert_keys(asdict(lumi_answer), "snake_to_camel")
 
 

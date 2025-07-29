@@ -49,6 +49,12 @@ L_HTML_START_PREFIX = "[[l-html_"
 L_HTML_END = "]]"
 L_HTML_CAP_START_PREFIX = "[[l-html_cap_"
 L_HTML_CAP_END = "]]"
+L_FIG_START_PREFIX = "[[l-fig-start-"
+L_FIG_END_PREFIX = "[[l-fig-end-"
+L_FIG_END = "]]"
+L_FIG_CAP_START_PREFIX = "[[l-fig-cap-"
+L_FIG_CAP_END = "]]"
+
 
 # ==============================================================================
 # Span Reference Tags (for answers)
@@ -88,7 +94,7 @@ L_REFERENCES_PATTERN = re.compile(rf"{re.escape(L_REFERENCES_START)}(.*?){re.esc
 #  - (?P=id):
 #       - (?P=id): matches the exact same text as previously matched by the named group 'id'
 L_CONCEPT_PATTERN = re.compile(rf"{re.escape(L_CONCEPT_START_PREFIX)}(?P<id>.*?){re.escape(L_CONCEPT_END)}(?P<content>.*?){re.escape(L_CONCEPT_START_PREFIX)}(?P=id){re.escape(L_CONCEPT_END)}", re.DOTALL)
-L_CITATION_PATTERN = re.compile(rf"{re.escape(L_CITATION_START_PREFIX)}(?P<id>.*?){re.escape(L_CITATION_END)}(?P<content>.*?){re.escape(L_CITATION_START_PREFIX)}(?P=id){re.escape(L_CITATION_END)}", re.DOTALL)
+L_CITATION_PATTERN = re.compile(rf"{re.escape(L_CITATION_START_PREFIX)}(?P<id>.*?){re.escape(L_CITATION_END)}", re.DOTALL)
 S_REF_PATTERN = re.compile(rf"{re.escape(S_REF_START_PREFIX)}(?P<id>.*?){re.escape(S_REF_END)}(?P<content>.*?){re.escape(S_REF_END_GENERIC)}", re.DOTALL)
 
 
@@ -141,6 +147,32 @@ HTML_FIGURE_PATTERN = re.compile(
     re.VERBOSE | re.DOTALL,
 )
 
+
+# Explanation of regex used:
+#  - `(?P<figure_id>.*?)`: Named group 'figure_id' that non-greedily captures the figure id.
+#  - `(?P<figure_content>.*?)`: Named group 'figure_content' that non-greedily captures the content of the figure.
+#  - `(?:`: Start of optional non-capturing group
+#  - `\s*` - Optional whitespace between image and caption tags
+#  - (?P=figure_id) is a backreference to ensure the ID matches the image path.
+#  - `(?P<main_caption_text>.*?)` - The caption text itself. Non-greedy to stop at the first end-caption tag.
+FIGURE_PATTERN = re.compile(
+    fr"""
+    (
+        {re.escape(L_FIG_START_PREFIX)}(?P<figure_id>.*?){re.escape(L_FIG_END)}
+        (?P<figure_content>.*?)
+        {re.escape(L_FIG_END_PREFIX)}(?P=figure_id){re.escape(L_FIG_END)}
+        (?:
+            \s*
+            {re.escape(L_FIG_CAP_START_PREFIX)}(?P=figure_id){re.escape(L_FIG_CAP_END)}
+            (?P<main_caption_text>.*?)
+            {re.escape(L_FIG_CAP_START_PREFIX)}(?P=figure_id){re.escape(L_FIG_CAP_END)}
+        )?
+    )
+    """,
+    re.VERBOSE | re.DOTALL,
+)
+
+
 TAG_DEFINITIONS = [
     {
         "name": InnerTagName.CONCEPT,
@@ -190,6 +222,11 @@ TAG_DEFINITIONS = [
     {
         "name": InnerTagName.UNDERLINE,
         "pattern": re.compile(r"<u>(?P<content>.*?)</u>", re.DOTALL),
+        "metadata_extractor": lambda m: {},
+    },
+    {
+        "name": InnerTagName.MATH_DISPLAY,
+        "pattern": re.compile(r"\$\$(?P<content>.*?)\$\$", re.DOTALL),
         "metadata_extractor": lambda m: {},
     },
     {

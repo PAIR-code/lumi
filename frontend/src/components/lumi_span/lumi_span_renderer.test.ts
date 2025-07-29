@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { csrFixture as fixture } from "@lit-labs/testing/fixtures.js";
-import { html } from "lit";
+import { fixture, html } from "@open-wc/testing";
 import { expect } from "@esm-bundle/chai";
 
 import { renderLumiSpan } from "./lumi_span_renderer";
@@ -30,9 +29,7 @@ describe("renderLumiSpan", () => {
       innerTags: [],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
     expect(el.textContent).to.equal("hello world");
   });
 
@@ -43,15 +40,13 @@ describe("renderLumiSpan", () => {
       innerTags: [
         {
           tagName: InnerTagName.BOLD,
-          position: { startIndex: 6, endIndex: 9 },
+          position: { startIndex: 6, endIndex: 10 },
           metadata: {},
         },
       ],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
     const boldEls = el.querySelectorAll("span.b");
     expect(boldEls.length).to.equal(4);
     const expectedTextContents = ["b", "o", "l", "d"];
@@ -68,15 +63,13 @@ describe("renderLumiSpan", () => {
       innerTags: [
         {
           tagName: InnerTagName.A,
-          position: { startIndex: 2, endIndex: 5 },
+          position: { startIndex: 2, endIndex: 6 },
           metadata: { href: "https://www.google.com" },
         },
       ],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
     const linkEls = el.querySelectorAll("a");
     const expectedTextContents = ["l", "i", "n", "k"];
     expectedTextContents.forEach((expectedContent, index) => {
@@ -102,8 +95,7 @@ describe("renderLumiSpan", () => {
     ];
 
     const el = await fixture(
-      html`<div>${renderLumiSpan({ span, highlights })}</div>`,
-      { modules: [] }
+      html`<div>${renderLumiSpan({ span, highlights })}</div>`
     );
     const highlightedEls = el.querySelectorAll("span.yellow");
     expect(highlightedEls.length).to.equal(11); // 'highlighted'.length
@@ -119,15 +111,13 @@ describe("renderLumiSpan", () => {
       innerTags: [
         {
           tagName: InnerTagName.MATH,
-          position: { startIndex: 13, endIndex: 18 },
+          position: { startIndex: 13, endIndex: 19 },
           metadata: {},
         },
       ],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: ["./lumi_span_renderer.ts"],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
 
     // Check that the text outside the equation is still there
     expect(el.textContent).to.include("An equation:");
@@ -140,5 +130,69 @@ describe("renderLumiSpan", () => {
     const miE = katexEl!.querySelector(".mord.mathnormal");
     expect(miE).to.exist;
     expect(miE!.textContent).to.equal("E");
+  });
+
+  it("renders a span with an reference", async () => {
+    const span: LumiSpan = {
+      id: "s2",
+      text: "Sentence",
+      innerTags: [
+        {
+          tagName: InnerTagName.REFERENCE,
+          position: { startIndex: 8, endIndex: 8 },
+          metadata: { id: "ref1, ref2" },
+        },
+      ],
+    };
+
+    const el = await fixture(
+      html`<div>
+        ${renderLumiSpan({
+          span,
+          references: [
+            { id: "ref1", span: { id: "ref-s1", text: "", innerTags: [] } },
+            { id: "ref2", span: { id: "ref-s2", text: "", innerTags: [] } },
+          ],
+        })}
+      </div>`
+    );
+
+    expect(el.textContent).to.include("Sentence12");
+  });
+
+  it("renders a span with nested bold and italic tags", async () => {
+    const span: LumiSpan = {
+      id: "s1",
+      text: "This is bold and italic text.",
+      innerTags: [
+        {
+          tagName: InnerTagName.BOLD,
+          position: { startIndex: 8, endIndex: 24 },
+          metadata: {},
+          children: [
+            {
+              tagName: InnerTagName.ITALIC,
+              position: { startIndex: 9, endIndex: 15 }, // "italic" relative to "bold and italic"
+              metadata: {},
+            },
+          ],
+        },
+      ],
+    };
+
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
+
+    const boldEls = el.querySelectorAll("span.b");
+    expect(boldEls.length).to.equal(16); // "bold and italic".length
+
+    const italicEls = el.querySelectorAll("span.i");
+    expect(italicEls.length).to.equal(6); // "italic".length
+
+    const boldAndItalicEls = el.querySelectorAll("span.b.i");
+    expect(boldAndItalicEls.length).to.equal(6);
+
+    expect(el.textContent).to.equal("This is bold and italic text.");
+    expect(boldAndItalicEls[0].textContent).to.equal("i");
+    expect(boldAndItalicEls[5].textContent).to.equal("c");
   });
 });

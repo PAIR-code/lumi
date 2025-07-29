@@ -17,12 +17,16 @@
 
 @use "../../sass/common";
 
-.image-container {
+@mixin outer-image-container {
   display: flex;
   flex-direction: column;
   gap: common.$spacing-medium;
   padding: common.$spacing-xl 0;
   align-items: center;
+}
+
+.single-image {
+  @include outer-image-container;
 
   img {
     max-width: 100%;
@@ -35,5 +39,45 @@
     margin-top: 8px;
     font-size: 14px;
     color: var(--md-sys-color-on-surface-variant);
+  }
+}
+
+.figure-group {
+  @include outer-image-container;
+
+  .subfigures-container {
+    display: flex;
+    gap: common.$spacing-large;
+    align-items: flex-start;
+
+    width: 100%;
+    overflow: auto;
+  }
+
+  .subfigure {
+    @include common.flex-column-align-center;
+
+    &:not(.is-only-image) {
+      max-width: 45%;
+    }
+  }
+
+  img {
+    @include common.full-percentage;
+    border-radius: 8px;
+  }
+
+  figcaption {
+    font-style: italic;
+    margin-top: common.$spacing-medium;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+    text-align: center;
+  }
+
+  /* Main caption for the whole figure group */
+  > figcaption {
+    margin-top: common.$spacing-large;
+    font-weight: bold;
   }
 }

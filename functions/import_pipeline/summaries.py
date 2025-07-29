@@ -18,7 +18,7 @@
 
 import json
 import uuid
-from typing import List, Type
+from typing import List, Type, Dict
 from pydantic import BaseModel
 
 from dataclasses import dataclass
@@ -33,7 +33,7 @@ from shared.lumi_doc import (
 )
 from shared import prompt_utils
 import models.gemini as gemini
-from import_pipeline.import_pipeline import parse_text_and_extract_inner_tags
+from import_pipeline.convert_html_to_lumi import parse_text_and_extract_inner_tags
 from shared.utils import get_unique_id
 
 
@@ -55,7 +55,7 @@ class LabelSchema(BaseModel):
     label: str
 
 
-MAX_CHARACTER_LENGTH = 100
+MIN_CHARACTER_LENGTH = 100
 
 SPAN_SUMMARIES_DEFAULT_BATCH_SIZE = 500
 SECTION_SUMMARIES_DEFAULT_BATCH_SIZE = 50
@@ -112,9 +112,15 @@ def generate_lumi_summaries(
 def _get_all_spans_from_doc(document: LumiDoc) -> List[LumiSpan]:
     """Extracts all LumiSpan objects from a LumiDoc by iterating through its contents."""
     all_spans = []
-    for section in document.sections:
-        for content in section.contents:
-            all_spans.extend(_get_spans_from_content(content))
+
+    def _collect_spans_recursive(sections: List[LumiSection]):
+        for section in sections:
+            for content in section.contents:
+                all_spans.extend(_get_spans_from_content(content))
+            if section.sub_sections:
+                _collect_spans_recursive(section.sub_sections)
+
+    _collect_spans_recursive(document.sections)
     return all_spans
 
 
@@ -144,10 +150,13 @@ def _get_text_from_content(content: LumiContent) -> str:
 
 
 def _get_text_from_section(section: LumiSection) -> str:
-    """Gets the concatenated text from all spans within a LumiSection."""
+    """Gets the concatenated text from all spans within a LumiSection, including sub-sections."""
     all_text = []
     for content in section.contents:
         all_text.append(_get_text_from_content(content))
+    if section.sub_sections:
+        for sub_section in section.sub_sections:
+            all_text.append(_get_text_from_section(sub_section))
     return " ".join(all_text)
 
 
@@ -245,9 +254,29 @@ def generate_span_summaries(
 # ------------------------------------------------------------------------------
 # Section summaries.
 # ------------------------------------------------------------------------------
-def _generate_section_summaries_prompt(section_strings: List[str]) -> str:
+def _get_all_sections_with_text(document: LumiDoc) -> List[Dict[str, str]]:
+    """Recursively collects all sections and their text from a LumiDoc."""
+    section_data = []
+
+    def _collect_recursive(sections: List[LumiSection]):
+        for section in sections:
+            section_data.append(
+                {"id": section.id, "text": _get_text_from_section(section)}
+            )
+            if section.sub_sections:
+                _collect_recursive(section.sub_sections)
+
+    _collect_recursive(document.sections)
+    return section_data
+
+
+def _generate_section_summaries_prompt(section_data: List[Dict[str, str]]) -> str:
     """Generates a prompt for section labels."""
-    section_strings = [s for s in section_strings if len(s) > MAX_CHARACTER_LENGTH]
+    section_strings = [
+        "{{ id: {id}, text: {text}}}".format(id=s["id"], text=s["text"])
+        for s in section_data
+        if len(s["text"]) > MIN_CHARACTER_LENGTH
+    ]
     section_string = "\n".join(section_strings)
     prompt = f"""You will be given a section of a document! Your task is to summarize each section in 4-16 words, being as specific as possible. {_PROMPT_FORMATTING_INSTRUCTIONS}
 Here are the contents:
@@ -264,18 +293,11 @@ def generate_section_summaries(
 ) -> List[LumiSummary]:
     """Generates section labels."""
     all_summaries: List[LumiSummary] = []
+    all_sections_data = _get_all_sections_with_text(document)
 
-    section_strings = []
-    for section in document.sections:
-        formatted_section = "{{ id: {id}, text: {text}}}".format(
-            id=section.id,
-            text=_get_text_from_section(section),
-        )
-        section_strings.append(formatted_section)
-
-    for i in range(0, len(section_strings), batch_size):
-        strings = section_strings[i : i + batch_size]
-        prompt = _generate_section_summaries_prompt(strings)
+    for i in range(0, len(all_sections_data), batch_size):
+        batch_data = all_sections_data[i : i + batch_size]
+        prompt = _generate_section_summaries_prompt(batch_data)
         schema_labels = gemini.call_predict_with_schema(
             prompt, response_schema=list[LabelSchema]
         )
@@ -290,16 +312,37 @@ def generate_section_summaries(
         else:
             print(f"Failed to parse JSON response for section summaries.")
             continue
-
     return all_summaries
 
 
 # ------------------------------------------------------------------------------
 # Content summaries.
 # ------------------------------------------------------------------------------
-def _get_generate_content_summaries_prompt(content_strings: List[str]) -> str:
+def _get_all_contents_with_text(document: LumiDoc) -> List[Dict[str, str]]:
+    """Recursively collects all content blocks and their text from a LumiDoc."""
+    content_data = []
+
+    def _collect_recursive(sections: List[LumiSection]):
+        for section in sections:
+            for content in section.contents:
+                if content.text_content or content.list_content:
+                    content_data.append(
+                        {"id": content.id, "text": _get_text_from_content(content)}
+                    )
+            if section.sub_sections:
+                _collect_recursive(section.sub_sections)
+
+    _collect_recursive(document.sections)
+    return content_data
+
+
+def _get_generate_content_summaries_prompt(content_data: List[Dict[str, str]]) -> str:
     """Generates a prompt for content labels."""
-    content_strings = [s for s in content_strings if len(s) > MAX_CHARACTER_LENGTH]
+    content_strings = [
+        "{{ id: {id}, text: {text}}}".format(id=c["id"], text=c["text"])
+        for c in content_data
+        if len(c["text"]) > MIN_CHARACTER_LENGTH
+    ]
     content_string = "\n".join(content_strings)
     prompt = f"""You will be given a list of content! Your task is to summarize each piece of content in 4-16 words, being as specific as possible. {_PROMPT_FORMATTING_INSTRUCTIONS}
 Here are the contents:
@@ -318,20 +361,11 @@ def generate_content_summaries(
 ) -> List[LumiSummary]:
     """Generates content labels."""
     all_summaries: List[LumiSummary] = []
+    all_contents_data = _get_all_contents_with_text(document)
 
-    content_strings = []
-    for section in document.sections:
-        for content in section.contents:
-            if content.text_content or content.list_content:
-                formatted_content = "{{ id: {id}, text: {text}}}".format(
-                    id=content.id,
-                    text=_get_text_from_content(content),
-                )
-                content_strings.append(formatted_content)
-
-    for i in range(0, len(content_strings), batch_size):
-        strings = content_strings[i : i + batch_size]
-        prompt = _get_generate_content_summaries_prompt(strings)
+    for i in range(0, len(all_contents_data), batch_size):
+        batch_data = all_contents_data[i : i + batch_size]
+        prompt = _get_generate_content_summaries_prompt(batch_data)
         schema_labels = gemini.call_predict_with_schema(
             prompt, response_schema=list[LabelSchema]
         )

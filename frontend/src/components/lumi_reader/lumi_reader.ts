@@ -29,7 +29,7 @@ import { FirebaseService } from "../../services/firebase.service";
 import { HistoryService } from "../../services/history.service";
 import { DocumentStateService } from "../../services/document_state.service";
 import { SnackbarService } from "../../services/snackbar.service";
-import { LumiDoc, LoadingStatus } from "../../shared/lumi_doc";
+import { LumiDoc, LoadingStatus, LumiReference } from "../../shared/lumi_doc";
 import {
   getArxivMetadata,
   getLumiResponseCallable,
@@ -38,6 +38,7 @@ import {
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import {
   FloatingPanelService,
+  ReferenceTooltipProps,
   SmartHighlightMenuProps,
 } from "../../services/floating_panel_service";
 import { LumiAnswer, LumiAnswerRequest } from "../../shared/api";
@@ -48,6 +49,7 @@ import {
   SelectionInfo,
 } from "../../shared/selection_utils";
 import { createTemporaryAnswer } from "../../shared/answer_utils";
+import { classMap } from "lit/directives/class-map.js";
 
 /**
  * The component responsible for fetching a single document and passing it
@@ -239,6 +241,14 @@ export class LumiReader extends MobxLitElement {
     this.floatingPanelService.show(props, selectionInfo.lastParentSpan);
   };
 
+  private readonly handlePaperReferenceClick = (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => {
+    const props = new ReferenceTooltipProps(reference);
+    this.floatingPanelService.show(props, target);
+  };
+
   override render() {
     const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
 
@@ -251,9 +261,15 @@ export class LumiReader extends MobxLitElement {
       return html`<div class="loading-message">Loading document...</div>`;
     }
 
+    const sidebarWrapperClasses = classMap({
+      ["sidebar-wrapper"]: true,
+      ["is-mobile-sidebar-collapsed"]:
+        this.documentStateService.isMobileSidebarCollapsed,
+    });
+
     return html`
       <div
-        class="sidebar-wrapper"
+        class=${sidebarWrapperClasses}
         @mousedown=${() => {
           this.floatingPanelService.hide();
         }}
@@ -278,6 +294,7 @@ export class LumiReader extends MobxLitElement {
           .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
             this.documentStateService.focusOnSpan(highlights, "gray");
           }}
+          .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
         ></lumi-doc>
       </div>
     `;

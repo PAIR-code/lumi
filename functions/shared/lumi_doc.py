@@ -89,6 +89,7 @@ class LumiSection:
     id: str
     heading: Heading
     contents: List["LumiContent"]
+    sub_sections: Optional[List["LumiSection"]] = None
 
 
 @dataclass
@@ -104,6 +105,12 @@ class ImageContent:
     alt_text: str
     width: float
     height: float
+    caption: Optional["LumiSpan"] = None
+
+
+@dataclass
+class FigureContent:
+    images: List[ImageContent]
     caption: Optional["LumiSpan"] = None
 
 
@@ -130,6 +137,7 @@ class LumiContent:
     id: str
     text_content: Optional[TextContent] = None
     image_content: Optional[ImageContent] = None
+    figure_content: Optional[FigureContent] = None
     html_figure_content: Optional[HtmlFigureContent] = None
     list_content: Optional[ListContent] = None
 
@@ -140,6 +148,7 @@ class LumiSpan:
     text: str
     inner_tags: List["InnerTag"]
 
+
 class InnerTagName(StrEnum):
     BOLD = "b"
     ITALIC = "i"
@@ -147,11 +156,13 @@ class InnerTagName(StrEnum):
     EM = "em"
     UNDERLINE = "u"
     MATH = "math"
+    MATH_DISPLAY = "math_display"
     REFERENCE = "ref"
     SPAN_REFERENCE = "spanref"
     CONCEPT = "concept"
     A = "a"
     CODE = "code"
+
 
 @dataclass
 class InnerTag:
@@ -187,3 +198,4 @@ class LumiDoc:
     summaries: Optional[LumiSummaries] = None
     metadata: Optional[ArxivMetadata] = None
     loading_status: Optional[LoadingStatus] = LoadingStatus.UNSET
+    loading_error: Optional[str] = None

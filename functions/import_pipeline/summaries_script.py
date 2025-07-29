@@ -18,16 +18,29 @@
 
 import os
 import sys
-import uuid
 
 # Add the project root to sys.path to allow imports like 'import_pipeline.summaries'
 script_dir = os.path.dirname(__file__)
 # Assuming project root is one levels up from this script:
-project_root = os.path.abspath(os.path.join(script_dir, '..'))
+project_root = os.path.abspath(os.path.join(script_dir, ".."))
 sys.path.insert(0, project_root)
 
-from shared.lumi_doc import LumiDoc, LumiSpan, LumiSection, LumiContent, TextContent, Heading, LumiSummaries, Label, LumiAbstract
-from import_pipeline.summaries import generate_lumi_summaries, FetchLumiSummariesRequestOptions
+from shared.lumi_doc import (
+    LumiDoc,
+    LumiSpan,
+    LumiSection,
+    LumiContent,
+    TextContent,
+    Heading,
+    LumiSummaries,
+    Label,
+    LumiAbstract,
+)
+from import_pipeline.summaries import (
+    generate_lumi_summaries,
+    FetchLumiSummariesRequestOptions,
+)
+
 
 def create_dummy_lumi_doc() -> LumiDoc:
     """
@@ -35,56 +48,94 @@ def create_dummy_lumi_doc() -> LumiDoc:
     Sentences are designed to be easily parsable and long enough for summarization.
     """
     # Create LumiSpan objects for the main content
-    span_id_1 = str(uuid.uuid4())
-    span_id_2 = str(uuid.uuid4())
-    span_id_3 = str(uuid.uuid4())
-    span_id_4 = str(uuid.uuid4())
 
-    span1 = LumiSpan(id=span_id_1, text="This is the first sentence of our document, containing important information about cats.", inner_tags=[])
-    span2 = LumiSpan(id=span_id_2, text="It's important to know that cats are obligatory carnivores.", inner_tags=[])
-    span3 = LumiSpan(id=span_id_3, text="This sentence includes an equation $E=mc^2$ to test math handling.", inner_tags=[])
-    span4 = LumiSpan(id=span_id_4, text="Finally, the fourth sentence concludes this initial thought with a summary.", inner_tags=[])
-
+    span1 = LumiSpan(
+        id="span_id_1",
+        text="This is the first sentence of our document, containing important information about cats.",
+        inner_tags=[],
+    )
+    span2 = LumiSpan(
+        id="span_id_2",
+        text="It's important to know that cats are obligatory carnivores.",
+        inner_tags=[],
+    )
+    span3 = LumiSpan(
+        id="span_id_3",
+        text="This sentence includes an equation $E=mc^2$ to test math handling.",
+        inner_tags=[],
+    )
+    span4 = LumiSpan(
+        id="span_id_4",
+        text="Finally, the fourth sentence concludes this initial thought with a summary.",
+        inner_tags=[],
+    )
 
     # Create TextContent
     text_content = TextContent(tag_name="p", spans=[span1, span2, span3, span4])
 
     # Create LumiContent
-    lumi_content_id = str(uuid.uuid4())
-    lumi_content = LumiContent(id=lumi_content_id, text_content=text_content)
+    lumi_content = LumiContent(id="main_content_id", text_content=text_content)
 
     # Create Heading
     heading = Heading(heading_level=2, text="Introduction to Dummy Document")
 
+    # Create nested section for testing
+    nested_span_id = "nested_span_id"
+    nested_span = LumiSpan(
+        id=nested_span_id,
+        text="This is a sentence within a nested subsection. Need to make it longer so it exceeds the min character length...",
+        inner_tags=[],
+    )
+    nested_text_content = TextContent(tag_name="p", spans=[nested_span])
+    nested_lumi_content_id = "nested_content_id"
+    nested_lumi_content = LumiContent(
+        id=nested_lumi_content_id, text_content=nested_text_content
+    )
+    nested_heading = Heading(heading_level=3, text="Nested Subsection")
+    nested_section_id = "section_id"
+    nested_section = LumiSection(
+        id=nested_section_id,
+        heading=nested_heading,
+        contents=[nested_lumi_content],
+        sub_sections=[],
+    )
+
     # Create LumiSection
-    section_id = str(uuid.uuid4())
-    lumi_section = LumiSection(id=section_id, heading=heading, contents=[lumi_content])
+    lumi_section = LumiSection(
+        id="main_section_id",
+        heading=heading,
+        contents=[lumi_content],
+        sub_sections=[nested_section],
+    )
 
     # Create LumiAbstract
-    abs_span_1 = str(uuid.uuid4())
-    abs_span_2 = str(uuid.uuid4())
     abstract_spans = [
-        LumiSpan(id=abs_span_1, text="This is the dummy abstract's first sentence.", inner_tags=[]),
-        LumiSpan(id=abs_span_2, text="This second sentence is the most important one for the abstract excerpt.", inner_tags=[]),
+        LumiSpan(
+            id="abs_span_1_id",
+            text="This is the dummy abstract's first sentence.",
+            inner_tags=[],
+        ),
+        LumiSpan(
+            id="abs_span_2_id",
+            text="This second sentence is the most important one for the abstract excerpt.",
+            inner_tags=[],
+        ),
     ]
-    abstract_content = LumiContent(id=str(uuid.uuid4()), text_content=TextContent(tag_name="p", spans=abstract_spans))
+    abstract_content = LumiContent(
+        id="abs_content_id",
+        text_content=TextContent(tag_name="p", spans=abstract_spans),
+    )
     lumi_abstract = LumiAbstract(contents=[abstract_content])
-
 
     # Create LumiDoc
     dummy_doc = LumiDoc(
-        markdown="""
-## Introduction to Dummy Document
-This is the first sentence of our document, containing important information.
-The second sentence provides additional details and context for the topic.
-This sentence includes an equation $E=mc^2$ to test math handling.
-Finally, the fourth sentence concludes this initial thought with a summary.
-""",
+        markdown="",
         sections=[lumi_section],
         concepts=[],
         abstract=lumi_abstract,
     )
     return dummy_doc
+
 
 def print_lumi_summaries(summaries: LumiSummaries):
     """Prints the components of a LumiSummaries object in a readable format."""
@@ -102,17 +153,22 @@ def print_lumi_summaries(summaries: LumiSummaries):
     print("\nContent Summaries:")
     if summaries.content_summaries:
         for c in summaries.content_summaries:
-            print(f"  - ID: {c.id}, Summary: {c.summary.text}, InnerTags: {c.summary.inner_tags}")
+            print(
+                f"  - ID: {c.id}, Summary: {c.summary.text}, InnerTags: {c.summary.inner_tags}"
+            )
     else:
         print("  No content summaries generated.")
 
     print("\nSpan Summaries:")
     if summaries.span_summaries:
         for sp in summaries.span_summaries:
-            print(f"  - ID: {sp.id}, Summary: {sp.summary.text}, InnerTags: {sp.summary.inner_tags}")
+            print(
+                f"  - ID: {sp.id}, Summary: {sp.summary.text}, InnerTags: {sp.summary.inner_tags}"
+            )
     else:
         print("  No span summaries generated.")
     print("-----------------------------\n")
+
 
 if __name__ == "__main__":
     print("Creating dummy LumiDoc...")

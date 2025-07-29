@@ -331,6 +331,35 @@
   }
 }
 
+// LumiDoc Content Grid
+@mixin lumi-doc-grid {
+  display: grid;
+  grid-template-columns: 0.5fr 2fr 0.5fr;
+
+  @include viewport-small {
+    grid-template-columns: 0.05fr 2fr 0.05fr;
+  }
+}
+
+// Fonts
+@mixin lumi-paper-text-font {
+  font-family: "Lora", "Georgia", "Serif";
+}
+
+@mixin lumi-paper-text {
+  @include typescale.body-large;
+  @include lumi-paper-text-font;
+
+  @include viewport-small {
+    @include typescale.body-medium;
+    @include lumi-paper-text-font;
+  }
+}
+
+$non-summary-grid-col: 1;
+$content-grid-col: 2;
+$summary-grid-col: 3;
+
 /** Constants. */
 $spacing-xs: 2px;
 $spacing-small: 4px;
@@ -339,6 +368,7 @@ $spacing-large: 12px;
 $spacing-xl: 16px;
 $spacing-xxl: 24px;
 
+$border: 1px solid var(--md-sys-color-outline-variant);
 $border-radius-medium: 12px;
 
 $header-height: 48px;
@@ -346,6 +376,7 @@ $footer-height: 48px;
 $info-content-max-width: 800px;
 $main-content-max-width: 1500px;
 $main-content-padding: $spacing-xl;
+$main-content-gap: 24px;
 $sidenav-header-height: 40px;
 $sidenav-padding: $spacing-large;
 $sidenav-width: 300px;
@@ -355,3 +386,5 @@ $panel-width: 240px;
 $document-content-horizontal-padding: $spacing-large;
 
 $sidebar-padding: $spacing-xl;
+
+$mobile-header-font-size: 24px;

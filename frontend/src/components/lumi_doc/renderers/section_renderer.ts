@@ -14,11 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { html, nothing, TemplateResult } from "lit";
+import { html, LitElement, nothing, TemplateResult } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 import {
   ListContent,
   LumiContent,
+  LumiReference,
   LumiSection,
   LumiSpan,
   LumiSummary,
@@ -30,9 +31,12 @@ import { HighlightManager } from "../../../shared/highlight_manager";
 import { HighlightSelection } from "../../../shared/selection_utils";
 
 import "../../lumi_span/lumi_span";
+import { CollapseManager } from "../../../shared/collapse_manager";
 
 export interface SectionRendererProperties {
+  parentComponent: LitElement;
   section: LumiSection;
+  references: LumiReference[];
   summaryMaps: LumiSummaryMaps | null;
   hoverFocusedSpanId: string | null;
   isCollapsed: boolean;
@@ -41,7 +45,13 @@ export interface SectionRendererProperties {
   onSpanSummaryMouseEnter: (spanIds: string[]) => void;
   onSpanSummaryMouseLeave: () => void;
   highlightManager: HighlightManager;
+  collapseManager: CollapseManager;
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void;
+  onPaperReferenceClick: (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => void;
+  isSubsection: boolean;
 }
 
 function renderHeading(section: LumiSection): TemplateResult | typeof nothing {
@@ -121,15 +131,19 @@ function getSpanIdsFromContent(content: LumiContent): string[] {
 function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
   const highlights = props.highlightManager.getSpanHighlights(span.id);
   return html`<lumi-span .span=${span}
-    >${renderLumiSpan({ span, highlights })}</lumi-span
+    >${renderLumiSpan({
+      span,
+      highlights,
+      references: props.references,
+      onPaperReferenceClick: props.onPaperReferenceClick,
+    })}</lumi-span
   >`;
 }
 
 function renderSectionSummaryPanel(
   props: SectionRendererProperties
 ): TemplateResult {
-  const { summaryMaps, section, getImageUrl, highlightManager, onFocusOnSpan } =
-    props;
+  const { summaryMaps, section, getImageUrl, onFocusOnSpan } = props;
   const summary = summaryMaps?.sectionSummariesMap.get(section.id);
   const classesObject: { [key: string]: boolean } = {
     "section-summary": true,
@@ -172,17 +186,10 @@ function renderSectionSummaryPanel(
       ${section.contents
         .filter((content) => content.imageContent)
         .map((content) => {
-          return renderContent({
-            content,
-            getImageUrl,
-            summary: summaryMaps?.contentSummariesMap.get(content.id) ?? null,
-            spanSummaries: new Map(),
-            focusedSpanId: "",
-            displayContentSummaries: true,
-            onSpanSummaryMouseEnter: () => {},
-            onSpanSummaryMouseLeave: () => {},
-            highlightManager,
-          });
+          return html`<lumi-image-content
+            .getImageUrl=${getImageUrl}
+            .imageContent=${content.imageContent}
+          ></lumi-image-content>`;
         })}
     </div> `;
 }
@@ -197,7 +204,9 @@ function getSpansFromListContent(content: ListContent) {
   return spans;
 }
 
-function renderContents(props: SectionRendererProperties): TemplateResult {
+function renderContents(
+  props: SectionRendererProperties
+): TemplateResult | typeof nothing {
   const {
     section,
     isCollapsed,
@@ -207,6 +216,9 @@ function renderContents(props: SectionRendererProperties): TemplateResult {
     onSpanSummaryMouseEnter,
     onSpanSummaryMouseLeave,
     highlightManager,
+    collapseManager,
+    references,
+    onPaperReferenceClick,
   } = props;
   if (isCollapsed) {
     return renderSectionSummaryPanel(props);
@@ -229,15 +241,18 @@ function renderContents(props: SectionRendererProperties): TemplateResult {
       });
 
       return renderContent({
+        parentComponent: props.parentComponent,
         content,
+        references,
         getImageUrl,
         summary: summaryMaps?.contentSummariesMap.get(content.id) ?? null,
         spanSummaries,
         focusedSpanId: hoverFocusedSpanId,
-        displayContentSummaries: true,
         onSpanSummaryMouseEnter,
         onSpanSummaryMouseLeave,
         highlightManager,
+        collapseManager,
+        onPaperReferenceClick,
       });
     })}
     ${renderSubsections(props)}
@@ -254,6 +269,9 @@ function renderSubsections(
     onSpanSummaryMouseEnter,
     onSpanSummaryMouseLeave,
     onFocusOnSpan,
+    collapseManager,
+    references,
+    onPaperReferenceClick,
   } = props;
   if (!section.subSections) return nothing;
 
@@ -262,16 +280,23 @@ function renderSubsections(
     (subSection) =>
       html`<div class="subsection">
         ${renderSection({
+          parentComponent: props.parentComponent,
           section: subSection,
+          references,
           summaryMaps: summaryMaps,
           hoverFocusedSpanId: null,
-          isCollapsed: false,
-          onCollapseChange: () => {},
+          isCollapsed: props.collapseManager.getCollapseState(subSection.id),
+          onCollapseChange: (isCollapsed: boolean) => {
+            props.collapseManager.toggleSection(subSection.id, isCollapsed);
+          },
           getImageUrl,
           onSpanSummaryMouseEnter,
           onSpanSummaryMouseLeave,
           highlightManager: props.highlightManager,
+          collapseManager,
           onFocusOnSpan,
+          onPaperReferenceClick,
+          isSubsection: true,
         })}
       </div>`
   )}`;
@@ -301,6 +326,7 @@ function renderHideButton(
   `;
 }
 
+// TODO(ellenj): Consider re-adding section summaries to the gutter, otherwise remove this.
 function renderSectionSummary(props: SectionRendererProperties) {
   if (props.isCollapsed) {
     return nothing;
@@ -319,13 +345,20 @@ export function renderSection(
     return nothing;
   }
 
+  const sectionContainerClasses = {
+    ["section-container"]: true,
+    ["is-subsection"]: props.isSubsection,
+  };
+
   return html`<div class="section-renderer-container">
-    <div class="section-container">
-      <div class="hide-button-container">
-        ${renderSectionSummary(props)}
-        ${renderHideButton(isCollapsed, onCollapseChange)}
+    <div class=${classMap(sectionContainerClasses)}>
+      <div class="heading-row">
+        <div class="hide-button-container">
+          ${renderHideButton(isCollapsed, onCollapseChange)}
+        </div>
+        ${renderHeading(section)}
       </div>
-      ${renderHeading(section)} ${renderContents(props)}
+      ${renderContents(props)}
     </div>
   </div>`;
 }

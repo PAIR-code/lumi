@@ -31,6 +31,7 @@ import { provide } from "@lit/context";
 // import { paper as paper_2506_09018 } from "../.examples/paper_2506.09018";
 // import { paper as paper_2309_12864 } from "../.examples/paper_2309.12864";
 // import { paper as paper_2406_09403 } from "../.examples/paper_2406.09403";
+// import { paper as paper_2406_13892 } from "../.examples/paper_2406.13892";
 
 import "../components/lumi_doc/lumi_doc";
 import { InnerTagName, LumiDoc, LoadingStatus } from "../shared/lumi_doc";
@@ -47,11 +48,12 @@ const PAPERS: { [key: string]: LumiDoc } = {
   // "2506.09018": paper_2506_09018,
   // "2309.12864": paper_2309_12864,
   // "2406.09403": paper_2406_09403,
+  // "2406.13892": paper_2406_13892,
 };
 
 const TEST_TABLE_HTML = `<table>
   <tr>
-    <th>Company</th>
+    <th>Company $a_2$</th>
     <th>Contact</th>
     <th>Country</th>
   </tr>
@@ -96,6 +98,7 @@ const mockLumiDoc: LumiDoc = {
         imageContent: null,
         htmlFigureContent: null,
         listContent: null,
+        figureContent: null,
       },
     ],
   },
@@ -166,6 +169,7 @@ const mockLumiDoc: LumiDoc = {
           imageContent: null,
           htmlFigureContent: null,
           listContent: null,
+          figureContent: null,
         },
       ],
     },
@@ -186,6 +190,7 @@ const mockLumiDoc: LumiDoc = {
           textContent: null,
           imageContent: null,
           htmlFigureContent: null,
+          figureContent: null,
         },
         // Pre content
         {
@@ -203,6 +208,7 @@ const mockLumiDoc: LumiDoc = {
           imageContent: null,
           htmlFigureContent: null,
           listContent: null,
+          figureContent: null,
         },
         // HTML figure content
         {
@@ -218,6 +224,7 @@ const mockLumiDoc: LumiDoc = {
               innerTags: [],
             },
           },
+          figureContent: null,
         },
         // Image content
         {
@@ -225,8 +232,10 @@ const mockLumiDoc: LumiDoc = {
           listContent: null,
           textContent: null,
           htmlFigureContent: null,
+          figureContent: null,
           imageContent: {
             storagePath: "lollipop.png",
+            latexPath: "",
             altText: "",
             width: 100,
             height: 100,
@@ -243,12 +252,9 @@ const mockLumiDoc: LumiDoc = {
 };
 
 class MockScrollState extends ScrollState {
-  registerSpan = (id: string, el: Ref) =>
-    console.log(`[Storybook] Registering span: ${id}`, el);
-  unregisterSpan = (id: string) =>
-    console.log(`[Storybook] Unregistering span: ${id}`);
-  scrollToSpan = (id: string) =>
-    console.log(`[Storybook] Scrolling to span: ${id}`);
+  registerSpan = (id: string, el: Ref) => {};
+  unregisterSpan = (id: string) => {};
+  scrollToSpan = (id: string) => {};
 }
 
 /**

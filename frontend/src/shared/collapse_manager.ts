@@ -16,31 +16,46 @@
  */
 
 import { action, makeObservable, observable } from "mobx";
-import { LumiDoc } from "./lumi_doc";
+import { LumiSection } from "./lumi_doc";
 import { LumiDocManager } from "./lumi_doc_manager";
+import { isViewportSmall } from "./responsive_utils";
 
-const INITIAL_COLLAPSE_STATE = true;
+const INITIAL_SECTION_COLLAPSE_STATE = false;
+const INITIAL_MOBILE_SUMMARY_COLLAPSE_STATE = true;
+const INITIAL_DESKTOP_SUMMARY_COLLAPSE_STATE = false;
+
+export type CollapseState = "collapsed" | "expanded" | "indeterminate";
+
 /**
  * Manages the collapse/expand state of sections in a document.
  */
 export class CollapseManager {
   sectionCollapseState = new Map<string, boolean>();
-  isAbstractCollapsed = INITIAL_COLLAPSE_STATE;
+  mobileSummaryCollapseState = new Map<string, boolean>();
+  isAbstractCollapsed = INITIAL_SECTION_COLLAPSE_STATE;
 
   constructor(private readonly lumiDocManager: LumiDocManager) {
     makeObservable(this, {
       sectionCollapseState: observable.shallow,
+      mobileSummaryCollapseState: observable.shallow,
       isAbstractCollapsed: observable,
       setAbstractCollapsed: action,
       toggleSection: action,
       setAllSectionsCollapsed: action,
       expandToSpan: action,
+      getMobileSummaryCollapseState: action,
+      toggleMobileSummaryCollapse: action,
     });
   }
 
   initialize() {
     // Initialize all sections to be expanded.
-    this.setAllSectionsCollapsed(INITIAL_COLLAPSE_STATE);
+    this.setAllSectionsCollapsed(INITIAL_SECTION_COLLAPSE_STATE);
+
+    const summaryCollapseState = isViewportSmall()
+      ? INITIAL_MOBILE_SUMMARY_COLLAPSE_STATE
+      : INITIAL_DESKTOP_SUMMARY_COLLAPSE_STATE;
+    this.setAllMobileSummariesCollapsed(summaryCollapseState);
   }
 
   setAbstractCollapsed(isCollapsed: boolean) {
@@ -55,15 +70,50 @@ export class CollapseManager {
     return this.sectionCollapseState.get(id) ?? false;
   }
 
-  areAllSectionsCollapsed() {
-    if (!this.isAbstractCollapsed) return false;
+  getMobileSummaryCollapseState(contentId: string) {
+    return this.mobileSummaryCollapseState.get(contentId) ?? false;
+  }
 
-    // Check if any section is not collapsed.
-    const uncollapsedValue = Array.from(
-      this.sectionCollapseState.values()
-    ).find((isCollapsed) => !isCollapsed);
-    // If we can't find an uncollapsed section, it means all are collapsed.
-    return uncollapsedValue === undefined;
+  toggleMobileSummaryCollapse(contentId: string) {
+    const currentState = this.getMobileSummaryCollapseState(contentId);
+    this.mobileSummaryCollapseState.set(contentId, !currentState);
+  }
+
+  setAllMobileSummariesCollapsed(isCollapsed: boolean) {
+    const setAllCollapsedInSection = (section: LumiSection) => {
+      section.contents.forEach((content) => {
+        this.mobileSummaryCollapseState.set(content.id, isCollapsed);
+      });
+
+      if (section.subSections) {
+        section.subSections.forEach((subSection) => {
+          setAllCollapsedInSection(subSection);
+        });
+      }
+    };
+
+    this.lumiDocManager.lumiDoc.sections.forEach((section) => {
+      setAllCollapsedInSection(section);
+    });
+  }
+
+  getOverallCollapseState(): CollapseState {
+    const allStates = [
+      this.isAbstractCollapsed,
+      ...this.sectionCollapseState.values(),
+    ];
+
+    const allCollapsed = allStates.every((isCollapsed) => isCollapsed);
+    if (allCollapsed) {
+      return "collapsed";
+    }
+
+    const allExpanded = allStates.every((isCollapsed) => !isCollapsed);
+    if (allExpanded) {
+      return "expanded";
+    }
+
+    return "indeterminate";
   }
 
   setAllSectionsCollapsed(isCollapsed: boolean) {

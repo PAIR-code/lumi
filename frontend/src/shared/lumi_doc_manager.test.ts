@@ -41,6 +41,7 @@ const createTextContent = (spans: LumiSpan[]): LumiContent => ({
   imageContent: null,
   htmlFigureContent: null,
   listContent: null,
+  figureContent: null,
 });
 
 // Helper to create a mock ListContent
@@ -53,6 +54,7 @@ const createListContent = (items: ListItem[]): LumiContent => ({
     listItems: items,
     isOrdered: false,
   },
+  figureContent: null,
 });
 
 // Helper to create a mock ListItem

@@ -47,6 +47,7 @@ const createContentWithSpans = (spans: LumiSpan[]): LumiContent => ({
   imageContent: null,
   htmlFigureContent: null,
   listContent: null,
+  figureContent: null,
 });
 
 describe("getReferencedSpanIdsFromContent", () => {
@@ -88,6 +89,7 @@ describe("getReferencedSpanIdsFromContent", () => {
       textContent: null,
       imageContent: null,
       htmlFigureContent: null,
+      figureContent: null,
       listContent: {
         isOrdered: false,
         listItems: [
@@ -119,6 +121,7 @@ describe("getReferencedSpanIdsFromContent", () => {
           isOrdered: true,
           listItems: [{ spans: [createSpanWithRefs("span-2", ["ref-B"])] }],
         },
+        figureContent: null,
       },
     ];
     expect(getReferencedSpanIdsFromContent(contents)).to.have.members([

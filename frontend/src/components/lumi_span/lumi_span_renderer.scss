@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+@use "../../sass/common";
 @use "../../sass/typescale";
 
 .lumi-span-renderer-element {
@@ -62,6 +63,9 @@
 
     &.code {
       font-family: "Roboto Mono", monospace;
+      font-size: 14px;
+      padding: common.$spacing-xs 0;
+
       background-color: var(--md-sys-color-surface-container);
     }
 
@@ -103,5 +107,35 @@
   // We only show the katex-mathml and hide katex-html.
   .katex-html {
     display: none;
+  }
+
+  .citation-marker {
+    display: inline-flex;
+    gap: common.$spacing-small;
+    padding: 0 common.$spacing-xs;
+  }
+
+  .inline-citation {
+    background: var(--md-sys-color-gray-container);
+    color: var(--md-sys-color-on-gray-container-soft);
+
+    @include typescale.body-small;
+    padding: 0 common.$spacing-small;
+    border-radius: 4px;
+
+    cursor: pointer;
+  }
+
+  .equation {
+    padding: 0 common.$spacing-xs;
+
+    &.display {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: common.$spacing-xl 0;
+
+      overflow-y: auto;
+    }
   }
 }

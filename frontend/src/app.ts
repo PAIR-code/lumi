@@ -30,8 +30,6 @@ import { customElement } from "lit/decorators.js";
 import { createRef, ref, Ref } from "lit/directives/ref.js";
 
 import { core } from "./core/core";
-import { AnalyticsService } from "./services/analytics.service";
-import { HomeService } from "./services/home.service";
 import { Pages, RouterService } from "./services/router.service";
 import { SettingsService } from "./services/settings.service";
 import { SnackbarService } from "./services/snackbar.service";
@@ -43,8 +41,6 @@ import { styles } from "./app.scss";
 export class App extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  private readonly analyticsService = core.getService(AnalyticsService);
-  private readonly homeService = core.getService(HomeService);
   private readonly routerService = core.getService(RouterService);
   private readonly settingsService = core.getService(SettingsService);
   private readonly snackbarService = core.getService(SnackbarService);

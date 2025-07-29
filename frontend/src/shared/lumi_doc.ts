@@ -102,10 +102,16 @@ export interface TextContent {
 
 export interface ImageContent {
   storagePath: string;
+  latexPath: string;
   caption: LumiSpan | null | undefined;
   altText: string;
   width: number;
   height: number;
+}
+
+export interface FigureContent {
+  images: ImageContent[];
+  caption: LumiSpan | null | undefined;
 }
 
 // Note: this currently only exists in the front-end type definitions.
@@ -136,6 +142,7 @@ export interface LumiContent {
   // Allowing this to be null to simplify conversion from backend.
   textContent: TextContent | undefined | null;
   imageContent: ImageContent | undefined | null;
+  figureContent: FigureContent | undefined | null;
   htmlFigureContent: HtmlFigureContent | undefined | null;
   listContent: ListContent | undefined | null;
 }
@@ -155,6 +162,7 @@ export enum InnerTagName {
   EM = "em", // em tag - Handled by lumi_span.scss class
   UNDERLINE = "u", // Underline - Handled by lumi_span.scss class
   MATH = "math", // Renders as Latex
+  MATH_DISPLAY = "math_display", // Renders as Latex display equation
   REFERENCE = "ref", // Renders as a linked citation
   SPAN_REFERENCE = "spanref",
   CONCEPT = "concept",
@@ -170,6 +178,7 @@ export interface InnerTag {
   tagName: InnerTagName;
   position: Position;
   metadata: InnerTagMetadata;
+  children?: InnerTag[];
 }
 
 export interface LumiReference {
@@ -209,5 +218,6 @@ export interface LumiDoc {
   summaries?: LumiSummaries;
   metadata?: ArxivMetadata;
   loadingStatus: string;
+  loadingError?: string;
   references: LumiReference[];
 }
