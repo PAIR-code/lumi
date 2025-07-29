@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { csrFixture as fixture } from "@lit-labs/testing/fixtures.js";
-import { html } from "lit";
+import { fixture, html } from "@open-wc/testing";
 import { expect } from "@esm-bundle/chai";
 
 import { renderLumiSpan } from "./lumi_span_renderer";
@@ -30,9 +29,7 @@ describe("renderLumiSpan", () => {
       innerTags: [],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
     expect(el.textContent).to.equal("hello world");
   });
 
@@ -49,9 +46,7 @@ describe("renderLumiSpan", () => {
       ],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
     const boldEls = el.querySelectorAll("span.b");
     expect(boldEls.length).to.equal(4);
     const expectedTextContents = ["b", "o", "l", "d"];
@@ -74,9 +69,7 @@ describe("renderLumiSpan", () => {
       ],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: [],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
     const linkEls = el.querySelectorAll("a");
     const expectedTextContents = ["l", "i", "n", "k"];
     expectedTextContents.forEach((expectedContent, index) => {
@@ -102,8 +95,7 @@ describe("renderLumiSpan", () => {
     ];
 
     const el = await fixture(
-      html`<div>${renderLumiSpan({ span, highlights })}</div>`,
-      { modules: [] }
+      html`<div>${renderLumiSpan({ span, highlights })}</div>`
     );
     const highlightedEls = el.querySelectorAll("span.yellow");
     expect(highlightedEls.length).to.equal(11); // 'highlighted'.length
@@ -125,9 +117,7 @@ describe("renderLumiSpan", () => {
       ],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: ["./lumi_span_renderer.ts"],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
 
     // Check that the text outside the equation is still there
     expect(el.textContent).to.include("An equation:");
@@ -164,10 +154,7 @@ describe("renderLumiSpan", () => {
             { id: "ref2", span: { id: "ref-s2", text: "", innerTags: [] } },
           ],
         })}
-      </div>`,
-      {
-        modules: ["./lumi_span_renderer.ts"],
-      }
+      </div>`
     );
 
     expect(el.textContent).to.include("Sentence12");
@@ -193,9 +180,7 @@ describe("renderLumiSpan", () => {
       ],
     };
 
-    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`, {
-      modules: ["./lumi_span_renderer.ts", "./lumi_span_utils.ts"],
-    });
+    const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
 
     const boldEls = el.querySelectorAll("span.b");
     expect(boldEls.length).to.equal(16); // "bold and italic".length
