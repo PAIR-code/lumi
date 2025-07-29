@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { InnerTagName, LumiContent, LumiSpan } from "./lumi_doc";
+import { InnerTagName, LumiContent, LumiSection, LumiSpan } from "./lumi_doc";
 
 /**
  * Extracts all unique referenced span IDs from the `spanref` tags within an
@@ -66,4 +66,28 @@ export function getReferencedSpanIdsFromContent(
 
   addAllRefs(contents);
   return Array.from(referencedIds);
+}
+
+/**
+ * Recursively traverses a LumiSection and its subSections to collect all
+ * LumiContent objects into a single flat array.
+ *
+ * @param section The root `LumiSection` to start traversal from.
+ * @returns A flat array of all `LumiContent` objects found.
+ */
+export function getAllContents(section: LumiSection): LumiContent[] {
+  const allContents: LumiContent[] = [];
+
+  function traverse(currentSection: LumiSection) {
+    allContents.push(...currentSection.contents);
+
+    if (currentSection.subSections) {
+      for (const subSection of currentSection.subSections) {
+        traverse(subSection);
+      }
+    }
+  }
+
+  traverse(section);
+  return allContents;
 }
