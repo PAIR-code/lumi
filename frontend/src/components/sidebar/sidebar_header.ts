@@ -29,6 +29,7 @@ import { LumiAnswerRequest } from "../../shared/api";
 import { createTemporaryAnswer } from "../../shared/answer_utils";
 import { getLumiResponseCallable } from "../../shared/callables";
 import { SnackbarService } from "../../services/snackbar.service";
+import { AnalyticsAction, AnalyticsService } from "../../services/analytics.service";
 
 /**
  * The header for the sidebar.
@@ -41,16 +42,19 @@ export class SidebarHeader extends MobxLitElement {
   private readonly firebaseService = core.getService(FirebaseService);
   private readonly historyService = core.getService(HistoryService);
   private readonly snackbarService = core.getService(SnackbarService);
+  private readonly analyticsService = core.getService(AnalyticsService);
 
   @property({ type: Object }) onHistoryClick = () => {};
   @state() private isSearchOpen = false;
   @state() private query = "";
 
   private openSearch() {
+    this.analyticsService.trackAction(AnalyticsAction.HEADER_OPEN_SEARCH);
     this.isSearchOpen = true;
   }
 
   private closeSearch() {
+    this.analyticsService.trackAction(AnalyticsAction.HEADER_CLOSE_SEARCH);
     this.isSearchOpen = false;
   }
 
@@ -60,6 +64,7 @@ export class SidebarHeader extends MobxLitElement {
     if (!this.query || !lumiDoc || this.historyService.isAnswerLoading) {
       return;
     }
+    this.analyticsService.trackAction(AnalyticsAction.HEADER_EXECUTE_SEARCH);
 
     const docId = this.routerService.getActiveRouteParams()["document_id"];
 
@@ -100,7 +105,10 @@ export class SidebarHeader extends MobxLitElement {
           icon="contextual_token"
           .loading=${isLoading}
           variant="default"
-          @click=${this.onHistoryClick}
+          @click=${() => {
+            this.analyticsService.trackAction(AnalyticsAction.HEADER_OPEN_CONTEXT);
+            this.onHistoryClick();
+          }}
         ></pr-icon-button>
         <pr-textarea
           .focused=${true}
@@ -160,6 +168,7 @@ export class SidebarHeader extends MobxLitElement {
   }
 
   private navigateHome() {
+    this.analyticsService.trackAction(AnalyticsAction.HEADER_NAVIGATE_HOME);
     this.routerService.navigate(Pages.HOME);
   }
 

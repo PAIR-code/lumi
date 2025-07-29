@@ -25,6 +25,33 @@ interface ServiceProvider {
 
 export enum AnalyticsAction {
   CREATE_DOC = "click_create_doc",
+
+  // lumi_reader
+  READER_TEXT_SELECTION = "reader_text_selection",
+
+  // sidebar
+  SIDEBAR_TOGGLE_ALL_CONCEPTS = "sidebar_toggle_all_concepts",
+  SIDEBAR_TOGGLE_CONCEPT = "sidebar_toggle_concept",
+  SIDEBAR_TAB_CHANGE = "sidebar_tab_change",
+  SIDEBAR_TOC_SECTION_CLICK = "sidebar_toc_section_click",
+
+  // lumi_questions
+  QUESTIONS_DISMISS_ANSWER = "questions_dismiss_answer",
+  QUESTIONS_SEE_ALL_CLICK = "questions_see_all_click",
+  QUESTIONS_BACK_CLICK = "questions_back_click",
+  QUESTIONS_REFERENCE_CLICK = "questions_reference_click",
+
+  // smart_highlight_menu
+  MENU_EXPLAIN_CLICK = "menu_explain_click",
+  MENU_ASK_CLICK = "menu_ask_click",
+  MENU_SEND_QUERY = "menu_send_query",
+
+  // sidebar_header
+  HEADER_NAVIGATE_HOME = "header_navigate_home",
+  HEADER_OPEN_SEARCH = "header_open_search",
+  HEADER_CLOSE_SEARCH = "header_close_search",
+  HEADER_EXECUTE_SEARCH = "header_execute_search",
+  HEADER_OPEN_CONTEXT = "header_open_context",
 }
 
 /** Manages Google Analytics. */
@@ -34,10 +61,10 @@ export class AnalyticsService extends Service {
     makeObservable(this);
   }
 
-  trackAction(buttonClick: AnalyticsAction) {
+  trackAction(action: AnalyticsAction) {
     if (typeof gtag === "function") {
       gtag("event", "user_action", {
-        action: buttonClick,
+        action,
         page_location: this.sp.routerService.activeRoute.path,
       });
     }
