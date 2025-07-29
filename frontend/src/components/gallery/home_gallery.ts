@@ -73,7 +73,6 @@ export class HomeGallery extends MobxLitElement {
     makeObservable(this);
   }
 
-  // TODO(ellenj): Implement error handling.
   get isLoadingDocument(): boolean {
     return this.unsubscribeListeners.size > 0 || this.isLoadingMetadata;
   }
@@ -175,7 +174,7 @@ export class HomeGallery extends MobxLitElement {
             this.historyService.deletePaper(paperId);
             this.unsubscribeListeners.get(paperId)?.();
             this.unsubscribeListeners.delete(paperId);
-            this.snackbarService.show("Error loading document.");
+            this.snackbarService.show(`${data.loadingError}`);
           }
         }
       }
@@ -273,7 +272,7 @@ export class HomeGallery extends MobxLitElement {
           @click=${this.loadDocument}
           .loading=${this.isLoadingDocument}
           ?disabled=${this.isLoadingDocument || !this.paperInput}
-          >
+        >
         </pr-icon-button>
       </div>
       <div class="gallery-wrapper">
@@ -282,8 +281,7 @@ export class HomeGallery extends MobxLitElement {
         })}
         ${this.renderEmptyMessage(historyItems)}
       </div>
-      <div class="history-controls">
-      </div>
+      <div class="history-controls"></div>
     `;
   }
 

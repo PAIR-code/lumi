@@ -154,7 +154,12 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
             versioned_doc_ref.update(lumi_doc_json)
         except Exception as e:
             logger.error(f"Error importing doc {arxiv_id}v{version}: {e}")
-            versioned_doc_ref.update({"loadingStatus": LoadingStatus.ERROR})
+            versioned_doc_ref.update(
+                {
+                    "loadingStatus": LoadingStatus.ERROR,
+                    "loadingError": f"Error importing document: {e}",
+                }
+            )
 
     elif loading_status == LoadingStatus.SUMMARIZING:
         try:
@@ -174,7 +179,12 @@ def on_document_import_requested(event: Event[Change[DocumentSnapshot]]) -> None
             versioned_doc_ref.update(lumi_doc_json)
         except Exception as e:
             logger.error(f"Error summarizing doc {arxiv_id}v{version}: {e}")
-            versioned_doc_ref.update({"loadingStatus": LoadingStatus.ERROR})
+            versioned_doc_ref.update(
+                {
+                    "loadingStatus": LoadingStatus.ERROR,
+                    "loadingError": f"Error summarizing document: {e}",
+                }
+            )
 
 
 @https_fn.on_call()
