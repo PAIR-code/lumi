@@ -36,8 +36,6 @@
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { computed, makeObservable } from "mobx";
-import { LumiSummaryMaps } from "../../shared/lumi_summary_maps";
 import {
   getSelectionInfo,
   HighlightSelection,
@@ -107,16 +105,8 @@ export class LumiDocViz extends MobxLitElement {
     return this.lumiDocManager.lumiDoc;
   }
 
-  @computed get summaryMaps() {
-    if (!this.lumiDoc?.summaries) {
-      return null;
-    }
-    return new LumiSummaryMaps(this.lumiDoc.summaries);
-  }
-
   constructor() {
     super();
-    makeObservable(this);
   }
 
   private handleMouseUp(e: MouseEvent) {
@@ -229,7 +219,7 @@ export class LumiDocViz extends MobxLitElement {
                 parentComponent: this,
                 section,
                 references: this.lumiDoc.references,
-                summaryMaps: this.summaryMaps,
+                summaryMaps: this.lumiDocManager.summaryMaps,
                 hoverFocusedSpanId: this.hoveredSpanId,
                 isCollapsed: isCollapsed,
                 onCollapseChange: (isCollapsed: boolean) => {
