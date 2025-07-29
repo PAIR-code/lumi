@@ -65,8 +65,6 @@ export class SidebarHeader extends MobxLitElement {
 
     const request: LumiAnswerRequest = {
       query: this.query,
-      // TODO(ellenj): Update question-answering to make use of history.
-      history: [],
     };
 
     const tempAnswer = createTemporaryAnswer(request);

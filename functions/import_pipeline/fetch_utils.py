@@ -14,11 +14,55 @@
 # ==============================================================================
 
 import requests
-from firebase_functions import logger
+from bs4 import BeautifulSoup
 
 import xml.etree.ElementTree as ET
 from shared import string_utils
 from shared.types import ArxivMetadata
+
+VALID_LICENSES = {
+    "creativecommons.org/licenses/by/4.0/",
+    "creativecommons.org/licenses/by-sa/4.0/",
+    "creativecommons.org/share-your-work/public-domain/cc0/",
+}
+
+INVALID_LICENSE = {
+    "arxiv.org/licenses/nonexclusive-distrib/1.0/",
+}
+
+
+def check_arxiv_license(arxiv_id: str) -> None:
+    """
+    Checks the license of an arXiv paper from its abstract page.
+
+    Args:
+        arxiv_id (str): The arXiv paper ID.
+
+    Raises:
+        ValueError: If an invalid license is found, or if no valid license is found.
+    """
+    url = f"https://arxiv.org/abs/{arxiv_id}"
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.content, "html.parser")
+    all_hrefs = [a_tag.get("href", "") for a_tag in soup.find_all("a")]
+
+    for href in all_hrefs:
+        for invalid in INVALID_LICENSE:
+            if invalid in href:
+                raise ValueError(
+                    "Paper has a non-exclusive license and cannot be processed."
+                )
+
+    found_license = False
+    for href in all_hrefs:
+        for valid in VALID_LICENSES:
+            if valid in href:
+                found_license = True
+
+    if not found_license:
+        raise ValueError("No valid license found.")
 
 
 def fetch_pdf_bytes(url) -> bytes:

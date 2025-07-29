@@ -218,5 +218,6 @@ export interface LumiDoc {
   summaries?: LumiSummaries;
   metadata?: ArxivMetadata;
   loadingStatus: string;
+  loadingError?: string;
   references: LumiReference[];
 }

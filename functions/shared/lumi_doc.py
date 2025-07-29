@@ -198,3 +198,4 @@ class LumiDoc:
     summaries: Optional[LumiSummaries] = None
     metadata: Optional[ArxivMetadata] = None
     loading_status: Optional[LoadingStatus] = LoadingStatus.UNSET
+    loading_error: Optional[str] = None

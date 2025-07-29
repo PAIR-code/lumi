@@ -189,6 +189,7 @@ shadow_directory_root
 frontend/src/.examples
 markdown_output.md
 functions/debug
+scripts_temp
 
 # Storybook local build
 frontend/storybook-static/

@@ -21,8 +21,6 @@ import { HighlightSelection } from "./selection_utils";
 export interface LumiAnswerRequest {
   query?: string;
   highlight?: string;
-  // TODO(ellenj): Update history to include past paper queries / abstracts as well.
-  history?: LumiAnswer[];
   highlightedSpans?: HighlightSelection[];
 }
 

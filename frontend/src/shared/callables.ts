@@ -22,6 +22,12 @@ import { PaperData } from "./types_local_storage";
 
 /** Firebase cloud function callables */
 
+/** The result from requesting a document import. */
+export interface RequestArxivDocImportResult {
+  metadata?: ArxivMetadata;
+  error?: string;
+}
+
 /**
  * Requests the import for a given arxiv doc.
  * @param functions The Firebase Functions instance.
@@ -30,8 +36,11 @@ import { PaperData } from "./types_local_storage";
 export const requestArxivDocImportCallable = async (
   functions: Functions,
   arxivId: string
-) => {
-  const result = await httpsCallable<{ arxiv_id: string }, ArxivMetadata>(
+): Promise<RequestArxivDocImportResult> => {
+  const result = await httpsCallable<
+    { arxiv_id: string },
+    RequestArxivDocImportResult
+  >(
     functions,
     "request_arxiv_doc_import"
   )({ arxiv_id: arxivId });

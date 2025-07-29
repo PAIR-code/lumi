@@ -39,32 +39,26 @@ def generate_lumi_answer(
     """
     query = request.query
     highlight = request.highlight
-    history = request.history
 
     all_spans = prompt_utils.get_all_spans_from_doc(doc)
     formatted_spans = prompt_utils.get_formatted_spans_list(all_spans)
     spans_string = "\n".join(formatted_spans)
-    history_string = ""
-    if history:
-        # TODO(ellenj): Format history into a string for the prompt
-        pass
 
     if query and highlight:
         prompt = prompts.LUMI_PROMPT_ANSWER_WITH_CONTEXT.format(
             spans_string=spans_string,
             highlight=highlight,
             query=query,
-            history_string=history_string,
         )
     elif query:
         prompt = prompts.LUMI_PROMPT_ANSWER.format(
-            spans_string=spans_string, query=query, history_string=history_string
+            spans_string=spans_string,
+            query=query,
         )
     elif highlight:
         prompt = prompts.LUMI_PROMPT_DEFINE.format(
             spans_string=spans_string,
             highlight=highlight,
-            history_string=history_string,
         )
     else:
         # Should not happen with proper request validation
