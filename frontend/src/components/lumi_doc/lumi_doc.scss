@@ -33,7 +33,7 @@
 
   .lumi-doc-content {
     @include common.flex-column;
-    gap: 24px;
+    gap: common.$main-content-gap;
 
     max-width: 1000px;
     height: 100%;

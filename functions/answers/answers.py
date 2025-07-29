@@ -22,7 +22,7 @@ from shared import prompt_utils
 from shared.api import LumiAnswer, LumiAnswerRequest
 from models import gemini
 from models import prompts
-from import_pipeline import import_pipeline, markdown_utils
+from import_pipeline import convert_html_to_lumi, markdown_utils
 from shared.utils import get_unique_id
 
 
@@ -74,7 +74,7 @@ def generate_lumi_answer(
     html_response = markdown_utils.markdown_to_html(markdown_response)
 
     # Parse the markdown response to create LumiContent objects.
-    response_sections = import_pipeline.convert_to_lumi_sections(
+    response_sections = convert_html_to_lumi.convert_to_lumi_sections(
         html_response, placeholder_map={}
     )
 

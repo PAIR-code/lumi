@@ -28,10 +28,10 @@ from shared.lumi_doc import LumiConcept
 
 PDF_IMPORT_FORMATTING_INSTRUCTIONS = rf"""Within these structural tags (but do NOT add any tags within header text), apply the following detailed markdown formatting rules:
 *   **Formatting Preservation:** Crucially, preserve all bold and italic formatting from the original PDF.
-*   **Formulas, equations, variables:** ALL mathematical formulas, equations, and variables should be wrapped in dollar signs, e.g., `$formula$`. 
+*   **Formulas, equations, variables:** ALL mathematical formulas, equations, and variables should be wrapped in single or double dollar signs, e.g., `$formula$` or `$$long equation$$`, following the dollar signs used in the original latex. 
         Try to convert latex equations into something supported by KaTeX html rendering. 
-        \begin{{equation}} and \end{{equation}} should be replaced with $ and $
-        \begin{{align}} and \end{{align}} with equations inside should also instead by wrapped in $ and $
+        \begin{{equation}} and \end{{equation}} should be replaced with $$ and $$
+        \begin{{align}} and \end{{align}} with equations inside should also instead by wrapped in $$ and $$
 
 *   **Headings:** Maintain the hierarchical header structure from the file, using `#` or `##` markdown headers. Do *not* use `*header*` style. Assume most academic papers will start with "Abstract" and "Introduction" as the first major headers (though "Abstract" will be wrapped in its own `{import_tags.L_ABSTRACT_START}` block). Maintain any numbering (e.g., "I. INTRODUCTION", "A. CONTRIBUTIONS").
 *   **Figures with Subfigures:** For figures that contain subfigures (like in the LaTeX `figure*` environment with `\begin{{subfigure\}}` contained within `\begin{{figure\}}`), use the following structure:
@@ -40,8 +40,8 @@ PDF_IMPORT_FORMATTING_INSTRUCTIONS = rf"""Within these structural tags (but do N
     *   Each subfigure's caption (if it has one) should follow its image tag, using the standard image caption tag: `{import_tags.L_IMG_CAP_START_PREFIX}path{import_tags.L_IMG_CAP_END}caption text{import_tags.L_IMG_CAP_START_PREFIX}path{import_tags.L_IMG_CAP_END}`.
     *   The main caption for the entire figure should be placed after the figure block, using `{import_tags.L_FIG_CAP_START_PREFIX}FIG_ID{import_tags.L_FIG_CAP_END}main caption text{import_tags.L_FIG_CAP_START_PREFIX}FIG_ID{import_tags.L_FIG_CAP_END}`.
 *   **Images (standalone):** For standalone images (not in a subfigure group), use the standard image tag: `{import_tags.L_IMG_START_PREFIX}path{import_tags.L_IMG_END}`, where path is the exact image path value cited in the latex file (Usually found in \includegraphics{{path}} - typically following the format 'directory/image_name.ext'). Ensure image captions are maintained and included as `{import_tags.L_IMG_CAP_START_PREFIX}path{import_tags.L_IMG_CAP_END}caption text{import_tags.L_IMG_CAP_START_PREFIX}path{import_tags.L_IMG_CAP_END}` directly after the image.
-*   **Inline references:** Wrap any inline references inside like `{import_tags.L_CITATION_START_PREFIX}X{import_tags.L_CITATION_END}citation text{import_tags.L_CITATION_START_PREFIX}X{import_tags.L_CITATION_END}` with the original PDF paper text within them, where X corresponds with the reference id - X should use the citation id from the latex file.
-*   **Tables, Algorithms and ALL other text-based figures and explanatory containers:** Wrap these within {import_tags.L_HTML_START_PREFIX}N{import_tags.L_HTML_END} and {import_tags.L_HTML_START_PREFIX}N{import_tags.L_HTML_END}, and reproduce the table, algorithm, or other text figure in HTML instead of markdown, matching the format as well as possible (Just output html without any html``` decorators). Ensure the captions are maintained and placed within {import_tags.L_HTML_CAP_START_PREFIX}N{import_tags.L_HTML_CAP_END} and {import_tags.L_HTML_CAP_START_PREFIX}N{import_tags.L_HTML_CAP_END}, following the {import_tags.L_HTML_START_PREFIX}N{import_tags.L_HTML_END}.
+*   **Inline references:** Wrap any inline references inside like `{import_tags.L_CITATION_START_PREFIX}X{import_tags.L_CITATION_END}`, where X corresponds with the reference id - X should use the citation id from the latex file often within `\cite{{id}}`.
+*   **Tables, Algorithms and ALL other text-based figures and explanatory containers:** Wrap these within {import_tags.L_HTML_START_PREFIX}N{import_tags.L_HTML_END} and {import_tags.L_HTML_START_PREFIX}N{import_tags.L_HTML_END}, and reproduce the table, algorithm, or other text figure in HTML instead of markdown, matching the format as well as possible (Just output html without any html``` decorators). Variables can be placed within $variable$. Ensure the captions are maintained and placed within {import_tags.L_HTML_CAP_START_PREFIX}N{import_tags.L_HTML_CAP_END} and {import_tags.L_HTML_CAP_START_PREFIX}N{import_tags.L_HTML_CAP_END}, following the {import_tags.L_HTML_START_PREFIX}N{import_tags.L_HTML_END}.
 *   **Captions: Within the {import_tags.L_IMG_CAP_START_PREFIX}X{import_tags.L_IMG_CAP_END} tags (where X is the image path value), captions must keep the '{{chart type}} N' text as it appears in the paper caption, such as 'Figure N' or 'Table N'.
 
 """
@@ -88,7 +88,7 @@ Optional content
 
 ## Subheading 1
 
-This is a sentence with a citation [[l-cit-citation1]][index][[l-cit-citation1]].
+This is a sentence with a citation [[l-cit-citation1]].
 
 1) Some bullets
 2) Bullet number 2

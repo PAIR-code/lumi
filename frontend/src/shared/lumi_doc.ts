@@ -102,6 +102,7 @@ export interface TextContent {
 
 export interface ImageContent {
   storagePath: string;
+  latexPath: string;
   caption: LumiSpan | null | undefined;
   altText: string;
   width: number;
@@ -161,6 +162,7 @@ export enum InnerTagName {
   EM = "em", // em tag - Handled by lumi_span.scss class
   UNDERLINE = "u", // Underline - Handled by lumi_span.scss class
   MATH = "math", // Renders as Latex
+  MATH_DISPLAY = "math_display", // Renders as Latex display equation
   REFERENCE = "ref", // Renders as a linked citation
   SPAN_REFERENCE = "spanref",
   CONCEPT = "concept",
@@ -176,6 +178,7 @@ export interface InnerTag {
   tagName: InnerTagName;
   position: Position;
   metadata: InnerTagMetadata;
+  children?: InnerTag[];
 }
 
 export interface LumiReference {

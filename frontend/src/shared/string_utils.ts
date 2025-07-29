@@ -16,6 +16,36 @@
  */
 
 // Utility functions for processing strings
+
+// Matches "arxiv.org/{some number of letters...}/####.#####
+// [a-zA-Z]+: greedily matches letters bewteen 1 and unlimited times
+// (\d{4}\.\d{5}): capturing group for id in format '####.#####' where # is a digit
+// (?!\d): negative lookahead that checks the next character is NOT a digit
+const ARXIV_CAPTURE_REGEX = /arxiv\.org\/[a-zA-Z]+\/(\d{4}\.\d{5})(?!\d)/;
+
+/**
+ * Extracts an arXiv ID from a URL or string.
+ *
+ * Handles various formats like:
+ * - https://arxiv.org/pdf/1511.02799
+ * - https://arxiv.org/abs/1511.02799
+ * - https://arxiv.org/pdf/1511.02799.pdf
+ * - https://arxiv.org/pdf/1511.02799v3
+ * - arxiv.org/pdf/1511.02799
+ *
+ * @param url The string to parse.
+ * @returns The arXiv ID (e.g., "1511.02799") or null if not found.
+ */
+export function extractArxivId(url: string): string | null {
+  const match = ARXIV_CAPTURE_REGEX.exec(url);
+  if (!match) return null;
+
+  const id = match[1]; // First capturing group
+  if (!id) return null;
+
+  return id;
+}
+
 /**
  * Parses a string of the form "key: value" into a key and value.
  */

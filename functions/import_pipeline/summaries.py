@@ -33,7 +33,7 @@ from shared.lumi_doc import (
 )
 from shared import prompt_utils
 import models.gemini as gemini
-from import_pipeline.import_pipeline import parse_text_and_extract_inner_tags
+from import_pipeline.convert_html_to_lumi import parse_text_and_extract_inner_tags
 from shared.utils import get_unique_id
 
 

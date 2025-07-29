@@ -192,6 +192,14 @@ Hello, world again!"""
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )
 
+        with self.subTest("underscores remain as underscores"):
+            self.maxDiff = None
+            markdown_input = "This is $\mathcal{a}_{b}$"
+            expected_html = "<p>This is $\mathcal{a}_{b}$</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

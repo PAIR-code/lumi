@@ -156,6 +156,7 @@ class InnerTagName(StrEnum):
     EM = "em"
     UNDERLINE = "u"
     MATH = "math"
+    MATH_DISPLAY = "math_display"
     REFERENCE = "ref"
     SPAN_REFERENCE = "spanref"
     CONCEPT = "concept"

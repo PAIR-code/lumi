@@ -26,11 +26,14 @@ import { reaction } from "mobx";
 import { core } from "../../core/core";
 import {
   FloatingPanelService,
+  ReferenceTooltipProps,
   SmartHighlightMenuProps,
 } from "../../services/floating_panel_service";
 
 import type { MdMenu } from "@material/web/menu/menu.js";
 import { styles } from "./floating_panel_host.scss";
+
+import "../reference_tooltip/reference_tooltip";
 
 /**
  * A host component that displays and positions a floating panel using md-menu.
@@ -104,6 +107,12 @@ export class FloatingPanelHost extends MobxLitElement {
       </div>`;
     }
 
+    if (contentProps instanceof ReferenceTooltipProps) {
+      return html`<div class="panel">
+        <reference-tooltip .props=${contentProps}></reference-tooltip>
+      </div>`;
+    }
+
     // Note: Add other cases for different panel content here.
 
     return nothing;
@@ -118,7 +127,7 @@ export class FloatingPanelHost extends MobxLitElement {
           @closed=${this.handleMenuClosed}
           positioning="fixed"
           anchor-corner="end-end"
-          menu-corner="start-end"
+          menu-corner="start-start"
         >
           ${this.renderContent()}
         </md-menu>

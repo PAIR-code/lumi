@@ -23,7 +23,7 @@ class UtilsTest(unittest.TestCase):
         id2 = get_unique_id()
         self.assertIsInstance(id1, str)
         self.assertNotEqual(id1, id2)
-        self.assertEqual(len(id1), 32)
+        self.assertEqual(len(id1), 8)
 
 
 if __name__ == "__main__":

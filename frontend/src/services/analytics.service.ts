@@ -23,7 +23,7 @@ interface ServiceProvider {
   routerService: RouterService;
 }
 
-export enum ButtonClick {
+export enum AnalyticsAction {
   CREATE_DOC = "click_create_doc",
 }
 
@@ -34,11 +34,10 @@ export class AnalyticsService extends Service {
     makeObservable(this);
   }
 
-  trackButtonClick(buttonClick: ButtonClick) {
+  trackAction(buttonClick: AnalyticsAction) {
     if (typeof gtag === "function") {
-      // Track as page view for now
-      gtag("event", "page_view", {
-        page_title: buttonClick,
+      gtag("event", "user_action", {
+        action: buttonClick,
         page_location: this.sp.routerService.activeRoute.path,
       });
     }

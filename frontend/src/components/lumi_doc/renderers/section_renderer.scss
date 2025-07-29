@@ -113,6 +113,10 @@
 
   .content-viz {
     grid-column: 2 / 4;
+
+    display: flex;
+    flex-direction: column;
+    gap: common.$main-content-gap;
   }
 
   .subsection {

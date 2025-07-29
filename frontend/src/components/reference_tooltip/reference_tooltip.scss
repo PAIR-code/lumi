@@ -16,19 +16,7 @@
  */
 @use "../../sass/common";
 
-.menu-wrapper {
-  /* This wrapper is needed for md-menu to position itself correctly
-     relative to its anchor element. */
-  position: relative;
-}
-
-.panel {
-  background-color: var(--md-sys-color-surface);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  margin: -8px 0;
-  padding: common.$spacing-xs;
-
-  overflow: hidden;
+.reference-tooltip-component {
+  max-width: 400px;
+  padding: common.$spacing-large;
 }
