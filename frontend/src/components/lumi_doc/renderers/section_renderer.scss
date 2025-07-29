@@ -111,6 +111,11 @@
     grid-column: common.$content-grid-col;
   }
 
+  .figures {
+    max-width: 100%;
+    overflow: auto;
+  }
+
   .content-viz {
     grid-column: 2 / 4;
 
