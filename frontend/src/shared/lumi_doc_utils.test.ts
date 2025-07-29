@@ -16,8 +16,11 @@
  */
 
 import { expect } from "@esm-bundle/chai";
-import { getReferencedSpanIdsFromContent } from "./lumi_doc_utils";
-import { InnerTagName, LumiContent, LumiSpan } from "./lumi_doc";
+import {
+  getAllContents,
+  getReferencedSpanIdsFromContent,
+} from "./lumi_doc_utils";
+import { InnerTagName, LumiContent, LumiSection, LumiSpan } from "./lumi_doc";
 
 // Helper to create a mock LumiSpan with spanref tags
 const createSpanWithRefs = (id: string, refIds: string[]): LumiSpan => ({
@@ -48,6 +51,19 @@ const createContentWithSpans = (spans: LumiSpan[]): LumiContent => ({
   htmlFigureContent: null,
   listContent: null,
   figureContent: null,
+});
+
+// Helper to create a mock LumiContent
+const createMockContent = (id: string): LumiContent => ({
+  id,
+  textContent: {
+    tagName: "p",
+    spans: [{ id: `span-for-${id}`, text: `text for ${id}`, innerTags: [] }],
+  },
+  imageContent: null,
+  figureContent: null,
+  htmlFigureContent: null,
+  listContent: null,
 });
 
 describe("getReferencedSpanIdsFromContent", () => {
@@ -128,5 +144,76 @@ describe("getReferencedSpanIdsFromContent", () => {
       "ref-A",
       "ref-B",
     ]);
+  });
+});
+
+describe("getAllContents", () => {
+  it("should return the section's contents when there are no subsections", () => {
+    const content1 = createMockContent("c1");
+    const section: LumiSection = {
+      id: "s1",
+      heading: { headingLevel: 1, text: "Section 1" },
+      contents: [content1],
+    };
+    expect(getAllContents(section)).to.deep.equal([content1]);
+  });
+
+  it("should return a flattened array from multiple levels of nested subsections", () => {
+    const c1 = createMockContent("c1");
+    const c2 = createMockContent("c2");
+    const c3 = createMockContent("c3");
+    const c4 = createMockContent("c4");
+    const section: LumiSection = {
+      id: "s1",
+      heading: { headingLevel: 1, text: "Section 1" },
+      contents: [c1],
+      subSections: [
+        {
+          id: "s1-1",
+          heading: { headingLevel: 2, text: "Sub 1-1" },
+          contents: [c2],
+          subSections: [
+            {
+              id: "s1-1-1",
+              heading: { headingLevel: 3, text: "Sub 1-1-1" },
+              contents: [c3],
+            },
+          ],
+        },
+        {
+          id: "s1-2",
+          heading: { headingLevel: 2, text: "Sub 1-2" },
+          contents: [c4],
+        },
+      ],
+    };
+    expect(getAllContents(section)).to.have.deep.members([c1, c2, c3, c4]);
+  });
+
+  it("should handle sections with no contents of their own but with subsections that have contents", () => {
+    const c1 = createMockContent("c1");
+    const section: LumiSection = {
+      id: "s1",
+      heading: { headingLevel: 1, text: "Section 1" },
+      contents: [],
+      subSections: [
+        {
+          id: "s1-1",
+          heading: { headingLevel: 2, text: "Sub 1-1" },
+          contents: [c1],
+        },
+      ],
+    };
+    expect(getAllContents(section)).to.deep.equal([c1]);
+  });
+
+  it("should return an empty array for a section with no contents and no subsections", () => {
+    const section: LumiSection = {
+      id: "s1",
+      heading: { headingLevel: 1, text: "Section 1" },
+      contents: [],
+      subSections: [],
+    };
+    expect(getAllContents(section)).to.deep.equal([]);
   });
 });
