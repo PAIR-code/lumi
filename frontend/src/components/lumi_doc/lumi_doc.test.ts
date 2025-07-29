@@ -25,6 +25,7 @@ import { HighlightManager } from "../../shared/highlight_manager";
 
 import "./lumi_doc";
 import "../multi_icon_toggle/multi_icon_toggle";
+import { LumiDoc } from "../../shared/lumi_doc";
 
 class MockLumiDocManager extends LumiDocManager {
   constructor(lumiDoc: any) {
@@ -41,20 +42,27 @@ describe("lumi-doc", () => {
   let highlightManager: HighlightManager;
 
   beforeEach(() => {
-    const lumiDoc = {
+    const lumiDoc: LumiDoc = {
       metadata: {
         paperId: "12345",
         title: "Test Paper",
         authors: ["Author 1", "Author 2"],
         publishedTimestamp: "2025-07-11",
+        version: "1",
+        summary: "summary",
+        updatedTimestamp: "",
       },
-      abstract: { text: "", paragraphs: [], items: [], contents: [] },
+      abstract: { contents: [] },
       sections: [],
       references: [],
       summaries: {
-        abstract: [],
-        sections: [],
+        sectionSummaries: [],
+        contentSummaries: [],
+        spanSummaries: [],
       },
+      markdown: "",
+      concepts: [],
+      loadingStatus: "SUCCESS",
     };
     lumiDocManager = new MockLumiDocManager(lumiDoc);
     collapseManager = new MockCollapseManager(lumiDocManager);
