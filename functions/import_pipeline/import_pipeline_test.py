@@ -30,6 +30,7 @@ from shared.lumi_doc import (
     Position,
     ImageContent,
     HtmlFigureContent,
+    FigureContent,
     LumiReference,
     LumiDoc,
     LumiConcept,
@@ -81,6 +82,47 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
         self.assertIsNotNone(image_content)
         self.assertEqual(image_content.latex_path, "fig1.png")
         self.assertIsNone(image_content.caption)
+
+    @patch.object(import_pipeline, "get_unique_id")
+    def test_figure_with_subfigures(self, mock_get_unique_id):
+        self.maxDiff = None
+        mock_get_unique_id.return_value = "uid"
+        markdown_input = f"""
+        {import_tags.L_FIG_START_PREFIX}FIG1{import_tags.L_FIG_END}
+            {import_tags.L_IMG_START_PREFIX}sub1.png{import_tags.L_IMG_END}
+                {import_tags.L_IMG_CAP_START_PREFIX}sub1.png{import_tags.L_IMG_CAP_END}
+                    Sub 1 Cap
+                {import_tags.L_IMG_CAP_START_PREFIX}sub1.png{import_tags.L_IMG_CAP_END}
+            {import_tags.L_IMG_START_PREFIX}sub2.png{import_tags.L_IMG_END}
+        {import_tags.L_FIG_END_PREFIX}FIG1{import_tags.L_FIG_END}
+        {import_tags.L_FIG_CAP_START_PREFIX}FIG1{import_tags.L_FIG_CAP_END}
+            Main Cap
+        {import_tags.L_FIG_CAP_START_PREFIX}FIG1{import_tags.L_FIG_CAP_END}
+        """
+
+        placeholder_map = {}
+        processed_markdown = import_pipeline.preprocess_and_replace_figures(
+            markdown_input, "file_id", placeholder_map
+        )
+
+        expected_placeholder_id = "[[LUMI_PLACEHOLDER_uid]]"
+        self.assertEqual(processed_markdown.strip(), expected_placeholder_id)
+        self.assertIn(expected_placeholder_id, placeholder_map)
+
+        lumi_content = placeholder_map[expected_placeholder_id]
+        self.assertIsNotNone(lumi_content.figure_content)
+
+        figure_content = lumi_content.figure_content
+        self.assertEqual(figure_content.caption.text, "Main Cap")
+        self.assertEqual(len(figure_content.images), 2)
+
+        # Check first sub-image
+        self.assertEqual(figure_content.images[0].latex_path, "sub1.png")
+        self.assertEqual(figure_content.images[0].caption.text, "Sub 1 Cap")
+
+        # Check second sub-image (no caption)
+        self.assertEqual(figure_content.images[1].latex_path, "sub2.png")
+        self.assertIsNone(figure_content.images[1].caption)
 
 
 class ImportPipelineTest(unittest.TestCase):
@@ -1408,6 +1450,10 @@ class ImportPipelineTest(unittest.TestCase):
             height=0,
             caption=None,
         )
+        mock_figure_content = FigureContent(
+            images=[mock_image_content],
+            caption=LumiSpan(id="cap1", text="main caption", inner_tags=[]),
+        )
         mock_doc = LumiDoc(
             markdown="",
             abstract=None,
@@ -1415,7 +1461,10 @@ class ImportPipelineTest(unittest.TestCase):
                 LumiSection(
                     id="s1",
                     heading=Heading(0, ""),
-                    contents=[LumiContent(id="c1", image_content=mock_image_content)],
+                    contents=[
+                        LumiContent(id="c1", image_content=mock_image_content),
+                        LumiContent(id="c2", figure_content=mock_figure_content),
+                    ],
                 )
             ],
             references=[],
@@ -1467,7 +1516,10 @@ class ImportPipelineTest(unittest.TestCase):
         # Assert that image extraction from latex source is called with the right args
         mock_image_utils.extract_images_from_latex_source.assert_called_once()
         _, kwargs = mock_image_utils.extract_images_from_latex_source.call_args
-        self.assertEqual(kwargs["image_contents"], [mock_image_content])
+        # The list should contain all images from ImageContent and FigureContent
+        self.assertEqual(len(kwargs["image_contents"]), 2)
+        self.assertEqual(kwargs["image_contents"][0], mock_image_content)
+        self.assertEqual(kwargs["image_contents"][1], mock_image_content)
 
         self.assertIsInstance(result, LumiDoc)
         self.assertEqual(result, mock_doc)

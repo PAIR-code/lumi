@@ -49,6 +49,12 @@ L_HTML_START_PREFIX = "[[l-html_"
 L_HTML_END = "]]"
 L_HTML_CAP_START_PREFIX = "[[l-html_cap_"
 L_HTML_CAP_END = "]]"
+L_FIG_START_PREFIX = "[[l-fig-start-"
+L_FIG_END_PREFIX = "[[l-fig-end-"
+L_FIG_END = "]]"
+L_FIG_CAP_START_PREFIX = "[[l-fig-cap-"
+L_FIG_CAP_END = "]]"
+
 
 # ==============================================================================
 # Span Reference Tags (for answers)
@@ -140,6 +146,32 @@ HTML_FIGURE_PATTERN = re.compile(
     """,
     re.VERBOSE | re.DOTALL,
 )
+
+
+# Explanation of regex used:
+#  - `(?P<figure_id>.*?)`: Named group 'figure_id' that non-greedily captures the figure id.
+#  - `(?P<figure_content>.*?)`: Named group 'figure_content' that non-greedily captures the content of the figure.
+#  - `(?:`: Start of optional non-capturing group
+#  - `\s*` - Optional whitespace between image and caption tags
+#  - (?P=figure_id) is a backreference to ensure the ID matches the image path.
+#  - `(?P<main_caption_text>.*?)` - The caption text itself. Non-greedy to stop at the first end-caption tag.
+FIGURE_PATTERN = re.compile(
+    fr"""
+    (
+        {re.escape(L_FIG_START_PREFIX)}(?P<figure_id>.*?){re.escape(L_FIG_END)}
+        (?P<figure_content>.*?)
+        {re.escape(L_FIG_END_PREFIX)}(?P=figure_id){re.escape(L_FIG_END)}
+        (?:
+            \s*
+            {re.escape(L_FIG_CAP_START_PREFIX)}(?P=figure_id){re.escape(L_FIG_CAP_END)}
+            (?P<main_caption_text>.*?)
+            {re.escape(L_FIG_CAP_START_PREFIX)}(?P=figure_id){re.escape(L_FIG_CAP_END)}
+        )?
+    )
+    """,
+    re.VERBOSE | re.DOTALL,
+)
+
 
 TAG_DEFINITIONS = [
     {

@@ -108,6 +108,11 @@ export interface ImageContent {
   height: number;
 }
 
+export interface FigureContent {
+  images: ImageContent[];
+  caption: LumiSpan | null | undefined;
+}
+
 // Note: this currently only exists in the front-end type definitions.
 // (The backend will directly write the bytes to storage and does not need this type.)
 export interface LumiImage {
@@ -136,6 +141,7 @@ export interface LumiContent {
   // Allowing this to be null to simplify conversion from backend.
   textContent: TextContent | undefined | null;
   imageContent: ImageContent | undefined | null;
+  figureContent: FigureContent | undefined | null;
   htmlFigureContent: HtmlFigureContent | undefined | null;
   listContent: ListContent | undefined | null;
 }

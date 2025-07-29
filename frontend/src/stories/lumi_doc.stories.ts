@@ -96,6 +96,7 @@ const mockLumiDoc: LumiDoc = {
         imageContent: null,
         htmlFigureContent: null,
         listContent: null,
+        figureContent: null,
       },
     ],
   },
@@ -166,6 +167,7 @@ const mockLumiDoc: LumiDoc = {
           imageContent: null,
           htmlFigureContent: null,
           listContent: null,
+          figureContent: null,
         },
       ],
     },
@@ -186,6 +188,7 @@ const mockLumiDoc: LumiDoc = {
           textContent: null,
           imageContent: null,
           htmlFigureContent: null,
+          figureContent: null,
         },
         // Pre content
         {
@@ -203,6 +206,7 @@ const mockLumiDoc: LumiDoc = {
           imageContent: null,
           htmlFigureContent: null,
           listContent: null,
+          figureContent: null,
         },
         // HTML figure content
         {
@@ -218,6 +222,7 @@ const mockLumiDoc: LumiDoc = {
               innerTags: [],
             },
           },
+          figureContent: null,
         },
         // Image content
         {
@@ -225,6 +230,7 @@ const mockLumiDoc: LumiDoc = {
           listContent: null,
           textContent: null,
           htmlFigureContent: null,
+          figureContent: null,
           imageContent: {
             storagePath: "lollipop.png",
             altText: "",

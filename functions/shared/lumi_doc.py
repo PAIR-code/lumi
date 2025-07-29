@@ -109,6 +109,12 @@ class ImageContent:
 
 
 @dataclass
+class FigureContent:
+    images: List[ImageContent]
+    caption: Optional["LumiSpan"] = None
+
+
+@dataclass
 class HtmlFigureContent:
     html: str
     caption: Optional["LumiSpan"] = None
@@ -131,6 +137,7 @@ class LumiContent:
     id: str
     text_content: Optional[TextContent] = None
     image_content: Optional[ImageContent] = None
+    figure_content: Optional[FigureContent] = None
     html_figure_content: Optional[HtmlFigureContent] = None
     list_content: Optional[ListContent] = None
 
