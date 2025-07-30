@@ -158,6 +158,44 @@ class TestMainGetLumiResponse(unittest.TestCase):
         }
         mock_collection.add.assert_called_once_with(expected_log_data)
 
+    def test_get_lumi_response_query_too_long(self):
+        # Arrange
+        mock_doc_obj = main_testing_utils.create_mock_lumidoc()
+        mock_request_obj = LumiAnswerRequest(query="a" * 2000)  # Exceeds max length
+        doc_dict = convert_keys(asdict(mock_doc_obj), "snake_to_camel")
+        request_dict = convert_keys(asdict(mock_request_obj), "snake_to_camel")
+        payload = {"doc": doc_dict, "request": request_dict}
+
+        # Act
+        response = self.lumi_response_client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        response_data = response.get_json()
+        self.assertIn("error", response_data)
+        self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
+        self.assertIn("Query exceeds max length", response_data["error"]["message"])
+
+    def test_get_lumi_response_highlight_too_long(self):
+        # Arrange
+        mock_doc_obj = main_testing_utils.create_mock_lumidoc()
+        mock_request_obj = LumiAnswerRequest(
+            highlight="a" * 100001
+        )  # Exceeds max length
+        doc_dict = convert_keys(asdict(mock_doc_obj), "snake_to_camel")
+        request_dict = convert_keys(asdict(mock_request_obj), "snake_to_camel")
+        payload = {"doc": doc_dict, "request": request_dict}
+
+        # Act
+        response = self.lumi_response_client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        response_data = response.get_json()
+        self.assertIn("error", response_data)
+        self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
+        self.assertIn("Highlight exceeds max length", response_data["error"]["message"])
+
 
 class TestMainGetArxivMetadata(unittest.TestCase):
 
@@ -220,6 +258,20 @@ class TestMainGetArxivMetadata(unittest.TestCase):
         self.assertIn("error", response_data)
         self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
 
+    def test_get_arxiv_metadata_incorrect_length(self):
+        # Arrange: arxiv_id too long
+        payload = {"arxiv_id": "1" * 100}
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        response_data = response.get_json()
+        self.assertIn("error", response_data)
+        self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
+        self.assertIn("Incorrect arxiv_id length", response_data["error"]["message"])
+
 
 class TestMainRequestArxivDocImport(unittest.TestCase):
     @patch("firebase_admin.initialize_app")
@@ -270,3 +322,17 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
         self.assertEqual(
             response_data["result"], {"error": error_message, "metadata": None}
         )
+
+    def test_request_arxiv_doc_import_incorrect_length(self):
+        # Arrange: arxiv_id too long
+        payload = {"arxiv_id": "1" * 100}
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        response_data = response.get_json()
+        self.assertIn("error", response_data)
+        self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
+        self.assertIn("Incorrect arxiv_id length", response_data["error"]["message"])

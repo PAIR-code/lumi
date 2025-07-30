@@ -43,6 +43,7 @@ from import_pipeline import fetch_utils, import_pipeline, summaries, personal_su
 import main_testing_utils
 from models import extract_concepts
 from shared.api import LumiAnswerRequest, QueryLog, LumiAnswer
+from shared.constants import ARXIV_ID_MAX_LENGTH, MAX_QUERY_LENGTH, MAX_HIGHLIGHT_LENGTH
 from shared.json_utils import convert_keys
 from shared.lumi_doc import LumiDoc, LumiSummaries
 from shared.types import ArxivMetadata, LoadingStatus
@@ -207,6 +208,12 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
             "Must specify arxiv_id parameter.",
         )
 
+    if len(arxiv_id) > ARXIV_ID_MAX_LENGTH:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            "Incorrect arxiv_id length.",
+        )
+
     try:
         fetch_utils.check_arxiv_license(arxiv_id)
     except ValueError as e:
@@ -290,6 +297,12 @@ def get_arxiv_metadata(req: https_fn.CallableRequest) -> dict:
             "Must specify arxiv_id parameter.",
         )
 
+    if len(arxiv_id) > ARXIV_ID_MAX_LENGTH:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            "Incorrect arxiv_id length.",
+        )
+
     metadata_list = fetch_utils.fetch_arxiv_metadata(arxiv_ids=[arxiv_id])
     if not metadata_list:
         raise https_fn.HttpsError(
@@ -359,6 +372,17 @@ def get_lumi_response(req: https_fn.CallableRequest) -> dict:
         data=convert_keys(request_dict, "camel_to_snake"),
         config=Config(check_types=False),
     )
+
+    if lumi_request.query and len(lumi_request.query) > MAX_QUERY_LENGTH:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            "Query exceeds max length.",
+        )
+    if lumi_request.highlight and len(lumi_request.highlight) > MAX_HIGHLIGHT_LENGTH:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            "Highlight exceeds max length.",
+        )
 
     lumi_answer = answers.generate_lumi_answer(doc, lumi_request)
 
