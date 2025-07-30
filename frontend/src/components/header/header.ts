@@ -23,6 +23,10 @@ import { CSSResultGroup, html } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import { core } from "../../core/core";
+import {
+  DialogService,
+  UserFeedbackDialogProps,
+} from "../../services/dialog.service";
 import { Pages, RouterService } from "../../services/router.service";
 
 import { APP_NAME } from "../../shared/constants";
@@ -34,6 +38,7 @@ export class Header extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly routerService = core.getService(RouterService);
+  private readonly dialogService = core.getService(DialogService);
 
   override render() {
     return html`
@@ -61,7 +66,7 @@ export class Header extends MobxLitElement {
   }
 
   private renderActions() {
-    return this.renderSettingsButton();
+    return html`${this.renderFeedbackButton()} ${this.renderSettingsButton()}`;
   }
 
   private renderHomeButton() {
@@ -74,6 +79,24 @@ export class Header extends MobxLitElement {
         <pr-icon-button
           color="neutral"
           icon="home"
+          variant="default"
+          @click=${handleClick}
+        >
+        </pr-icon-button>
+      </pr-tooltip>
+    `;
+  }
+
+  private renderFeedbackButton() {
+    const handleClick = () => {
+      this.dialogService.show(new UserFeedbackDialogProps());
+    };
+
+    return html`
+      <pr-tooltip text="Send feedback" position="BOTTOM_END">
+        <pr-icon-button
+          color="neutral"
+          icon="feedback"
           variant="default"
           @click=${handleClick}
         >

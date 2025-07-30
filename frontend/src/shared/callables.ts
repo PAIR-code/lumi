@@ -17,7 +17,7 @@
 
 import { Functions, httpsCallable } from "firebase/functions";
 import { ArxivMetadata, LumiDoc } from "./lumi_doc";
-import { LumiAnswer, LumiAnswerRequest } from "./api";
+import { LumiAnswer, LumiAnswerRequest, UserFeedback } from "./api";
 import { PaperData } from "./types_local_storage";
 
 /** Firebase cloud function callables */
@@ -109,4 +109,25 @@ export const getPersonalSummaryCallable = async (
   )({ doc, past_papers: pastPapers });
 
   return result.data;
+};
+
+/**
+ * Saves user feedback to Firestore.
+ * @param functions The Firebase Functions instance.
+ * @param feedback The user feedback data.
+ */
+export const saveUserFeedbackCallable = async (
+  functions: Functions,
+  feedback: UserFeedback
+): Promise<void> => {
+  await httpsCallable<
+    { user_feedback_text: string; arxiv_id?: string },
+    { status: string }
+  >(
+    functions,
+    "save_user_feedback"
+  )({
+    user_feedback_text: feedback.userFeedbackText,
+    arxiv_id: feedback.arxivId,
+  });
 };
