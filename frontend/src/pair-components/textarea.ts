@@ -81,8 +81,12 @@ export class TextArea extends LitElement {
       this.resizeObserver.observe(this.textareaRef.value);
     }
     if (this.focused) {
-      (this.renderRoot.querySelector("#textarea") as HTMLElement).focus();
+      this.focusElement();
     }
+  }
+
+  focusElement() {
+    (this.renderRoot.querySelector("#textarea") as HTMLElement).focus();
   }
 
   override updated(changedProperties: Map<string, unknown>) {
