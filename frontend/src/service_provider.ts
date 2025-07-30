@@ -17,6 +17,7 @@
 
 import { Core } from "./core/core";
 import { AnalyticsService } from "./services/analytics.service";
+import { DialogService } from "./services/dialog.service";
 import { DocumentStateService } from "./services/document_state.service";
 import { FirebaseService } from "./services/firebase.service";
 import { FloatingPanelService } from "./services/floating_panel_service";
@@ -35,6 +36,9 @@ export function makeServiceProvider(self: Core) {
   const serviceProvider = {
     get analyticsService() {
       return self.getService(AnalyticsService);
+    },
+    get dialogService() {
+      return self.getService(DialogService);
     },
     get documentStateService() {
       return self.getService(DocumentStateService);
