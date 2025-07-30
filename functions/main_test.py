@@ -29,9 +29,10 @@ with patch("firebase_admin.initialize_app"):
         get_arxiv_metadata,
         get_lumi_response,
         request_arxiv_doc_import,
+        save_user_feedback,
     )
 import main_testing_utils
-from shared.api import LumiAnswer, LumiAnswerRequest
+from shared.api import LumiAnswer, LumiAnswerRequest, UserFeedback
 from shared.json_utils import convert_keys
 from shared.lumi_doc import ArxivMetadata
 from shared.types_local_storage import PaperData
@@ -336,3 +337,94 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
         self.assertIn("error", response_data)
         self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
         self.assertIn("Incorrect arxiv_id length", response_data["error"]["message"])
+
+
+class TestMainSaveUserFeedback(unittest.TestCase):
+    @patch("firebase_admin.initialize_app")
+    def setUp(self, initialize_app_mock):
+        self.client = create_app("save_user_feedback", "main.py").test_client()
+
+    @patch("main.firestore")
+    def test_save_user_feedback_with_arxiv_id(self, mock_firestore):
+        # Arrange
+        mock_db = MagicMock()
+        mock_firestore.client.return_value = mock_db
+        mock_collection = MagicMock()
+        mock_db.collection.return_value = mock_collection
+
+        payload = {
+            "user_feedback_text": "This is great!",
+            "arxiv_id": "1234.5678",
+        }
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        mock_firestore.client.assert_called_once()
+        mock_db.collection.assert_called_once_with("user_feedback")
+        expected_data = {
+            "user_feedback_text": "This is great!",
+            "created_timestamp": SERVER_TIMESTAMP,
+            "arxiv_id": "1234.5678",
+        }
+        mock_collection.add.assert_called_once_with(expected_data)
+        self.assertEqual(response.get_json()["result"], {"status": "success"})
+
+    @patch("main.firestore")
+    def test_save_user_feedback_without_arxiv_id(self, mock_firestore):
+        # Arrange
+        mock_db = MagicMock()
+        mock_firestore.client.return_value = mock_db
+        mock_collection = MagicMock()
+        mock_db.collection.return_value = mock_collection
+
+        payload = {"user_feedback_text": "This is helpful."}
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        mock_firestore.client.assert_called_once()
+        mock_db.collection.assert_called_once_with("user_feedback")
+        expected_data = {
+            "user_feedback_text": "This is helpful.",
+            "created_timestamp": SERVER_TIMESTAMP,
+            "arxiv_id": None,
+        }
+        mock_collection.add.assert_called_once_with(expected_data)
+        self.assertEqual(response.get_json()["result"], {"status": "success"})
+
+    def test_save_user_feedback_empty_text(self):
+        # Arrange
+        payload = {"user_feedback_text": ""}
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        response_data = response.get_json()
+        self.assertIn("error", response_data)
+        self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
+        self.assertIn(
+            "user_feedback_text must not be empty", response_data["error"]["message"]
+        )
+
+    def test_save_user_feedback_too_long(self):
+        # Arrange
+        payload = {"user_feedback_text": "a" * 1001}
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        response_data = response.get_json()
+        self.assertIn("error", response_data)
+        self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
+        self.assertIn(
+            "Feedback text exceeds max length", response_data["error"]["message"]
+        )
