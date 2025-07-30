@@ -32,7 +32,11 @@ import "../../pair-components/textinput";
 
 import { styles } from "./smart_highlight_menu.scss";
 import { TextInput } from "../../pair-components/textinput";
-import { AnalyticsAction, AnalyticsService } from "../../services/analytics.service";
+import {
+  AnalyticsAction,
+  AnalyticsService,
+} from "../../services/analytics.service";
+import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
 
 /**
  * The menu that appears on text selection.
@@ -93,6 +97,7 @@ export class SmartHighlightMenu extends MobxLitElement {
           if (e.key === "Enter") this.handleSendClick();
         }}
         placeholder="Ask Lumi"
+        .maxLength=${MAX_QUERY_INPUT_LENGTH}
       ></pr-textinput>
       <pr-icon-button
         icon="send"
