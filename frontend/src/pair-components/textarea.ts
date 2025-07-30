@@ -25,6 +25,7 @@ import type { ComponentColor, ComponentSize, ComponentVariant } from "./types";
 import { getComponentClassName } from "./utils";
 
 import { styles } from "./textarea.scss";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 function fitTextAreaToContent(
   textarea: HTMLElement,
@@ -57,6 +58,7 @@ export class TextArea extends LitElement {
   @property({ type: String }) value = "";
   @property({ type: Boolean }) disabled = false;
   @property({ type: Boolean }) focused = false;
+  @property({ type: Boolean }) maxLength?: number;
 
   // Max height for the textarea in vh (e.g., 80 for 80vh max height)
   @property() maxViewportHeight: number | undefined = undefined;
@@ -146,6 +148,7 @@ export class TextArea extends LitElement {
           class=${classes}
           ?disabled=${this.disabled}
           type="text"
+          .maxLength=${ifDefined(this.maxLength)}
           placeholder=${this.placeholder}
           .value=${this.value}
           @input=${this.onChange}
