@@ -14,27 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LumiContent } from "./lumi_doc";
-import { HighlightSelection } from "./selection_utils";
+@use "../../../sass/common";
 
-// Kept in sync with: functions/shared/api.py
-export interface LumiAnswerRequest {
-  query?: string;
-  highlight?: string;
-  highlightedSpans?: HighlightSelection[];
-}
-
-// Kept in sync with: functions/shared/api.py
-export interface LumiAnswer {
-  id: string;
-  request: LumiAnswerRequest;
-  responseContent: LumiContent[];
-  timestamp: number;
-  isLoading?: boolean;
-}
-
-// Kept in sync with: functions/shared/api.py
-export interface UserFeedback {
-  userFeedbackText: string;
-  arxivId?: string;
+.content {
+  @include common.flex-column;
+  gap: common.$spacing-small;
 }
