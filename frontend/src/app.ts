@@ -23,6 +23,7 @@ import "./components/settings/project_dialog";
 import "./components/lumi_reader/lumi_reader";
 import "./components/floating_panel_host/floating_panel_host";
 import "./components/smart_highlight_menu/smart_highlight_menu";
+import "./components/dialogs/dialogs";
 import "lit-toast/lit-toast.js";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
@@ -95,6 +96,7 @@ export class App extends MobxLitElement {
           <div class="content-wrapper">${this.renderPageContent()}</div>
           <project-dialog></project-dialog>
           <floating-panel-host></floating-panel-host>
+          <lumi-dialogs></lumi-dialogs>
           <lit-toast ${ref(this.toastRef)}></lit-toast>
         </main>
       </div>

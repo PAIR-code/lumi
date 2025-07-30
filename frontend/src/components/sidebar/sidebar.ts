@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "@material/web/dialog/dialog";
-
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
@@ -35,12 +33,15 @@ import { core } from "../../core/core";
 import { SelectionInfo } from "../../shared/selection_utils";
 import { consume } from "@lit/context";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
-import { MdDialog } from "@material/web/dialog/dialog";
 import { HistoryService } from "../../services/history.service";
 import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
+import {
+  DialogService,
+  HistoryDialogProps,
+} from "../../services/dialog.service";
 
 const MOBILE_TABS = {
   ANSWERS: "Ask Lumi",
@@ -65,8 +66,8 @@ export class LumiSidebar extends MobxLitElement {
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly historyService = core.getService(HistoryService);
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly dialogService = core.getService(DialogService);
 
-  @query("md-dialog") private readonly dialog!: MdDialog;
   @query(".tabs-container.mobile")
   private readonly tabsContainer!: HTMLDivElement;
 
@@ -122,7 +123,7 @@ export class LumiSidebar extends MobxLitElement {
   onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
 
   private openHistoryDialog() {
-    this.dialog.show();
+    this.dialogService.show(new HistoryDialogProps());
   }
 
   private renderHeader() {
@@ -132,24 +133,6 @@ export class LumiSidebar extends MobxLitElement {
         }}
       ></sidebar-header>
       <div class="divider"></div>`;
-  }
-
-  private renderHistoryDialog() {
-    return html`
-      <md-dialog>
-        <div slot="headline">History</div>
-        <div slot="content">
-          <p class="dialog-explanation">
-            This is the list of papers and queries included as context for the
-            model:
-          </p>
-          <history-view></history-view>
-        </div>
-        <div slot="actions">
-          <pr-button @click=${() => this.dialog.close()}> Close </pr-button>
-        </div>
-      </md-dialog>
-    `;
   }
 
   private renderQuestions() {
@@ -247,7 +230,6 @@ export class LumiSidebar extends MobxLitElement {
             ${this.renderConcepts()} ${this.renderToc()}
           </tab-component>
         </div>
-        ${this.renderHistoryDialog()}
       </div>
     `;
   }
@@ -307,7 +289,7 @@ export class LumiSidebar extends MobxLitElement {
             ${this.renderMobileTabContents()}
           </tab-component>
         </div>
-        ${this.renderMobileCollapseButton()} ${this.renderHistoryDialog()}
+        ${this.renderMobileCollapseButton()}
       </div>
     `;
   }
