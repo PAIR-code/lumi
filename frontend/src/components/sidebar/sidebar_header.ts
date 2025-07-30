@@ -106,7 +106,7 @@ export class SidebarHeader extends MobxLitElement {
         <pr-icon-button
           title="Open model context"
           icon="contextual_token"
-          .loading=${isLoading}
+          ?disabled=${isLoading}
           variant="default"
           @click=${() => {
             this.analyticsService.trackAction(
