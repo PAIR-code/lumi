@@ -55,3 +55,14 @@ class QueryLog:
     answer: LumiAnswer
     arxiv_id: str
     version: str
+
+
+@dataclass
+class UserFeedback:
+    """Schema for user feedback stored in Firestore."""
+
+    user_feedback_text: str
+    created_timestamp: (
+        Any  # Firestore timestamp created with firestore_v1.SERVER_TIMESTAMP
+    )
+    arxiv_id: Optional[str] = None

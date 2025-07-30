@@ -42,8 +42,13 @@ from answers import answers
 from import_pipeline import fetch_utils, import_pipeline, summaries, personal_summary
 import main_testing_utils
 from models import extract_concepts
-from shared.api import LumiAnswerRequest, QueryLog, LumiAnswer
-from shared.constants import ARXIV_ID_MAX_LENGTH, MAX_QUERY_LENGTH, MAX_HIGHLIGHT_LENGTH
+from shared.api import LumiAnswerRequest, QueryLog, LumiAnswer, UserFeedback
+from shared.constants import (
+    ARXIV_ID_MAX_LENGTH,
+    MAX_QUERY_LENGTH,
+    MAX_HIGHLIGHT_LENGTH,
+    MAX_USER_FEEDBACK_LENGTH,
+)
 from shared.json_utils import convert_keys
 from shared.lumi_doc import LumiDoc, LumiSummaries
 from shared.types import ArxivMetadata, LoadingStatus
@@ -78,6 +83,7 @@ if os.environ.get("FUNCTION_RUN_MODE") == "testing":
 _ARXIV_DOCS_COLLECTION = "arxiv_docs"
 _VERSIONS_COLLECTION = "versions"
 _LOGS_QUERY_COLLECTION = "query_logs"
+_USER_FEEDBACK_COLLECTION = "user_feedback"
 
 initialize_app()
 
@@ -86,6 +92,11 @@ initialize_app()
 class RequestArxivDocImportResult:
     metadata: Optional[ArxivMetadata] = None
     error: Optional[str] = None
+
+
+@dataclass
+class SaveUserFeedbackResult:
+    status: str
 
 
 def _is_locally_emulated() -> bool:
@@ -428,3 +439,42 @@ def get_personal_summary(req: https_fn.CallableRequest) -> dict:
 
     summary = personal_summary.get_personal_summary(doc, past_papers)
     return convert_keys(asdict(summary), "snake_to_camel")
+
+
+@https_fn.on_call()
+def save_user_feedback(req: https_fn.CallableRequest) -> dict:
+    """
+    Saves user feedback to Firestore.
+
+    Args:
+        req (https_fn.CallableRequest): The request, containing user feedback data.
+
+    Returns:
+        A dictionary representation of the SaveUserFeedbackResult object.
+    """
+    user_feedback_text = req.data.get("user_feedback_text")
+    arxiv_id = req.data.get("arxiv_id")
+
+    if not user_feedback_text:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            "user_feedback_text must not be empty.",
+        )
+
+    if len(user_feedback_text) > MAX_USER_FEEDBACK_LENGTH:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
+            "Feedback text exceeds max length.",
+        )
+
+    feedback_data = UserFeedback(
+        user_feedback_text=user_feedback_text,
+        created_timestamp=SERVER_TIMESTAMP,
+        arxiv_id=arxiv_id,
+    )
+
+    db = firestore.client()
+    db.collection(_USER_FEEDBACK_COLLECTION).add(asdict(feedback_data))
+
+    result = SaveUserFeedbackResult(status="success")
+    return convert_keys(asdict(result), "snake_to_camel")
