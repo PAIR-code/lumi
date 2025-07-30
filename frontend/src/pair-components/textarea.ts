@@ -118,6 +118,11 @@ export class TextArea extends LitElement {
     }
   }
 
+  onKeydown(e: KeyboardEvent) {
+    const event = { detail: { key: e.key } };
+    this.dispatchEvent(new CustomEvent("keydown", event));
+  }
+
   override render() {
     const classes = classMap({
       "body-size-small": this.size === "small",
@@ -144,6 +149,7 @@ export class TextArea extends LitElement {
           placeholder=${this.placeholder}
           .value=${this.value}
           @input=${this.onChange}
+          @keydown=${this.onKeydown}
         ></textarea>
       </div>
     `;

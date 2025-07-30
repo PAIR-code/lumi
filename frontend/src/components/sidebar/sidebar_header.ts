@@ -29,7 +29,10 @@ import { LumiAnswerRequest } from "../../shared/api";
 import { createTemporaryAnswer } from "../../shared/answer_utils";
 import { getLumiResponseCallable } from "../../shared/callables";
 import { SnackbarService } from "../../services/snackbar.service";
-import { AnalyticsAction, AnalyticsService } from "../../services/analytics.service";
+import {
+  AnalyticsAction,
+  AnalyticsService,
+} from "../../services/analytics.service";
 
 /**
  * The header for the sidebar.
@@ -106,17 +109,22 @@ export class SidebarHeader extends MobxLitElement {
           .loading=${isLoading}
           variant="default"
           @click=${() => {
-            this.analyticsService.trackAction(AnalyticsAction.HEADER_OPEN_CONTEXT);
+            this.analyticsService.trackAction(
+              AnalyticsAction.HEADER_OPEN_CONTEXT
+            );
             this.onHistoryClick();
           }}
         ></pr-icon-button>
         <pr-textarea
           .focused=${true}
           .value=${this.query}
-          .onChange=${(e: InputEvent) =>
-            (this.query = (e.target as HTMLInputElement).value)}
-          .onKeydown=${(e: KeyboardEvent) => {
-            if (e.key === "Enter") this.handleSearch();
+          @change=${(e: CustomEvent) => {
+            this.query = e.detail.value;
+          }}
+          @keydown=${(e: CustomEvent) => {
+            if (e.detail.key === "Enter") {
+              this.handleSearch();
+            }
           }}
           placeholder="Ask Lumi"
           class="search-input"
