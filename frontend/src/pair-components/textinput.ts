@@ -24,6 +24,7 @@ import type { ComponentColor, ComponentSize } from "./types";
 import { getComponentClassName } from "./utils";
 
 import { styles } from "./textinput.scss";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 /**
  * Text input
@@ -37,6 +38,7 @@ export class TextInput extends LitElement {
   @property({ type: String }) placeholder = "";
   @property({ type: String }) value = "";
   @property({ type: Boolean }) disabled = false;
+  @property({ type: Boolean }) maxLength?: number;
   @property({ type: Object }) onChange = (e: InputEvent) => {};
   @property({ type: Object }) onKeydown = (e: KeyboardEvent) => {};
 
@@ -75,6 +77,7 @@ export class TextInput extends LitElement {
         type="text"
         placeholder=${this.placeholder}
         .value=${this.value}
+        .maxLength=${ifDefined(this.maxLength)}
         @keydown=${this.onKeydown}
         @input=${this.onChange}
       />`;
