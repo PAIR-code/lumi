@@ -29,7 +29,7 @@ dialog {
   color: var(--md-sys-color-on-surface);
   flex-direction: column;
   max-height: calc(100% - common.$spacing-xxl * 2);
-  max-width: common.$chat-column-max-width;
+  max-width: common.$tos-dialog-max-width;
   outline: none;
   overflow: auto;
   padding: common.$spacing-xxl;

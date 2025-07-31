@@ -36,14 +36,10 @@ export class ProjectDialog extends MobxLitElement {
   @state() acceptedTOS = false;
 
   override updated() {
-    if (this.settingsService.getOnboarded()) {
-      this.acceptedTOS = true;
-    }
+    this.acceptedTOS = this.settingsService.getTOSConfirmed();
   }
 
   override render() {
-    const showDialog = !this.settingsService.getOnboarded();
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         this.closeDialog();
@@ -51,14 +47,15 @@ export class ProjectDialog extends MobxLitElement {
     };
 
     return html`
-      <pr-dialog .showDialog=${showDialog} @keydown=${handleKeyDown}>
-        ${this.renderTOS()}
+      <pr-dialog .showDialog=${!this.acceptedTOS} @keydown=${handleKeyDown}>
+        ${this.renderTOS()}}
       </pr-dialog>
     `;
   }
 
   closeDialog() {
-    this.settingsService.setOnboarded(true);
+    this.acceptedTOS = true;
+    this.settingsService.setTOSConfirmed(true);
   }
 
   renderTOS() {

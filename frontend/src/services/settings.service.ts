@@ -22,28 +22,32 @@ import { core } from "../core/core";
 import { ColorMode } from "../shared/types";
 import { LocalStorageService } from "./local_storage.service";
 
+interface ServiceProvider {
+  localStorageService: LocalStorageService;
+}
+
 /**
  * Settings service.
  */
 export class SettingsService extends Service {
-  constructor() {
+  constructor(private readonly sp: ServiceProvider) {
     super();
     makeObservable(this);
   }
 
   @observable colorMode: ColorMode = ColorMode.DEFAULT;
-  private readonly localStorageService = core.getService(LocalStorageService);
+  @observable tosConfirmed: boolean = false;
 
   @action setColorMode(colorMode: ColorMode) {
     this.colorMode = colorMode;
   }
 
-  setOnboarded(onboarded: boolean) {
-    this.localStorageService.setData("isOnboarded", Number(onboarded));
+  setTOSConfirmed(onboarded: boolean) {
+    this.sp.localStorageService.setData("tosConfirmed", Number(onboarded));
   }
 
-  getOnboarded(): boolean {
-    const isOnboarded = this.localStorageService.getData("isOnboarded", 0);
-    return Boolean(isOnboarded);
+  getTOSConfirmed(): boolean {
+    const tosConfirmed = this.sp.localStorageService.getData("tosConfirmed", 0);
+    return Boolean(tosConfirmed);
   }
 }
