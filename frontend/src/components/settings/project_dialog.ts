@@ -52,7 +52,7 @@ export class ProjectDialog extends MobxLitElement {
 
     return html`
       <pr-dialog .showDialog=${showDialog} @keydown=${handleKeyDown}>
-        ${this.renderTOS()}}
+        ${this.renderTOS()}
       </pr-dialog>
     `;
   }
@@ -68,6 +68,7 @@ export class ProjectDialog extends MobxLitElement {
 
     const handleClick = () => {
       this.acceptedTOS = true;
+      this.closeDialog();
     };
 
     return html`
