@@ -19,6 +19,7 @@ cp api_config.example.py api_config.py
 To run emulator:
 
 ```
+source venv/bin/activate
 firebase emulators:start
 ```
 

@@ -17,8 +17,10 @@
 
 import { action, makeObservable, observable } from "mobx";
 import { Service } from "./service";
+import { core } from "../core/core";
 
 import { ColorMode } from "../shared/types";
+import { LocalStorageService } from "./local_storage.service";
 
 /**
  * Settings service.
@@ -30,8 +32,18 @@ export class SettingsService extends Service {
   }
 
   @observable colorMode: ColorMode = ColorMode.DEFAULT;
+  private readonly localStorageService = core.getService(LocalStorageService);
 
   @action setColorMode(colorMode: ColorMode) {
     this.colorMode = colorMode;
+  }
+
+  setOnboarded(onboarded: boolean) {
+    this.localStorageService.setData("isOnboarded", Number(onboarded));
+  }
+
+  getOnboarded(): boolean {
+    const isOnboarded = this.localStorageService.getData("isOnboarded", 0);
+    return Boolean(isOnboarded);
   }
 }
