@@ -33,6 +33,7 @@ import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
+import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
 
 /**
  * The header for the sidebar.
@@ -118,6 +119,7 @@ export class SidebarHeader extends MobxLitElement {
         <pr-textarea
           .focused=${true}
           .value=${this.query}
+          .maxLength=${MAX_QUERY_INPUT_LENGTH}
           @change=${(e: CustomEvent) => {
             this.query = e.detail.value;
           }}

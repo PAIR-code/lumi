@@ -43,6 +43,7 @@ import { styles } from "./home_gallery.scss";
 import { makeObservable, observable, ObservableMap } from "mobx";
 import { PaperData } from "../../shared/types_local_storage";
 import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
+import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
 
 /** Gallery for home/landing page */
 @customElement("home-gallery")
@@ -262,6 +263,7 @@ export class HomeGallery extends MobxLitElement {
           ?focused=${autoFocus}
           size="large"
           .value=${this.paperInput}
+          .maxLength=${MAX_IMPORT_URL_LENGTH}
           @change=${(e: CustomEvent) => {
             this.paperInput = e.detail.value;
           }}
