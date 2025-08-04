@@ -16,6 +16,7 @@
  */
 
 import "./history_dialog/history_dialog";
+import "./user_feedback_dialog/user_feedback_dialog";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { html } from "lit";
@@ -32,7 +33,10 @@ export class Dialogs extends MobxLitElement {
   private readonly dialogService = core.getService(DialogService);
 
   override render() {
-    return html` <history-dialog></history-dialog> `;
+    return html`
+      <history-dialog></history-dialog>
+      <user-feedback-dialog></user-feedback-dialog>
+    `;
   }
 }
 
