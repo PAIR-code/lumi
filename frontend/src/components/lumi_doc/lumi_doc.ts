@@ -36,8 +36,6 @@
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { computed, makeObservable } from "mobx";
-import { LumiSummaryMaps } from "../../shared/lumi_summary_maps";
 import {
   getSelectionInfo,
   HighlightSelection,
@@ -107,19 +105,11 @@ export class LumiDocViz extends MobxLitElement {
     return this.lumiDocManager.lumiDoc;
   }
 
-  @computed get summaryMaps() {
-    if (!this.lumiDoc?.summaries) {
-      return null;
-    }
-    return new LumiSummaryMaps(this.lumiDoc.summaries);
-  }
-
   constructor() {
     super();
-    makeObservable(this);
   }
 
-  private handleMouseUp(e: MouseEvent) {
+  private handleMouseOrTouchUp(e: Event) {
     const selection = window.getSelection();
     if (!selection || !this.shadowRoot) {
       return;
@@ -174,9 +164,14 @@ export class LumiDocViz extends MobxLitElement {
     return html`
       <div
         class="lumi-doc"
+        @touchend=${(e: TouchEvent) => {
+          window.setTimeout(() => {
+            this.handleMouseOrTouchUp(e);
+          });
+        }}
         @mouseup=${(e: MouseEvent) => {
           window.setTimeout(() => {
-            this.handleMouseUp(e);
+            this.handleMouseOrTouchUp(e);
           });
         }}
       >
@@ -229,7 +224,7 @@ export class LumiDocViz extends MobxLitElement {
                 parentComponent: this,
                 section,
                 references: this.lumiDoc.references,
-                summaryMaps: this.summaryMaps,
+                summaryMaps: this.lumiDocManager.summaryMaps,
                 hoverFocusedSpanId: this.hoveredSpanId,
                 isCollapsed: isCollapsed,
                 onCollapseChange: (isCollapsed: boolean) => {
@@ -250,6 +245,10 @@ export class LumiDocViz extends MobxLitElement {
           })}
           ${renderReferences({
             references: this.lumiDoc.references,
+            isCollapsed: this.collapseManager.areReferencesCollapsed,
+            onCollapseChange: (isCollapsed: boolean) => {
+              this.collapseManager.setReferencesCollapsed(isCollapsed);
+            },
           })}
         </div>
       </div>

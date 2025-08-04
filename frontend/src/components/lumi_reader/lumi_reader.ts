@@ -50,6 +50,10 @@ import {
 } from "../../shared/selection_utils";
 import { createTemporaryAnswer } from "../../shared/answer_utils";
 import { classMap } from "lit/directives/class-map.js";
+import {
+  AnalyticsAction,
+  AnalyticsService,
+} from "../../services/analytics.service";
 
 /**
  * The component responsible for fetching a single document and passing it
@@ -64,6 +68,7 @@ export class LumiReader extends MobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly snackbarService = core.getService(SnackbarService);
+  private readonly analyticsService = core.getService(AnalyticsService);
 
   @provide({ context: scrollContext })
   private scrollState = new ScrollState();
@@ -232,6 +237,7 @@ export class LumiReader extends MobxLitElement {
   };
 
   private readonly handleTextSelection = (selectionInfo: SelectionInfo) => {
+    this.analyticsService.trackAction(AnalyticsAction.READER_TEXT_SELECTION);
     const props = new SmartHighlightMenuProps(
       selectionInfo.selectedText,
       selectionInfo.highlightSelection,

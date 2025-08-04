@@ -37,6 +37,10 @@ import { consume } from "@lit/context";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { MdDialog } from "@material/web/dialog/dialog";
 import { HistoryService } from "../../services/history.service";
+import {
+  AnalyticsAction,
+  AnalyticsService,
+} from "../../services/analytics.service";
 
 const MOBILE_TABS = {
   ANSWERS: "Ask Lumi",
@@ -60,6 +64,7 @@ export class LumiSidebar extends MobxLitElement {
 
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly historyService = core.getService(HistoryService);
+  private readonly analyticsService = core.getService(AnalyticsService);
 
   @query("md-dialog") private readonly dialog!: MdDialog;
   @query(".tabs-container.mobile")
@@ -99,11 +104,15 @@ export class LumiSidebar extends MobxLitElement {
 
   @action
   private setConceptCollapsed(conceptName: string, isCollapsed: boolean) {
+    this.analyticsService.trackAction(AnalyticsAction.SIDEBAR_TOGGLE_CONCEPT);
     this.conceptCollapsedState.set(conceptName, isCollapsed);
   }
 
   @action
   private toggleAllConcepts() {
+    this.analyticsService.trackAction(
+      AnalyticsAction.SIDEBAR_TOGGLE_ALL_CONCEPTS
+    );
     const areAnyCollapsed = this.areAnyConceptsCollapsed;
     const newCollapseState = areAnyCollapsed ? false : true;
     this.setAllConceptCollapsed(newCollapseState);
@@ -205,6 +214,9 @@ export class LumiSidebar extends MobxLitElement {
           .sections=${this.documentStateService.lumiDocManager?.lumiDoc
             .sections}
           .onSectionClicked=${(sectionId: string) => {
+            this.analyticsService.trackAction(
+              AnalyticsAction.SIDEBAR_TOC_SECTION_CLICK
+            );
             this.scrollContext?.scrollToSection(sectionId);
           }}
         ></table-of-contents>
@@ -224,7 +236,14 @@ export class LumiSidebar extends MobxLitElement {
         ${this.renderHeader()} ${this.renderQuestions()}
         <div class="divider"></div>
         <div class="tabs-container">
-          <tab-component .tabs=${Object.values(TABS)}>
+          <tab-component
+            .tabs=${Object.values(TABS)}
+            @tab-selected=${() => {
+              this.analyticsService.trackAction(
+                AnalyticsAction.SIDEBAR_TAB_CHANGE
+              );
+            }}
+          >
             ${this.renderConcepts()} ${this.renderToc()}
           </tab-component>
         </div>
@@ -276,6 +295,9 @@ export class LumiSidebar extends MobxLitElement {
         <div class=${tabsContainerClasses}>
           <tab-component
             @tab-selected=${() => {
+              this.analyticsService.trackAction(
+                AnalyticsAction.SIDEBAR_TAB_CHANGE
+              );
               if (this.documentStateService.isMobileSidebarCollapsed) {
                 this.documentStateService.toggleMobileSidebarCollapsed();
               }

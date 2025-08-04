@@ -21,10 +21,12 @@ import { computed, makeObservable, observable } from "mobx";
 
 import { Service } from "./service";
 import { AnalyticsService } from "./analytics.service";
+import { DocumentStateService } from "./document_state.service";
 import { HistoryService } from "./history.service";
 
 interface ServiceProvider {
   analyticsService: AnalyticsService;
+  documentStateService: DocumentStateService;
   historyService: HistoryService;
 }
 
@@ -90,6 +92,7 @@ export class RouterService extends Service {
 
     if (prevDocId !== nextDocId) {
       this.sp.historyService.clearTemporaryAnswers();
+      this.sp.documentStateService.clearDocument();
     }
 
     this.activeRoute = routeChange.route;

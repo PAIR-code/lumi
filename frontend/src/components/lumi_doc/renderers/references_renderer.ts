@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { html, TemplateResult } from "lit";
+import { html, nothing, TemplateResult } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 import { LumiReference } from "../../../shared/lumi_doc";
 import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
@@ -24,6 +24,8 @@ import "../../lumi_span/lumi_span";
 
 export interface ReferencesRendererProperties {
   references: LumiReference[];
+  isCollapsed: boolean;
+  onCollapseChange: (isCollapsed: boolean) => void;
 }
 
 function renderReference(reference: LumiReference) {
@@ -42,13 +44,24 @@ function renderReference(reference: LumiReference) {
 export function renderReferences(
   props: ReferencesRendererProperties
 ): TemplateResult {
-  const { references } = props;
+  const { references, isCollapsed, onCollapseChange } = props;
 
   return html`
     <div class="references-renderer-container">
       <div class="references">
-        <h2>References</h2>
-        ${references.map((reference) => renderReference(reference))}
+        <h2 class="header">
+          <pr-icon-button
+            variant="default"
+            @click=${() => {
+              onCollapseChange(!isCollapsed);
+            }}
+            .icon=${isCollapsed ? "chevron_right" : "keyboard_arrow_down"}
+          ></pr-icon-button>
+          References
+        </h2>
+        ${isCollapsed
+          ? nothing
+          : references.map((reference) => renderReference(reference))}
       </div>
     </div>
   `;

@@ -37,6 +37,10 @@ import {
 } from "../../shared/selection_utils";
 import { classMap } from "lit/directives/class-map.js";
 import { ifDefined } from "lit/directives/if-defined.js";
+import {
+  AnalyticsAction,
+  AnalyticsService,
+} from "../../services/analytics.service";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
@@ -47,6 +51,7 @@ export class LumiQuestions extends MobxLitElement {
 
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly historyService = core.getService(HistoryService);
+  private readonly analyticsService = core.getService(AnalyticsService);
 
   @property({ type: Boolean }) isHistoryShowAll = false;
   @property({ type: Object }) setHistoryVisible?: (isVisible: boolean) => void;
@@ -66,10 +71,14 @@ export class LumiQuestions extends MobxLitElement {
   }
 
   private onReferenceClick(highlightedSpans: HighlightSelection[]) {
+    this.analyticsService.trackAction(
+      AnalyticsAction.QUESTIONS_REFERENCE_CLICK
+    );
     this.documentStateService.focusOnSpan(highlightedSpans);
   }
 
   private onDismiss(answerId: string) {
+    this.analyticsService.trackAction(AnalyticsAction.QUESTIONS_DISMISS_ANSWER);
     this.dismissedAnswers.add(answerId);
     this.requestUpdate();
   }
@@ -159,7 +168,12 @@ export class LumiQuestions extends MobxLitElement {
               <pr-button
                 class="history-button"
                 variant="default"
-                @click=${() => this.setHistoryVisible?.(true)}
+                @click=${() => {
+                  this.analyticsService.trackAction(
+                    AnalyticsAction.QUESTIONS_SEE_ALL_CLICK
+                  );
+                  this.setHistoryVisible?.(true);
+                }}
                 >See all</pr-button
               >
             </div>
@@ -176,7 +190,12 @@ export class LumiQuestions extends MobxLitElement {
     return html`
       <div class="back-button-container">
         <pr-icon-button
-          @click=${() => this.setHistoryVisible?.(false)}
+          @click=${() => {
+            this.analyticsService.trackAction(
+              AnalyticsAction.QUESTIONS_BACK_CLICK
+            );
+            this.setHistoryVisible?.(false);
+          }}
           .icon=${"arrow_back"}
           variant="default"
         ></pr-icon-button>

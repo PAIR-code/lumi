@@ -32,6 +32,7 @@ import { HighlightSelection } from "../../../shared/selection_utils";
 
 import "../../lumi_span/lumi_span";
 import { CollapseManager } from "../../../shared/collapse_manager";
+import { getAllContents } from "../../../shared/lumi_doc_utils";
 
 export interface SectionRendererProperties {
   parentComponent: LitElement;
@@ -183,13 +184,21 @@ function renderSectionSummaryPanel(
       </ul>
     </div>
     <div class="figures">
-      ${section.contents
-        .filter((content) => content.imageContent)
+      ${getAllContents(section)
+        .filter((content) => content.imageContent || content.figureContent)
         .map((content) => {
-          return html`<lumi-image-content
-            .getImageUrl=${getImageUrl}
-            .imageContent=${content.imageContent}
-          ></lumi-image-content>`;
+          if (content.figureContent) {
+            return html`<lumi-image-content
+              .content=${content.figureContent}
+              .getImageUrl=${getImageUrl}
+            ></lumi-image-content>`;
+          }
+          if (content.imageContent) {
+            return html`<lumi-image-content
+              .getImageUrl=${getImageUrl}
+              .content=${content.imageContent}
+            ></lumi-image-content>`;
+          }
         })}
     </div> `;
 }
@@ -262,40 +271,19 @@ function renderContents(
 function renderSubsections(
   props: SectionRendererProperties
 ): TemplateResult | typeof nothing {
-  const {
-    section,
-    getImageUrl,
-    summaryMaps,
-    onSpanSummaryMouseEnter,
-    onSpanSummaryMouseLeave,
-    onFocusOnSpan,
-    collapseManager,
-    references,
-    onPaperReferenceClick,
-  } = props;
+  const { section } = props;
   if (!section.subSections) return nothing;
 
-  // TODO(ellenj): Implement separate collapse states for subsections.
   return html`${section.subSections.map(
     (subSection) =>
       html`<div class="subsection">
         ${renderSection({
-          parentComponent: props.parentComponent,
+          ...props,
           section: subSection,
-          references,
-          summaryMaps: summaryMaps,
-          hoverFocusedSpanId: null,
           isCollapsed: props.collapseManager.getCollapseState(subSection.id),
           onCollapseChange: (isCollapsed: boolean) => {
             props.collapseManager.toggleSection(subSection.id, isCollapsed);
           },
-          getImageUrl,
-          onSpanSummaryMouseEnter,
-          onSpanSummaryMouseLeave,
-          highlightManager: props.highlightManager,
-          collapseManager,
-          onFocusOnSpan,
-          onPaperReferenceClick,
           isSubsection: true,
         })}
       </div>`

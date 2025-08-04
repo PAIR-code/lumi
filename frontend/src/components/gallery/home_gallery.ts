@@ -262,8 +262,14 @@ export class HomeGallery extends MobxLitElement {
           ?focused=${autoFocus}
           size="large"
           .value=${this.paperInput}
-          .onChange=${(e: Event) =>
-            (this.paperInput = (e.target as HTMLInputElement).value)}
+          @change=${(e: CustomEvent) => {
+            this.paperInput = e.detail.value;
+          }}
+          @keydown=${(e: CustomEvent) => {
+            if (e.detail.key === "Enter") {
+              this.loadDocument();
+            }
+          }}
           placeholder="Paste your arXiv paper link here"
         ></pr-textarea>
         <pr-icon-button
