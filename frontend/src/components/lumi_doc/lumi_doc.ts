@@ -143,6 +143,18 @@ export class LumiDocViz extends MobxLitElement {
       ? new Date(publishedTimestamp).toLocaleDateString()
       : "";
     return html`
+      <div class="collapse-toggle-container">
+        <multi-icon-toggle
+          .selection=${this.collapseManager.getOverallCollapseState()}
+          @onCollapseAll=${() => {
+            this.collapseManager.setAllSectionsCollapsed(true);
+          }}
+          @onExpandAll=${() => {
+            this.collapseManager.setAllSectionsCollapsed(false);
+          }}
+        >
+        </multi-icon-toggle>
+      </div>
       <div
         class="lumi-doc"
         @touchend=${(e: TouchEvent) => {
@@ -156,18 +168,6 @@ export class LumiDocViz extends MobxLitElement {
           });
         }}
       >
-        <div class="collapse-toggle-container">
-          <multi-icon-toggle
-            .selection=${this.collapseManager.getOverallCollapseState()}
-            @onCollapseAll=${() => {
-              this.collapseManager.setAllSectionsCollapsed(true);
-            }}
-            @onExpandAll=${() => {
-              this.collapseManager.setAllSectionsCollapsed(false);
-            }}
-          >
-          </multi-icon-toggle>
-        </div>
         <div class="lumi-doc-content">
           <div class="title-section">
             <h1 class="main-column title">
