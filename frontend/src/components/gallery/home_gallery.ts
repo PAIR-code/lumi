@@ -238,7 +238,7 @@ export class HomeGallery extends MobxLitElement {
     return html`
       <div class="paper-input">
         <pr-textarea
-          ?disabled=${this.isLoadingDocument}
+          ?disabled=${this.isLoadingMetadata}
           ?focused=${autoFocus}
           size="large"
           .value=${this.paperInput}
@@ -257,8 +257,8 @@ export class HomeGallery extends MobxLitElement {
           icon="arrow_forward"
           variant="tonal"
           @click=${this.loadDocument}
-          .loading=${this.isLoadingDocument}
-          ?disabled=${this.isLoadingDocument || !this.paperInput}
+          .loading=${this.isLoadingMetadata}
+          ?disabled=${this.isLoadingMetadata || !this.paperInput}
         >
         </pr-icon-button>
       </div>
