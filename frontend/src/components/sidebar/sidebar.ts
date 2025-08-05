@@ -197,10 +197,18 @@ export class LumiSidebar extends MobxLitElement {
           .sections=${this.documentStateService.lumiDocManager?.lumiDoc
             .sections}
           .onSectionClicked=${(sectionId: string) => {
+            if (!this.documentStateService.collapseManager) return;
+
             this.analyticsService.trackAction(
               AnalyticsAction.SIDEBAR_TOC_SECTION_CLICK
             );
-            this.scrollContext?.scrollToSection(sectionId);
+            this.documentStateService.collapseManager.expandToSection(
+              sectionId
+            );
+
+            setTimeout(() => {
+              this.scrollContext?.scrollToSection(sectionId);
+            }, 0);
           }}
         ></table-of-contents>
       </div>
