@@ -136,7 +136,7 @@ export class LumiQuestions extends MobxLitElement {
 
     const showSeeAllButton =
       !this.isHistoryShowAll &&
-      this.historyService.getAnswers(docId).length > 1;
+      this.historyService.getAnswers(docId).length > 0;
 
     const historyContainerClasses = classMap({
       "history-container": true,
