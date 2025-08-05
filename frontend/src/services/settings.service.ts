@@ -20,11 +20,19 @@ import { Service } from "./service";
 
 import { ColorMode } from "../shared/types";
 
+import { LocalStorageService } from "./local_storage.service";
+
+interface ServiceProvider {
+  localStorageService: LocalStorageService;
+}
+
+const tosConfirmedKey = "tosConfirmed";
+
 /**
  * Settings service.
  */
 export class SettingsService extends Service {
-  constructor() {
+  constructor(private readonly sp: ServiceProvider) {
     super();
     makeObservable(this);
   }
@@ -33,5 +41,17 @@ export class SettingsService extends Service {
 
   @action setColorMode(colorMode: ColorMode) {
     this.colorMode = colorMode;
+  }
+
+  setTOSConfirmed(onboarded: boolean) {
+    this.sp.localStorageService.setData(tosConfirmedKey, onboarded);
+  }
+
+  getTOSConfirmed(): boolean {
+    const tosConfirmed = this.sp.localStorageService.getData(
+      tosConfirmedKey,
+      false
+    );
+    return tosConfirmed;
   }
 }

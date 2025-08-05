@@ -20,6 +20,7 @@ import "./components/gallery/home_gallery";
 import "./components/header/header";
 import "./components/settings/settings";
 import "./components/lumi_reader/lumi_reader";
+import "./components/settings/project_dialog";
 import "./components/floating_panel_host/floating_panel_host";
 import "./components/smart_highlight_menu/smart_highlight_menu";
 import "./components/dialogs/dialogs";
@@ -93,6 +94,7 @@ export class App extends MobxLitElement {
       <div class="app-wrapper mode--${this.settingsService.colorMode}">
         <main>
           <div class="content-wrapper">${this.renderPageContent()}</div>
+          <project-dialog></project-dialog>
           <floating-panel-host></floating-panel-host>
           <lumi-dialogs></lumi-dialogs>
           <lit-toast ${ref(this.toastRef)}></lit-toast>
