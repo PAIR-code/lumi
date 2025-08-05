@@ -124,10 +124,10 @@ def convert_to_lumi_sections(
         elif tag not in visited_tags and tag.name in TAGS_TO_PROCESS:
             if not section_stack:
                 # If content appears before any heading, create a default section to hold it.
-                # This section has a heading level of 0.
+                # This section has a heading level of 1.
                 default_section = LumiSection(
                     id=get_unique_id(),
-                    heading=Heading(heading_level=0, text=""),
+                    heading=Heading(heading_level=1, text=""),
                     contents=[],
                     sub_sections=[],
                 )
