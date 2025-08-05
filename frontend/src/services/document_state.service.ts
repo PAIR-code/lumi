@@ -16,7 +16,7 @@
  */
 
 import { Service } from "./service";
-import { Highlight, HighlightColor, LumiDoc } from "../shared/lumi_doc";
+import { Highlight, HighlightColor, LoadingStatus, LumiDoc } from "../shared/lumi_doc";
 import { ScrollState } from "../contexts/scroll_context";
 import { HighlightManager } from "../shared/highlight_manager";
 import { CollapseManager } from "../shared/collapse_manager";
@@ -53,9 +53,15 @@ export class DocumentStateService extends Service {
 
   setDocument(lumiDoc: LumiDoc) {
     this.highlightManager = new HighlightManager();
-    this.lumiDocManager = new LumiDocManager(lumiDoc);
-    this.collapseManager = new CollapseManager(this.lumiDocManager);
-    this.collapseManager.initialize();
+    // Only set LumiDoc if it has been defined
+    if (
+      lumiDoc.loadingStatus === LoadingStatus.SUCCESS ||
+      lumiDoc.loadingStatus === LoadingStatus.SUMMARIZING
+    ) {
+      this.lumiDocManager = new LumiDocManager(lumiDoc);
+      this.collapseManager = new CollapseManager(this.lumiDocManager);
+      this.collapseManager.initialize();
+    }
   }
 
   clearDocument() {
