@@ -30,6 +30,7 @@ import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { HighlightSelection } from "../../../shared/selection_utils";
 
+import "../lumi_section";
 import "../../lumi_span/lumi_span";
 import { CollapseManager } from "../../../shared/collapse_manager";
 import { getAllContents } from "../../../shared/lumi_doc_utils";
@@ -292,7 +293,7 @@ function renderSubsections(
 
   return html`${section.subSections.map(
     (subSection) =>
-      html`<div class="subsection">
+      html`<lumi-section class="subsection" .section=${subSection}>
         ${renderSection({
           ...props,
           section: subSection,
@@ -302,7 +303,7 @@ function renderSubsections(
           },
           isSubsection: true,
         })}
-      </div>`
+      </lumi-section>`
   )}`;
 }
 
