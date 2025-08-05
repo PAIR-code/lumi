@@ -11,5 +11,11 @@ service cloud.firestore {
         allow write: if false; // Use Cloud functions
       }
     }
+
+    // arxiv_metadata
+    match /arxiv_metadata/{document_id} {
+      allow read: if true;
+      allow write: if false; // Use Cloud functions
+    }
   }
 }

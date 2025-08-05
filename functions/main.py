@@ -81,6 +81,7 @@ if os.environ.get("FUNCTION_RUN_MODE") == "testing":
     extract_concepts.extract_concepts.return_value = []
 
 _ARXIV_DOCS_COLLECTION = "arxiv_docs"
+_ARXIV_METADATA_COLLECTION = "arxiv_metadata"
 _VERSIONS_COLLECTION = "versions"
 _LOGS_QUERY_COLLECTION = "query_logs"
 _USER_FEEDBACK_COLLECTION = "user_feedback"
@@ -135,12 +136,28 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
     )
 
     if loading_status == LoadingStatus.WAITING:
-        # TODO: Write metadata to collection
+        # Write metadata to "arxiv_metadata" collection
+        _save_lumi_metadata(arxiv_id, version, after_data)
         # Import source as LumiDoc
         _add_lumi_doc(versioned_doc_ref, after_data)
     elif loading_status == LoadingStatus.SUMMARIZING:
         # Add summaries to existing LumiDoc data
         _add_summaries_to_lumi_doc(versioned_doc_ref, after_data)
+
+
+def _save_lumi_metadata(arxiv_id, version, doc_data):
+    """
+    Takes in arxiv_id, version, doc data in dict (TypeScript) form.
+    Extracts metadata and saves as new Firestore doc in "arxiv_metadata"
+    collection.
+    """
+    db = firestore.client()
+    doc_ref = (
+        db.collection(_ARXIV_METADATA_COLLECTION)
+        .document(arxiv_id)
+    )
+    metadata_dict = doc_data.get("metadata", {})
+    doc_ref.set(metadata_dict)
 
 
 def _add_lumi_doc(versioned_doc_ref, doc_data):
