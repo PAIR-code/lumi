@@ -38,6 +38,7 @@ const meta = {
         version: args.version,
         paperId: args.paperId,
       }}
+      .status=${args.status}
     ></paper-card>`,
   argTypes: {
     title: { control: "text" },
@@ -47,6 +48,7 @@ const meta = {
     updatededTimestamp: { control: "text" },
     version: { control: "number" },
     paperId: { control: "text" },
+    status: { control: "text" },
   },
   args: { onClick: fn() },
 } satisfies Meta;

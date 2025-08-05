@@ -107,3 +107,9 @@ h1 {
 .preview-title {
   @include typescale.title-medium;
 }
+
+.chip {
+  @include common.chip;
+  @include typescale.label-small;
+  width: max-content;
+}

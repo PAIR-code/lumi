@@ -57,10 +57,8 @@ export class HomeGallery extends MobxLitElement {
 
   // Paper URL or ID for text input box
   @state() private paperInput: string = "";
-  /**
-   * Holds the metadata of the paper being loaded. This is used to render a
-   * temporary, disabled "loading" card in the UI.
-   */
+  // Whether the last imported paper is still loading metadata
+  // (if true, this blocks importing another paper)
   @state() private isLoadingMetadata = false;
 
   @observable.shallow private unsubscribeListeners = new ObservableMap<
@@ -207,9 +205,11 @@ export class HomeGallery extends MobxLitElement {
         this.historyService.deletePaper(metadata.paperId);
       };
 
+      const status = this.unsubscribeListeners.has(metadata.paperId) ? 'loading' : '';
       return html`
         <paper-card
           .metadata=${metadata}
+          .status=${status}
           @click=${navigate}
         >
         </paper-card>
@@ -274,6 +274,7 @@ export class PaperCard extends MobxLitElement {
   @property() metadata: ArxivMetadata | null = null;
   @property({ type: Boolean }) disabled = false;
   @property({ type: Number }) summaryMaxCharacters = 250;
+  @property({ type: String }) status = '';
 
   override render() {
     if (!this.metadata) {
@@ -292,10 +293,18 @@ export class PaperCard extends MobxLitElement {
         <div class="preview-image"></div>
         <div class="preview-content">
           <div class="preview-title">${this.metadata.title}</div>
+          ${this.renderStatusChip()}
           <div class="preview-description">${summary}</div>
         </div>
       </div>
     `;
+  }
+
+  private renderStatusChip() {
+    if (!this.status) {
+      return nothing;
+    }
+    return html`<div class="chip secondary">${this.status}</div>`;
   }
 }
 
