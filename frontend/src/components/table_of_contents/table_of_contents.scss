@@ -18,7 +18,7 @@
 @use "../../sass/typescale";
 
 $item-border-radius: 8px;
-$tab-spacing: 20px;
+$tab-spacing: 14px;
 
 .toc-container {
   background: var(--md-sys-color-surface);
@@ -37,26 +37,29 @@ $tab-spacing: 20px;
     width: 100%;
   }
 
-  button {
-    @include typescale.label-small;
-    &:not(.level-1) {
-      font-weight: 400;
-    }
+  .toc-button {
+    @include common.flex-column;
+    gap: common.$spacing-small;
+    padding: 6px common.$spacing-large;
+    border-radius: $item-border-radius 0 0 $item-border-radius;
 
     width: 100%;
 
-    background: none;
-    border: none;
-    padding: 6px common.$spacing-large;
-    border-radius: $item-border-radius 0 0 $item-border-radius;
-    font-size: inherit;
-    font-family: inherit;
+    @include typescale.label-medium;
+    font-weight: 500;
+
     color: var(--md-sys-color-on-surface-high);
+
     cursor: pointer;
-    text-align: left;
 
     &:hover {
       background: var(--md-sys-color-tertiary-container-lowest);
+    }
+
+    .item-summary {
+      font-size: 12px;
+      font-weight: 400;
+      font-style: italic;
     }
   }
 

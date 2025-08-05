@@ -45,13 +45,13 @@ import {
 
 const MOBILE_TABS = {
   ANSWERS: "Ask Lumi",
-  CONCEPTS: "Concepts",
   TOC: "Table of Contents",
+  CONCEPTS: "Concepts",
 };
 
 const TABS = {
-  CONCEPTS: "Concepts",
   TOC: "Table of Contents",
+  CONCEPTS: "Concepts",
 };
 
 const DEFAULT_CONCEPT_IS_COLLAPSED = true;
@@ -196,6 +196,8 @@ export class LumiSidebar extends MobxLitElement {
         <table-of-contents
           .sections=${this.documentStateService.lumiDocManager?.lumiDoc
             .sections}
+          .lumiSummariesMap=${this.documentStateService.lumiDocManager
+            ?.summaryMaps}
           .onSectionClicked=${(sectionId: string) => {
             if (!this.documentStateService.collapseManager) return;
 

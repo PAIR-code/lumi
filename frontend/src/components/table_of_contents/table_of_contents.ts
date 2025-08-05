@@ -19,14 +19,17 @@ import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, HTMLTemplateResult, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "./table_of_contents.scss";
-import { LumiSection } from "../../shared/lumi_doc";
+import { LumiSection, LumiSpan, LumiSummaries } from "../../shared/lumi_doc";
 import { classMap } from "lit/directives/class-map.js";
+import { LumiSummaryMaps } from "../../shared/lumi_summary_maps";
+import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 
 @customElement("table-of-contents")
 export class TableOfContents extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   @property({ type: Array }) sections: LumiSection[] = [];
+  @property({ type: Object }) lumiSummariesMap?: LumiSummaryMaps;
   @property({ attribute: false }) onSectionClicked: (
     sectionId: string
   ) => void = () => {};
@@ -46,24 +49,40 @@ export class TableOfContents extends MobxLitElement {
           };
 
           const buttonClasses = {
+            ["toc-button"]: true,
             [`level-${section.heading.headingLevel}`]: true,
           };
 
+          const summary = this.lumiSummariesMap?.sectionSummariesMap.get(
+            section.id
+          );
+
           return html`
             <li class=${classMap(listClasses)}>
-              <button
+              <div
                 class=${classMap(buttonClasses)}
                 @click=${() => {
                   this.onSectionClicked(section.id);
                 }}
               >
-                ${section.heading.text}
-              </button>
+                <span class="item-text">${section.heading.text}</span>
+                ${this.renderSummarySpan(summary?.summary)}
+              </div>
               ${section.subSections && this.renderSections(section.subSections)}
             </li>
           `;
         })}
       </ul>
+    `;
+  }
+
+  private renderSummarySpan(span?: LumiSpan) {
+    if (!span) return nothing;
+
+    return html`
+      <lumi-span class="item-summary" .span=${span}
+        >${renderLumiSpan({ span })}</lumi-span
+      >
     `;
   }
 
