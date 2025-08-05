@@ -158,8 +158,8 @@ export class LumiSidebar extends MobxLitElement {
       this.documentStateService.lumiDocManager?.lumiDoc.concepts || [];
 
     const toggleAllIcon = this.areAnyConceptsCollapsed
-      ? "unfold_less"
-      : "unfold_more";
+      ? "unfold_more"
+      : "unfold_less";
 
     return html`
       <div class="concepts-container" slot=${TABS.CONCEPTS}>
