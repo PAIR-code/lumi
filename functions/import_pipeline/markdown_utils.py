@@ -75,8 +75,26 @@ def markdown_to_html(markdown: str) -> str:
     Returns:
         str: The converted html string.
     """
-    escaped_markdown = markdown.replace("_", "\\_")
+    markdown = markdown.replace("_", "\\_")
+    markdown = markdown.replace("\\$", "\\\\$")
     with HtmlRenderer() as renderer:
-        doc = Document(escaped_markdown)
+        doc = Document(markdown)
         html = renderer.render(doc)
         return html
+
+
+def postprocess_span_text(text: str) -> str:
+    """
+    Post-processes text right before it is finalized in a LumiSpan
+
+    Args:
+        text (str): The text to clean.
+
+    Returns:
+        str: The cleaned text.
+    """
+    # (1) Swaps $ in for escaped \\$
+    text = text.replace("\\$", "$")
+    # (2) Removing any remaining Lumi tags that were not correctly processed.
+    text = re.sub(r"\[\[l-.*?\]\]", "", text)
+    return text

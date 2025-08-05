@@ -161,7 +161,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -188,7 +188,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -248,7 +248,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -295,7 +295,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -361,7 +361,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -407,7 +407,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -447,7 +447,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -480,7 +480,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -516,7 +516,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -552,7 +552,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -588,7 +588,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -618,13 +618,103 @@ class ImportPipelineTest(unittest.TestCase):
                 {},
             ),
             (
+                "paragraph_with_displaymath_tag",
+                "<p>The equation is $$\\alpha + \\beta = \\gamma$$.</p>",
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="The equation is \\alpha + \\beta = \\gamma.",
+                                            inner_tags=[
+                                                InnerTag(
+                                                    tag_name=InnerTagName.MATH_DISPLAY,
+                                                    metadata={},
+                                                    position=Position(
+                                                        start_index=16, end_index=39
+                                                    ),
+                                                    children=[],
+                                                )
+                                            ],
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+            ),
+            (
+                "paragraph_with_escaped_dollar_sign",
+                "<p>It costs \\$40 and \\$50.</p>",
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="It costs $40 and $50.",
+                                            inner_tags=[],  # No math tag
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+            ),
+            (
+                "paragraph_with_escaped_double_dollar_signs",
+                "<p>It costs \\$\\$40 and \\$\\$50.</p>",
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="It costs $$40 and $$50.",
+                                            inner_tags=[],  # No math tag
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+            ),
+            (
                 "paragraph_with_a_tag",
                 '<p>This is a <a href="https://google.com">link</a>.</p>',
                 [
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -662,7 +752,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -698,7 +788,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -766,7 +856,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -810,7 +900,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -847,7 +937,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -897,7 +987,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -953,7 +1043,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -998,7 +1088,7 @@ class ImportPipelineTest(unittest.TestCase):
                 [
                     LumiSection(
                         id="123",
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -1077,7 +1167,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -1136,7 +1226,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
@@ -1251,7 +1341,7 @@ class ImportPipelineTest(unittest.TestCase):
                     LumiSection(
                         id="123",
                         sub_sections=[],
-                        heading=Heading(heading_level=0, text=""),
+                        heading=Heading(heading_level=1, text=""),
                         contents=[
                             LumiContent(
                                 id="123",
