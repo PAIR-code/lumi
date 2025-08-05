@@ -5,10 +5,11 @@ service cloud.firestore {
     match /arxiv_docs/{document_id} {
       allow read: if true;
       allow write: if false; // Use Cloud functions
-    }
-    match /arxiv_docs/{document_id}/versions/{version} {
-      allow read: if true;
-      allow write: if false; // Use Cloud functions
+
+      match /versions/{version} {
+        allow read: if true;
+        allow write: if false; // Use Cloud functions
+      }
     }
   }
 }
