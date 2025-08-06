@@ -29,6 +29,7 @@ export interface AbstractRendererProperties {
   onCollapseChange: (isCollapsed: boolean) => void;
   excerptSpanId?: string;
   highlightManager: HighlightManager;
+  onConceptClick?: (conceptId: string, target: HTMLElement) => void;
 }
 
 export function renderAbstract(
@@ -40,6 +41,7 @@ export function renderAbstract(
     onCollapseChange,
     excerptSpanId = "",
     highlightManager,
+    onConceptClick,
   } = props;
 
   return html`
@@ -73,7 +75,11 @@ export function renderAbstract(
               }
 
               return html`<lumi-span .span=${span}
-                >${renderLumiSpan({ span, highlights })}</lumi-span
+                >${renderLumiSpan({
+                  span,
+                  highlights,
+                  onConceptClick,
+                })}</lumi-span
               >`;
             })}
           </div>`;

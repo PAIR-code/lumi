@@ -17,6 +17,7 @@
 
 import {
   ListContent,
+  LumiConcept,
   LumiContent,
   LumiDoc,
   LumiSection,
@@ -42,6 +43,7 @@ export class LumiDocManager {
   private readonly sectionToParentMap = new Map<string, LumiSection>();
   private readonly innerSummaryMaps: LumiSummaryMaps;
   private readonly innerLumiDoc: LumiDoc;
+  private readonly conceptMap = new Map<string, LumiConcept>();
 
   constructor(lumiDoc: LumiDoc) {
     this.innerLumiDoc = lumiDoc;
@@ -67,6 +69,15 @@ export class LumiDocManager {
    */
   getSpanById(id: string): LumiSpan | undefined {
     return this.spanMap.get(id);
+  }
+
+  /**
+   * Retrieves a LumiSpan by its ID.
+   * @param id The ID of the span to retrieve.
+   * @returns The LumiSpan if found, otherwise undefined.
+   */
+  getConceptById(id: string): LumiConcept | undefined {
+    return this.conceptMap.get(id);
   }
 
   /**
@@ -105,6 +116,10 @@ export class LumiDocManager {
     // Index spans in references
     lumiDoc.references.forEach((reference) => {
       this.spanMap.set(reference.span.id, reference.span);
+    });
+
+    lumiDoc.concepts.forEach((concept) => {
+      this.conceptMap.set(concept.id, concept);
     });
   }
 

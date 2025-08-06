@@ -37,6 +37,7 @@ import {
 } from "../../shared/callables";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import {
+  ConceptTooltipProps,
   FloatingPanelService,
   ReferenceTooltipProps,
   SmartHighlightMenuProps,
@@ -236,6 +237,17 @@ export class LumiReader extends MobxLitElement {
     }
   };
 
+  private readonly handleConceptClick = (id: string, target: HTMLElement) => {
+    this.analyticsService.trackAction(AnalyticsAction.READER_CONCEPT_CLICK);
+
+    const concept =
+      this.documentStateService.lumiDocManager?.getConceptById(id);
+    if (!concept) return;
+
+    const props = new ConceptTooltipProps(concept);
+    this.floatingPanelService.show(props, target);
+  };
+
   private readonly handleTextSelection = (selectionInfo: SelectionInfo) => {
     this.analyticsService.trackAction(AnalyticsAction.READER_TEXT_SELECTION);
     const props = new SmartHighlightMenuProps(
@@ -298,6 +310,7 @@ export class LumiReader extends MobxLitElement {
           .collapseManager=${this.documentStateService.collapseManager}
           .getImageUrl=${this.getImageUrl.bind(this)}
           .onTextSelection=${this.handleTextSelection.bind(this)}
+          .onConceptClick=${this.handleConceptClick.bind(this)}
           .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
             this.documentStateService.focusOnSpan(highlights, "gray");
           }}

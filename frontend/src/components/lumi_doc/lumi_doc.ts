@@ -91,6 +91,8 @@ export class LumiDocViz extends MobxLitElement {
     reference: LumiReference,
     target: HTMLElement
   ) => void = () => {};
+  @property() onConceptClick: (conceptId: string, target: HTMLElement) => void =
+    () => {};
 
   @state() hoveredSpanId: string | null = null;
 
@@ -190,6 +192,7 @@ export class LumiDocViz extends MobxLitElement {
             onCollapseChange: (isCollapsed: boolean) => {
               this.collapseManager.setAbstractCollapsed(isCollapsed);
             },
+            onConceptClick: this.onConceptClick.bind(this),
             excerptSpanId: this.lumiDoc.summaries?.abstractExcerptSpanId,
             highlightManager: this.highlightManager,
           })}
