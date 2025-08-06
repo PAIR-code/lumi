@@ -139,12 +139,11 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
         .document(version)
     )
 
+    delay = (
+        DOCUMENT_REQUESTED_FUNCTION_TIMEOUT - DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER
+    )
+    timer = Timer(delay, _write_timeout_error, args=(versioned_doc_ref, after_data))
     if loading_status != LoadingStatus.TIMEOUT:
-        delay = (
-            DOCUMENT_REQUESTED_FUNCTION_TIMEOUT
-            - DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER
-        )
-        timer = Timer(delay, _write_timeout_error, args=(versioned_doc_ref, after_data))
         timer.start()
 
     if loading_status == LoadingStatus.WAITING:
@@ -155,6 +154,8 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
     elif loading_status == LoadingStatus.SUMMARIZING:
         # Add summaries to existing LumiDoc data
         _add_summaries_to_lumi_doc(versioned_doc_ref, after_data)
+
+    timer.cancel()
 
 
 def _write_timeout_error(versioned_doc_ref, doc_data):
