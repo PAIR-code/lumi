@@ -28,7 +28,7 @@ from unittest.mock import MagicMock
 # Third-party library imports
 from dacite import from_dict, Config
 from firebase_admin import initialize_app, firestore
-from firebase_functions import https_fn, logger
+from firebase_functions import https_fn, logger, options
 from firebase_functions.firestore_fn import (
     on_document_written,
     Event,
@@ -107,7 +107,7 @@ def _is_locally_emulated() -> bool:
 
 @on_document_written(
     timeout_sec=540,
-    memory="2GiB",
+    memory=options.MemoryOption.GB_2,
     document=_ARXIV_DOCS_COLLECTION
     + "/{arxivId}/"
     + _VERSIONS_COLLECTION
@@ -152,10 +152,7 @@ def _save_lumi_metadata(arxiv_id, version, doc_data):
     collection.
     """
     db = firestore.client()
-    doc_ref = (
-        db.collection(_ARXIV_METADATA_COLLECTION)
-        .document(arxiv_id)
-    )
+    doc_ref = db.collection(_ARXIV_METADATA_COLLECTION).document(arxiv_id)
     metadata_dict = doc_data.get("metadata", {})
     doc_ref.set(metadata_dict)
 
@@ -192,10 +189,12 @@ def _add_lumi_doc(versioned_doc_ref, doc_data):
         versioned_doc_ref.update(lumi_doc_json)
     except Exception as e:
         logger.error(f"Error importing doc {arxiv_id}v{version}: {e}")
-        versioned_doc_ref.update({
-            "loadingStatus": LoadingStatus.ERROR,
-            "loadingError": f"Error importing document: {e}",
-        })
+        versioned_doc_ref.update(
+            {
+                "loadingStatus": LoadingStatus.ERROR,
+                "loadingError": f"Error importing document: {e}",
+            }
+        )
 
 
 def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
@@ -230,10 +229,12 @@ def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
         versioned_doc_ref.update(lumi_doc_json)
     except Exception as e:
         logger.error(f"Error summarizing doc {arxiv_id}v{version}: {e}")
-        versioned_doc_ref.update({
-            "loadingStatus": LoadingStatus.ERROR,
-            "loadingError": f"Error summarizing document: {e}",
-        })
+        versioned_doc_ref.update(
+            {
+                "loadingStatus": LoadingStatus.ERROR,
+                "loadingError": f"Error summarizing document: {e}",
+            }
+        )
 
 
 @https_fn.on_call()
