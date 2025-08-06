@@ -20,49 +20,8 @@
 @use "../../sass/typescale";
 
 :host {
-  @include common.flex-column;
-  gap: 24px;
-
-  align-items: center;
-  width: 100%;
-}
-
-.gallery-wrapper {
-  @include common.flex-row;
-  flex-wrap: wrap;
-  gap: common.$spacing-large;
-  max-width: common.$info-content-max-width;
-  width: 100%;
-}
-
-.gallery-tabs {
-  @include common.flex-row;
-  align-items: center;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  padding: 0 common.$main-content-padding;
-  position: sticky;
-  top: common.$header-height;
-  width: 100%;
-}
-
-.gallery-tab {
-  @include common.flex-row;
-  align-items: center;
-  border-bottom: 2px solid transparent;
-  color: var(--md-sys-color-outline);
-  height: common.$header-height;
-  padding: 0 common.$spacing-large;
-
-  &:focus,
-  &:hover {
-    cursor: pointer;
-    color: var(--md-sys-color-on-surface);
-  }
-
-  &.active {
-    color: var(--md-sys-color-primary);
-    border-color: var(--md-sys-color-primary);
-  }
+  @include common.flex-column-align-center;
+  gap: common.$spacing-xl;
 }
 
 .banner {
@@ -98,4 +57,59 @@ h1 {
   pr-icon-button {
     flex-shrink: 1;
   }
+}
+
+.preview-gallery {
+  display: grid;
+  gap: common.$spacing-large;
+  grid-template-columns: repeat(2, 1fr);
+  max-width: common.$info-content-max-width;
+
+  @include common.viewport-small {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.preview-item {
+  @include common.flex-column;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: common.$spacing-small;
+  gap: common.$spacing-large;
+  height: 100%;
+  max-width: calc(common.$info-content-max-width / 2);
+  padding: common.$spacing-large;
+  transition: all .25s ease-out;
+  width: 100%;
+
+  &:focus,
+  &:hover {
+    box-shadow: common.$spacing-small common.$spacing-small 1px 0 var(--md-sys-color-outline-variant);
+    cursor: pointer;
+    transform: translate(-2px);
+    transition: all .25s ease-out;
+  }
+}
+
+.preview-image {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(50deg, var(--md-sys-color-primary-container), var(--md-sys-color-surface));
+  flex-shrink: 0;
+  height: 200px;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.preview-content {
+  @include common.flex-column;
+  gap: common.$spacing-small;
+}
+
+.preview-title {
+  @include typescale.title-medium;
+}
+
+.chip {
+  @include common.chip;
+  @include typescale.label-small;
+  width: max-content;
 }

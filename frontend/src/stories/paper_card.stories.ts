@@ -21,37 +21,34 @@ import type { Meta, StoryObj } from "@storybook/web-components";
 
 import { html } from "lit";
 
-import "../components/gallery/gallery_card";
+import "../components/gallery/home_gallery";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 const meta = {
-  title: "Components/GalleryCard",
+  title: "Components/PaperCard",
   tags: ["autodocs"],
   render: (args) =>
-    html`<gallery-card
-      .item=${{
+    html`<paper-card
+      .metadata=${{
         title: args.title,
-        description: args.description,
-        creator: args.creator,
-        date: args.date,
+        summary: args.summary,
+        authors: args.authors,
+        publishedTimestamp: args.publishedTimestamp,
+        updatedTimestamp: args.updatedTimestamp,
         version: args.version,
-        isPublic: args.isPublic,
-        isStarred: args.isStarred,
-        tags: Array.from(Array(args.tagCount).keys()).map(
-          (value) => args.tagName
-        ),
+        paperId: args.paperId,
       }}
-    ></gallery-card>`,
+      .status=${args.status}
+    ></paper-card>`,
   argTypes: {
     title: { control: "text" },
-    description: { control: "text" },
-    creator: { control: "text" },
-    date: { control: "text" },
+    summary: { control: "text" },
+    authors: { control: "text" },
+    publishedTimestamp: { control: "text" },
+    updatededTimestamp: { control: "text" },
     version: { control: "number" },
-    isPublic: { control: "boolean" },
-    isStarred: { control: "boolean" },
-    tagName: { control: "text" },
-    tagCount: { control: "number" },
+    paperId: { control: "text" },
+    status: { control: "text" },
   },
   args: { onClick: fn() },
 } satisfies Meta;
@@ -62,14 +59,12 @@ type Story = StoryObj;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
   args: {
-    title: "My Gallery Card",
-    description: "Description of card",
-    creator: "Lumi",
-    date: "May 1",
-    version: 1,
-    isPublic: true,
-    isStarred: false,
-    tagName: ["tag"],
-    tagCount: 1,
+    title: "Headscarf drosera bell cardamom backwards lemon custard",
+    summary: "Pilot pumpernickel ginger prunus crown grits slushie half-moons black tee scarf. Pinguicula fuzzy jacket potato chips pepper malvaceae macaroon.",
+    authors: "Cashew, Biscuit",
+    version: "1",
+    updatedTimestamp: "",
+    publishedTimestamp: "",
+    paperId: "my-paper-id",
   },
 };

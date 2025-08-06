@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import "./gallery_card";
 import "../../pair-components/textarea";
 import "../../pair-components/icon_button";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
+import { classMap } from "lit/directives/class-map.js";
 
 import { core } from "../../core/core";
 import { HomeService } from "../../services/home.service";
@@ -32,7 +32,6 @@ import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
 
 import { LumiDoc, LoadingStatus, ArxivMetadata } from "../../shared/lumi_doc";
-import { GalleryItem } from "../../shared/types";
 import {
   requestArxivDocImportCallable,
   RequestArxivDocImportResult,
@@ -58,10 +57,8 @@ export class HomeGallery extends MobxLitElement {
 
   // Paper URL or ID for text input box
   @state() private paperInput: string = "";
-  /**
-   * Holds the metadata of the paper being loaded. This is used to render a
-   * temporary, disabled "loading" card in the UI.
-   */
+  // Whether the last imported paper is still loading metadata
+  // (if true, this blocks importing another paper)
   @state() private isLoadingMetadata = false;
 
   @observable.shallow private unsubscribeListeners = new ObservableMap<
@@ -184,73 +181,55 @@ export class HomeGallery extends MobxLitElement {
   }
 
   override render() {
-    const renderDocument = (document: LumiDoc) => {
-      const item: GalleryItem = {
-        title: document.metadata?.title ?? "Untitled Paper",
-        description: document.metadata?.summary ?? "",
-        creator: document.metadata?.authors.join(", ") ?? "Unknown Author",
-        date: document.metadata?.publishedTimestamp ?? "",
-        version: document.metadata?.version ?? "",
-        isPublic: true,
-        isStarred: false,
-        tags: [],
-      };
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    ).map(item => item.metadata);
 
+    return html`
+      ${this.renderLinkInput()}
+      ${this.renderCollection(historyItems)}
+    `;
+  }
+
+  private renderCollection(items: ArxivMetadata[]) {
+    const renderItem = (metadata: ArxivMetadata) => {
       const navigate = () => {
-        if (document.metadata) {
-          this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
-            document_id: document.metadata.paperId,
-          });
-        }
+        this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
+          document_id: metadata.paperId,
+        });
       };
 
-      return html`
-        <gallery-card .item=${item} @click=${navigate}></gallery-card>
-      `;
-    };
-
-    const renderHistoryItem = (paperData: PaperData) => {
-      const { metadata } = paperData;
-      const isLoading = paperData?.status === "loading";
-
-      const item: GalleryItem = {
-        title: metadata.title,
-        description: metadata.summary,
-        creator: metadata.authors.join(", "),
-        date: metadata.publishedTimestamp,
-        version: metadata.version,
-        isPublic: true,
-        isStarred: false,
-        tags: [],
-      };
-
-      const navigate = () => {
-        if (!isLoading) {
-          this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
-            document_id: metadata.paperId,
-          });
-        }
-      };
-
-      // TODO(ellenj): Update gallery card to take in a callback or slot to delete the paper.
+      // TODO(vivcodes): Add callback or slot to paper-card for deletion
       const deletePaper = (e: Event) => {
         e.stopPropagation();
         this.historyService.deletePaper(metadata.paperId);
       };
 
+      const status = this.unsubscribeListeners.has(metadata.paperId) ? 'loading' : '';
       return html`
-        <gallery-card .item=${item} ?disabled=${isLoading} @click=${navigate}>
-          <md-icon-button slot="actions" @click=${deletePaper}>
-            <md-icon>delete</md-icon>
-          </md-icon-button>
-        </gallery-card>
+        <paper-card
+          .metadata=${metadata}
+          .status=${status}
+          @click=${navigate}
+        >
+        </paper-card>
+      `;
+    };
+    const renderEmpty = () => {
+      return html`
+        <div class="empty-message">No papers available</div>
       `;
     };
 
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    );
+    return html`
+      <div class="preview-gallery">
+        ${items.map(item => renderItem(item))}
+        ${items.length === 0 ? renderEmpty() : nothing}
+      </div>
+    `;
+  }
 
+  private renderLinkInput() {
     const autoFocus = () => {
       // Only auto-focus chat input if on desktop
       return navigator.maxTouchPoints === 0;
@@ -259,7 +238,7 @@ export class HomeGallery extends MobxLitElement {
     return html`
       <div class="paper-input">
         <pr-textarea
-          ?disabled=${this.isLoadingDocument}
+          ?disabled=${this.isLoadingMetadata}
           ?focused=${autoFocus}
           size="large"
           .value=${this.paperInput}
@@ -278,29 +257,60 @@ export class HomeGallery extends MobxLitElement {
           icon="arrow_forward"
           variant="tonal"
           @click=${this.loadDocument}
-          .loading=${this.isLoadingDocument}
-          ?disabled=${this.isLoadingDocument || !this.paperInput}
+          .loading=${this.isLoadingMetadata}
+          ?disabled=${this.isLoadingMetadata || !this.paperInput}
         >
         </pr-icon-button>
       </div>
-      <div class="gallery-wrapper">
-        ${historyItems.map((item) => {
-          return renderHistoryItem(item);
-        })}
-        ${this.renderEmptyMessage(historyItems)}
+    `;
+  }
+}
+
+/** Paper preview card */
+@customElement("paper-card")
+export class PaperCard extends MobxLitElement {
+  static override styles: CSSResultGroup = [styles];
+
+  @property() metadata: ArxivMetadata | null = null;
+  @property({ type: Boolean }) disabled = false;
+  @property({ type: Number }) summaryMaxCharacters = 250;
+  @property({ type: String }) status = '';
+
+  override render() {
+    if (!this.metadata) {
+      return nothing;
+    }
+
+    const classes = { "preview-item": true, disabled: this.disabled };
+
+    // If summary is over max characters, abbreviate
+    const summary = this.metadata.summary.length <= this.summaryMaxCharacters ?
+      this.metadata.summary :
+      `${this.metadata.summary.slice(0, this.summaryMaxCharacters)}...`;
+
+    return html`
+      <div class=${classMap(classes)}>
+        <div class="preview-image"></div>
+        <div class="preview-content">
+          <div class="preview-title">${this.metadata.title}</div>
+          ${this.renderStatusChip()}
+          <div class="preview-description">${summary}</div>
+        </div>
       </div>
-      <div class="history-controls"></div>
     `;
   }
 
-  private renderEmptyMessage(documents: unknown[]) {
-    if (documents.length > 0 || this.isLoadingDocument) return nothing;
-    return html`<div class="empty-message">No reading history yet</div>`;
+  private renderStatusChip() {
+    if (!this.status) {
+      return nothing;
+    }
+    return html`<div class="chip secondary">${this.status}</div>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "home-gallery": HomeGallery;
+    "paper-card": PaperCard;
   }
 }

@@ -258,7 +258,8 @@ export class LumiReader extends MobxLitElement {
   override render() {
     const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
 
-    if (!currentDoc) return nothing;
+    // TODO: Add more descriptive/accurate message based on document status
+    if (!currentDoc) return html`<div>Document loading...</div>`;
 
     if (
       currentDoc.loadingStatus === LoadingStatus.LOADING ||

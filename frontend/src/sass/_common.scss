@@ -320,7 +320,7 @@
 }
 
 @mixin viewport-small {
-  @media screen and (max-width: 720px) {
+  @media screen and (max-width: 600px) {
     @content;
   }
 }
