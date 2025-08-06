@@ -228,7 +228,9 @@ def preprocess_and_replace_figures(
         """Helper to create a LumiSpan for a caption."""
         if not caption_text:
             return None
-        caption_spans = convert_html_to_lumi.convert_raw_output_to_spans(caption_text)
+        caption_spans = convert_html_to_lumi.convert_raw_output_to_spans(
+            caption_text, skip_tokenize=True
+        )
         return caption_spans[0] if caption_spans else None
 
     def _create_image_content(image_path: str, caption_text: str):
