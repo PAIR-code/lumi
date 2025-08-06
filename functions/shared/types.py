@@ -29,6 +29,7 @@ class LoadingStatus(StrEnum):
     SUMMARIZING = "SUMMARIZING"
     SUCCESS = "SUCCESS"
     ERROR = "ERROR"
+    TIMEOUT = "TIMEOUT"
 
 
 @dataclass
