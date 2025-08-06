@@ -2,31 +2,50 @@
 
 Defines cloud functions for Lumi backend.
 
-First, create and activate a virtual env in this functions directory.
+## Set-up
 
-To install dependencies:
+1. Make sure to be in the functions directory:
+
+```
+cd functions
+```
+
+2. Create and activate a virtual env in this functions directory:
+
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
+3. To install dependencies:
 
 ```
 pip install -r requirements.txt
 ```
 
-Create an api_config.py file and add your API key (see TODOs in example file).
+4. Create an api_config.py file and add your API key (see TODOs in example file).
 
 ```
-cp api_config.example.py api_config.py
+cp models/api_config.example.py models/api_config.py
 ```
 
-To run emulator:
+## Running locally
+
+To run the local emulator:
 
 ```
 firebase emulators:start
 ```
+
+## Deployment
 
 To deploy functions:
 
 ```
 firebase deploy --only functions
 ```
+
+## Testing
 
 To run unittests:
 
