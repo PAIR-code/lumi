@@ -125,7 +125,7 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
 
 
 class ImportPipelineTest(unittest.TestCase):
-    @patch.object(import_pipeline, "get_unique_id", return_value="123")
+    @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
     @patch("import_pipeline.markdown_utils.parse_lumi_import")
     def test_convert_model_output_to_lumi_doc_with_references(
         self, mock_parse_lumi_import, mock_get_unique_id
@@ -140,7 +140,7 @@ class ImportPipelineTest(unittest.TestCase):
             "content": "",
             "references": [
                 {"id": "ref1", "content": "This is a <b>bold</b> reference."},
-                {"id": "ref2", "content": "This is an <i>italic</i> one."},
+                {"id": "ref2", "content": "This is an *italic* one."},
             ],
         }
 
@@ -167,7 +167,7 @@ class ImportPipelineTest(unittest.TestCase):
                     text="This is an italic one.",
                     inner_tags=[
                         InnerTag(
-                            tag_name=InnerTagName.ITALIC,
+                            tag_name=InnerTagName.EM,
                             metadata={},
                             position=Position(start_index=11, end_index=17),
                             children=[],

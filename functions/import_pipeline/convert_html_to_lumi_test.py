@@ -36,13 +36,68 @@ from shared import import_tags
 from dataclasses import asdict
 
 
-class ImportPipelineTest(unittest.TestCase):
+class ConvertHtmlToLumiTest(unittest.TestCase):
+    @patch.object(convert_html_to_lumi, "get_unique_id")
+    def test_convert_raw_output_to_spans(self, mock_get_unique_id):
+        """Tests that headings are nested correctly into sub_sections."""
+        self.maxDiff = None
+        mock_get_unique_id.return_value = "uid"
+
+        with self.subTest("model output containing a tag"):
+            model_output = "Testing *italic*"
+            actual_spans = convert_html_to_lumi.convert_raw_output_to_spans(
+                model_output
+            )
+
+            expected_span = LumiSpan(
+                id="uid",
+                text="Testing italic",
+                inner_tags=[
+                    InnerTag(
+                        tag_name=InnerTagName.EM,
+                        metadata={},
+                        position=Position(start_index=8, end_index=14),
+                        children=[],
+                    )
+                ],
+            )
+
+            self.assertEqual(len(actual_spans), 1)
+            self.assertEqual(actual_spans[0], expected_span)
+
+        with self.subTest("model output containing no tag"):
+            model_output = "Testing"
+            actual_spans = convert_html_to_lumi.convert_raw_output_to_spans(
+                model_output
+            )
+
+            expected_span = LumiSpan(
+                id="uid",
+                text="Testing",
+                inner_tags=[],
+            )
+
+            self.assertEqual(len(actual_spans), 1)
+            self.assertEqual(actual_spans[0], expected_span)
+
+        with self.subTest("empty model output"):
+            model_output = ""
+            actual_spans = convert_html_to_lumi.convert_raw_output_to_spans(
+                model_output
+            )
+
+            expected_span = LumiSpan(
+                id="uid",
+                text="",
+                inner_tags=[],
+            )
+
+            self.assertEqual(len(actual_spans), 0)
+
     @patch.object(convert_html_to_lumi, "get_unique_id")
     def test_nested_headings(self, mock_get_unique_id):
         """Tests that headings are nested correctly into sub_sections."""
         self.maxDiff = None
-        # This test will fail until the nesting logic is implemented.
-        # It's added first as per the user's request.
         html_input = (
             "<h1>Title 1</h1>"
             "<h2>Subtitle 1.1</h2>"

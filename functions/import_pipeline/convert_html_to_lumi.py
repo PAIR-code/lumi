@@ -34,7 +34,7 @@ from shared.lumi_doc import (
 )
 from shared.utils import get_unique_id
 from import_pipeline.tokenize import tokenize_sentences
-from import_pipeline.markdown_utils import postprocess_span_text
+from import_pipeline.markdown_utils import postprocess_span_text, markdown_to_html
 
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
 ORDERED_LIST_TAG = "ol"
@@ -445,3 +445,19 @@ def create_lumi_spans(
         cleaned_text_search_offset = sentence_start_in_cleaned + sentence_len
 
     return lumi_spans
+
+
+def convert_raw_output_to_spans(
+    output_text: str, skip_tokenize=False
+) -> List[LumiSpan]:
+    html = markdown_to_html(output_text)
+    soup = bs4.BeautifulSoup(html, "html.parser")
+
+    children = list(soup.children)
+    if not children:
+        return []
+
+    text = _get_text(children[0])
+
+    cleaned_text, inner_tags = parse_text_and_extract_inner_tags(text)
+    return create_lumi_spans(cleaned_text, inner_tags, skip_tokenize=skip_tokenize)
