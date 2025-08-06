@@ -107,7 +107,7 @@ def _is_locally_emulated() -> bool:
 
 @on_document_written(
     timeout_sec=540,
-    memory=512,
+    memory="2GiB",
     document=_ARXIV_DOCS_COLLECTION
     + "/{arxivId}/"
     + _VERSIONS_COLLECTION
