@@ -83,7 +83,7 @@ def markdown_to_html(markdown: str) -> str:
         return html
 
 
-def postprocess_span_text(text: str) -> str:
+def postprocess_content_text(text: str) -> str:
     """
     Post-processes text right before it is finalized in a LumiSpan
 

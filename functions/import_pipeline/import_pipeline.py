@@ -291,7 +291,8 @@ def preprocess_and_replace_figures(
         placeholder_map[placeholder_id] = LumiContent(
             id=id,
             html_figure_content=HtmlFigureContent(
-                html=html_content.strip(), caption=caption_span
+                html=markdown_utils.postprocess_content_text(html_content.strip()),
+                caption=caption_span,
             ),
         )
         return placeholder_id

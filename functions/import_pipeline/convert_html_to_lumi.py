@@ -34,7 +34,7 @@ from shared.lumi_doc import (
 )
 from shared.utils import get_unique_id
 from import_pipeline.tokenize import tokenize_sentences
-from import_pipeline.markdown_utils import postprocess_span_text, markdown_to_html
+from import_pipeline.markdown_utils import postprocess_content_text, markdown_to_html
 
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
 ORDERED_LIST_TAG = "ol"
@@ -414,7 +414,7 @@ def create_lumi_spans(
             lumi_spans.append(
                 LumiSpan(
                     id=get_unique_id(),
-                    text=postprocess_span_text(cleaned_text),
+                    text=postprocess_content_text(cleaned_text),
                     inner_tags=all_inner_tags,
                 )
             )
@@ -438,7 +438,7 @@ def create_lumi_spans(
         lumi_spans.append(
             LumiSpan(
                 id=get_unique_id(),
-                text=postprocess_span_text(sentence_text),
+                text=postprocess_content_text(sentence_text),
                 inner_tags=tags_relative_to_sentence,
             )
         )
