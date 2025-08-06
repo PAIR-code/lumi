@@ -17,6 +17,7 @@
 import unittest
 from unittest.mock import patch
 from shared.lumi_doc import (
+    LumiAbstract,
     LumiSection,
     Heading,
     LumiContent,
@@ -29,6 +30,7 @@ from shared.lumi_doc import (
     LumiReference,
     LumiDoc,
     LumiConcept,
+    TextContent,
 )
 from import_pipeline import import_pipeline, convert_html_to_lumi
 from shared import import_tags
@@ -125,6 +127,61 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
 
 
 class ImportPipelineTest(unittest.TestCase):
+    @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
+    @patch("import_pipeline.markdown_utils.parse_lumi_import")
+    def test_convert_model_output_to_lumi_doc_with_abstract(
+        self, mock_parse_lumi_import, mock_get_unique_id
+    ):
+        """Tests that concept inner tags in abstract are correctly parsed."""
+        self.maxDiff = None
+        del mock_get_unique_id  # unused
+
+        # Mock the output of the markdown parser
+        mock_parse_lumi_import.return_value = {
+            "abstract": "Here's an abstract with a concept",
+            "content": "",
+            "references": [],
+        }
+
+        concepts = [
+            LumiConcept(id="123", name="concept", contents=[], in_text_citations=[])
+        ]
+
+        expected_abstract = LumiAbstract(
+            contents=[
+                LumiContent(
+                    id="123",
+                    text_content=TextContent(
+                        tag_name="p",
+                        spans=[
+                            LumiSpan(
+                                id="123",
+                                text="Here's an abstract with a concept",
+                                inner_tags=[
+                                    InnerTag(
+                                        tag_name=InnerTagName.CONCEPT,
+                                        metadata={"concept_id": "123"},
+                                        children=[],
+                                        position=Position(start_index=26, end_index=33),
+                                    )
+                                ],
+                            )
+                        ],
+                    ),
+                )
+            ]
+        )
+
+        # Call the function to be tested
+        lumi_doc = import_pipeline.convert_model_output_to_lumi_doc(
+            # This string doesn't matter since parse_lumi_import is mocked
+            model_output_string="dummy_string",
+            concepts=concepts,
+            file_id="test_file",
+        )
+
+        self.assertEqual(asdict(expected_abstract), asdict(lumi_doc.abstract))
+
     @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
     @patch("import_pipeline.markdown_utils.parse_lumi_import")
     def test_convert_model_output_to_lumi_doc_with_references(

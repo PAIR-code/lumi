@@ -22,6 +22,7 @@ from import_pipeline import image_utils
 from import_pipeline import latex_utils
 from import_pipeline import convert_html_to_lumi
 from models import gemini
+from models import extract_concepts as extract_concepts_util
 from shared import import_tags
 from shared.lumi_doc import (
     LumiReference,
@@ -181,7 +182,14 @@ def convert_model_output_to_lumi_doc(
             # TODO(ellenj): Consider raising error
             pass
         if abstract_sections:
-            lumi_abstract = LumiAbstract(contents=abstract_sections[0].contents)
+            abstract_section = abstract_sections[0]
+            # Annotate abstract with concepts
+            for content in abstract_section.contents:
+                if content.text_content:
+                    extract_concepts_util.annotate_concepts_in_place(
+                        content.text_content.spans, concepts
+                    )
+            lumi_abstract = LumiAbstract(contents=abstract_section.contents)
 
     lumi_sections = []
     if parsed_data.get("content"):
