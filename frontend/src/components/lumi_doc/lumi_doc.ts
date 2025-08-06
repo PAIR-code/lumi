@@ -93,6 +93,7 @@ export class LumiDocViz extends MobxLitElement {
   ) => void = () => {};
   @property() onConceptClick: (conceptId: string, target: HTMLElement) => void =
     () => {};
+  @property() onScroll: () => void = () => {};
 
   @state() hoveredSpanId: string | null = null;
 
@@ -164,6 +165,7 @@ export class LumiDocViz extends MobxLitElement {
             this.handleMouseOrTouchUp(e);
           });
         }}
+        @scroll=${this.onScroll.bind(this)}
         @mouseup=${(e: MouseEvent) => {
           window.setTimeout(() => {
             this.handleMouseOrTouchUp(e);

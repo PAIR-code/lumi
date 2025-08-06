@@ -248,6 +248,12 @@ export class LumiReader extends MobxLitElement {
     this.floatingPanelService.show(props, target);
   };
 
+  private readonly handleScroll = () => {
+    if (this.floatingPanelService.isVisible) {
+      this.floatingPanelService.hide();
+    }
+  };
+
   private readonly handleTextSelection = (selectionInfo: SelectionInfo) => {
     this.analyticsService.trackAction(AnalyticsAction.READER_TEXT_SELECTION);
     const props = new SmartHighlightMenuProps(
@@ -311,6 +317,7 @@ export class LumiReader extends MobxLitElement {
           .getImageUrl=${this.getImageUrl.bind(this)}
           .onTextSelection=${this.handleTextSelection.bind(this)}
           .onConceptClick=${this.handleConceptClick.bind(this)}
+          .onScroll=${this.handleScroll.bind(this)}
           .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
             this.documentStateService.focusOnSpan(highlights, "gray");
           }}
