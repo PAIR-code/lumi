@@ -22,10 +22,8 @@ npm install  # Only run once
 # analytics ID (see TODOs in example file) with your Google Analytics ID
 cp index.example.html index.html
 
-# If you didn't already create a firebase_config.ts when setting up
-# the emulator, do so now:
-#
-# cp firebase_config.example.ts firebase_config.ts
+# Create a firebase_config.ts file and replace the placeholder.
+cp firebase_config.example.ts firebase_config.ts
 
 npm run start
 ```
