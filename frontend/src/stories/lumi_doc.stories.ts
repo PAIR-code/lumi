@@ -91,7 +91,18 @@ const mockLumiDoc: LumiDoc = {
             {
               id: "abstract_span_1_1_1",
               text: "This is the first sentence in the abstract. ",
-              innerTags: [],
+              innerTags: [
+                {
+                  tagName: InnerTagName.FOOTNOTE,
+                  position: {
+                    startIndex: 4,
+                    endIndex: 4,
+                  },
+                  metadata: {
+                    id: "1",
+                  },
+                },
+              ],
             },
           ],
         },
@@ -103,6 +114,16 @@ const mockLumiDoc: LumiDoc = {
     ],
   },
   concepts: [],
+  footnotes: [
+    {
+      id: "1",
+      span: {
+        id: "footnote_span_1",
+        text: "What a footnote would say",
+        innerTags: [],
+      },
+    },
+  ],
   references: [
     {
       id: "ref_1",

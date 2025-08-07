@@ -19,6 +19,11 @@
 @use "../../sass/typescale";
 
 .lumi-span-renderer-element {
+  .footnote-marker {
+    cursor: pointer;
+    color: var(--md-sys-color-primary);
+  }
+
   .character {
     // Enum classes for lumi_doc.ts/InnerTagName
     &.b,

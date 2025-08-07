@@ -19,6 +19,7 @@ import { classMap } from "lit/directives/class-map.js";
 import {
   ListContent,
   LumiContent,
+  LumiFootnote,
   LumiReference,
   LumiSection,
   LumiSpan,
@@ -41,6 +42,7 @@ export interface SectionRendererProperties {
   parentComponent: LitElement;
   section: LumiSection;
   references: LumiReference[];
+  footnotes?: LumiFootnote[];
   summaryMaps: LumiSummaryMaps | null;
   hoverFocusedSpanId: string | null;
   isCollapsed: boolean;
@@ -55,6 +57,7 @@ export interface SectionRendererProperties {
     reference: LumiReference,
     target: HTMLElement
   ) => void;
+  onFootnoteClick: (footnote: LumiFootnote, target: HTMLElement) => void;
   isSubsection: boolean;
 }
 
@@ -150,7 +153,9 @@ function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
       span,
       highlights,
       references: props.references,
+      footnotes: props.footnotes,
       onPaperReferenceClick: props.onPaperReferenceClick,
+      onFootnoteClick: props.onFootnoteClick,
     })}</lumi-span
   >`;
 }
@@ -244,7 +249,9 @@ function renderContents(
     highlightManager,
     collapseManager,
     references,
+    footnotes,
     onPaperReferenceClick,
+    onFootnoteClick,
   } = props;
   if (isCollapsed) {
     return renderSectionSummaryPanel(props);
@@ -270,6 +277,7 @@ function renderContents(
         parentComponent: props.parentComponent,
         content,
         references,
+        footnotes,
         getImageUrl,
         summary: summaryMaps?.contentSummariesMap.get(content.id) ?? null,
         spanSummaries,
@@ -279,6 +287,7 @@ function renderContents(
         highlightManager,
         collapseManager,
         onPaperReferenceClick,
+        onFootnoteClick,
       });
     })}
     ${renderSubsections(props)}
