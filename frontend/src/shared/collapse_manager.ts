@@ -134,7 +134,6 @@ export class CollapseManager {
 
   setAllSectionsCollapsed(isCollapsed: boolean) {
     this.isAbstractCollapsed = isCollapsed;
-    this.areFootnotesCollapsed = isCollapsed;
 
     this.lumiDocManager.lumiDoc.sections.forEach((section) => {
       this.sectionCollapseState.set(section.id, isCollapsed);
