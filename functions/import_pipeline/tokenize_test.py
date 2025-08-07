@@ -40,6 +40,7 @@ class TokenizeTest(unittest.TestCase):
         # ['This is a sentence with a math block $E = m.c^2.', 'It continues here$.', 'This is the final sentence.']
         math_tags = [
             InnerTag(
+                id="123",
                 tag_name=InnerTagName.MATH,
                 metadata={},
                 position=Position(start_index=34, end_index=65),
@@ -60,12 +61,14 @@ class TokenizeTest(unittest.TestCase):
         text = "First sentence. A math block a.b and another c.d. Last sentence."
         math_tags = [
             InnerTag(
+                id="123",
                 tag_name=InnerTagName.MATH,
                 position=Position(start_index=29, end_index=31),
                 metadata={},
                 children=[],
             ),
             InnerTag(
+                id="123",
                 tag_name=InnerTagName.MATH,
                 position=Position(start_index=44, end_index=46),
                 metadata={},

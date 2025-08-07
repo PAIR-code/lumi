@@ -132,7 +132,7 @@ describe("renderLumiSpan", () => {
     expect(miE!.textContent).to.equal("E");
   });
 
-  it("renders a span with an reference", async () => {
+  it("renders a span with an l-ref reference", async () => {
     const span: LumiSpan = {
       id: "s2",
       text: "Sentence",
@@ -152,6 +152,39 @@ describe("renderLumiSpan", () => {
           references: [
             { id: "ref1", span: { id: "ref-s1", text: "", innerTags: [] } },
             { id: "ref2", span: { id: "ref-s2", text: "", innerTags: [] } },
+          ],
+        })}
+      </div>`
+    );
+
+    expect(el.textContent).to.include("Sentence12");
+  });
+
+  it("renders a span with an s-ref reference as a numerical index", async () => {
+    const span: LumiSpan = {
+      id: "s2",
+      text: "Sentence",
+      innerTags: [
+        {
+          tagName: InnerTagName.SPAN_REFERENCE,
+          position: { startIndex: 8, endIndex: 8 },
+          metadata: { id: "sref1" },
+        },
+        {
+          tagName: InnerTagName.SPAN_REFERENCE,
+          position: { startIndex: 8, endIndex: 8 },
+          metadata: { id: "sref2" },
+        },
+      ],
+    };
+
+    const el = await fixture(
+      html`<div>
+        ${renderLumiSpan({
+          span,
+          referencedSpans: [
+            { id: "sref1", innerTags: [], text: "ref text 1" },
+            { id: "sref2", innerTags: [], text: "ref text 2" },
           ],
         })}
       </div>`

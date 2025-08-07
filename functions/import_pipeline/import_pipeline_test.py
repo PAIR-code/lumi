@@ -33,6 +33,7 @@ from shared.lumi_doc import (
     TextContent,
 )
 from import_pipeline import import_pipeline, convert_html_to_lumi
+from models import extract_concepts
 from shared import import_tags
 from shared.types import ArxivMetadata
 from dataclasses import asdict
@@ -128,13 +129,18 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
 
 class ImportPipelineTest(unittest.TestCase):
     @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
+    @patch.object(extract_concepts, "get_unique_id", return_value="123")
     @patch("import_pipeline.markdown_utils.parse_lumi_import")
     def test_convert_model_output_to_lumi_doc_with_abstract(
-        self, mock_parse_lumi_import, mock_get_unique_id
+        self,
+        mock_parse_lumi_import,
+        mock_get_unique_id_extract_concepts,
+        mock_get_unique_id_convert_html_to_lumi,
     ):
         """Tests that concept inner tags in abstract are correctly parsed."""
         self.maxDiff = None
-        del mock_get_unique_id  # unused
+        del mock_get_unique_id_extract_concepts  # unused
+        del mock_get_unique_id_convert_html_to_lumi  # unused
 
         # Mock the output of the markdown parser
         mock_parse_lumi_import.return_value = {
@@ -159,6 +165,7 @@ class ImportPipelineTest(unittest.TestCase):
                                 text="Here's an abstract with a concept",
                                 inner_tags=[
                                     InnerTag(
+                                        id="123",
                                         tag_name=InnerTagName.CONCEPT,
                                         metadata={"concept_id": "123"},
                                         children=[],
@@ -209,6 +216,7 @@ class ImportPipelineTest(unittest.TestCase):
                     text="This is a bold reference.",
                     inner_tags=[
                         InnerTag(
+                            id="123",
                             tag_name=InnerTagName.BOLD,
                             metadata={},
                             position=Position(start_index=10, end_index=14),
@@ -224,6 +232,7 @@ class ImportPipelineTest(unittest.TestCase):
                     text="This is an italic one.",
                     inner_tags=[
                         InnerTag(
+                            id="123",
                             tag_name=InnerTagName.EM,
                             metadata={},
                             position=Position(start_index=11, end_index=17),

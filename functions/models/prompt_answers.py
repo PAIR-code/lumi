@@ -30,10 +30,10 @@ Your response should give an 8-10 word quick response in the beginning in (markd
         \\begin{{{{align}}}} and \\end{{{{align}}}} with equations inside should also instead by wrapped in $ and $
         True dollar signs should be represented with \$ just as in latex.
 
-When you use information from a sentence, you must cite it by adding a reference after the information with {import_tags.S_REF_START_PREFIX}id{import_tags.S_REF_END}N{import_tags.S_REF_END_GENERIC}, where `[id]` is the id of the sentence you are referencing and N is the 1-index of this reference within this answer.
-For example, if you use text from a sentence with id 's1' and this is the first reference, the output should look like: {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}1{import_tags.S_REF_END_GENERIC}.
+When you use information from a sentence, you must cite it by adding a reference after the information with {import_tags.S_REF_START_PREFIX}id{import_tags.S_REF_END}, , where `id` is the id of the sentence you are referencing and N is the 1-index of this reference within this answer.
+For example, if you use text from a sentence with id 's1', the output should look like: some text {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}.
 
-* References should have commas separating them (if there are multiple in a row) and wrapped in parenthesis so they look like ({import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}1{import_tags.S_REF_END_GENERIC}, {import_tags.S_REF_START_PREFIX}s2{import_tags.S_REF_END}2{import_tags.S_REF_END_GENERIC}).
+* If there are multiple in a row, just show them one after another: {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END} {import_tags.S_REF_START_PREFIX}s2{import_tags.S_REF_END}
 
 """
 

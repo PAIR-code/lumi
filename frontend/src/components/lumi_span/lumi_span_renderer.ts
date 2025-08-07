@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { html, nothing, TemplateResult } from "lit";
+import { html, TemplateResult } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 import { renderKatex } from "../../directives/katex_directive";
 
@@ -37,9 +37,15 @@ interface InlineCitation {
   reference: LumiReference;
 }
 
+interface InlineSpanCitation {
+  index: number;
+  id: string;
+}
+
 export interface LumiSpanRendererProperties {
   span: LumiSpan;
   references?: LumiReference[];
+  referencedSpans?: LumiSpan[];
   onReferenceClicked?: (referenceId: string) => void;
   onSpanReferenceClicked?: (referenceId: string) => void;
   onConceptClick?: (conceptId: string, target: HTMLElement) => void;
@@ -75,8 +81,11 @@ function renderFormattedCharacter(
     classesObject[key] = true;
   });
 
-  // REFERENCE tags are handled by the insertions map now.
-  if (classesObject[InnerTagName.REFERENCE]) {
+  // REFERENCE and SPAN_REFERENCE tags are handled by the insertions map now.
+  if (
+    classesObject[InnerTagName.REFERENCE] ||
+    classesObject[InnerTagName.SPAN_REFERENCE]
+  ) {
     return html``;
   }
 
@@ -90,12 +99,6 @@ function renderFormattedCharacter(
   }
 
   const onClick = (e: MouseEvent) => {
-    if (Object.keys(classesObject).includes(InnerTagName.SPAN_REFERENCE)) {
-      const metadata = classesAndMetadata[InnerTagName.SPAN_REFERENCE];
-      if (metadata["id"] && props.onSpanReferenceClicked) {
-        props.onSpanReferenceClicked(metadata["id"]);
-      }
-    }
     if (Object.keys(classesObject).includes(InnerTagName.CONCEPT)) {
       const metadata = classesAndMetadata[InnerTagName.CONCEPT];
       if (metadata["conceptId"] && props.onConceptClick) {
@@ -120,16 +123,21 @@ function renderNonformattedCharacters(value: string): TemplateResult {
 
 function createInsertionsMap(props: LumiSpanRendererProperties) {
   new Map<number, TemplateResult[]>();
-  const { span, references, onPaperReferenceClick } = props;
+  const {
+    span,
+    references,
+    referencedSpans,
+    onPaperReferenceClick,
+    onSpanReferenceClicked,
+  } = props;
   const insertions = new Map<number, TemplateResult[]>();
 
-  if (!references) return insertions;
-
-  // Pre-process REFERENCE tags to create an insertions map.
+  // Pre-process REFERENCE and SPAN_REFERENCE tags to create an insertions map.
   span.innerTags.forEach((innerTag) => {
     if (
       innerTag.tagName === InnerTagName.REFERENCE &&
-      innerTag.metadata["id"]
+      innerTag.metadata["id"] &&
+      references
     ) {
       const refIds = innerTag.metadata["id"].split(",").map((s) => s.trim());
       const citations: InlineCitation[] = [];
@@ -170,6 +178,45 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
         }
         insertions.get(insertionIndex)!.push(citationTemplate);
       }
+    } else if (
+      innerTag.tagName === InnerTagName.SPAN_REFERENCE &&
+      innerTag.metadata["id"] &&
+      referencedSpans
+    ) {
+      const refId = innerTag.metadata["id"];
+      const citations: InlineSpanCitation[] = [];
+
+      const refIndex = referencedSpans.map((span) => span.id).indexOf(refId);
+      if (refIndex !== -1) {
+        citations.push({
+          index: refIndex + 1,
+          id: refId,
+        });
+      }
+
+      if (citations.length > 0) {
+        const citationTemplate = html`<span class="citation-marker"
+          >${citations.map((citation) => {
+            return html`<span
+              class="span-inline-citation inline-citation"
+              tabindex="0"
+              @click=${(e: MouseEvent) => {
+                if (onSpanReferenceClicked) {
+                  e.stopPropagation();
+                  onSpanReferenceClicked(citation.id);
+                }
+              }}
+              >${citation.index}</span
+            >`;
+          })}</span
+        >`;
+
+        const insertionIndex = innerTag.position.startIndex;
+        if (!insertions.has(insertionIndex)) {
+          insertions.set(insertionIndex, []);
+        }
+        insertions.get(insertionIndex)!.push(citationTemplate);
+      }
     }
   });
 
@@ -184,7 +231,7 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
 export function renderLumiSpan(
   props: LumiSpanRendererProperties
 ): TemplateResult {
-  const { span, highlights = [], monospace = false, references = [] } = props;
+  const { span, highlights = [], monospace = false } = props;
   const spanText = span.text;
   const hasHighlight = highlights.length > 0;
 

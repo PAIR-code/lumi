@@ -172,6 +172,7 @@ class InnerTag:
     # These are additional recursive tags within the content of this inner tag.
     # This may happen if we have e.g. <b>[lumi-start-concept]...[lumi-end-concept]</b>
     children: List["InnerTag"]
+    id: str
 
 
 @dataclass
