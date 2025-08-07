@@ -276,7 +276,10 @@ class ImportPipelineTest(unittest.TestCase):
             "abstract": "",
             "content": "",
             "references": [],
-            "footnotes": footnotes_string,
+            "footnotes": [
+                {"id": "1", "content": "Footnote 1 text."},
+                {"id": "2", "content": "Footnote <b>2</b> text."},
+            ],
         }
 
         expected_footnotes = [
