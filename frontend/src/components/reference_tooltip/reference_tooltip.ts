@@ -24,13 +24,14 @@ import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import "../lumi_span/lumi_span";
 
 import { styles } from "./reference_tooltip.scss";
+import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
 /**
  * A component that renders a reference in a tooltip.
  */
 @customElement("reference-tooltip")
 export class ReferenceTooltip extends MobxLitElement {
-  static override styles = [styles];
+  static override styles = [styles, spanRendererStyles];
 
   @property({ type: Object }) props!: ReferenceTooltipProps;
 
