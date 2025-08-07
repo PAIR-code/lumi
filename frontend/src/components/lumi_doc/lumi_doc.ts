@@ -211,6 +211,7 @@ export class LumiDocViz extends MobxLitElement {
             const isCollapsed = this.collapseManager?.getCollapseState(
               section.id
             );
+
             return html`<lumi-section .section=${section}>
               ${renderSection({
                 parentComponent: this,
