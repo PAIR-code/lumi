@@ -162,21 +162,28 @@ class InnerTagName(StrEnum):
     CONCEPT = "concept"
     A = "a"
     CODE = "code"
+    FOOTNOTE = "footnote"
 
 
 @dataclass
 class InnerTag:
+    id: str
     tag_name: InnerTagName
     metadata: dict
     position: "Position"
     # These are additional recursive tags within the content of this inner tag.
     # This may happen if we have e.g. <b>[lumi-start-concept]...[lumi-end-concept]</b>
     children: List["InnerTag"]
-    id: str
 
 
 @dataclass
 class LumiReference:
+    id: str
+    span: LumiSpan
+
+
+@dataclass
+class LumiFootnote:
     id: str
     span: LumiSpan
 
@@ -196,6 +203,7 @@ class LumiDoc:
     concepts: List[LumiConcept]
     abstract: Optional[LumiAbstract] = None
     references: Optional[List[LumiReference]] = None
+    footnotes: Optional[List[LumiFootnote]] = None
     summaries: Optional[LumiSummaries] = None
     metadata: Optional[ArxivMetadata] = None
     loading_status: Optional[LoadingStatus] = LoadingStatus.UNSET
