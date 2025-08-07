@@ -27,6 +27,7 @@ import { core } from "../../core/core";
 import {
   ConceptTooltipProps,
   FloatingPanelService,
+  FootnoteTooltipProps,
   ReferenceTooltipProps,
   SmartHighlightMenuProps,
 } from "../../services/floating_panel_service";
@@ -36,6 +37,7 @@ import { styles } from "./floating_panel_host.scss";
 
 import "../reference_tooltip/reference_tooltip";
 import "../concept_tooltip/concept_tooltip";
+import "../footnote_tooltip/footnote_tooltip";
 
 /**
  * A host component that displays and positions a floating panel using md-menu.
@@ -118,6 +120,12 @@ export class FloatingPanelHost extends MobxLitElement {
     if (contentProps instanceof ConceptTooltipProps) {
       return html`<div class="panel">
         <concept-tooltip .props=${contentProps}></concept-tooltip>
+      </div>`;
+    }
+
+    if (contentProps instanceof FootnoteTooltipProps) {
+      return html`<div class="panel">
+        <footnote-tooltip .props=${contentProps}></footnote-tooltip>
       </div>`;
     }
 

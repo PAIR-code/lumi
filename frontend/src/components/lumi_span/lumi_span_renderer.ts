@@ -23,6 +23,7 @@ import {
   Highlight,
   InnerTagMetadata,
   InnerTagName,
+  LumiFootnote,
   LumiReference,
   LumiSpan,
 } from "../../shared/lumi_doc";
@@ -45,6 +46,7 @@ interface InlineSpanCitation {
 export interface LumiSpanRendererProperties {
   span: LumiSpan;
   references?: LumiReference[];
+  footnotes?: LumiFootnote[];
   referencedSpans?: LumiSpan[];
   onReferenceClicked?: (referenceId: string) => void;
   onSpanReferenceClicked?: (referenceId: string) => void;
@@ -53,6 +55,7 @@ export interface LumiSpanRendererProperties {
     reference: LumiReference,
     target: HTMLElement
   ) => void;
+  onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
   highlights?: Highlight[];
   monospace?: boolean;
 }
@@ -81,10 +84,11 @@ function renderFormattedCharacter(
     classesObject[key] = true;
   });
 
-  // REFERENCE and SPAN_REFERENCE tags are handled by the insertions map now.
+  // REFERENCE, SPAN_REFERENCE, and FOOTNOTE tags are handled by the insertions map now.
   if (
     classesObject[InnerTagName.REFERENCE] ||
-    classesObject[InnerTagName.SPAN_REFERENCE]
+    classesObject[InnerTagName.SPAN_REFERENCE] ||
+    classesObject[InnerTagName.FOOTNOTE]
   ) {
     return html``;
   }
@@ -126,13 +130,14 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
   const {
     span,
     references,
+    footnotes,
     referencedSpans,
     onPaperReferenceClick,
+    onFootnoteClick,
     onSpanReferenceClicked,
   } = props;
   const insertions = new Map<number, TemplateResult[]>();
-
-  // Pre-process REFERENCE and SPAN_REFERENCE tags to create an insertions map.
+  // Pre-process tags to create an insertions map.
   span.innerTags.forEach((innerTag) => {
     if (
       innerTag.tagName === InnerTagName.REFERENCE &&
@@ -177,6 +182,41 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
           insertions.set(insertionIndex, []);
         }
         insertions.get(insertionIndex)!.push(citationTemplate);
+      }
+    } else if (
+      innerTag.tagName === InnerTagName.FOOTNOTE &&
+      innerTag.metadata["id"] &&
+      footnotes
+    ) {
+      const footnoteId = innerTag.metadata["id"];
+      const footnoteIndex = footnotes.findIndex(
+        (note) => note.id === footnoteId
+      );
+
+      if (footnoteIndex !== -1) {
+        const index = footnoteIndex + 1;
+        const footnote = footnotes[footnoteIndex];
+
+        const footnoteTemplate = html`<sup
+          class="footnote-marker"
+          tabindex="0"
+          @click=${(e: MouseEvent) => {
+            if (onFootnoteClick) {
+              e.stopPropagation();
+              onFootnoteClick(
+                footnote,
+                e.currentTarget as HTMLElement
+              );
+            }
+          }}
+          >${index}</sup
+        >`;
+
+        const insertionIndex = innerTag.position.startIndex;
+        if (!insertions.has(insertionIndex)) {
+          insertions.set(insertionIndex, []);
+        }
+        insertions.get(insertionIndex)!.push(footnoteTemplate);
       }
     } else if (
       innerTag.tagName === InnerTagName.SPAN_REFERENCE &&

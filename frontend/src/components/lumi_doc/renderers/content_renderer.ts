@@ -20,6 +20,7 @@ import { classMap } from "lit/directives/class-map.js";
 import {
   ListContent,
   LumiContent,
+  LumiFootnote,
   LumiReference,
   LumiSpan,
   LumiSummary,
@@ -39,6 +40,7 @@ export interface ContentRendererProperties {
   parentComponent: LitElement;
   content: LumiContent;
   references?: LumiReference[];
+  footnotes?: LumiFootnote[];
   referencedSpans?: LumiSpan[];
   summary: LumiSummary | null;
   spanSummaries: Map<string, LumiSummary>;
@@ -53,6 +55,7 @@ export interface ContentRendererProperties {
     reference: LumiReference,
     target: HTMLElement
   ) => void;
+  onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
 }
 
 function renderSpans(
@@ -68,9 +71,11 @@ function renderSpans(
       monospace,
       highlights,
       references: props.references,
+      footnotes: props.footnotes,
       referencedSpans: props.referencedSpans,
       onSpanReferenceClicked: props.onSpanReferenceClicked,
       onPaperReferenceClick: props.onPaperReferenceClick,
+      onFootnoteClick: props.onFootnoteClick,
     });
 
     const { focusState } = getFocusState(props.focusedSpanId, [span.id]);
