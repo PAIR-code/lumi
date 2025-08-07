@@ -28,6 +28,7 @@ from shared.lumi_doc import LumiConcept
 
 PDF_IMPORT_FORMATTING_INSTRUCTIONS = rf"""Within these structural tags (but do NOT add any tags within header text), apply the following detailed markdown formatting rules:
 *   **Formatting Preservation:** Crucially, preserve all bold and italic formatting from the original PDF.
+*   **Quotation marks:** `` and '' are used for quotation marks in latex and should be translated into " and "
 *   **Formulas, equations, variables:** ALL mathematical formulas, equations, and variables should be wrapped in single or double dollar signs, e.g., `$formula$` or `$$long equation$$`, following the dollar signs used in the original latex. 
         Try to convert latex equations into something supported by KaTeX html rendering. 
         \begin{{equation}} and \end{{equation}} should be replaced with $$ and $$
