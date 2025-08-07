@@ -41,6 +41,7 @@ def parse_lumi_import(model_output_string: str) -> dict:
         "abstract": import_tags.L_ABSTRACT_PATTERN,
         "content": import_tags.L_CONTENT_PATTERN,
         "references": import_tags.L_REFERENCES_PATTERN,
+        "footnotes": import_tags.L_FOOTNOTES_PATTERN,
     }
 
     for key, pattern in patterns.items():
@@ -62,6 +63,18 @@ def parse_lumi_import(model_output_string: str) -> dict:
             references_list.append({"id": ref_id, "content": ref_content})
 
     parsed_data["references"] = references_list
+
+    # Use re.finditer to get match objects, which allows accessing specific groups
+    footnotes_list = []
+    if "footnotes" in parsed_data:
+        for match in re.finditer(
+            import_tags.L_FOOTNOTE_CONTENT_PATTERN, parsed_data["footnotes"]
+        ):
+            footnote_id = match.group(1)  # The N from reference-id-N
+            footnote_content = match.group(2).strip()  # The actual reference text
+            footnotes_list.append({"id": footnote_id, "content": footnote_content})
+    parsed_data["footnotes"] = footnotes_list
+
     return parsed_data
 
 

@@ -30,6 +30,8 @@ L_CONTENT_START = "[[l-con]]"
 L_CONTENT_END = "[[l-con]]"
 L_REFERENCES_START = "[[l-refs-start]]"
 L_REFERENCES_END = "[[l-refs-end]]"
+L_FOOTNOTES_START = "[[l-footnotes-start]]"
+L_FOOTNOTES_END = "[[l-footnotes-end]]"
 
 # ==============================================================================
 # Item Tags (within sections)
@@ -54,6 +56,11 @@ L_FIG_END_PREFIX = "[[l-fig-end-"
 L_FIG_END = "]]"
 L_FIG_CAP_START_PREFIX = "[[l-fig-cap-"
 L_FIG_CAP_END = "]]"
+L_FOOTNOTE_MARKER_PREFIX = "[[l-foot-"
+L_FOOTNOTE_MARKER_END = "]]"
+L_FOOTNOTE_CONTENT_START_PREFIX = "[[l-footnote-start-"
+L_FOOTNOTE_CONTENT_END_PREFIX = "[[l-footnote-end-"
+L_FOOTNOTE_CONTENT_END = "]]"
 
 
 # ==============================================================================
@@ -88,6 +95,9 @@ L_CONTENT_PATTERN = re.compile(
 L_REFERENCES_PATTERN = re.compile(
     rf"{re.escape(L_REFERENCES_START)}(.*?){re.escape(L_REFERENCES_END)}", re.DOTALL
 )
+L_FOOTNOTES_PATTERN = re.compile(
+    rf"{re.escape(L_FOOTNOTES_START)}(.*?){re.escape(L_FOOTNOTES_END)}", re.DOTALL
+)
 
 
 # Inner Content Patterns
@@ -110,6 +120,10 @@ L_CITATION_PATTERN = re.compile(
     rf"{re.escape(L_CITATION_START_PREFIX)}(?P<id>.*?){re.escape(L_CITATION_END)}",
     re.DOTALL,
 )
+L_FOOTNOTE_MARKER_PATTERN = re.compile(
+    rf"{re.escape(L_FOOTNOTE_MARKER_PREFIX)}(?P<id>.*?){re.escape(L_FOOTNOTE_MARKER_END)}",
+    re.DOTALL,
+)
 S_REF_PATTERN = re.compile(
     rf"{re.escape(S_REF_START_PREFIX)}(?P<id>.*?){re.escape(S_REF_END)}", re.DOTALL
 )
@@ -119,6 +133,10 @@ S_REF_PATTERN = re.compile(
 # Captures 2 capturing groups containing the ID and the text content
 L_REFERENCE_ITEM_PATTERN = re.compile(
     rf"{re.escape(L_REFERENCE_ITEM_START_PREFIX)}(.*?){re.escape(L_REFERENCE_ITEM_END)}(.*?){re.escape(L_REFERENCE_ITEM_END_GENERIC)}",
+    re.DOTALL,
+)
+L_FOOTNOTE_CONTENT_PATTERN = re.compile(
+    rf"{re.escape(L_FOOTNOTE_CONTENT_START_PREFIX)}(?P<id>.*?){re.escape(L_FOOTNOTE_CONTENT_END)}(?P<content>.*?){re.escape(L_FOOTNOTE_CONTENT_END_PREFIX)}(?P=id){re.escape(L_FOOTNOTE_CONTENT_END)}",
     re.DOTALL,
 )
 
@@ -202,6 +220,11 @@ TAG_DEFINITIONS = [
     {
         "name": InnerTagName.REFERENCE,
         "pattern": L_CITATION_PATTERN,
+        "metadata_extractor": lambda m: {"id": m.group("id")},
+    },
+    {
+        "name": InnerTagName.FOOTNOTE,
+        "pattern": L_FOOTNOTE_MARKER_PATTERN,
         "metadata_extractor": lambda m: {"id": m.group("id")},
     },
     {

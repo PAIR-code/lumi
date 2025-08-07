@@ -35,6 +35,7 @@ from shared.lumi_doc import (
     ImageContent,
     HtmlFigureContent,
     FigureContent,
+    LumiFootnote,
 )
 from shared.types import ArxivMetadata
 from shared.constants import MAX_LATEX_CHARACTER_COUNT
@@ -215,11 +216,30 @@ def convert_model_output_to_lumi_doc(
                     )
                 )
 
+    lumi_footnotes = []
+    if parsed_data.get("footnotes"):
+        for match in import_tags.L_FOOTNOTE_CONTENT_PATTERN.finditer(
+            parsed_data.get("footnotes")
+        ):
+            footnote_id = match.group("id")
+            content = match.group("content")
+            spans = convert_html_to_lumi.convert_raw_output_to_spans(
+                content, skip_tokenize=True
+            )
+            if spans:
+                lumi_footnotes.append(
+                    LumiFootnote(
+                        id=footnote_id,
+                        span=spans[0],
+                    )
+                )
+
     return LumiDoc(
         markdown="",
         abstract=lumi_abstract,
         sections=lumi_sections,
         references=lumi_references,
+        footnotes=lumi_footnotes,
         concepts=concepts,
     )
 
