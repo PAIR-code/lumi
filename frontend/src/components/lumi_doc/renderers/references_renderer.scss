@@ -26,7 +26,6 @@
 
     @include common.flex-column;
     gap: common.$spacing-xl;
-    padding-bottom: 50px;
 
     @include common.lumi-paper-text-font;
 

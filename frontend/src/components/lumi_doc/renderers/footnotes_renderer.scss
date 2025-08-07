@@ -19,8 +19,7 @@
 @use "../../../sass/typescale";
 
 .footnotes-renderer-container {
-  padding: common.$spacing-large 0;
-  border-top: 1px solid var(--md-sys-color-outline-variant);
+  padding-bottom: 24px;
 
   @include common.lumi-doc-grid;
 
@@ -33,7 +32,7 @@
     .header {
       @include common.flex-row-align-center;
       @include common.lumi-paper-text-font;
-      margin: 0;
+      margin: 0 0 common.$spacing-medium 0;
 
       @include common.viewport-small {
         font-size: common.$mobile-header-font-size;
