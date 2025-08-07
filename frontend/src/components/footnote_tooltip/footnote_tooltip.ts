@@ -21,6 +21,7 @@ import { customElement, property } from "lit/decorators.js";
 import { FootnoteTooltipProps } from "../../services/floating_panel_service";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { styles } from "./footnote_tooltip.scss";
+import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
 import "../lumi_span/lumi_span";
 
@@ -29,7 +30,7 @@ import "../lumi_span/lumi_span";
  */
 @customElement("footnote-tooltip")
 export class FootnoteTooltip extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles];
+  static override styles: CSSResultGroup = [styles, spanRendererStyles];
 
   @property({ type: Object }) props!: FootnoteTooltipProps;
 
