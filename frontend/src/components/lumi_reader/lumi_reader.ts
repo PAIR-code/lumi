@@ -61,6 +61,8 @@ import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
+import { isViewportSmall } from "../../shared/responsive_utils";
+import { SIDEBAR_TABS_MOBILE } from "../../shared/constants";
 
 /**
  * The component responsible for fetching a single document and passing it
@@ -181,6 +183,22 @@ export class LumiReader extends MobxLitElement {
     return (path: string) => this.firebaseService.getDownloadUrl(path);
   }
 
+  private checkOpenMobileSidebar() {
+    if (isViewportSmall()) {
+      const { collapseManager } = this.documentStateService;
+      if (collapseManager) {
+        if (collapseManager.isMobileSidebarCollapsed) {
+          collapseManager.toggleMobileSidebarCollapsed();
+        }
+        if (
+          collapseManager.sidebarTabSelection !== SIDEBAR_TABS_MOBILE.ANSWERS
+        ) {
+          collapseManager.setSidebarTabSelection(SIDEBAR_TABS_MOBILE.ANSWERS);
+        }
+      }
+    }
+  }
+
   private readonly handleDefine = async (
     text: string,
     highlightedSpans: HighlightSelection[]
@@ -195,6 +213,8 @@ export class LumiReader extends MobxLitElement {
 
     const tempAnswer = createTemporaryAnswer(request);
     this.historyService.addTemporaryAnswer(tempAnswer);
+
+    this.checkOpenMobileSidebar();
 
     try {
       const response = await getLumiResponseCallable(
@@ -224,6 +244,8 @@ export class LumiReader extends MobxLitElement {
       query: query,
       highlightedSpans,
     };
+
+    this.checkOpenMobileSidebar();
 
     const tempAnswer = createTemporaryAnswer(request);
     this.historyService.addTemporaryAnswer(tempAnswer);
