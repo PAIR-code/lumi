@@ -45,6 +45,8 @@ $tab-spacing: 14px;
 
     width: 100%;
 
+    user-select: none;
+
     @include typescale.label-medium;
     font-weight: 500;
 
