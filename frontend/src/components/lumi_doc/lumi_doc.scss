@@ -39,28 +39,10 @@
     height: 100%;
   }
 
-  padding: 0 20px;
+  padding: 48px 20px;
 
   @include common.viewport-small {
-    padding: 0;
-  }
-}
-
-.collapse-toggle-container {
-  @include common.flex-row-align-center;
-  justify-content: center;
-
-  width: 100%;
-
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background-color: var(--md-sys-color-surface);
-
-  padding: 24px 0;
-
-  @include common.viewport-small {
-    padding: common.$spacing-medium 0;
+    padding: 24px 0;
   }
 }
 

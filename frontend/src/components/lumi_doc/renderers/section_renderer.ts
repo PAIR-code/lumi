@@ -254,7 +254,7 @@ function renderContents(
     onFootnoteClick,
   } = props;
   if (isCollapsed) {
-    return renderSectionSummaryPanel(props);
+    return nothing;
   }
 
   return html`<div class="content-viz">
@@ -366,12 +366,7 @@ export function renderSection(
 
   return html`<div class="section-renderer-container">
     <div class=${classMap(sectionContainerClasses)}>
-      <div class="heading-row">
-        <div class="hide-button-container">
-          ${renderHideButton(isCollapsed, onCollapseChange)}
-        </div>
-        ${renderHeading(props)}
-      </div>
+      <div class="heading-row">${renderHeading(props)}</div>
       ${renderContents(props)}
     </div>
   </div>`;

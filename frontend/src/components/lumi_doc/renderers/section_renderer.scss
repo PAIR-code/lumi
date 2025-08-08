@@ -146,7 +146,6 @@
   .heading-text {
     grid-column: common.$content-grid-col;
 
-    font-size: 28px;
     @include common.viewport-small {
       font-size: common.$mobile-header-font-size;
     }
