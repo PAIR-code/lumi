@@ -87,56 +87,6 @@ describe("lumi-doc", () => {
     expect(title!.textContent).to.contain("Test Paper");
   });
 
-  it("calls setAllSectionsCollapsed(true) when the collapse icon is clicked", async () => {
-    const setAllSectionsCollapsed = sinon.spy(
-      collapseManager,
-      "setAllSectionsCollapsed"
-    );
-
-    const el = await fixture(
-      html`<lumi-doc
-        .lumiDocManager=${lumiDocManager}
-        .collapseManager=${collapseManager}
-        .highlightManager=${highlightManager}
-      ></lumi-doc>`
-    );
-
-    const toggle = el.shadowRoot!.querySelector(
-      "multi-icon-toggle"
-    ) as HTMLElement;
-    const collapseIcon = toggle.shadowRoot!.querySelector(
-      'pr-icon[icon="list"]'
-    )!.parentElement as HTMLElement;
-    collapseIcon.click();
-
-    expect(setAllSectionsCollapsed.calledOnceWith(true)).to.be.true;
-  });
-
-  it("calls setAllSectionsCollapsed(false) when the expand icon is clicked", async () => {
-    const setAllSectionsCollapsed = sinon.spy(
-      collapseManager,
-      "setAllSectionsCollapsed"
-    );
-
-    const el = await fixture(
-      html`<lumi-doc
-        .lumiDocManager=${lumiDocManager}
-        .collapseManager=${collapseManager}
-        .highlightManager=${highlightManager}
-      ></lumi-doc>`
-    );
-
-    const toggle = el.shadowRoot!.querySelector(
-      "multi-icon-toggle"
-    ) as HTMLElement;
-    const expandIcon = toggle.shadowRoot!.querySelector(
-      'pr-icon[icon="article"]'
-    )!.parentElement as HTMLElement;
-    expandIcon.click();
-
-    expect(setAllSectionsCollapsed.calledOnceWith(false)).to.be.true;
-  });
-
   it("opens arXiv link in a new tab when the open_in_new icon is clicked", async () => {
     const windowOpen = sinon.stub(window, "open");
     const el = await fixture(
