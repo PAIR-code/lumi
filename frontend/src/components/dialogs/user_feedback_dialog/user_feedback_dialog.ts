@@ -103,6 +103,7 @@ export class UserFeedbackDialog extends MobxLitElement {
           <pr-textarea
             .value=${this.feedbackText}
             variant="outlined"
+            size="large"
             @change=${(e: CustomEvent) => {
               this.feedbackText = e.detail.value;
             }}

@@ -34,6 +34,7 @@ import {
   AnalyticsService,
 } from "../../services/analytics.service";
 import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
+import { isViewportSmall } from "../../shared/responsive_utils";
 
 /**
  * The header for the sidebar.
@@ -102,6 +103,7 @@ export class SidebarHeader extends MobxLitElement {
   private renderSearch() {
     const isLoading = this.historyService.isAnswerLoading;
 
+    const textareaSize = isViewportSmall() ? "medium" : "small";
     return html`
       <div class="input-container">
         <pr-icon-button
@@ -119,6 +121,7 @@ export class SidebarHeader extends MobxLitElement {
         <pr-textarea
           .focused=${true}
           .value=${this.query}
+          size=${textareaSize}
           .maxLength=${MAX_QUERY_INPUT_LENGTH}
           @change=${(e: CustomEvent) => {
             this.query = e.detail.value;
