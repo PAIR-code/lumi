@@ -41,6 +41,7 @@ import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
+import { FloatingPanelService } from "../../services/floating_panel_service";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
@@ -49,9 +50,10 @@ import {
 export class LumiQuestions extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  private readonly documentStateService = core.getService(DocumentStateService);
-  private readonly historyService = core.getService(HistoryService);
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly documentStateService = core.getService(DocumentStateService);
+  private readonly floatingPanelService = core.getService(FloatingPanelService);
+  private readonly historyService = core.getService(HistoryService);
 
   @property({ type: Boolean }) isHistoryShowAll = false;
   @property({ type: Object }) setHistoryVisible?: (isVisible: boolean) => void;
@@ -117,6 +119,14 @@ export class LumiQuestions extends MobxLitElement {
     return this.documentStateService.lumiDocManager?.lumiDoc.metadata?.paperId;
   }
 
+  private registerShadowRoot(shadowRoot: ShadowRoot) {
+    this.floatingPanelService.registerShadowRoot(shadowRoot);
+  }
+
+  private unregisterShadowRoot(shadowRoot: ShadowRoot) {
+    this.floatingPanelService.unregisterShadowRoot(shadowRoot);
+  }
+
   private renderHistory() {
     const docId = this.getDocId();
     if (!docId) return nothing;
@@ -150,7 +160,8 @@ export class LumiQuestions extends MobxLitElement {
 
           return html`
             <answer-item
-              .onTextSelection=${this.onTextSelection}
+              .registerShadowRoot=${this.registerShadowRoot.bind(this)}
+              .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
               .onReferenceClick=${this.onReferenceClick.bind(this)}
               .onDismiss=${ifDefined(onDismiss)}
               .answer=${answer}

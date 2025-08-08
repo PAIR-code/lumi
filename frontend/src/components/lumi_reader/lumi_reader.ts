@@ -19,8 +19,8 @@ import "../lumi_doc/lumi_doc";
 import "../sidebar/sidebar";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { CSSResultGroup, html } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
 import { provide } from "@lit/context";
 
@@ -52,6 +52,7 @@ import { LumiAnswer, LumiAnswerRequest } from "../../shared/api";
 
 import { styles } from "./lumi_reader.scss";
 import {
+  getSelectionInfo,
   HighlightSelection,
   SelectionInfo,
 } from "../../shared/selection_utils";
@@ -92,6 +93,21 @@ export class LumiReader extends MobxLitElement {
     if (this.documentId) {
       this.loadDocument();
     }
+
+    document.onselectionchange = () => {
+      const selection = window.getSelection();
+
+      if (!selection) return;
+
+      const selectionInfo = getSelectionInfo(
+        selection,
+        this.floatingPanelService.selectionShadowRoots
+      );
+
+      if (selectionInfo) {
+        this.handleTextSelection(selectionInfo);
+      }
+    };
   }
 
   override disconnectedCallback() {
@@ -99,6 +115,14 @@ export class LumiReader extends MobxLitElement {
     if (this.unsubscribeListener) {
       this.unsubscribeListener();
     }
+  }
+
+  private registerShadowRoot(shadowRoot: ShadowRoot) {
+    this.floatingPanelService.registerShadowRoot(shadowRoot);
+  }
+
+  private unregisterShadowRoot(shadowRoot: ShadowRoot) {
+    this.floatingPanelService.unregisterShadowRoot(shadowRoot);
   }
 
   private async loadDocument() {
@@ -290,7 +314,7 @@ export class LumiReader extends MobxLitElement {
       this.handleDefine.bind(this),
       this.handleAsk.bind(this)
     );
-    this.floatingPanelService.show(props, selectionInfo.lastParentSpan);
+    this.floatingPanelService.show(props, selectionInfo.parentSpan);
   };
 
   private readonly handlePaperReferenceClick = (
@@ -336,9 +360,7 @@ export class LumiReader extends MobxLitElement {
           this.floatingPanelService.hide();
         }}
       >
-        <lumi-sidebar
-          .onTextSelection=${this.handleTextSelection.bind(this)}
-        ></lumi-sidebar>
+        <lumi-sidebar></lumi-sidebar>
       </div>
       <div
         class="doc-wrapper"
@@ -352,12 +374,13 @@ export class LumiReader extends MobxLitElement {
           .highlightManager=${this.documentStateService.highlightManager}
           .collapseManager=${this.documentStateService.collapseManager}
           .getImageUrl=${this.getImageUrl.bind(this)}
-          .onTextSelection=${this.handleTextSelection.bind(this)}
           .onConceptClick=${this.handleConceptClick.bind(this)}
           .onScroll=${this.handleScroll.bind(this)}
           .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
             this.documentStateService.focusOnSpan(highlights, "gray");
           }}
+          .registerShadowRoot=${this.registerShadowRoot.bind(this)}
+          .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
           .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
           .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
         ></lumi-doc>

@@ -75,7 +75,7 @@ describe("getSelectionInfo", () => {
 
     const selectionInfo = getSelectionInfo(
       window.getSelection()!,
-      el.shadowRoot!
+      [el.shadowRoot!]
     );
 
     expect(selectionInfo).to.not.be.null;
@@ -89,7 +89,7 @@ describe("getSelectionInfo", () => {
     const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`);
     const selection = window.getSelection()!;
     selection.removeAllRanges(); // Ensure it's empty
-    const selectionInfo = getSelectionInfo(selection, el.shadowRoot!);
+    const selectionInfo = getSelectionInfo(selection, [el.shadowRoot!]);
     expect(selectionInfo).to.be.null;
   });
 
@@ -101,7 +101,7 @@ describe("getSelectionInfo", () => {
     // @ts-ignore - Mocking getComposedRanges for this specific test case
     selection.getComposedRanges = () => [];
 
-    const selectionInfo = getSelectionInfo(selection, el.shadowRoot!);
+    const selectionInfo = getSelectionInfo(selection, [el.shadowRoot!]);
     expect(selectionInfo).to.be.null;
   });
 
@@ -146,7 +146,7 @@ describe("getSelectionInfo", () => {
     // @ts-ignore - Mocking getComposedRanges for this specific test case
     selection.getComposedRanges = () => [range];
 
-    const selectionInfo = getSelectionInfo(selection, el.shadowRoot!);
+    const selectionInfo = getSelectionInfo(selection, [el.shadowRoot!]);
 
     expect(selectionInfo).to.not.be.null;
     expect(selectionInfo!.selectedText).to.equal("part. Second part. Third");

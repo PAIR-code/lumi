@@ -43,6 +43,7 @@ import {
   HistoryDialogProps,
 } from "../../services/dialog.service";
 import { SIDEBAR_TABS, SIDEBAR_TABS_MOBILE } from "../../shared/constants";
+import { FloatingPanelService } from "../../services/floating_panel_service";
 
 /**
  * A sidebar component that displays a list of concepts.
@@ -52,7 +53,7 @@ export class LumiSidebar extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly documentStateService = core.getService(DocumentStateService);
-  private readonly historyService = core.getService(HistoryService);
+  private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly analyticsService = core.getService(AnalyticsService);
   private readonly dialogService = core.getService(DialogService);
   private readonly collapseManager = this.documentStateService.collapseManager;
@@ -78,11 +79,16 @@ export class LumiSidebar extends MobxLitElement {
     makeObservable(this);
   }
 
-  @property()
-  onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
-
   private openHistoryDialog() {
     this.dialogService.show(new HistoryDialogProps());
+  }
+
+  private registerShadowRoot(shadowRoot: ShadowRoot) {
+    this.floatingPanelService.registerShadowRoot(shadowRoot);
+  }
+
+  private unregisterShadowRoot(shadowRoot: ShadowRoot) {
+    this.floatingPanelService.unregisterShadowRoot(shadowRoot);
   }
 
   private renderHeader() {
@@ -103,7 +109,6 @@ export class LumiSidebar extends MobxLitElement {
     return html`
       <div class=${classMap(classes)} slot=${SIDEBAR_TABS_MOBILE.ANSWERS}>
         <lumi-questions
-          .onTextSelection=${this.onTextSelection}
           .isHistoryShowAll=${this.documentStateService.isHistoryShowAll}
           .setHistoryVisible=${(isVisible: boolean) =>
             this.documentStateService.setHistoryShowAll(isVisible)}
@@ -143,7 +148,8 @@ export class LumiSidebar extends MobxLitElement {
               html`<lumi-concept
                 .concept=${concept}
                 .labelsToShow=${["description"]}
-                .onTextSelection=${this.onTextSelection}
+                .registerShadowRoot=${this.registerShadowRoot.bind(this)}
+                .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
                 .isCollapsed=${this.collapseManager!.conceptCollapsedState.get(
                   concept.name
                 ) ?? true}

@@ -38,8 +38,8 @@ export class LumiConceptViz extends MobxLitElement {
 
   @property({ type: Object }) concept!: LumiConcept;
   @property({ type: Object }) labelsToShow: string[] = [];
-  @property()
-  onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
+  @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
+  @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
 
   @property({ type: Boolean }) isCollapsed = true;
   @property()
@@ -51,25 +51,18 @@ export class LumiConceptViz extends MobxLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addEventListener("mouseup", this.handleMouseUp);
+
+    if (this.shadowRoot) {
+      this.registerShadowRoot(this.shadowRoot);
+    }
   }
 
   override disconnectedCallback() {
-    this.removeEventListener("mouseup", this.handleMouseUp);
+    if (this.shadowRoot) {
+      this.unregisterShadowRoot(this.shadowRoot);
+    }
+
     super.disconnectedCallback();
-  }
-
-  private handleMouseUp(e: MouseEvent) {
-    const selection = window.getSelection();
-    if (!selection || !this.shadowRoot) {
-      return;
-    }
-
-    const selectionInfo = getSelectionInfo(selection, this.shadowRoot);
-    if (selectionInfo) {
-      this.onTextSelection(selectionInfo);
-      e.stopPropagation();
-    }
   }
 
   override render() {
