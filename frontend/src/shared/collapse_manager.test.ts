@@ -69,8 +69,8 @@ const mockLumiDoc: LumiDoc = {
     },
   ],
   concepts: [
-    { id: "concept1", name: "Concept 1" , inTextCitations: [], contents: []},
-    { id: "concept2", name: "Concept 2", inTextCitations: [], contents: []},
+    { id: "concept1", name: "Concept 1", inTextCitations: [], contents: [] },
+    { id: "concept2", name: "Concept 2", inTextCitations: [], contents: [] },
   ],
   loadingStatus: "SUCCESS",
   references: [],
@@ -100,16 +100,13 @@ describe("CollapseManager", () => {
 
     it("should initialize sidebar state", () => {
       collapseManager.initialize();
-      expect(collapseManager.sidebarTabSelection).to.equal(
-        SIDEBAR_TABS.TOC
-      );
+      expect(collapseManager.sidebarTabSelection).to.equal(SIDEBAR_TABS.TOC);
       expect(collapseManager.isMobileSidebarCollapsed).to.be.true;
       expect(collapseManager.conceptCollapsedState.size).to.equal(
         mockLumiDoc.concepts.length
       );
-      expect(
-        collapseManager.conceptCollapsedState.get("Concept 1")
-      ).to.be.true;
+      expect(collapseManager.conceptCollapsedState.get("Concept 1")).to.be
+        .false;
     });
   });
 
@@ -209,11 +206,10 @@ describe("CollapseManager", () => {
     });
 
     it("should set a single concept's collapsed state", () => {
-      collapseManager.setConceptCollapsed("Concept 1", false);
-      expect(collapseManager.conceptCollapsedState.get("Concept 1")).to.be
-        .false;
+      collapseManager.setConceptCollapsed("Concept 1", true);
+      expect(collapseManager.conceptCollapsedState.get("Concept 1")).to.be.true;
       expect(collapseManager.conceptCollapsedState.get("Concept 2")).to.be
-        .true;
+        .false;
     });
 
     it("should set all concepts' collapsed state", () => {
@@ -225,18 +221,18 @@ describe("CollapseManager", () => {
     });
 
     it("should toggle all concepts' collapsed state", () => {
-      // initial state is all collapsed (true)
-      collapseManager.toggleAllConcepts(); // should be all expanded (false)
-      expect(
-        Array.from(collapseManager.conceptCollapsedState.values()).every(
-          (v) => v === false
-        )
-      ).to.be.true;
-
-      collapseManager.toggleAllConcepts(); // should be all collapsed (true)
+      // initial state is all collapsed (false)
+      collapseManager.toggleAllConcepts(); // should be all expanded (true)
       expect(
         Array.from(collapseManager.conceptCollapsedState.values()).every(
           (v) => v === true
+        )
+      ).to.be.true;
+
+      collapseManager.toggleAllConcepts(); // should be all collapsed (false)
+      expect(
+        Array.from(collapseManager.conceptCollapsedState.values()).every(
+          (v) => v === false
         )
       ).to.be.true;
     });
