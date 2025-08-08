@@ -15,16 +15,23 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { LumiSection } from "./lumi_doc";
 import { LumiDocManager } from "./lumi_doc_manager";
 import { isViewportSmall } from "./responsive_utils";
+import {
+  INITIAL_SIDEBAR_TAB_DESKTOP,
+  INITIAL_SIDEBAR_TAB_MOBILE,
+  SIDEBAR_TABS,
+} from "./constants";
 
 const INITIAL_SECTION_COLLAPSE_STATE = false;
 const INITIAL_REFERENCES_COLLAPSE_STATE = true;
 const INITIAL_FOOTNOTES_COLLAPSE_STATE = true;
 const INITIAL_MOBILE_SUMMARY_COLLAPSE_STATE = true;
 const INITIAL_DESKTOP_SUMMARY_COLLAPSE_STATE = false;
+const INITIAL_CONCEPT_IS_COLLAPSED = true;
+const INITIAL_MOBILE_SIDEBAR_COLLAPSED = true;
 
 export type CollapseState = "collapsed" | "expanded" | "indeterminate";
 
@@ -32,11 +39,31 @@ export type CollapseState = "collapsed" | "expanded" | "indeterminate";
  * Manages the collapse/expand state of sections in a document.
  */
 export class CollapseManager {
+  // Document section collapse state
   sectionCollapseState = new Map<string, boolean>();
   mobileSummaryCollapseState = new Map<string, boolean>();
   isAbstractCollapsed = INITIAL_SECTION_COLLAPSE_STATE;
   areReferencesCollapsed = INITIAL_REFERENCES_COLLAPSE_STATE;
   areFootnotesCollapsed = INITIAL_FOOTNOTES_COLLAPSE_STATE;
+
+  // Sidebar state
+  sidebarTabSelection: string = isViewportSmall()
+    ? INITIAL_SIDEBAR_TAB_MOBILE
+    : INITIAL_SIDEBAR_TAB_DESKTOP;
+
+  isMobileSidebarCollapsed = INITIAL_MOBILE_SIDEBAR_COLLAPSED;
+
+  conceptCollapsedState = new Map<string, boolean>();
+
+  get areAnyConceptsCollapsed() {
+    return (
+      this.lumiDocManager.lumiDoc.concepts.some(
+        (concept) =>
+          this.conceptCollapsedState.get(concept.name) ??
+          INITIAL_CONCEPT_IS_COLLAPSED
+      ) ?? INITIAL_CONCEPT_IS_COLLAPSED
+    );
+  }
 
   constructor(private readonly lumiDocManager: LumiDocManager) {
     makeObservable(this, {
@@ -45,6 +72,9 @@ export class CollapseManager {
       isAbstractCollapsed: observable,
       areReferencesCollapsed: observable,
       areFootnotesCollapsed: observable,
+      sidebarTabSelection: observable,
+      isMobileSidebarCollapsed: observable,
+      conceptCollapsedState: observable.shallow,
       setAbstractCollapsed: action,
       setReferencesCollapsed: action,
       setFootnotesCollapsed: action,
@@ -53,6 +83,12 @@ export class CollapseManager {
       expandToSpan: action,
       getMobileSummaryCollapseState: action,
       toggleMobileSummaryCollapse: action,
+      setSidebarTabSelection: action,
+      toggleMobileSidebarCollapsed: action,
+      setConceptCollapsed: action,
+      setAllConceptsCollapsed: action,
+      toggleAllConcepts: action,
+      areAnyConceptsCollapsed: computed,
     });
   }
 
@@ -64,8 +100,12 @@ export class CollapseManager {
       ? INITIAL_MOBILE_SUMMARY_COLLAPSE_STATE
       : INITIAL_DESKTOP_SUMMARY_COLLAPSE_STATE;
     this.setAllMobileSummariesCollapsed(summaryCollapseState);
+
+    // Initialize sidebar state
+    this.setAllConceptsCollapsed(INITIAL_CONCEPT_IS_COLLAPSED);
   }
 
+  // Document section methods
   setAbstractCollapsed(isCollapsed: boolean) {
     this.isAbstractCollapsed = isCollapsed;
   }
@@ -159,5 +199,30 @@ export class CollapseManager {
       this.sectionCollapseState.set(section.id, false);
       section = this.lumiDocManager.getParentSection(section.id);
     }
+  }
+
+  // Sidebar methods
+  setSidebarTabSelection(tab: string) {
+    this.sidebarTabSelection = tab;
+  }
+
+  toggleMobileSidebarCollapsed() {
+    this.isMobileSidebarCollapsed = !this.isMobileSidebarCollapsed;
+  }
+
+  setConceptCollapsed(conceptName: string, isCollapsed: boolean) {
+    this.conceptCollapsedState.set(conceptName, isCollapsed);
+  }
+
+  setAllConceptsCollapsed(isCollapsed: boolean) {
+    this.lumiDocManager.lumiDoc.concepts.forEach((concept) => {
+      this.conceptCollapsedState.set(concept.name, isCollapsed);
+    });
+  }
+
+  toggleAllConcepts() {
+    const areAnyCollapsed = this.areAnyConceptsCollapsed;
+    const newCollapseState = areAnyCollapsed ? false : true;
+    this.setAllConceptsCollapsed(newCollapseState);
   }
 }

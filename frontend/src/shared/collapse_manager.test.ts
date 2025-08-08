@@ -19,6 +19,7 @@ import { expect } from "@esm-bundle/chai";
 import { CollapseManager } from "./collapse_manager";
 import { LumiDoc, LumiSection } from "./lumi_doc";
 import { LumiDocManager } from "./lumi_doc_manager";
+import { SIDEBAR_TABS } from "./constants";
 
 // Mocks
 const mockLumiDoc: LumiDoc = {
@@ -67,7 +68,10 @@ const mockLumiDoc: LumiDoc = {
       contents: [],
     },
   ],
-  concepts: [],
+  concepts: [
+    { id: "concept1", name: "Concept 1" , inTextCitations: [], contents: []},
+    { id: "concept2", name: "Concept 2", inTextCitations: [], contents: []},
+  ],
   loadingStatus: "SUCCESS",
   references: [],
 };
@@ -92,6 +96,20 @@ describe("CollapseManager", () => {
       expect(collapseManager.getCollapseState("sec1")).to.be.false;
       expect(collapseManager.getCollapseState("sub1")).to.be.false;
       expect(collapseManager.getCollapseState("sec2")).to.be.false;
+    });
+
+    it("should initialize sidebar state", () => {
+      collapseManager.initialize();
+      expect(collapseManager.sidebarTabSelection).to.equal(
+        SIDEBAR_TABS.TOC
+      );
+      expect(collapseManager.isMobileSidebarCollapsed).to.be.true;
+      expect(collapseManager.conceptCollapsedState.size).to.equal(
+        mockLumiDoc.concepts.length
+      );
+      expect(
+        collapseManager.conceptCollapsedState.get("Concept 1")
+      ).to.be.true;
     });
   });
 
@@ -169,6 +187,58 @@ describe("CollapseManager", () => {
       expect(collapseManager.getCollapseState("sec1")).to.be.false;
       expect(collapseManager.getCollapseState("sub1")).to.be.false;
       expect(collapseManager.getCollapseState("sec2")).to.be.false; // Unrelated section remains expanded
+    });
+  });
+
+  describe("Sidebar State Management", () => {
+    beforeEach(() => {
+      collapseManager.initialize();
+    });
+
+    it("should set sidebar tab selection", () => {
+      collapseManager.setSidebarTabSelection(SIDEBAR_TABS.TOC);
+      expect(collapseManager.sidebarTabSelection).to.equal(SIDEBAR_TABS.TOC);
+    });
+
+    it("should toggle mobile sidebar collapse state", () => {
+      const initialState = collapseManager.isMobileSidebarCollapsed;
+      collapseManager.toggleMobileSidebarCollapsed();
+      expect(collapseManager.isMobileSidebarCollapsed).to.not.equal(
+        initialState
+      );
+    });
+
+    it("should set a single concept's collapsed state", () => {
+      collapseManager.setConceptCollapsed("Concept 1", false);
+      expect(collapseManager.conceptCollapsedState.get("Concept 1")).to.be
+        .false;
+      expect(collapseManager.conceptCollapsedState.get("Concept 2")).to.be
+        .true;
+    });
+
+    it("should set all concepts' collapsed state", () => {
+      collapseManager.setAllConceptsCollapsed(false);
+      expect(collapseManager.conceptCollapsedState.get("Concept 1")).to.be
+        .false;
+      expect(collapseManager.conceptCollapsedState.get("Concept 2")).to.be
+        .false;
+    });
+
+    it("should toggle all concepts' collapsed state", () => {
+      // initial state is all collapsed (true)
+      collapseManager.toggleAllConcepts(); // should be all expanded (false)
+      expect(
+        Array.from(collapseManager.conceptCollapsedState.values()).every(
+          (v) => v === false
+        )
+      ).to.be.true;
+
+      collapseManager.toggleAllConcepts(); // should be all collapsed (true)
+      expect(
+        Array.from(collapseManager.conceptCollapsedState.values()).every(
+          (v) => v === true
+        )
+      ).to.be.true;
     });
   });
 });

@@ -303,7 +303,8 @@ export class LumiReader extends MobxLitElement {
     const sidebarWrapperClasses = classMap({
       ["sidebar-wrapper"]: true,
       ["is-mobile-sidebar-collapsed"]:
-        this.documentStateService.isMobileSidebarCollapsed,
+        this.documentStateService.collapseManager?.isMobileSidebarCollapsed ??
+        false,
     });
 
     return html`

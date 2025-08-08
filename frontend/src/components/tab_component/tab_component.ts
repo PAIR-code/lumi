@@ -17,7 +17,7 @@
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { styles } from "./tab_component.scss";
 
 @customElement("tab-component")
@@ -25,16 +25,9 @@ export class TabComponent extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   @property({ type: Array }) tabs: string[] = [];
-  @state() private selectedTab: string = "";
-
-  override firstUpdated() {
-    if (this.tabs.length > 0) {
-      this.selectedTab = this.tabs[0];
-    }
-  }
+  @property({ type: String }) selectedTab: string = "";
 
   private handleTabClick(tab: string) {
-    this.selectedTab = tab;
     this.dispatchEvent(
       new CustomEvent("tab-selected", {
         detail: { tab },
