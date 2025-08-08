@@ -17,6 +17,10 @@
 
 @use "../../sass/common";
 
+:host {
+  @include common.flex-row-align-center;
+}
+
 @mixin outer-image-container {
   display: flex;
   flex-direction: column;
@@ -27,6 +31,7 @@
 
 .single-image {
   @include outer-image-container;
+  max-width: common.$figure-max-width;
 
   img {
     max-width: 100%;
