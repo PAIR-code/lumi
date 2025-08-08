@@ -30,9 +30,12 @@ import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { HighlightSelection } from "../../../shared/selection_utils";
 
+import "../lumi_section";
 import "../../lumi_span/lumi_span";
 import { CollapseManager } from "../../../shared/collapse_manager";
 import { getAllContents } from "../../../shared/lumi_doc_utils";
+
+const EMPTY_PLACEHOLDER_TEXT = "section";
 
 export interface SectionRendererProperties {
   parentComponent: LitElement;
@@ -55,17 +58,28 @@ export interface SectionRendererProperties {
   isSubsection: boolean;
 }
 
-function renderHeading(section: LumiSection): TemplateResult | typeof nothing {
+function renderHeading(
+  props: SectionRendererProperties
+): TemplateResult | typeof nothing {
+  const { section, isCollapsed } = props;
   if (!section.heading) {
     return nothing;
   }
 
   const headingLevel = section.heading.headingLevel;
-  const headingText = section.heading.text;
+  let headingText = section.heading.text;
+
+  const isEmpty = headingText.length === 0;
 
   const classesObject: { [key: string]: boolean } = {
     "heading-text": true,
+    "empty-heading-placeholder": isEmpty,
+    ["collapsed"]: isCollapsed,
   };
+
+  if (isEmpty) {
+    headingText = EMPTY_PLACEHOLDER_TEXT;
+  }
 
   const onClickStopPropagation = (e: MouseEvent) => {
     e.stopPropagation();
@@ -143,9 +157,12 @@ function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
 
 function renderSectionSummaryPanel(
   props: SectionRendererProperties
-): TemplateResult {
+): TemplateResult | typeof nothing {
   const { summaryMaps, section, getImageUrl, onFocusOnSpan } = props;
   const summary = summaryMaps?.sectionSummariesMap.get(section.id);
+
+  if (!summary) return nothing;
+
   const classesObject: { [key: string]: boolean } = {
     "section-summary": true,
   };
@@ -276,7 +293,7 @@ function renderSubsections(
 
   return html`${section.subSections.map(
     (subSection) =>
-      html`<div class="subsection">
+      html`<lumi-section class="subsection" .section=${subSection}>
         ${renderSection({
           ...props,
           section: subSection,
@@ -286,7 +303,7 @@ function renderSubsections(
           },
           isSubsection: true,
         })}
-      </div>`
+      </lumi-section>`
   )}`;
 }
 
@@ -344,7 +361,7 @@ export function renderSection(
         <div class="hide-button-container">
           ${renderHideButton(isCollapsed, onCollapseChange)}
         </div>
-        ${renderHeading(section)}
+        ${renderHeading(props)}
       </div>
       ${renderContents(props)}
     </div>

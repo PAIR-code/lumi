@@ -88,6 +88,7 @@ $history-item-horizontal-padding: common.$spacing-large;
 
   .left {
     @include common.flex-row-align-center;
+    overflow: hidden;
   }
 
   .toggle-answer-button {

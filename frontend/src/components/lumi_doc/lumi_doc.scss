@@ -20,7 +20,7 @@
 @use "../../sass/typescale";
 
 :host {
-  @include common.flex-row;
+  @include common.flex-column;
   @include common.full-percentage;
 }
 

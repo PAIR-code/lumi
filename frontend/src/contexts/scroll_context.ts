@@ -54,7 +54,7 @@ export class ScrollState {
   scrollToSection = (id: string) => {
     const element = this.sectionMap.get(id)?.value;
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
       console.warn(`[ScrollContext] Section with id "${id}" not found.`);
     }

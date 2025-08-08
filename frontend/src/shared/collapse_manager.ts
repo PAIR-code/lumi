@@ -144,4 +144,12 @@ export class CollapseManager {
       section = this.lumiDocManager.getParentSection(section.id);
     }
   }
+
+  expandToSection(sectionId: string) {
+    let section = this.lumiDocManager.getParentSection(sectionId);
+    while (section) {
+      this.sectionCollapseState.set(section.id, false);
+      section = this.lumiDocManager.getParentSection(section.id);
+    }
+  }
 }

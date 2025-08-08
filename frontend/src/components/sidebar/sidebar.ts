@@ -45,13 +45,13 @@ import {
 
 const MOBILE_TABS = {
   ANSWERS: "Ask Lumi",
-  CONCEPTS: "Concepts",
   TOC: "Table of Contents",
+  CONCEPTS: "Concepts",
 };
 
 const TABS = {
-  CONCEPTS: "Concepts",
   TOC: "Table of Contents",
+  CONCEPTS: "Concepts",
 };
 
 const DEFAULT_CONCEPT_IS_COLLAPSED = true;
@@ -158,8 +158,8 @@ export class LumiSidebar extends MobxLitElement {
       this.documentStateService.lumiDocManager?.lumiDoc.concepts || [];
 
     const toggleAllIcon = this.areAnyConceptsCollapsed
-      ? "unfold_less"
-      : "unfold_more";
+      ? "unfold_more"
+      : "unfold_less";
 
     return html`
       <div class="concepts-container" slot=${TABS.CONCEPTS}>
@@ -196,11 +196,21 @@ export class LumiSidebar extends MobxLitElement {
         <table-of-contents
           .sections=${this.documentStateService.lumiDocManager?.lumiDoc
             .sections}
+          .lumiSummariesMap=${this.documentStateService.lumiDocManager
+            ?.summaryMaps}
           .onSectionClicked=${(sectionId: string) => {
+            if (!this.documentStateService.collapseManager) return;
+
             this.analyticsService.trackAction(
               AnalyticsAction.SIDEBAR_TOC_SECTION_CLICK
             );
-            this.scrollContext?.scrollToSection(sectionId);
+            this.documentStateService.collapseManager.expandToSection(
+              sectionId
+            );
+
+            setTimeout(() => {
+              this.scrollContext?.scrollToSection(sectionId);
+            }, 0);
           }}
         ></table-of-contents>
       </div>

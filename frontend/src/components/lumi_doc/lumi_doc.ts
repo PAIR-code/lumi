@@ -46,6 +46,7 @@ import { renderSection } from "./renderers/section_renderer";
 import { renderAbstract } from "./renderers/abstract_renderer";
 import { renderReferences } from "./renderers/references_renderer";
 
+import "./lumi_section";
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
 import "../multi_icon_toggle/multi_icon_toggle";
@@ -61,9 +62,6 @@ import { LumiDocManager } from "../../shared/lumi_doc_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
 import { HighlightManager } from "../../shared/highlight_manager";
 
-import { createRef, ref, Ref } from "lit/directives/ref.js";
-import { scrollContext, ScrollState } from "../../contexts/scroll_context";
-import { consume } from "@lit/context";
 import { LumiReference } from "../../shared/lumi_doc";
 
 /**
@@ -81,9 +79,6 @@ export class LumiDocViz extends MobxLitElement {
     referencesRendererStyles,
   ];
 
-  @consume({ context: scrollContext, subscribe: true })
-  private scrollContext?: ScrollState;
-
   @property({ type: Object }) lumiDocManager!: LumiDocManager;
   @property({ type: Object }) collapseManager!: CollapseManager;
   @property({ type: Object }) highlightManager!: HighlightManager;
@@ -98,8 +93,6 @@ export class LumiDocViz extends MobxLitElement {
   ) => void = () => {};
 
   @state() hoveredSpanId: string | null = null;
-
-  private sectionRefs = new Map<string, Ref<HTMLElement>>();
 
   get lumiDoc() {
     return this.lumiDocManager.lumiDoc;
@@ -143,18 +136,6 @@ export class LumiDocViz extends MobxLitElement {
     }
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.updateComplete.then(() => {
-      for (const [id, ref] of this.sectionRefs.entries()) {
-        if (ref.value) {
-          this.scrollContext?.registerSection(id, ref);
-        }
-      }
-    });
-  }
-
   override render() {
     const publishedTimestamp =
       this.lumiDocManager.lumiDoc.metadata?.publishedTimestamp;
@@ -162,6 +143,18 @@ export class LumiDocViz extends MobxLitElement {
       ? new Date(publishedTimestamp).toLocaleDateString()
       : "";
     return html`
+      <div class="collapse-toggle-container">
+        <multi-icon-toggle
+          .selection=${this.collapseManager.getOverallCollapseState()}
+          @onCollapseAll=${() => {
+            this.collapseManager.setAllSectionsCollapsed(true);
+          }}
+          @onExpandAll=${() => {
+            this.collapseManager.setAllSectionsCollapsed(false);
+          }}
+        >
+        </multi-icon-toggle>
+      </div>
       <div
         class="lumi-doc"
         @touchend=${(e: TouchEvent) => {
@@ -175,18 +168,6 @@ export class LumiDocViz extends MobxLitElement {
           });
         }}
       >
-        <div class="collapse-toggle-container">
-          <multi-icon-toggle
-            .selection=${this.collapseManager.getOverallCollapseState()}
-            @onCollapseAll=${() => {
-              this.collapseManager.setAllSectionsCollapsed(true);
-            }}
-            @onExpandAll=${() => {
-              this.collapseManager.setAllSectionsCollapsed(false);
-            }}
-          >
-          </multi-icon-toggle>
-        </div>
         <div class="lumi-doc-content">
           <div class="title-section">
             <h1 class="main-column title">
@@ -216,10 +197,8 @@ export class LumiDocViz extends MobxLitElement {
             const isCollapsed = this.collapseManager?.getCollapseState(
               section.id
             );
-            const sectionRef = createRef<HTMLElement>();
-            this.sectionRefs.set(section.id, sectionRef);
 
-            return html`<div ${ref(sectionRef)}>
+            return html`<lumi-section .section=${section}>
               ${renderSection({
                 parentComponent: this,
                 section,
@@ -241,7 +220,7 @@ export class LumiDocViz extends MobxLitElement {
                 onPaperReferenceClick: this.onPaperReferenceClick,
                 isSubsection: false,
               })}
-            </div>`;
+            </lumi-section>`;
           })}
           ${renderReferences({
             references: this.lumiDoc.references,
