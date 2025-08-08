@@ -30,7 +30,7 @@ const INITIAL_REFERENCES_COLLAPSE_STATE = true;
 const INITIAL_FOOTNOTES_COLLAPSE_STATE = true;
 const INITIAL_MOBILE_SUMMARY_COLLAPSE_STATE = true;
 const INITIAL_DESKTOP_SUMMARY_COLLAPSE_STATE = false;
-const INITIAL_CONCEPT_IS_COLLAPSED = true;
+const INITIAL_CONCEPT_IS_COLLAPSED = false;
 const INITIAL_MOBILE_SIDEBAR_COLLAPSED = true;
 
 export type CollapseState = "collapsed" | "expanded" | "indeterminate";
