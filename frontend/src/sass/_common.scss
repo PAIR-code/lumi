@@ -334,7 +334,7 @@
 // LumiDoc Content Grid
 @mixin lumi-doc-grid {
   display: grid;
-  grid-template-columns: 0.5fr 2fr 0.5fr;
+  grid-template-columns: 0.2fr 2fr 0.2fr;
 
   @include viewport-small {
     grid-template-columns: 0.05fr 2fr 0.05fr;

@@ -366,7 +366,9 @@ export function renderSection(
 
   return html`<div class="section-renderer-container">
     <div class=${classMap(sectionContainerClasses)}>
-      <div class="heading-row">${renderHeading(props)}</div>
+      <div class="heading-grid-container">
+        <div class="heading-row">${renderHeading(props)}</div>
+      </div>
       ${renderContents(props)}
     </div>
   </div>`;
