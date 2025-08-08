@@ -86,6 +86,7 @@ _ARXIV_METADATA_COLLECTION = "arxiv_metadata"
 _VERSIONS_COLLECTION = "versions"
 _LOGS_QUERY_COLLECTION = "query_logs"
 _USER_FEEDBACK_COLLECTION = "user_feedback"
+COLLECTIONS_COLLECTION = "collections"
 
 DOCUMENT_REQUESTED_FUNCTION_TIMEOUT = 540
 DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER = 10
@@ -292,7 +293,10 @@ def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
             https_fn.FunctionsErrorCode.INVALID_ARGUMENT,
             "Incorrect arxiv_id length.",
         )
+    return start_arxiv_doc_import(arxiv_id=arxiv_id, test_config=test_config)
 
+
+def start_arxiv_doc_import(arxiv_id: str, test_config: dict | None = None):
     try:
         fetch_utils.check_arxiv_license(arxiv_id)
     except ValueError as e:
