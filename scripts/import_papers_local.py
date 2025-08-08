@@ -1,3 +1,18 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
 import subprocess
 import argparse
 import os
@@ -9,8 +24,8 @@ import os
 # The key is the arXiv ID, and the value is the version.
 PAPERS_TO_IMPORT = {
     "2410.18808": "1",
-    "2406.10252": "1", 
-    "2405.17767": "3", 
+    "2406.10252": "1",
+    "2405.17767": "3",
     "2309.12864": "1",
     "2506.09018": "1",
     "2406.09403": "3",
@@ -22,9 +37,7 @@ def import_papers(args):
     Iterates through PAPERS_TO_IMPORT and calls the main import script for each.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    main_script_path = os.path.join(
-        script_dir, "..", "functions/import_test_script.py"
-    )
+    main_script_path = os.path.join(script_dir, "..", "functions/import_test_script.py")
 
     # 3. Main Loop
     for arxiv_id, version in PAPERS_TO_IMPORT.items():
