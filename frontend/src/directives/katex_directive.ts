@@ -24,6 +24,27 @@ import {
 } from "lit/directive.js";
 import katex from "katex";
 
+function makeErrorSpan(equationText: string, error: Error) {
+  const span = document.createElement("span");
+  span.innerText = "error";
+  span.style.background = "#ffcfc9"; // $error87
+  span.style.color = "#690005"; // $error20
+  span.style.borderRadius = "8px";
+  span.style.padding = "4px 8px";
+  span.style.fontSize = "11px";
+  span.style.fontFamily = "Inter";
+  span.style.height = "100%";
+  span.style.cursor = "pointer";
+  span.title = error.toString();
+
+  span.onclick = () => {
+    span.innerText = equationText;
+    span.style.background = "unset";
+  };
+
+  return span;
+}
+
 // This directive can be attached to an element and will render the equation param as
 // LaTeX within the element using the KaTeX library.
 class KatexDirective extends Directive {
@@ -45,10 +66,14 @@ class KatexDirective extends Directive {
   update(part: ElementPart, [equationText, displayMode]: [string, boolean]) {
     // `part.element` is the DOM element the directive is attached to.
     // By the time `update` is called, this element is guaranteed to exist.
-    katex.render(equationText, part.element as HTMLElement, {
-      throwOnError: false,
-      displayMode,
-    });
+    try {
+      katex.render(equationText, part.element as HTMLElement, {
+        throwOnError: true,
+        displayMode,
+      });
+    } catch (error) {
+      part.element.appendChild(makeErrorSpan(equationText, error as Error));
+    }
   }
 }
 
