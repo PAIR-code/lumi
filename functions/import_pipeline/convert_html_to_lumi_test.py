@@ -31,17 +31,27 @@ from shared.lumi_doc import (
     ImageContent,
     HtmlFigureContent,
 )
-from import_pipeline import convert_html_to_lumi
+from import_pipeline import (
+    convert_html_to_lumi,
+    convert_lumi_spans,
+    convert_list_content,
+)
 from shared import import_tags
 from dataclasses import asdict
 
 
 class ConvertHtmlToLumiTest(unittest.TestCase):
-    @patch.object(convert_html_to_lumi, "get_unique_id")
-    def test_convert_raw_output_to_spans(self, mock_get_unique_id):
+    @patch.object(convert_lumi_spans, "get_unique_id", return_value="uid")
+    @patch.object(convert_html_to_lumi, "get_unique_id", return_value="uid")
+    def test_convert_raw_output_to_spans(
+        self,
+        mock_get_unique_id_convert_html_to_lumi,
+        mock_get_unique_id_convert_lumi_spans,
+    ):
         """Tests that headings are nested correctly into sub_sections."""
         self.maxDiff = None
-        mock_get_unique_id.return_value = "uid"
+        del mock_get_unique_id_convert_html_to_lumi  # unused
+        del mock_get_unique_id_convert_lumi_spans  # unused
 
         with self.subTest("model output containing a tag"):
             model_output = "Testing *italic*"
@@ -95,9 +105,15 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
 
             self.assertEqual(len(actual_spans), 0)
 
-    @patch.object(convert_html_to_lumi, "get_unique_id")
-    def test_nested_headings(self, mock_get_unique_id):
+    @patch.object(convert_lumi_spans, "get_unique_id", return_value="uid")
+    @patch.object(convert_html_to_lumi, "get_unique_id", return_value="uid")
+    def test_nested_headings(
+        self, mock_get_unique_id_html_to_lumi, mock_get_unique_id_lumi_spans
+    ):
         """Tests that headings are nested correctly into sub_sections."""
+        del mock_get_unique_id_html_to_lumi  # unused
+        del mock_get_unique_id_lumi_spans  # unused
+
         self.maxDiff = None
         html_input = (
             "<h1>Title 1</h1>"
@@ -110,9 +126,6 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
             "<h1>Title 2</h1>"
             "<p>Content 2</p>"
         )
-
-        # Mock get_unique_id to return predictable IDs for easier comparison
-        mock_get_unique_id.return_value = "uid"
 
         expected_sections = [
             LumiSection(
@@ -1540,6 +1553,8 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
             ),
         ]
     )
+    @patch.object(convert_list_content, "get_unique_id", return_value="123")
+    @patch.object(convert_lumi_spans, "get_unique_id", return_value="123")
     @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
     def test_convert_to_lumi_sections(
         self,
@@ -1547,11 +1562,15 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
         html,
         expected_sections,
         placeholder_map,
-        mock_get_unique_id,
+        mock_get_unique_id_convert_html_to_lumi,
+        mock_get_unique_id_convert_lumi_spans,
+        mock_get_unique_id_convert_list_content,
     ):
         self.maxDiff = None
         del name  # unused
-        del mock_get_unique_id  # unused
+        del mock_get_unique_id_convert_html_to_lumi  # unused
+        del mock_get_unique_id_convert_lumi_spans  # unused
+        del mock_get_unique_id_convert_list_content  # unused
 
         # Call convert_to_lumi_sections directly
         converted_sections = convert_html_to_lumi.convert_to_lumi_sections(

@@ -33,7 +33,7 @@ from shared.lumi_doc import (
     TextContent,
     LumiFootnote,
 )
-from import_pipeline import import_pipeline, convert_html_to_lumi
+from import_pipeline import import_pipeline, convert_html_to_lumi, convert_lumi_spans
 from models import extract_concepts
 from shared import import_tags
 from shared.types import ArxivMetadata
@@ -41,11 +41,17 @@ from dataclasses import asdict
 
 
 class PreprocessAndReplaceFiguresTest(unittest.TestCase):
+    @patch.object(convert_lumi_spans, "get_unique_id", return_value="123")
     @patch.object(convert_html_to_lumi, "get_unique_id")
     @patch.object(import_pipeline, "get_unique_id")
     def test_interleaved_image_and_html_figure(
-        self, mock_get_unique_id, mock_convert_html_get_unique_id
+        self,
+        mock_get_unique_id,
+        mock_convert_html_get_unique_id,
+        mock_convert_lumi_spans_get_unique_id,
     ):
+        del mock_convert_html_get_unique_id  # unused
+
         self.maxDiff = None
         markdown_input = f"Some text {import_tags.L_IMG_START_PREFIX}fig1.png{import_tags.L_IMG_END} and more text {import_tags.L_HTML_START_PREFIX}T1{import_tags.L_HTML_END}<div>\$[[l-ref]]</div>{import_tags.L_HTML_START_PREFIX}T1{import_tags.L_HTML_END}{import_tags.L_HTML_CAP_START_PREFIX}T1{import_tags.L_HTML_CAP_END}Cap{import_tags.L_HTML_CAP_START_PREFIX}T1{import_tags.L_HTML_CAP_END}"
         placeholder_map = {}
@@ -53,7 +59,7 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
         # The mock needs to provide enough unique IDs for all calls within preprocess_and_replace_figures.
         # In this case: 1 for the HTML figure, 1 for its caption, and 1 for the image.
         mock_get_unique_id.side_effect = ["html_id_1", "image_id_1"]
-        mock_convert_html_get_unique_id.side_effect = ["caption_id_1"]
+        mock_convert_lumi_spans_get_unique_id.side_effect = ["caption_id_1"]
 
         processed_markdown = import_pipeline.preprocess_and_replace_figures(
             markdown_input, "file_id", placeholder_map
@@ -129,6 +135,7 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
 
 
 class ImportPipelineTest(unittest.TestCase):
+    @patch.object(convert_lumi_spans, "get_unique_id", return_value="123")
     @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
     @patch.object(extract_concepts, "get_unique_id", return_value="123")
     @patch("import_pipeline.markdown_utils.parse_lumi_import")
@@ -137,11 +144,13 @@ class ImportPipelineTest(unittest.TestCase):
         mock_parse_lumi_import,
         mock_get_unique_id_extract_concepts,
         mock_get_unique_id_convert_html_to_lumi,
+        mock_get_unique_id_convert_lumi_spans,
     ):
         """Tests that concept inner tags in abstract are correctly parsed."""
         self.maxDiff = None
         del mock_get_unique_id_extract_concepts  # unused
         del mock_get_unique_id_convert_html_to_lumi  # unused
+        del mock_get_unique_id_convert_lumi_spans  # unused
 
         # Mock the output of the markdown parser
         mock_parse_lumi_import.return_value = {
@@ -191,14 +200,20 @@ class ImportPipelineTest(unittest.TestCase):
 
         self.assertEqual(asdict(expected_abstract), asdict(lumi_doc.abstract))
 
+    @patch.object(convert_lumi_spans, "get_unique_id", return_value="123")
     @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
     @patch("import_pipeline.markdown_utils.parse_lumi_import")
     def test_convert_model_output_to_lumi_doc_with_references(
-        self, mock_parse_lumi_import, mock_get_unique_id
+        self,
+        mock_parse_lumi_import,
+        mock_get_unique_id_convert_html_to_lumi,
+        mock_get_unique_id_convert_lumi_spans,
     ):
         """Tests that inner tags in references are correctly parsed."""
+        del mock_get_unique_id_convert_html_to_lumi  # unused
+        del mock_get_unique_id_convert_lumi_spans  # unused
+
         self.maxDiff = None
-        del mock_get_unique_id  # unused
 
         # Mock the output of the markdown parser
         mock_parse_lumi_import.return_value = {
@@ -261,14 +276,19 @@ class ImportPipelineTest(unittest.TestCase):
                 asdict(expected_references[i]), asdict(lumi_doc.references[i])
             )
 
+    @patch.object(convert_lumi_spans, "get_unique_id", return_value="123")
     @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
     @patch("import_pipeline.markdown_utils.parse_lumi_import")
     def test_convert_model_output_to_lumi_doc_with_footnotes(
-        self, mock_parse_lumi_import, mock_get_unique_id
+        self,
+        mock_parse_lumi_import,
+        mock_get_unique_id_html_to_lumi,
+        mock_get_unique_id_lumi_spans,
     ):
         """Tests that footnotes are correctly parsed."""
         self.maxDiff = None
-        del mock_get_unique_id  # unused
+        del mock_get_unique_id_html_to_lumi  # unused
+        del mock_get_unique_id_lumi_spans  # unused
 
         # Mock the output of the markdown parser
         footnotes_string = f"{import_tags.L_FOOTNOTE_CONTENT_START_PREFIX}1{import_tags.L_FOOTNOTE_CONTENT_END}Footnote 1 text.{import_tags.L_FOOTNOTE_CONTENT_END_PREFIX}1{import_tags.L_FOOTNOTE_CONTENT_END}{import_tags.L_FOOTNOTE_CONTENT_START_PREFIX}2{import_tags.L_FOOTNOTE_CONTENT_END}Footnote <b>2</b> text.{import_tags.L_FOOTNOTE_CONTENT_END_PREFIX}2{import_tags.L_FOOTNOTE_CONTENT_END}"

@@ -13,46 +13,34 @@
 # limitations under the License.
 # ==============================================================================
 
-
 import bs4
 import re
-import html
-from typing import Dict, List, Optional, Set
-import copy
+from typing import Dict, List
 
-from shared import import_tags
 from shared.lumi_doc import (
     LumiSection,
     Heading,
     LumiContent,
     TextContent,
     LumiSpan,
-    InnerTag,
-    ListContent,
-    ListItem,
-    Position,
 )
 from shared.utils import get_unique_id
-from import_pipeline.tokenize import tokenize_sentences
-from import_pipeline.markdown_utils import postprocess_content_text, markdown_to_html
+from import_pipeline.markdown_utils import markdown_to_html
+from import_pipeline.import_utils import get_text
+from import_pipeline.convert_list_content import (
+    DEFAULT_LIST_TAGS,
+    get_list_content_from_tag,
+)
+from import_pipeline.convert_lumi_spans import (
+    parse_text_and_extract_inner_tags,
+    create_lumi_spans,
+)
 
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
-ORDERED_LIST_TAG = "ol"
-UNORDERED_LIST_TAG = "ul"
-DEFAULT_LIST_TAGS = [ORDERED_LIST_TAG, UNORDERED_LIST_TAG]
 TAGS_TO_PROCESS = DEFAULT_TEXT_TAGS + DEFAULT_LIST_TAGS
 STORAGE_PATH_DELIMETER = "__"
 PLACEHOLDER_PREFIX = "[[LUMI_PLACEHOLDER_"
 PLACEHOLDER_SUFFIX = "]]"
-
-
-# All text extracted from bs4 must be unescaped.
-def _unescape(text: str):
-    return html.unescape(text)
-
-
-def _get_text(tag: bs4.Tag):
-    return _unescape(tag.decode_contents())
 
 
 def convert_to_lumi_sections(
@@ -90,7 +78,7 @@ def convert_to_lumi_sections(
         # Check if the tag is a heading (h1, h2, etc.)
         if tag.name and tag.name.startswith("h") and tag.name[1:].isdigit():
             heading_level = int(tag.name[1:])
-            heading_text = _get_text(tag)
+            heading_text = get_text(tag)
 
             new_section = LumiSection(
                 id=get_unique_id(),
@@ -139,13 +127,13 @@ def convert_to_lumi_sections(
             current_section = section_stack[-1]
             if tag.name in DEFAULT_TEXT_TAGS:
                 new_contents: List[LumiContent] = _parse_html_block_for_lumi_contents(
-                    _get_text(tag), tag.name, placeholder_map
+                    get_text(tag), tag.name, placeholder_map
                 )
                 if new_contents:
                     current_section.contents.extend(new_contents)
             else:
                 # For now, we assume list content will not contain images or figures.
-                new_content = _get_list_content_from_tag(tag)
+                new_content = get_list_content_from_tag(tag)
                 if new_content:
                     current_section.contents.append(new_content)
 
@@ -221,258 +209,6 @@ def _parse_html_block_for_lumi_contents(
     return lumi_contents
 
 
-def _get_list_content_from_tag(tag: bs4.Tag) -> Optional[LumiContent]:
-    """
-    Returns a LumiContent object for list tags (ul, ol).
-    Note: This function does not currently handle images embedded within list items.
-    """
-
-    if tag.name in DEFAULT_LIST_TAGS:
-        list_items_processed = []
-        # Iterate over all direct list children
-        for li_tag in tag.find_all("li", recursive=False):
-            # This contains all unparsed tags like <b> or [l-conc-id-N]
-            raw_li_content_html = ""
-            subListContent: ListContent | None = None
-
-            for child_node in li_tag.contents:
-                # If the child node is a list, process it as a nested sublist.
-                # (There can only be one nested sublist per list item.)
-                if child_node.name in DEFAULT_LIST_TAGS and subListContent is None:
-                    nested_lumi_content_obj = _get_list_content_from_tag(child_node)
-                    if nested_lumi_content_obj and nested_lumi_content_obj.list_content:
-                        subListContent = nested_lumi_content_obj.list_content
-                else:
-                    # Otherwise, we add the child node to the raw html content.
-                    raw_li_content_html += _unescape(child_node.get_text())
-
-            cleaned_li_text, li_inner_tags = parse_text_and_extract_inner_tags(
-                raw_li_content_html
-            )
-
-            current_li_spans = []
-            if cleaned_li_text.strip() or li_inner_tags:
-                # Create the new LumiSpans from the processed text (with tags removed etc)
-                # and parsed inner tags.
-                current_li_spans = create_lumi_spans(cleaned_li_text, li_inner_tags)
-
-            list_items_processed.append(
-                ListItem(spans=current_li_spans, subListContent=subListContent)
-            )
-
-        return LumiContent(
-            id=get_unique_id(),
-            list_content=ListContent(
-                is_ordered=(tag.name == ORDERED_LIST_TAG),
-                list_items=list_items_processed,
-            ),
-        )
-    else:
-        return None
-
-
-def parse_text_and_extract_inner_tags(raw_content: str) -> (str, List[InnerTag]):
-    """
-    Parses raw HTML-like content to extract plain text and InnerTag objects.
-    This function is recursive to handle nested tags. The content of tags is
-    also parsed, and any inner tags found are added as children to the parent tag.
-    """
-    cleaned_text_content = ""
-    inner_tags = []
-    current_position_raw = 0
-    current_position_cleaned = 0
-
-    while current_position_raw < len(raw_content):
-        earliest_match = None
-        earliest_match_tag_definition = None
-
-        # Find the earliest next tag from current_position_raw
-        for tag_definition in import_tags.TAG_DEFINITIONS:
-            match = tag_definition["pattern"].search(raw_content, current_position_raw)
-            if match:
-                if earliest_match is None or match.start() < earliest_match.start():
-                    earliest_match = match
-                    earliest_match_tag_definition = tag_definition
-
-        if earliest_match:
-            # Append plain text between current_position_raw and the found tag
-            text_before_match = raw_content[
-                current_position_raw : earliest_match.start()
-            ]
-            if text_before_match:
-                cleaned_text_content += text_before_match
-                current_position_cleaned += len(text_before_match)
-
-            tag_start_index = current_position_cleaned
-
-            # For tags with no content, the group may not exist.
-            tag_inner_content_raw = ""
-            if "content" in earliest_match.groupdict():
-                tag_inner_content_raw = earliest_match.group("content")
-
-            # Recursively parse the content of the tag
-            (
-                tag_inner_content_cleaned,
-                child_tags,
-            ) = parse_text_and_extract_inner_tags(tag_inner_content_raw)
-
-            cleaned_text_content += tag_inner_content_cleaned
-            current_position_cleaned += len(tag_inner_content_cleaned)
-            tag_end_index = current_position_cleaned
-
-            metadata = earliest_match_tag_definition["metadata_extractor"](
-                earliest_match
-            )
-
-            inner_tags.append(
-                InnerTag(
-                    id=get_unique_id(),
-                    tag_name=earliest_match_tag_definition["name"],
-                    metadata=metadata,
-                    position=Position(
-                        start_index=tag_start_index, end_index=tag_end_index
-                    ),
-                    children=child_tags,
-                )
-            )
-
-            current_position_raw = earliest_match.end()
-        else:
-            # No tags remaining, append the remaining plain text
-            remaining_plain_text = raw_content[current_position_raw:]
-            if remaining_plain_text:
-                cleaned_text_content += remaining_plain_text
-            break
-
-    return cleaned_text_content, inner_tags
-
-
-def _adjust_tags_for_sentence(
-    tags: List[InnerTag],
-    parent_absolute_start: int,
-    sentence_start_in_cleaned: int,
-    sentence_len: int,
-) -> List[InnerTag]:
-    """Recursively adjusts tags and their children to be relative to a single sentence span."""
-    sentence_end_in_cleaned = sentence_start_in_cleaned + sentence_len
-
-    result_tags = []
-    for tag in tags:
-        tag_absolute_start = parent_absolute_start + tag.position.start_index
-        tag_absolute_end = parent_absolute_start + tag.position.end_index
-
-        # Check for overlap
-        if (
-            tag_absolute_start <= sentence_end_in_cleaned
-            and tag_absolute_end >= sentence_start_in_cleaned
-        ):
-            new_tag = copy.deepcopy(tag)
-
-            # Adjust position to be relative to the sentence
-            new_tag.position.start_index = max(
-                0, tag_absolute_start - sentence_start_in_cleaned
-            )
-            new_tag.position.end_index = min(
-                sentence_len, tag_absolute_end - sentence_start_in_cleaned
-            )
-
-            if new_tag.children:
-                # Recurse for children, passing the parent's absolute start position
-                new_tag.children = _adjust_tags_for_sentence(
-                    new_tag.children,
-                    tag_absolute_start,  # Children positions are relative to this new parent tag's start index
-                    sentence_start_in_cleaned,
-                    sentence_len,
-                )
-            result_tags.append(new_tag)
-    return result_tags
-
-
-def create_lumi_spans(
-    cleaned_text: str, all_inner_tags: List[InnerTag], skip_tokenize=False
-) -> List[LumiSpan]:
-    """
-    Splits cleaned_text into sentences and creates LumiSpan objects.
-    InnerTag objects (with positions relative to cleaned_text) are distributed
-    to their respective sentences, adjusting positions to be sentence-relative.
-    If an InnerTag overlaps with multiple sentence, an inner tag is added to both
-    other sentences with the positions clamped accordingly.
-    """
-    lumi_spans: List[LumiSpan] = []
-
-    if not cleaned_text.strip() and not all_inner_tags:
-        return []
-
-    sentences = []
-    if not skip_tokenize:
-        sentences = tokenize_sentences(cleaned_text, all_inner_tags)
-
-    if not sentences or skip_tokenize:
-        # If tokenization results in no sentences, but there is text or tags,
-        # treat the whole text as a single sentence/span. This can happen for
-        # reference entries that don't have standard sentence punctuation.
-        if cleaned_text or all_inner_tags:
-            lumi_spans.append(
-                LumiSpan(
-                    id=get_unique_id(),
-                    text=postprocess_content_text(cleaned_text),
-                    inner_tags=all_inner_tags,
-                )
-            )
-        return lumi_spans
-
-    cleaned_text_search_offset = 0
-    processed_tag_ids: Set[int] = set()
-
-    for sentence_text in sentences:
-        # Locate the first index of sentence_text within cleaned_text (after the offset)
-        sentence_start_in_cleaned = cleaned_text.find(
-            sentence_text, cleaned_text_search_offset
-        )
-        if sentence_start_in_cleaned == -1:
-            # Should not happen if sentences are derived from cleaned_text
-            continue
-        sentence_len = len(sentence_text)
-
-        tags_relative_to_sentence = _adjust_tags_for_sentence(
-            all_inner_tags, 0, sentence_start_in_cleaned, sentence_len
-        )
-
-        # Track which tags were processed
-        for tag in tags_relative_to_sentence:
-            processed_tag_ids.add(tag.id)
-
-        lumi_spans.append(
-            LumiSpan(
-                id=get_unique_id(),
-                text=postprocess_content_text(sentence_text),
-                inner_tags=tags_relative_to_sentence,
-            )
-        )
-        cleaned_text_search_offset = sentence_start_in_cleaned + sentence_len
-
-    # Handle any tags that were not processed (e.g., tags with no text content at the end)
-    # This can happen for self-closing reference tags.
-    for tag in all_inner_tags:
-        if tag.id not in processed_tag_ids:
-            new_tag = copy.deepcopy(tag)
-            # Adjust position to be relative to the new empty string
-            new_tag.position.start_index = 0
-            new_tag.position.end_index = 0
-            # Clear any existing children
-            new_tag.children = []
-
-            lumi_spans.append(
-                LumiSpan(
-                    id=get_unique_id(),
-                    text="",
-                    inner_tags=[new_tag],
-                )
-            )
-
-    return lumi_spans
-
-
 def convert_raw_output_to_spans(
     output_text: str, skip_tokenize=False
 ) -> List[LumiSpan]:
@@ -483,7 +219,7 @@ def convert_raw_output_to_spans(
     if not children:
         return []
 
-    text = _get_text(children[0])
+    text = get_text(children[0])
 
     cleaned_text, inner_tags = parse_text_and_extract_inner_tags(text)
     return create_lumi_spans(cleaned_text, inner_tags, skip_tokenize=skip_tokenize)
