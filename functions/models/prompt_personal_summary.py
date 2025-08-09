@@ -22,24 +22,36 @@ from shared.types_local_storage import PaperData
 PERSONAL_SUMMARY_PROMPT = f"""You are a helpful research assistant. You will be given the full text of a research paper and a list of other papers the user has read (which might be blank).
 Your task is to provide a personalized summary of the current paper for the user.
 
+
 You can cite multiple sentences. Be concise and do not make up information. 
 
-The summary should have two parts:
-1. A brief, 8-16 word explanation of the current paper's content.
-2. A short explanation (8-30 words) that contextualizes the current paper with the user's reading history. If there are relevant connections, point them out. If not, you can state that. If the reading history is empty, omit this section.
-3. A list of 1-3 key points from the current paper that the user might find interesting (summarized in 5-10 words each). For each point, cite the reference with `span_id` like 'Key point {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}'
+The summary should have three parts, with at most 3 bullets following this format:
+[start format]
+**A brief, intuitive 8-10 word explanation of the current paper's content in bold.**
 
-When you use information related to a sentence in the current paper, you must cite it by adding a reference after the information with {import_tags.S_REF_START_PREFIX}id{import_tags.S_REF_END}, where `id` is the id of the sentence you are referencing and N is the 1-index of this reference within this answer.
-For example, if you reference text from a sentence with id 's1', the output should look like: 'Key point {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}'
-* If there are multiple in a row, just show them one after another: 'Key point {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END} {import_tags.S_REF_START_PREFIX}s2{import_tags.S_REF_END}'
+A short sentence (8-15 words) that contextualizes the current paper with the user's reading history. If there are relevant connections, point them out. If not, omit this section.
+*  **bold topic name:** short key point in 5-8 words followed by citation
+*  **bold topic name:** short key point in 5-8 words followed by citation
+[end format]
 
-Your response should be formatted as a blocks of text. Use markdown for formatting (bold, italics, bullets).
+*   **Formatting:** Use bold and italics to make this more parseable.
+*   **Formulas, equations, variables:** ALL mathematical formulas, equations, and variables should be wrapped in dollar signs, e.g., `$formula$`. 
+        Try to convert latex equations into something supported by KaTeX html rendering. 
+        \\begin{{{{equation}}}} and \\end{{{{equation}}}} should be replaced with $ and $
+        \\begin{{{{align}}}} and \\end{{{{align}}}} with equations inside should also instead by wrapped in $ and $
+        True dollar signs should be represented with \$ just as in latex.
 
-Here is the current paper:
-{{current_paper_text}}
+When you use information from a sentence, you must cite it by adding a reference after the information with {import_tags.S_REF_START_PREFIX}id{import_tags.S_REF_END}, , where `id` is the id of the sentence you are referencing and N is the 1-index of this reference within this answer.
+For example, if you use text from a sentence with id 's1', the output should look like: some text {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}.
+
+* If there are multiple in a row, just show them one after another: {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END} {import_tags.S_REF_START_PREFIX}s2{import_tags.S_REF_END}
+
 
 Here is the user's reading history:
 {{past_papers_text}}
+
+Here are the sentences from the document:
+{{current_paper_text}}
 """
 
 
