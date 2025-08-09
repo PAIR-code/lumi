@@ -57,7 +57,7 @@ def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData]) -> LumiAnsw
         )
         response_content = [fallback_content]
 
-    request = LumiAnswerRequest(query="Personalized Summary")
+    request = LumiAnswerRequest(query="Summary")
 
     return LumiAnswer(
         id=get_unique_id(),
