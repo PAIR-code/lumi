@@ -95,7 +95,6 @@ def main():
     )
     parser.add_argument("--query", type=str, help="The user's query.")
     parser.add_argument("--highlight", type=str, help="The highlighted text.")
-    # TODO: Add history argument
 
     args = parser.parse_args()
 
@@ -107,7 +106,7 @@ def main():
     doc = create_dummy_doc()
     print("Using a dummy document for context...")
 
-    request = LumiAnswerRequest(query=args.query, highlight=args.highlight, history=[])
+    request = LumiAnswerRequest(query=args.query, highlight=args.highlight)
 
     print("Generating answer...")
     lumi_answer = generate_lumi_answer(doc, request)
@@ -116,12 +115,13 @@ def main():
     print(f"Request Query: {lumi_answer.request.query}")
     print(f"Request Highlight: {lumi_answer.request.highlight}")
     print("\nResponse:")
-    for span in lumi_answer.response_spans:
-        print(f"  Span Text: {span.text}")
-        if span.inner_tags:
-            print("  Inner Tags:")
-            for tag in span.inner_tags:
-                print(f"    - {tag.tag_name.value}: {tag.metadata}")
+    for content in lumi_answer.response_content:
+        for span in content.text_content.spans:
+            print(f"  Span Text: {span.text}")
+            if span.inner_tags:
+                print("  Inner Tags:")
+                for tag in span.inner_tags:
+                    print(f"    - {tag.tag_name.value}: {tag.metadata}")
 
     print("=" * 48 + "\n")
 
