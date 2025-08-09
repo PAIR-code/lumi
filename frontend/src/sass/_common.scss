@@ -347,7 +347,7 @@
 }
 
 @mixin lumi-paper-text {
-  @include typescale.body-large;
+  @include typescale.body-medium;
   @include lumi-paper-text-font;
 
   @include viewport-small {
@@ -387,6 +387,6 @@ $figure-max-width: 800px;
 
 $document-content-horizontal-padding: $spacing-large;
 
-$sidebar-padding: $spacing-xl;
+$sidebar-padding: $spacing-large;
 
 $mobile-header-font-size: 24px;
