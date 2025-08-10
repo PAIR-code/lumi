@@ -43,3 +43,6 @@ export const SIDEBAR_TABS_MOBILE = {
 
 export const INITIAL_SIDEBAR_TAB_DESKTOP = SIDEBAR_TABS.TOC;
 export const INITIAL_SIDEBAR_TAB_MOBILE = SIDEBAR_TABS_MOBILE.ANSWERS;
+
+// Keep in sync with constants.py
+export const PERSONAL_SUMMARY_QUERY_NAME = "Summary";

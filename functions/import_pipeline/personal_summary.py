@@ -20,6 +20,7 @@ from shared.types_local_storage import PaperData
 from import_pipeline import convert_html_to_lumi, markdown_utils
 from shared.api import LumiAnswer, LumiAnswerRequest
 from shared.utils import get_unique_id
+from shared.constants import PERSONAL_SUMMARY_QUERY_NAME
 
 
 def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData]) -> LumiAnswer:
@@ -57,7 +58,7 @@ def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData]) -> LumiAnsw
         )
         response_content = [fallback_content]
 
-    request = LumiAnswerRequest(query="Summary")
+    request = LumiAnswerRequest(query=PERSONAL_SUMMARY_QUERY_NAME)
 
     return LumiAnswer(
         id=get_unique_id(),

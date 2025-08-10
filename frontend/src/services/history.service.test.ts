@@ -233,12 +233,6 @@ describe("HistoryService", () => {
         mockAnswer
       );
     });
-
-    it("should set the personal summary loading state", () => {
-      expect(historyService.isPersonalSummaryLoading).to.be.false;
-      historyService.setPersonalSummaryLoading(true);
-      expect(historyService.isPersonalSummaryLoading).to.be.true;
-    });
   });
 
   describe("4. Temporary Answer Management", () => {

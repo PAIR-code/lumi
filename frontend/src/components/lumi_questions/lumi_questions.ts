@@ -186,6 +186,8 @@ export class LumiQuestions extends MobxLitElement {
 
   private renderSearch() {
     const isLoading = this.historyService.isAnswerLoading;
+    const isNonSummaryAnswerLoading =
+      this.historyService.isNonSummaryAnswerLoading;
 
     const textareaSize = isViewportSmall() ? "medium" : "small";
     return html`
@@ -223,7 +225,7 @@ export class LumiQuestions extends MobxLitElement {
           title="Ask Lumi"
           icon="search"
           ?disabled=${!this.query || isLoading}
-          .loading=${isLoading}
+          .loading=${isNonSummaryAnswerLoading}
           @click=${this.handleSearch}
           variant="outlined"
         ></pr-icon-button>
@@ -237,15 +239,9 @@ export class LumiQuestions extends MobxLitElement {
 
     const { answers: answersToRender, canDismiss } =
       this.getAnswersToRender(docId);
-    const isSummaryLoading = this.historyService.isPersonalSummaryLoading;
-    if (answersToRender.length === 0 && !isSummaryLoading) {
-      return nothing;
-    }
 
-    if (isSummaryLoading) {
-      return html`<div class="loading-indicator">
-        Loading personal summary...
-      </div>`;
+    if (answersToRender.length === 0) {
+      return nothing;
     }
 
     const showSeeAllButton =
