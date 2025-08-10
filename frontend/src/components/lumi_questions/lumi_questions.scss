@@ -18,7 +18,7 @@
 @use "../../sass/typescale";
 
 $input-container-height: 50px;
-$lumi-questions-gap: common.$spacing-xl;
+$lumi-questions-gap: common.$spacing-large;
 $button-height: 32px;
 
 :host {
@@ -59,5 +59,28 @@ $button-height: 32px;
 
   span {
     @include typescale.label-large;
+  }
+}
+
+.input-container {
+  @include common.flex-row-align-center;
+  padding: common.$spacing-medium common.$sidebar-padding;
+
+  background: var(--md-sys-color-surface);
+  border-radius: common.$border-radius-small;
+  border: common.$border;
+
+  max-width: common.$info-content-max-width;
+  gap: common.$spacing-medium;
+  width: 100%;
+
+  flex-shrink: 0;
+
+  pr-textarea {
+    flex-grow: 1;
+  }
+
+  pr-icon-button {
+    flex-shrink: 1;
   }
 }

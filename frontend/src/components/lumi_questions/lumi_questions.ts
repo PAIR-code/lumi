@@ -21,7 +21,7 @@ import { customElement, property, state } from "lit/decorators.js";
 
 import { core } from "../../core/core";
 import { HistoryService } from "../../services/history.service";
-import { LumiAnswer } from "../../shared/api";
+import { LumiAnswer, LumiAnswerRequest } from "../../shared/api";
 
 import "./answer_item";
 import "../lumi_span/lumi_span";
@@ -42,6 +42,17 @@ import {
   AnalyticsService,
 } from "../../services/analytics.service";
 import { FloatingPanelService } from "../../services/floating_panel_service";
+import {
+  DialogService,
+  HistoryDialogProps,
+} from "../../services/dialog.service";
+import { isViewportSmall } from "../../shared/responsive_utils";
+import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
+import { getLumiResponseCallable } from "../../shared/callables";
+import { createTemporaryAnswer } from "../../shared/answer_utils";
+import { RouterService } from "../../services/router.service";
+import { SnackbarService } from "../../services/snackbar.service";
+import { FirebaseService } from "../../services/firebase.service";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
@@ -51,15 +62,20 @@ export class LumiQuestions extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly dialogService = core.getService(DialogService);
   private readonly documentStateService = core.getService(DocumentStateService);
+  private readonly firebaseService = core.getService(FirebaseService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly historyService = core.getService(HistoryService);
+  private readonly routerService = core.getService(RouterService);
+  private readonly snackbarService = core.getService(SnackbarService);
 
   @property({ type: Boolean }) isHistoryShowAll = false;
   @property({ type: Object }) setHistoryVisible?: (isVisible: boolean) => void;
   @property() onTextSelection: (selectionInfo: SelectionInfo) => void =
     () => {};
   @state() private dismissedAnswers = new Set<string>();
+  @state() private query = "";
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -125,6 +141,94 @@ export class LumiQuestions extends MobxLitElement {
 
   private unregisterShadowRoot(shadowRoot: ShadowRoot) {
     this.floatingPanelService.unregisterShadowRoot(shadowRoot);
+  }
+
+  private openHistoryDialog() {
+    this.dialogService.show(new HistoryDialogProps());
+  }
+
+  private async handleSearch() {
+    const lumiDoc = this.documentStateService.lumiDocManager?.lumiDoc;
+
+    if (!this.query || !lumiDoc || this.historyService.isAnswerLoading) {
+      return;
+    }
+    this.analyticsService.trackAction(AnalyticsAction.HEADER_EXECUTE_SEARCH);
+
+    const docId = this.routerService.getActiveRouteParams()["document_id"];
+
+    const request: LumiAnswerRequest = {
+      query: this.query,
+    };
+
+    const tempAnswer = createTemporaryAnswer(request);
+    this.historyService.addTemporaryAnswer(tempAnswer);
+    const queryToClear = this.query;
+
+    try {
+      const response = await getLumiResponseCallable(
+        this.firebaseService.functions,
+        lumiDoc,
+        request
+      );
+      this.historyService.addAnswer(docId, response);
+      this.query = "";
+    } catch (e) {
+      console.error("Error getting Lumi response:", e);
+      this.snackbarService.show("Error: Could not get response from Lumi.");
+    } finally {
+      this.historyService.removeTemporaryAnswer(tempAnswer.id);
+      if (this.query === queryToClear) {
+        this.query = "";
+      }
+    }
+  }
+
+  private renderSearch() {
+    const isLoading = this.historyService.isAnswerLoading;
+
+    const textareaSize = isViewportSmall() ? "medium" : "small";
+    return html`
+      <div class="input-container">
+        <pr-icon-button
+          title="Open model context"
+          icon="contextual_token"
+          ?disabled=${isLoading}
+          variant="default"
+          @click=${() => {
+            this.analyticsService.trackAction(
+              AnalyticsAction.HEADER_OPEN_CONTEXT
+            );
+            this.openHistoryDialog();
+          }}
+        ></pr-icon-button>
+        <pr-textarea
+          .focused=${true}
+          .value=${this.query}
+          size=${textareaSize}
+          .maxLength=${MAX_QUERY_INPUT_LENGTH}
+          @change=${(e: CustomEvent) => {
+            this.query = e.detail.value;
+          }}
+          @keydown=${(e: CustomEvent) => {
+            if (e.detail.key === "Enter") {
+              this.handleSearch();
+            }
+          }}
+          placeholder="Ask Lumi"
+          class="search-input"
+          ?disabled=${isLoading}
+        ></pr-textarea>
+        <pr-icon-button
+          title="Ask Lumi"
+          icon="search"
+          ?disabled=${!this.query || isLoading}
+          .loading=${isLoading}
+          @click=${this.handleSearch}
+          variant="outlined"
+        ></pr-icon-button>
+      </div>
+    `;
   }
 
   private renderHistory() {
@@ -223,7 +327,7 @@ export class LumiQuestions extends MobxLitElement {
       return html` ${this.renderBackButton()} ${this.renderHistory()} `;
     }
 
-    return html` ${this.renderHistory()} `;
+    return html`${this.renderSearch()} ${this.renderHistory()} `;
   }
 }
 

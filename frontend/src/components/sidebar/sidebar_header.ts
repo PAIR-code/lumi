@@ -22,19 +22,14 @@ import { styles } from "./sidebar_header.scss";
 import { core } from "../../core/core";
 import { RouterService, Pages } from "../../services/router.service";
 import "../../pair-components/icon_button";
-import { DocumentStateService } from "../../services/document_state.service";
-import { FirebaseService } from "../../services/firebase.service";
-import { HistoryService } from "../../services/history.service";
-import { LumiAnswerRequest } from "../../shared/api";
-import { createTemporaryAnswer } from "../../shared/answer_utils";
-import { getLumiResponseCallable } from "../../shared/callables";
-import { SnackbarService } from "../../services/snackbar.service";
 import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
-import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
-import { isViewportSmall } from "../../shared/responsive_utils";
+import {
+  DialogService,
+  UserFeedbackDialogProps,
+} from "../../services/dialog.service";
 
 /**
  * The header for the sidebar.
@@ -42,119 +37,18 @@ import { isViewportSmall } from "../../shared/responsive_utils";
 @customElement("sidebar-header")
 export class SidebarHeader extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
-  private readonly routerService = core.getService(RouterService);
-  private readonly documentStateService = core.getService(DocumentStateService);
-  private readonly firebaseService = core.getService(FirebaseService);
-  private readonly historyService = core.getService(HistoryService);
-  private readonly snackbarService = core.getService(SnackbarService);
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly dialogService = core.getService(DialogService);
+  private readonly routerService = core.getService(RouterService);
 
-  @property({ type: Object }) onHistoryClick = () => {};
-  @state() private isSearchOpen = false;
-  @state() private query = "";
-
-  private openSearch() {
-    this.analyticsService.trackAction(AnalyticsAction.HEADER_OPEN_SEARCH);
-    this.isSearchOpen = true;
+  private handleFeedbackClick() {
+    this.analyticsService.trackAction(
+      AnalyticsAction.SIDEBAR_HEADER_FEEDBACK_CLICK
+    );
+    this.dialogService.show(new UserFeedbackDialogProps());
   }
 
-  private closeSearch() {
-    this.analyticsService.trackAction(AnalyticsAction.HEADER_CLOSE_SEARCH);
-    this.isSearchOpen = false;
-  }
-
-  private async handleSearch() {
-    const lumiDoc = this.documentStateService.lumiDocManager?.lumiDoc;
-
-    if (!this.query || !lumiDoc || this.historyService.isAnswerLoading) {
-      return;
-    }
-    this.analyticsService.trackAction(AnalyticsAction.HEADER_EXECUTE_SEARCH);
-
-    const docId = this.routerService.getActiveRouteParams()["document_id"];
-
-    const request: LumiAnswerRequest = {
-      query: this.query,
-    };
-
-    const tempAnswer = createTemporaryAnswer(request);
-    this.historyService.addTemporaryAnswer(tempAnswer);
-    const queryToClear = this.query;
-
-    try {
-      const response = await getLumiResponseCallable(
-        this.firebaseService.functions,
-        lumiDoc,
-        request
-      );
-      this.historyService.addAnswer(docId, response);
-      this.query = "";
-    } catch (e) {
-      console.error("Error getting Lumi response:", e);
-      this.snackbarService.show("Error: Could not get response from Lumi.");
-    } finally {
-      this.historyService.removeTemporaryAnswer(tempAnswer.id);
-      if (this.query === queryToClear) {
-        this.query = "";
-      }
-    }
-  }
-
-  private renderSearch() {
-    const isLoading = this.historyService.isAnswerLoading;
-
-    const textareaSize = isViewportSmall() ? "medium" : "small";
-    return html`
-      <div class="input-container">
-        <pr-icon-button
-          title="Open model context"
-          icon="contextual_token"
-          ?disabled=${isLoading}
-          variant="default"
-          @click=${() => {
-            this.analyticsService.trackAction(
-              AnalyticsAction.HEADER_OPEN_CONTEXT
-            );
-            this.onHistoryClick();
-          }}
-        ></pr-icon-button>
-        <pr-textarea
-          .focused=${true}
-          .value=${this.query}
-          size=${textareaSize}
-          .maxLength=${MAX_QUERY_INPUT_LENGTH}
-          @change=${(e: CustomEvent) => {
-            this.query = e.detail.value;
-          }}
-          @keydown=${(e: CustomEvent) => {
-            if (e.detail.key === "Enter") {
-              this.handleSearch();
-            }
-          }}
-          placeholder="Ask Lumi"
-          class="search-input"
-          ?disabled=${isLoading}
-        ></pr-textarea>
-        <pr-icon-button
-          title="Ask Lumi"
-          icon="search"
-          ?disabled=${!this.query || isLoading}
-          .loading=${isLoading}
-          @click=${this.handleSearch}
-          variant="outlined"
-        ></pr-icon-button>
-        <pr-icon-button
-          title="Close"
-          icon="close"
-          ?disabled=${isLoading}
-          @click=${this.closeSearch}
-          variant="outlined"
-        ></pr-icon-button>
-      </div>
-    `;
-  }
-
-  private renderDefaultContent() {
+  private renderContent() {
     return html`<div class="default-content">
       <div class="left-container">
         <pr-icon-button
@@ -165,19 +59,11 @@ export class SidebarHeader extends MobxLitElement {
         <div class="title">Lumi</div>
       </div>
       <pr-icon-button
-        icon="search"
-        variant="outlined"
-        @click=${this.openSearch}
+        icon="feedback"
+        variant="default"
+        @click=${this.handleFeedbackClick}
       ></pr-icon-button>
     </div>`;
-  }
-
-  private renderContent() {
-    if (this.isSearchOpen) {
-      return this.renderSearch();
-    }
-
-    return this.renderDefaultContent();
   }
 
   private navigateHome() {
