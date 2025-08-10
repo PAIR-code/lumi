@@ -56,9 +56,13 @@ def get_list_content_from_tag(tag: bs4.Tag) -> Optional[LumiContent]:
                     nested_lumi_content_obj = get_list_content_from_tag(child_node)
                     if nested_lumi_content_obj and nested_lumi_content_obj.list_content:
                         subListContent = nested_lumi_content_obj.list_content
+                # If the child node is a <p> tag, process its contents instead of the tag itself.
+                elif isinstance(child_node, bs4.Tag) and child_node.name == "p":
+                    for p_child in child_node.contents:
+                        raw_li_content_html += unescape(str(p_child))
                 else:
                     # Otherwise, we add the child node to the raw html content.
-                    raw_li_content_html += unescape(child_node.get_text())
+                    raw_li_content_html += unescape(str(child_node))
 
             cleaned_li_text, li_inner_tags = parse_text_and_extract_inner_tags(
                 raw_li_content_html

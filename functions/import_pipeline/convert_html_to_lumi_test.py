@@ -312,7 +312,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
             # LIST TESTS
             (
                 "unordered_list_with_two_sentences_in_li",
-                "<ul><li>Sentence 1. Sentence 2.</li><li>Sentence 3.</li></ul>",
+                "<ul><li><b>S</b>entence 1. Sentence 2.</li><li>Sentence 3.</li></ul>",
                 [
                     LumiSection(
                         id="123",
@@ -329,7 +329,18 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                 LumiSpan(
                                                     id="123",
                                                     text="Sentence 1.",
-                                                    inner_tags=[],
+                                                    inner_tags=[
+                                                        InnerTag(
+                                                            id="123",
+                                                            tag_name=InnerTagName.BOLD,
+                                                            metadata={},
+                                                            position=Position(
+                                                                start_index=0,
+                                                                end_index=1,
+                                                            ),
+                                                            children=[],
+                                                        )
+                                                    ],
                                                 ),
                                                 LumiSpan(
                                                     id="123",
