@@ -142,6 +142,12 @@ export class LumiReader extends MobxLitElement {
       return;
     }
 
+    // Add the paper to local storage history if it does not yet exist.
+    const paperData = this.historyService.getPaperData(this.documentId);
+    if (!paperData) {
+      this.historyService.addPaper(this.documentId, metadata);
+    }
+
     const docPath = `arxiv_docs/${this.documentId}/versions/${metadata.version}`;
     this.unsubscribeListener = onSnapshot(
       doc(this.firebaseService.firestore, docPath),
