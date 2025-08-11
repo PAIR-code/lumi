@@ -16,8 +16,8 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 import {
   AnswerHighlightTooltipProps,
   FloatingPanelService,
@@ -31,6 +31,8 @@ import { LumiAnswer } from "../../shared/api";
 
 import { styles as contentRendererStyles } from "../lumi_doc/renderers/content_renderer.scss";
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
+import { LumiContent } from "../../shared/lumi_doc";
+import { classMap } from "lit/directives/class-map.js";
 
 /**
  * A tooltip that displays the content of a LumiAnswer.
@@ -44,6 +46,7 @@ export class AnswerHighlightTooltip extends MobxLitElement {
   ];
 
   @property({ type: Object }) props!: AnswerHighlightTooltipProps;
+  @state() private showAll = false;
 
   private documentStateService = core.getService(DocumentStateService);
   private historyService = core.getService(HistoryService);
@@ -57,31 +60,56 @@ export class AnswerHighlightTooltip extends MobxLitElement {
     this.floatingPanelService.show(props, target);
   };
 
+  private showContent() {
+    this.showAll = true;
+  }
+
   override render(): TemplateResult {
-    const answerContent = this.props.answer.responseContent;
-    if (!answerContent) {
+    const allContent = this.props.answer.responseContent;
+    if (!allContent || allContent.length === 0) {
       return html`<div>No content to display.</div>`;
     }
 
+    const contentToShow = this.showAll ? allContent : allContent.slice(0, 1);
+    const hasMoreContent = allContent.length > 1;
+
+    const renderItem = (content: LumiContent) =>
+      renderContent({
+        parentComponent: this,
+        content,
+        references:
+          this.documentStateService.lumiDocManager?.lumiDoc.references,
+        summary: null,
+        spanSummaries: new Map(),
+        focusedSpanId: null,
+        highlightManager: this.documentStateService.highlightManager!,
+        answerHighlightManager: this.historyService.answerHighlightManager!,
+        collapseManager: this.documentStateService.collapseManager!,
+        onSpanSummaryMouseEnter: () => {},
+        onSpanSummaryMouseLeave: () => {},
+        onAnswerHighlightClick: this.handleAnswerHighlightClick.bind(this),
+      });
+
+    const showButton = hasMoreContent && !this.showAll;
+
+    const answerHighlightClasses = classMap({
+      "answer-highlight-tooltip": true,
+      "no-show-all-button": !showButton,
+    });
+
     return html`
-      <div class="answer-highlight-tooltip">
-        ${answerContent.map((content) => {
-          return renderContent({
-            parentComponent: this,
-            content,
-            references:
-              this.documentStateService.lumiDocManager?.lumiDoc.references,
-            summary: null,
-            spanSummaries: new Map(),
-            focusedSpanId: null,
-            highlightManager: this.documentStateService.highlightManager!,
-            answerHighlightManager: this.historyService.answerHighlightManager!,
-            collapseManager: this.documentStateService.collapseManager!,
-            onSpanSummaryMouseEnter: () => {},
-            onSpanSummaryMouseLeave: () => {},
-            onAnswerHighlightClick: this.handleAnswerHighlightClick.bind(this),
-          });
-        })}
+      <div class=${answerHighlightClasses}>
+        ${contentToShow.map(renderItem.bind(this))}
+        ${showButton
+          ? html`<pr-icon-button
+              title="See more"
+              icon="more_horiz"
+              variant="default"
+              class="show-more-button"
+              color="secondary"
+              @click=${this.showContent.bind(this)}
+            ></pr-icon-button>`
+          : nothing}
       </div>
     `;
   }

@@ -18,8 +18,18 @@
 @use "../../sass/typescale";
 
 .answer-highlight-tooltip {
+  @include common.flex-column-align-center;
+
   max-width: 300px;
   padding: common.$spacing-large 0;
+  padding-top: common.$spacing-xl;
+  padding-bottom: common.$spacing-medium;
+
+  &.no-show-all-button {
+    padding-bottom: common.$spacing-xl;
+  }
+
+  margin: -1 * common.$spacing-medium -1 * common.$spacing-large;
 }
 
 p {
