@@ -63,7 +63,10 @@ import {
   AnalyticsService,
 } from "../../services/analytics.service";
 import { isViewportSmall } from "../../shared/responsive_utils";
-import { SIDEBAR_TABS_MOBILE } from "../../shared/constants";
+import {
+  PERSONAL_SUMMARY_QUERY_NAME,
+  SIDEBAR_TABS_MOBILE,
+} from "../../shared/constants";
 
 /**
  * The component responsible for fetching a single document and passing it
@@ -142,6 +145,12 @@ export class LumiReader extends MobxLitElement {
       return;
     }
 
+    // Add the paper to local storage history if it does not yet exist.
+    const paperData = this.historyService.getPaperData(this.documentId);
+    if (!paperData) {
+      this.historyService.addPaper(this.documentId, metadata);
+    }
+
     const docPath = `arxiv_docs/${this.documentId}/versions/${metadata.version}`;
     this.unsubscribeListener = onSnapshot(
       doc(this.firebaseService.firestore, docPath),
@@ -178,7 +187,11 @@ export class LumiReader extends MobxLitElement {
     const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
     if (!currentDoc) return;
 
-    this.historyService.setPersonalSummaryLoading(true);
+    const tempAnswer = createTemporaryAnswer({
+      query: PERSONAL_SUMMARY_QUERY_NAME,
+    });
+    this.historyService.addTemporaryAnswer(tempAnswer);
+
     try {
       // Filter out the current paper.
       const pastPapers = this.historyService
@@ -199,7 +212,7 @@ export class LumiReader extends MobxLitElement {
       console.error("Error getting personal summary:", e);
       this.snackbarService.show("Error: Could not generate personal summary.");
     } finally {
-      this.historyService.setPersonalSummaryLoading(false);
+      this.historyService.removeTemporaryAnswer(tempAnswer.id);
     }
   }
 
@@ -230,7 +243,7 @@ export class LumiReader extends MobxLitElement {
     if (!this.documentStateService.lumiDocManager) return;
 
     const request: LumiAnswerRequest = {
-      query: `Explain "${text}"`,
+      query: ``,
       highlight: text,
       highlightedSpans,
     };

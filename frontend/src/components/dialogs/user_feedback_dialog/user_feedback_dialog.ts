@@ -35,6 +35,7 @@ import { SnackbarService } from "../../../services/snackbar.service";
 import { saveUserFeedbackCallable } from "../../../shared/callables";
 import { styles } from "./user_feedback_dialog.scss";
 import { TextArea } from "../../../pair-components/textarea";
+import { isViewportSmall } from "../../../shared/responsive_utils";
 
 /**
  * The user feedback dialog component.
@@ -89,6 +90,8 @@ export class UserFeedbackDialog extends MobxLitElement {
   }
 
   override render() {
+    const textareaSize = isViewportSmall() ? "medium" : "small";
+
     return html`
       <md-dialog
         @close=${this.handleClose}
@@ -103,7 +106,7 @@ export class UserFeedbackDialog extends MobxLitElement {
           <pr-textarea
             .value=${this.feedbackText}
             variant="outlined"
-            size="large"
+            size=${textareaSize}
             @change=${(e: CustomEvent) => {
               this.feedbackText = e.detail.value;
             }}

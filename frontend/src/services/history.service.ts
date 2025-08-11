@@ -21,6 +21,7 @@ import { LumiAnswer } from "../shared/api";
 import { PaperData } from "../shared/types_local_storage";
 import { LocalStorageService } from "./local_storage.service";
 import { ArxivMetadata } from "../shared/lumi_doc";
+import { PERSONAL_SUMMARY_QUERY_NAME } from "../shared/constants";
 
 const PAPER_KEY_PREFIX = "lumi-paper:";
 
@@ -37,7 +38,6 @@ export class HistoryService extends Service {
   temporaryAnswers: LumiAnswer[] = [];
   paperMetadata = new Map<string, ArxivMetadata>();
   personalSummaries = new Map<string, LumiAnswer>();
-  isPersonalSummaryLoading = false;
 
   constructor(private readonly sp: ServiceProvider) {
     super();
@@ -46,7 +46,6 @@ export class HistoryService extends Service {
       temporaryAnswers: observable.shallow,
       paperMetadata: observable.shallow,
       personalSummaries: observable.shallow,
-      isPersonalSummaryLoading: observable,
       isAnswerLoading: computed,
       addAnswer: action,
       addTemporaryAnswer: action,
@@ -57,12 +56,21 @@ export class HistoryService extends Service {
       addLoadingPaper: action,
       deletePaper: action,
       clearAllHistory: action,
-      setPersonalSummaryLoading: action,
     });
   }
 
   get isAnswerLoading() {
     return this.temporaryAnswers.length > 0;
+  }
+
+  get isNonSummaryAnswerLoading() {
+    if (this.temporaryAnswers.length === 0) return false;
+    for (const answer of this.temporaryAnswers) {
+      if (answer.request.query === PERSONAL_SUMMARY_QUERY_NAME) {
+        return false;
+      }
+    }
+    return true;
   }
 
   override initialize(): void {
@@ -253,15 +261,6 @@ export class HistoryService extends Service {
     this.answers.clear();
     this.personalSummaries.clear();
   }
-
-  /**
-   * Sets the loading state for the personal summary.
-   * @param isLoading Whether the summary is currently loading.
-   */
-  setPersonalSummaryLoading(isLoading: boolean) {
-    this.isPersonalSummaryLoading = isLoading;
-  }
-
   private syncPaperToLocalStorage(docId: string) {
     const paperData = this.getPaperData(docId);
     if (!paperData) {

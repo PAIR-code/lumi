@@ -69,6 +69,9 @@
   gap: common.$spacing-small;
   padding: 0 common.$sidebar-padding common.$sidebar-padding;
 
+  background: var(--md-sys-color-surface-container);
+  z-index: 1; // To be above the lumi answer item responses container
+
   &.mobile {
     padding: 0;
   }

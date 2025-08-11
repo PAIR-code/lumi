@@ -23,5 +23,9 @@
 }
 
 .dialog-explanation {
-  @include typescale.body-medium;
+  @include typescale.body-small;
+
+  @include common.viewport-small {
+    @include typescale.body-medium;
+  }
 }

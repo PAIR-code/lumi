@@ -30,18 +30,13 @@ import { styles } from "./sidebar.scss";
 
 import { DocumentStateService } from "../../services/document_state.service";
 import { core } from "../../core/core";
-import { SelectionInfo } from "../../shared/selection_utils";
 import { consume } from "@lit/context";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
-import { HistoryService } from "../../services/history.service";
 import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
-import {
-  DialogService,
-  HistoryDialogProps,
-} from "../../services/dialog.service";
+import { DialogService } from "../../services/dialog.service";
 import { SIDEBAR_TABS, SIDEBAR_TABS_MOBILE } from "../../shared/constants";
 import { FloatingPanelService } from "../../services/floating_panel_service";
 
@@ -78,11 +73,6 @@ export class LumiSidebar extends MobxLitElement {
     super();
     makeObservable(this);
   }
-
-  private openHistoryDialog() {
-    this.dialogService.show(new HistoryDialogProps());
-  }
-
   private registerShadowRoot(shadowRoot: ShadowRoot) {
     this.floatingPanelService.registerShadowRoot(shadowRoot);
   }
@@ -92,11 +82,7 @@ export class LumiSidebar extends MobxLitElement {
   }
 
   private renderHeader() {
-    return html`<sidebar-header
-        .onHistoryClick=${() => {
-          this.openHistoryDialog();
-        }}
-      ></sidebar-header>
+    return html`<sidebar-header></sidebar-header>
       <div class="divider"></div>`;
   }
 

@@ -31,12 +31,17 @@ import { Pages, RouterService } from "../../services/router.service";
 
 import { APP_NAME } from "../../shared/constants";
 import { styles } from "./header.scss";
+import {
+  AnalyticsAction,
+  AnalyticsService,
+} from "../../services/analytics.service";
 
 /** Header component for app pages */
 @customElement("page-header")
 export class Header extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
+  private readonly analyticsService = core.getService(AnalyticsService);
   private readonly routerService = core.getService(RouterService);
   private readonly dialogService = core.getService(DialogService);
 
@@ -89,6 +94,9 @@ export class Header extends MobxLitElement {
 
   private renderFeedbackButton() {
     const handleClick = () => {
+      this.analyticsService.trackAction(
+        AnalyticsAction.HOME_HEADER_FEEDBACK_CLICK
+      );
       this.dialogService.show(new UserFeedbackDialogProps());
     };
 

@@ -28,25 +28,6 @@
   padding: common.$spacing-medium common.$sidebar-padding;
 }
 
-.input-container {
-  @include common.flex-row-align-center;
-  padding: common.$spacing-medium common.$sidebar-padding;
-
-  max-width: common.$info-content-max-width;
-  gap: common.$spacing-medium;
-  width: 100%;
-
-  flex-shrink: 0;
-
-  pr-textarea {
-    flex-grow: 1;
-  }
-
-  pr-icon-button {
-    flex-shrink: 1;
-  }
-}
-
 .header-container {
   @include common.flex-row;
   justify-content: space-between;
