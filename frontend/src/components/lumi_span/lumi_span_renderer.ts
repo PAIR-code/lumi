@@ -31,7 +31,11 @@ import { flattenTags } from "./lumi_span_utils";
 import { HighlightManager } from "../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../shared/api";
-import { HIGHLIGHT_METADATA_ANSWER_KEY } from "../../shared/constants";
+import {
+  HIGHLIGHT_METADATA_ANSWER_KEY,
+  CITATION_CLASSNAME,
+  FOOTNOTE_CLASSNAME,
+} from "../../shared/constants";
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;
@@ -187,7 +191,7 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
       });
 
       if (citations.length > 0) {
-        const citationTemplate = html`<span class="citation-marker"
+        const citationTemplate = html`<span class=${CITATION_CLASSNAME}
           >${citations.map((citation) => {
             return html`<span
               class="inline-citation"
@@ -227,7 +231,7 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
         const footnote = footnotes[footnoteIndex];
 
         const footnoteTemplate = html`<sup
-          class="footnote-marker"
+          class=${FOOTNOTE_CLASSNAME}
           tabindex="0"
           @click=${(e: MouseEvent) => {
             if (onFootnoteClick) {

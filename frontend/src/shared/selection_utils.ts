@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { CITATION_CLASSNAME, FOOTNOTE_CLASSNAME } from "./constants";
 import { Position } from "./lumi_doc";
 
 // Helper to find a parent element matching a condition
@@ -60,7 +61,20 @@ function getOffsetInLumiSpan(textNode: Node): number {
   if (!lumiSpanRendererElement) return -1;
 
   const lumiSpanRendererChildren = Array.from(lumiSpanRendererElement.children);
-  return lumiSpanRendererChildren.indexOf(characterSpan);
+  const spanIndex = lumiSpanRendererChildren.indexOf(characterSpan);
+
+  let inlineTagOffset = 0;
+
+  for (const element of lumiSpanRendererChildren.slice(0, spanIndex)) {
+    if (
+      Array.from(element.classList).includes(CITATION_CLASSNAME) ||
+      Array.from(element.classList).includes(FOOTNOTE_CLASSNAME)
+    ) {
+      inlineTagOffset++;
+    }
+  }
+
+  return spanIndex - inlineTagOffset;
 }
 
 /**
