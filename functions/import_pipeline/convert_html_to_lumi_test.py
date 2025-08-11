@@ -604,6 +604,43 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                 {},
             ),
             (
+                "paragraph_with_footnote_marker_tag",
+                f"<p>Sentence with a footnote{import_tags.L_FOOTNOTE_MARKER_PREFIX}1{import_tags.L_FOOTNOTE_MARKER_END}</p>",
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="Sentence with a footnote",
+                                            inner_tags=[
+                                                InnerTag(
+                                                    id="123",
+                                                    tag_name=InnerTagName.FOOTNOTE,
+                                                    metadata={"id": "1"},
+                                                    position=Position(
+                                                        start_index=24, end_index=24
+                                                    ),
+                                                    children=[],
+                                                )
+                                            ],
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+            ),
+            (
                 "paragraph_with_underline_tag",
                 "<p>This is <u>underlined</u> text.</p>",
                 [

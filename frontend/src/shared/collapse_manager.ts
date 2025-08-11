@@ -22,6 +22,7 @@ import { isViewportSmall } from "./responsive_utils";
 
 const INITIAL_SECTION_COLLAPSE_STATE = false;
 const INITIAL_REFERENCES_COLLAPSE_STATE = true;
+const INITIAL_FOOTNOTES_COLLAPSE_STATE = true;
 const INITIAL_MOBILE_SUMMARY_COLLAPSE_STATE = true;
 const INITIAL_DESKTOP_SUMMARY_COLLAPSE_STATE = false;
 
@@ -35,6 +36,7 @@ export class CollapseManager {
   mobileSummaryCollapseState = new Map<string, boolean>();
   isAbstractCollapsed = INITIAL_SECTION_COLLAPSE_STATE;
   areReferencesCollapsed = INITIAL_REFERENCES_COLLAPSE_STATE;
+  areFootnotesCollapsed = INITIAL_FOOTNOTES_COLLAPSE_STATE;
 
   constructor(private readonly lumiDocManager: LumiDocManager) {
     makeObservable(this, {
@@ -42,8 +44,10 @@ export class CollapseManager {
       mobileSummaryCollapseState: observable.shallow,
       isAbstractCollapsed: observable,
       areReferencesCollapsed: observable,
+      areFootnotesCollapsed: observable,
       setAbstractCollapsed: action,
       setReferencesCollapsed: action,
+      setFootnotesCollapsed: action,
       toggleSection: action,
       setAllSectionsCollapsed: action,
       expandToSpan: action,
@@ -68,6 +72,10 @@ export class CollapseManager {
 
   setReferencesCollapsed(isCollapsed: boolean) {
     this.areReferencesCollapsed = isCollapsed;
+  }
+
+  setFootnotesCollapsed(isCollapsed: boolean) {
+    this.areFootnotesCollapsed = isCollapsed;
   }
 
   toggleSection(sectionId: string, isCollapsed: boolean) {

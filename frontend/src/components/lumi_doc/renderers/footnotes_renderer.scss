@@ -18,25 +18,32 @@
 @use "../../../sass/common";
 @use "../../../sass/typescale";
 
-.references-renderer-container {
+.footnotes-renderer-container {
+  padding-bottom: 24px;
+
   @include common.lumi-doc-grid;
 
-  .references {
+  .footnotes {
     grid-column: common.$content-grid-col;
 
     @include common.flex-column;
-    gap: common.$spacing-xl;
-
-    @include common.lumi-paper-text-font;
+    gap: common.$spacing-medium;
 
     .header {
       @include common.flex-row-align-center;
       @include common.lumi-paper-text-font;
-      margin: 0;
+      margin: 0 0 common.$spacing-medium 0;
 
       @include common.viewport-small {
         font-size: common.$mobile-header-font-size;
       }
+    }
+
+    .footnote-item {
+      display: flex;
+      gap: common.$spacing-medium;
+
+      @include common.lumi-paper-text-font;
     }
   }
 }

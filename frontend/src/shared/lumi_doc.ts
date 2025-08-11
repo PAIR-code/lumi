@@ -168,6 +168,7 @@ export enum InnerTagName {
   CONCEPT = "concept",
   A = "a",
   CODE = "code",
+  FOOTNOTE = "footnote",
 }
 
 export declare interface InnerTagMetadata {
@@ -182,6 +183,11 @@ export interface InnerTag {
 }
 
 export interface LumiReference {
+  id: string;
+  span: LumiSpan;
+}
+
+export interface LumiFootnote {
   id: string;
   span: LumiSpan;
 }
@@ -221,4 +227,5 @@ export interface LumiDoc {
   loadingStatus: string;
   loadingError?: string;
   references: LumiReference[];
+  footnotes?: LumiFootnote[];
 }

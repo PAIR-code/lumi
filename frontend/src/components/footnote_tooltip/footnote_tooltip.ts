@@ -16,43 +16,43 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { html } from "lit";
+import { CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-
-import { ReferenceTooltipProps } from "../../services/floating_panel_service";
+import { FootnoteTooltipProps } from "../../services/floating_panel_service";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
-import "../lumi_span/lumi_span";
-
-import { styles } from "./reference_tooltip.scss";
+import { styles } from "./footnote_tooltip.scss";
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
-/**
- * A component that renders a reference in a tooltip.
- */
-@customElement("reference-tooltip")
-export class ReferenceTooltip extends MobxLitElement {
-  static override styles = [styles, spanRendererStyles];
+import "../lumi_span/lumi_span";
 
-  @property({ type: Object }) props!: ReferenceTooltipProps;
+/**
+ * A tooltip component to display information about a LumiFootnote.
+ */
+@customElement("footnote-tooltip")
+export class FootnoteTooltip extends MobxLitElement {
+  static override styles: CSSResultGroup = [styles, spanRendererStyles];
+
+  @property({ type: Object }) props!: FootnoteTooltipProps;
 
   override render() {
-    if (!this.props?.reference) {
-      return html``;
+    if (!this.props?.footnote) {
+      return nothing;
     }
 
-    const referenceContent = this.props.reference.span;
-    const lumiSpanRenderer = renderLumiSpan({
-      span: referenceContent,
-    });
+    const { footnote } = this.props;
 
-    return html`<div class="reference-tooltip-component">
-      <lumi-span .span=${referenceContent}>${lumiSpanRenderer}</lumi-span>
-    </div>`;
+    return html`
+      <div class="footnote-tooltip-component">
+        <lumi-span .span=${footnote.span}
+          >${renderLumiSpan({ span: footnote.span })}</lumi-span
+        >
+      </div>
+    `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "reference-tooltip": ReferenceTooltip;
+    "footnote-tooltip": FootnoteTooltip;
   }
 }

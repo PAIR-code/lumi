@@ -31,6 +31,7 @@ from shared.lumi_doc import (
     LumiDoc,
     LumiConcept,
     TextContent,
+    LumiFootnote,
 )
 from import_pipeline import import_pipeline, convert_html_to_lumi
 from models import extract_concepts
@@ -147,6 +148,7 @@ class ImportPipelineTest(unittest.TestCase):
             "abstract": "Here's an abstract with a concept",
             "content": "",
             "references": [],
+            "footnotes": "",
         }
 
         concepts = [
@@ -206,6 +208,7 @@ class ImportPipelineTest(unittest.TestCase):
                 {"id": "ref1", "content": "This is a <b>bold</b> reference."},
                 {"id": "ref2", "content": "This is an *italic* one."},
             ],
+            "footnotes": "",
         }
 
         expected_references = [
@@ -258,6 +261,68 @@ class ImportPipelineTest(unittest.TestCase):
                 asdict(expected_references[i]), asdict(lumi_doc.references[i])
             )
 
+    @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
+    @patch("import_pipeline.markdown_utils.parse_lumi_import")
+    def test_convert_model_output_to_lumi_doc_with_footnotes(
+        self, mock_parse_lumi_import, mock_get_unique_id
+    ):
+        """Tests that footnotes are correctly parsed."""
+        self.maxDiff = None
+        del mock_get_unique_id  # unused
+
+        # Mock the output of the markdown parser
+        footnotes_string = f"{import_tags.L_FOOTNOTE_CONTENT_START_PREFIX}1{import_tags.L_FOOTNOTE_CONTENT_END}Footnote 1 text.{import_tags.L_FOOTNOTE_CONTENT_END_PREFIX}1{import_tags.L_FOOTNOTE_CONTENT_END}{import_tags.L_FOOTNOTE_CONTENT_START_PREFIX}2{import_tags.L_FOOTNOTE_CONTENT_END}Footnote <b>2</b> text.{import_tags.L_FOOTNOTE_CONTENT_END_PREFIX}2{import_tags.L_FOOTNOTE_CONTENT_END}"
+        mock_parse_lumi_import.return_value = {
+            "abstract": "",
+            "content": "",
+            "references": [],
+            "footnotes": [
+                {"id": "1", "content": "Footnote 1 text."},
+                {"id": "2", "content": "Footnote <b>2</b> text."},
+            ],
+        }
+
+        expected_footnotes = [
+            LumiFootnote(
+                id="1",
+                span=LumiSpan(
+                    id="123",
+                    text="Footnote 1 text.",
+                    inner_tags=[],
+                ),
+            ),
+            LumiFootnote(
+                id="2",
+                span=LumiSpan(
+                    id="123",
+                    text="Footnote 2 text.",
+                    inner_tags=[
+                        InnerTag(
+                            id="123",
+                            tag_name=InnerTagName.BOLD,
+                            metadata={},
+                            position=Position(start_index=9, end_index=10),
+                            children=[],
+                        )
+                    ],
+                ),
+            ),
+        ]
+
+        # Call the function to be tested
+        lumi_doc = import_pipeline.convert_model_output_to_lumi_doc(
+            model_output_string="dummy_string",
+            concepts=[],
+            file_id="test_file",
+        )
+
+        # Assert that the footnotes in the LumiDoc are what we expect
+        self.assertEqual(len(expected_footnotes), len(lumi_doc.footnotes))
+        for i in range(len(expected_footnotes)):
+            self.assertEqual(
+                asdict(expected_footnotes[i]), asdict(lumi_doc.footnotes[i])
+            )
+
     @patch("import_pipeline.import_pipeline.convert_model_output_to_lumi_doc")
     @patch("import_pipeline.import_pipeline.gemini")
     @patch("import_pipeline.import_pipeline.image_utils")
@@ -307,6 +372,7 @@ class ImportPipelineTest(unittest.TestCase):
                 )
             ],
             references=[],
+            footnotes=[],
             concepts=[],
         )
         mock_convert_to_doc.return_value = mock_doc

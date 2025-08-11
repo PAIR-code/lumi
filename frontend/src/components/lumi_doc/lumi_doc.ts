@@ -45,6 +45,7 @@ import {
 import { renderSection } from "./renderers/section_renderer";
 import { renderAbstract } from "./renderers/abstract_renderer";
 import { renderReferences } from "./renderers/references_renderer";
+import { renderFootnotes } from "./renderers/footnotes_renderer";
 
 import "./lumi_section";
 import "../lumi_span/lumi_span";
@@ -58,11 +59,12 @@ import { styles as contentSummaryRendererStyles } from "./renderers/content_summ
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 import { styles as abstractRendererStyles } from "./renderers/abstract_renderer.scss";
 import { styles as referencesRendererStyles } from "./renderers/references_renderer.scss";
+import { styles as footnotesRendererStyles } from "./renderers/footnotes_renderer.scss";
 import { LumiDocManager } from "../../shared/lumi_doc_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
 import { HighlightManager } from "../../shared/highlight_manager";
 
-import { LumiReference } from "../../shared/lumi_doc";
+import { LumiFootnote, LumiReference } from "../../shared/lumi_doc";
 
 /**
  * Displays a Lumi Document.
@@ -77,6 +79,7 @@ export class LumiDocViz extends MobxLitElement {
     spanRendererStyles,
     abstractRendererStyles,
     referencesRendererStyles,
+    footnotesRendererStyles,
   ];
 
   @property({ type: Object }) lumiDocManager!: LumiDocManager;
@@ -89,6 +92,10 @@ export class LumiDocViz extends MobxLitElement {
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void = () => {};
   @property() onPaperReferenceClick: (
     reference: LumiReference,
+    target: HTMLElement
+  ) => void = () => {};
+  @property() onFootnoteClick: (
+    footnote: LumiFootnote,
     target: HTMLElement
   ) => void = () => {};
   @property() onConceptClick: (conceptId: string, target: HTMLElement) => void =
@@ -194,20 +201,22 @@ export class LumiDocViz extends MobxLitElement {
             onCollapseChange: (isCollapsed: boolean) => {
               this.collapseManager.setAbstractCollapsed(isCollapsed);
             },
+            onFootnoteClick: this.onFootnoteClick.bind(this),
             onConceptClick: this.onConceptClick.bind(this),
             excerptSpanId: this.lumiDoc.summaries?.abstractExcerptSpanId,
             highlightManager: this.highlightManager,
+            footnotes: this.lumiDoc.footnotes,
           })}
           ${this.lumiDoc.sections.map((section) => {
             const isCollapsed = this.collapseManager?.getCollapseState(
               section.id
             );
-
             return html`<lumi-section .section=${section}>
               ${renderSection({
                 parentComponent: this,
                 section,
                 references: this.lumiDoc.references,
+                footnotes: this.lumiDoc.footnotes,
                 summaryMaps: this.lumiDocManager.summaryMaps,
                 hoverFocusedSpanId: this.hoveredSpanId,
                 isCollapsed: isCollapsed,
@@ -223,6 +232,7 @@ export class LumiDocViz extends MobxLitElement {
                 collapseManager: this.collapseManager,
                 onFocusOnSpan: this.onFocusOnSpan,
                 onPaperReferenceClick: this.onPaperReferenceClick,
+                onFootnoteClick: this.onFootnoteClick,
                 isSubsection: false,
               })}
             </lumi-section>`;
@@ -232,6 +242,13 @@ export class LumiDocViz extends MobxLitElement {
             isCollapsed: this.collapseManager.areReferencesCollapsed,
             onCollapseChange: (isCollapsed: boolean) => {
               this.collapseManager.setReferencesCollapsed(isCollapsed);
+            },
+          })}
+          ${renderFootnotes({
+            footnotes: this.lumiDoc.footnotes || [],
+            isCollapsed: this.collapseManager.areFootnotesCollapsed,
+            onCollapseChange: (isCollapsed: boolean) => {
+              this.collapseManager.setFootnotesCollapsed(isCollapsed);
             },
           })}
         </div>

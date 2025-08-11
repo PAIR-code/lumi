@@ -20,13 +20,14 @@ import { CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ConceptTooltipProps } from "../../services/floating_panel_service";
 import { styles } from "./concept_tooltip.scss";
+import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
 /**
  * A tooltip component to display information about a LumiConcept.
  */
 @customElement("concept-tooltip")
 export class ConceptTooltip extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles];
+  static override styles: CSSResultGroup = [styles, spanRendererStyles];
 
   @property({ type: Object }) props!: ConceptTooltipProps;
 

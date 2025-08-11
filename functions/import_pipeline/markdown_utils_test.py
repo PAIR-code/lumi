@@ -50,6 +50,10 @@ The impact of this work is **profound**, suggesting a future where AI acts as a 
 
 {import_tags.L_CONTENT_END}
 
+{import_tags.L_FOOTNOTES_START}
+{import_tags.L_FOOTNOTE_CONTENT_START_PREFIX}1{import_tags.L_FOOTNOTE_CONTENT_END}This is the first footnote.{import_tags.L_FOOTNOTE_CONTENT_END_PREFIX}1{import_tags.L_FOOTNOTE_CONTENT_END}
+{import_tags.L_FOOTNOTES_END}
+
 {import_tags.L_REFERENCES_START}
 {import_tags.L_REFERENCE_ITEM_START_PREFIX}1{import_tags.L_REFERENCE_ITEM_END}[1] A. Chen, "AI for Materials Science: A Review," *Journal of Advanced AI Research*, 2023, pp. 100-115.{import_tags.L_REFERENCE_ITEM_END_GENERIC}
 {import_tags.L_REFERENCE_ITEM_START_PREFIX}2{import_tags.L_REFERENCE_ITEM_END}[2] B. Lee, "Deep Learning in Drug Discovery," *Nature AI Reviews*, vol. 5, no. 2, 2022, pp. 50-65.{import_tags.L_REFERENCE_ITEM_END_GENERIC}
@@ -121,7 +125,7 @@ class TestMarkdownUtils(unittest.TestCase):
             "**profound**", parsed_output["content"], "Content missing bold formatting"
         )
 
-        # Test References
+        # References
         self.assertIn("references", parsed_output)
         self.assertIsInstance(parsed_output["references"], list)
         self.assertEqual(len(parsed_output["references"]), 3)
@@ -131,6 +135,15 @@ class TestMarkdownUtils(unittest.TestCase):
                 "id": "1",
                 "content": '[1] A. Chen, "AI for Materials Science: A Review," *Journal of Advanced AI Research*, 2023, pp. 100-115.',
             },
+        )
+
+        # Footnotes
+        self.assertIn("footnotes", parsed_output)
+        self.assertIsInstance(parsed_output["footnotes"], list)
+        self.assertEqual(len(parsed_output["footnotes"]), 1)
+        self.assertEqual(
+            parsed_output["footnotes"][0],
+            {"id": "1", "content": "This is the first footnote."},
         )
 
     def test_markdown_to_html(self):

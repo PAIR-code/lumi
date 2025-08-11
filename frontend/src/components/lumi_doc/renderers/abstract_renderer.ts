@@ -16,7 +16,11 @@
  */
 
 import { html, nothing, TemplateResult } from "lit";
-import { Highlight, LumiAbstract } from "../../../shared/lumi_doc";
+import {
+  Highlight,
+  LumiAbstract,
+  LumiFootnote,
+} from "../../../shared/lumi_doc";
 import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import { HighlightManager } from "../../../shared/highlight_manager";
 
@@ -30,6 +34,8 @@ export interface AbstractRendererProperties {
   excerptSpanId?: string;
   highlightManager: HighlightManager;
   onConceptClick?: (conceptId: string, target: HTMLElement) => void;
+  onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
+  footnotes?: LumiFootnote[];
 }
 
 export function renderAbstract(
@@ -42,6 +48,8 @@ export function renderAbstract(
     excerptSpanId = "",
     highlightManager,
     onConceptClick,
+    onFootnoteClick,
+    footnotes,
   } = props;
 
   return html`
@@ -79,6 +87,8 @@ export function renderAbstract(
                   span,
                   highlights,
                   onConceptClick,
+                  footnotes,
+                  onFootnoteClick,
                 })}</lumi-span
               >`;
             })}

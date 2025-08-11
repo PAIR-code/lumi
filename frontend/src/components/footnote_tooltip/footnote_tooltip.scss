@@ -14,29 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "../../sass/common";
+@use "../../sass/typescale";
 
-@use "../../../sass/common";
-@use "../../../sass/typescale";
+:host {
+  max-width: 300px;
+}
 
-.references-renderer-container {
-  @include common.lumi-doc-grid;
-
-  .references {
-    grid-column: common.$content-grid-col;
-
-    @include common.flex-column;
-    gap: common.$spacing-xl;
-
-    @include common.lumi-paper-text-font;
-
-    .header {
-      @include common.flex-row-align-center;
-      @include common.lumi-paper-text-font;
-      margin: 0;
-
-      @include common.viewport-small {
-        font-size: common.$mobile-header-font-size;
-      }
-    }
-  }
+.footnote-tooltip-component {
+  display: flex;
+  flex-direction: column;
+  gap: common.$spacing-medium;
+  padding: common.$spacing-large;
 }
