@@ -64,6 +64,13 @@ export class AnswerHighlightTooltip extends MobxLitElement {
     this.showAll = true;
   }
 
+  private renderQuery() {
+    const query = this.props.answer.request.query;
+    if (!query) return nothing;
+
+    return html`<div class="query">"${query}"</div>`;
+  }
+
   override render(): TemplateResult {
     const allContent = this.props.answer.responseContent;
     if (!allContent || allContent.length === 0) {
@@ -99,7 +106,7 @@ export class AnswerHighlightTooltip extends MobxLitElement {
 
     return html`
       <div class=${answerHighlightClasses}>
-        ${contentToShow.map(renderItem.bind(this))}
+        ${this.renderQuery()} ${contentToShow.map(renderItem.bind(this))}
         ${showButton
           ? html`<pr-icon-button
               title="See more"

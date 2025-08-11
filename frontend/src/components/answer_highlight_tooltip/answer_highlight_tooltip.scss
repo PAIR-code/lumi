@@ -17,6 +17,16 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
+$lumi-content-offset: 26px;
+$horizontal-negative-margin: common.$spacing-large;
+$vertical-negative-margin: common.$spacing-small;
+
+.query {
+  @include typescale.label-large;
+  width: 100%;
+  padding: 0 $lumi-content-offset + $horizontal-negative-margin;
+}
+
 .answer-highlight-tooltip {
   @include common.flex-column-align-center;
 
@@ -29,7 +39,7 @@
     padding-bottom: common.$spacing-xl;
   }
 
-  margin: -1 * common.$spacing-medium -1 * common.$spacing-large;
+  margin: (-1 * $vertical-negative-margin) (-1 * $horizontal-negative-margin);
 }
 
 p {
