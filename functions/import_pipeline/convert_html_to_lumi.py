@@ -17,7 +17,7 @@
 import bs4
 import re
 import html
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 import copy
 
 from shared import import_tags
@@ -326,6 +326,7 @@ def parse_text_and_extract_inner_tags(raw_content: str) -> (str, List[InnerTag])
 
             inner_tags.append(
                 InnerTag(
+                    id=get_unique_id(),
                     tag_name=earliest_match_tag_definition["name"],
                     metadata=metadata,
                     position=Position(
@@ -421,6 +422,8 @@ def create_lumi_spans(
         return lumi_spans
 
     cleaned_text_search_offset = 0
+    processed_tag_ids: Set[int] = set()
+
     for sentence_text in sentences:
         # Locate the first index of sentence_text within cleaned_text (after the offset)
         sentence_start_in_cleaned = cleaned_text.find(
@@ -435,6 +438,10 @@ def create_lumi_spans(
             all_inner_tags, 0, sentence_start_in_cleaned, sentence_len
         )
 
+        # Track which tags were processed
+        for tag in tags_relative_to_sentence:
+            processed_tag_ids.add(tag.id)
+
         lumi_spans.append(
             LumiSpan(
                 id=get_unique_id(),
@@ -443,6 +450,25 @@ def create_lumi_spans(
             )
         )
         cleaned_text_search_offset = sentence_start_in_cleaned + sentence_len
+
+    # Handle any tags that were not processed (e.g., tags with no text content at the end)
+    # This can happen for self-closing reference tags.
+    for tag in all_inner_tags:
+        if tag.id not in processed_tag_ids:
+            new_tag = copy.deepcopy(tag)
+            # Adjust position to be relative to the new empty string
+            new_tag.position.start_index = 0
+            new_tag.position.end_index = 0
+            # Clear any existing children
+            new_tag.children = []
+
+            lumi_spans.append(
+                LumiSpan(
+                    id=get_unique_id(),
+                    text="",
+                    inner_tags=[new_tag],
+                )
+            )
 
     return lumi_spans
 

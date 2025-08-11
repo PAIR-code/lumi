@@ -59,9 +59,8 @@ L_FIG_CAP_END = "]]"
 # ==============================================================================
 # Span Reference Tags (for answers)
 # ==============================================================================
-S_REF_START_PREFIX = "[sref-"
-S_REF_END = "]"
-S_REF_END_GENERIC = "[sref]"
+S_REF_START_PREFIX = "[[l-sref-"
+S_REF_END = "]]"
 
 # ==============================================================================
 # Regex Patterns for Parsing
@@ -74,11 +73,21 @@ S_REF_END_GENERIC = "[sref]"
 #       - `.` matches any character (usually without line terminators, but we use re.DOTALL)
 #       - `*?` matches the previous token between 0 and unlimited times (lazy)
 #       - `<tag>` and `</tag>` are matched literally (so we extract all text between these 2 tags)
-L_TITLE_PATTERN = re.compile(rf"{re.escape(L_TITLE_START)}(.*?){re.escape(L_TITLE_END)}", re.DOTALL)
-L_AUTHORS_PATTERN = re.compile(rf"{re.escape(L_AUTHORS_START)}(.*?){re.escape(L_AUTHORS_END)}", re.DOTALL)
-L_ABSTRACT_PATTERN = re.compile(rf"{re.escape(L_ABSTRACT_START)}(.*?){re.escape(L_ABSTRACT_END)}", re.DOTALL)
-L_CONTENT_PATTERN = re.compile(rf"{re.escape(L_CONTENT_START)}(.*?){re.escape(L_CONTENT_END)}", re.DOTALL)
-L_REFERENCES_PATTERN = re.compile(rf"{re.escape(L_REFERENCES_START)}(.*?){re.escape(L_REFERENCES_END)}", re.DOTALL)
+L_TITLE_PATTERN = re.compile(
+    rf"{re.escape(L_TITLE_START)}(.*?){re.escape(L_TITLE_END)}", re.DOTALL
+)
+L_AUTHORS_PATTERN = re.compile(
+    rf"{re.escape(L_AUTHORS_START)}(.*?){re.escape(L_AUTHORS_END)}", re.DOTALL
+)
+L_ABSTRACT_PATTERN = re.compile(
+    rf"{re.escape(L_ABSTRACT_START)}(.*?){re.escape(L_ABSTRACT_END)}", re.DOTALL
+)
+L_CONTENT_PATTERN = re.compile(
+    rf"{re.escape(L_CONTENT_START)}(.*?){re.escape(L_CONTENT_END)}", re.DOTALL
+)
+L_REFERENCES_PATTERN = re.compile(
+    rf"{re.escape(L_REFERENCES_START)}(.*?){re.escape(L_REFERENCES_END)}", re.DOTALL
+)
 
 
 # Inner Content Patterns
@@ -93,14 +102,25 @@ L_REFERENCES_PATTERN = re.compile(rf"{re.escape(L_REFERENCES_START)}(.*?){re.esc
 #       - `.*?` matches any character between 0 and unlimited times (lazy)
 #  - (?P=id):
 #       - (?P=id): matches the exact same text as previously matched by the named group 'id'
-L_CONCEPT_PATTERN = re.compile(rf"{re.escape(L_CONCEPT_START_PREFIX)}(?P<id>.*?){re.escape(L_CONCEPT_END)}(?P<content>.*?){re.escape(L_CONCEPT_START_PREFIX)}(?P=id){re.escape(L_CONCEPT_END)}", re.DOTALL)
-L_CITATION_PATTERN = re.compile(rf"{re.escape(L_CITATION_START_PREFIX)}(?P<id>.*?){re.escape(L_CITATION_END)}", re.DOTALL)
-S_REF_PATTERN = re.compile(rf"{re.escape(S_REF_START_PREFIX)}(?P<id>.*?){re.escape(S_REF_END)}(?P<content>.*?){re.escape(S_REF_END_GENERIC)}", re.DOTALL)
+L_CONCEPT_PATTERN = re.compile(
+    rf"{re.escape(L_CONCEPT_START_PREFIX)}(?P<id>.*?){re.escape(L_CONCEPT_END)}(?P<content>.*?){re.escape(L_CONCEPT_START_PREFIX)}(?P=id){re.escape(L_CONCEPT_END)}",
+    re.DOTALL,
+)
+L_CITATION_PATTERN = re.compile(
+    rf"{re.escape(L_CITATION_START_PREFIX)}(?P<id>.*?){re.escape(L_CITATION_END)}",
+    re.DOTALL,
+)
+S_REF_PATTERN = re.compile(
+    rf"{re.escape(S_REF_START_PREFIX)}(?P<id>.*?){re.escape(S_REF_END)}", re.DOTALL
+)
 
 
 # Item Patterns
 # Captures 2 capturing groups containing the ID and the text content
-L_REFERENCE_ITEM_PATTERN = re.compile(rf"{re.escape(L_REFERENCE_ITEM_START_PREFIX)}(.*?){re.escape(L_REFERENCE_ITEM_END)}(.*?){re.escape(L_REFERENCE_ITEM_END_GENERIC)}", re.DOTALL)
+L_REFERENCE_ITEM_PATTERN = re.compile(
+    rf"{re.escape(L_REFERENCE_ITEM_START_PREFIX)}(.*?){re.escape(L_REFERENCE_ITEM_END)}(.*?){re.escape(L_REFERENCE_ITEM_END_GENERIC)}",
+    re.DOTALL,
+)
 
 # Figure/Image/Table Patterns
 # Explanation of regex used:
@@ -110,7 +130,7 @@ L_REFERENCE_ITEM_PATTERN = re.compile(rf"{re.escape(L_REFERENCE_ITEM_START_PREFI
 #  - (?P=image_path) is a backreference to ensure the ID matches the image path.
 #  - `(?P<image_caption_text>.*?)` - The caption text itself. Non-greedy to stop at the first end-caption tag.
 IMAGE_AND_CAPTION_PATTERN = re.compile(
-    fr"""
+    rf"""
     (
       {re.escape(L_IMG_START_PREFIX)}(?P<image_path>.*?){re.escape(L_IMG_END)}
       (?:
@@ -131,7 +151,7 @@ IMAGE_AND_CAPTION_PATTERN = re.compile(
 #  - (?P=figure_id) is a backreference to ensure the ID matches the image path.
 #  - `(?P<html_caption_text>.*?)` - The caption text itself. Non-greedy to stop at the first end-caption tag.
 HTML_FIGURE_PATTERN = re.compile(
-    fr"""
+    rf"""
     (
       {re.escape(L_HTML_START_PREFIX)}(?P<figure_id>.*?){re.escape(L_HTML_END)}
       (?P<html_content>.*?)
@@ -156,7 +176,7 @@ HTML_FIGURE_PATTERN = re.compile(
 #  - (?P=figure_id) is a backreference to ensure the ID matches the image path.
 #  - `(?P<main_caption_text>.*?)` - The caption text itself. Non-greedy to stop at the first end-caption tag.
 FIGURE_PATTERN = re.compile(
-    fr"""
+    rf"""
     (
         {re.escape(L_FIG_START_PREFIX)}(?P<figure_id>.*?){re.escape(L_FIG_END)}
         (?P<figure_content>.*?)
@@ -191,7 +211,9 @@ TAG_DEFINITIONS = [
     },
     {
         "name": InnerTagName.A,
-        "pattern": re.compile(r'<a href="(?P<href>.*?)">(?P<content>.*?)</a>', re.DOTALL),
+        "pattern": re.compile(
+            r'<a href="(?P<href>.*?)">(?P<content>.*?)</a>', re.DOTALL
+        ),
         "metadata_extractor": lambda m: {"href": m.group("href")},
     },
     {
@@ -226,7 +248,9 @@ TAG_DEFINITIONS = [
     },
     {
         "name": InnerTagName.MATH_DISPLAY,
-        "pattern": re.compile(r"(?<!\\)\$(?<!\\)\$(?P<content>.*?)(?<!\\)\$(?<!\\)\$", re.DOTALL),
+        "pattern": re.compile(
+            r"(?<!\\)\$(?<!\\)\$(?P<content>.*?)(?<!\\)\$(?<!\\)\$", re.DOTALL
+        ),
         "metadata_extractor": lambda m: {},
     },
     {

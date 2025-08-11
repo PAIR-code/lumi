@@ -191,6 +191,7 @@ export class AnswerItem extends MobxLitElement {
             parentComponent: this,
             content,
             references: this.lumiDocManager?.lumiDoc.references,
+            referencedSpans: this.referencedSpans,
             summary: null,
             spanSummaries: new Map(),
             focusedSpanId: null,

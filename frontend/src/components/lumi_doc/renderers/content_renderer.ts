@@ -39,6 +39,7 @@ export interface ContentRendererProperties {
   parentComponent: LitElement;
   content: LumiContent;
   references?: LumiReference[];
+  referencedSpans?: LumiSpan[];
   summary: LumiSummary | null;
   spanSummaries: Map<string, LumiSummary>;
   focusedSpanId: string | null;
@@ -67,6 +68,7 @@ function renderSpans(
       monospace,
       highlights,
       references: props.references,
+      referencedSpans: props.referencedSpans,
       onSpanReferenceClicked: props.onSpanReferenceClicked,
       onPaperReferenceClick: props.onPaperReferenceClick,
     });

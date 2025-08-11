@@ -54,6 +54,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                 text="Testing italic",
                 inner_tags=[
                     InnerTag(
+                        id="uid",
                         tag_name=InnerTagName.EM,
                         metadata={},
                         position=Position(start_index=8, end_index=14),
@@ -547,6 +548,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="This is a concept text.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.CONCEPT,
                                                     metadata={"id": "C1"},
                                                     position=Position(
@@ -583,6 +585,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="Sentence ends with a reference.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.REFERENCE,
                                                     metadata={"id": "Author2023Title"},
                                                     position=Position(
@@ -619,6 +622,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="This is underlined text.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.UNDERLINE,
                                                     metadata={},
                                                     position=Position(
@@ -655,6 +659,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="The equation is \\alpha + \\beta = \\gamma.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.MATH,
                                                     metadata={},
                                                     position=Position(
@@ -691,6 +696,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="The equation is \\alpha + \\beta = \\gamma.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.MATH_DISPLAY,
                                                     metadata={},
                                                     position=Position(
@@ -781,6 +787,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="This is a link.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.A,
                                                     metadata={
                                                         "href": "https://google.com"
@@ -819,6 +826,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="This is inline code.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.CODE,
                                                     metadata={},
                                                     position=Position(
@@ -855,6 +863,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="012345678910",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.UNDERLINE,
                                                     metadata={},
                                                     position=Position(
@@ -863,6 +872,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                     children=[],
                                                 ),
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.MATH,
                                                     metadata={},
                                                     position=Position(
@@ -871,6 +881,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                     children=[],
                                                 ),
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -879,6 +890,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                     children=[],
                                                 ),
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.CONCEPT,
                                                     metadata={"id": "C3"},
                                                     position=Position(
@@ -887,6 +899,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                     children=[],
                                                 ),
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.ITALIC,
                                                     metadata={},
                                                     position=Position(
@@ -923,6 +936,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="Ref and ref.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.REFERENCE,
                                                     metadata={"id": "id-4"},
                                                     position=Position(
@@ -931,6 +945,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                     children=[],
                                                 ),
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.REFERENCE,
                                                     metadata={"id": "id-5"},
                                                     position=Position(
@@ -949,8 +964,8 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                 {},
             ),
             (
-                "only_span_reference_tag_in_paragraph",
-                f"<p>{import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}some content{import_tags.S_REF_END_GENERIC}</p>",
+                "span_reference_tag_in_paragraph",
+                f"<p>A sentence with a ref{import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}.</p>",
                 [
                     LumiSection(
                         id="123",
@@ -964,16 +979,65 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                     spans=[
                                         LumiSpan(
                                             id="123",
-                                            text="some content",
+                                            text="A sentence with a ref.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.SPAN_REFERENCE,
                                                     metadata={"id": "s1"},
                                                     position=Position(
-                                                        start_index=0, end_index=12
+                                                        start_index=21, end_index=21
                                                     ),
                                                     children=[],
                                                 )
+                                            ],
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+            ),
+            (
+                "only_span_reference_tag_no_content",
+                f"<ul><li>Hi. {import_tags.S_REF_START_PREFIX}s1{import_tags.S_REF_END}</li></ul>",
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                list_content=ListContent(
+                                    is_ordered=False,
+                                    list_items=[
+                                        ListItem(
+                                            subListContent=None,
+                                            spans=[
+                                                LumiSpan(
+                                                    id="123",
+                                                    text="Hi.",
+                                                    inner_tags=[],
+                                                ),
+                                                LumiSpan(
+                                                    id="123",
+                                                    text="",
+                                                    inner_tags=[
+                                                        InnerTag(
+                                                            id="123",
+                                                            tag_name=InnerTagName.SPAN_REFERENCE,
+                                                            metadata={"id": "s1"},
+                                                            position=Position(
+                                                                start_index=0,
+                                                                end_index=0,
+                                                            ),
+                                                            children=[],
+                                                        )
+                                                    ],
+                                                ),
                                             ],
                                         )
                                     ],
@@ -1004,6 +1068,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="Sentence one is bold.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -1018,6 +1083,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="This bold continues into sentence two.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -1054,6 +1120,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="Prefix Sentence part one.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -1068,6 +1135,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="Sentence part two.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -1110,6 +1178,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="text",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -1117,6 +1186,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                     ),
                                                     children=[
                                                         InnerTag(
+                                                            id="123",
                                                             tag_name=InnerTagName.CONCEPT,
                                                             metadata={"id": "C1"},
                                                             position=Position(
@@ -1155,6 +1225,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="Proposition 4.1.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.STRONG,
                                                     metadata={},
                                                     position=Position(
@@ -1169,6 +1240,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="Let there.",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -1183,6 +1255,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="offset text",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -1190,6 +1263,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                     ),
                                                     children=[
                                                         InnerTag(
+                                                            id="123",
                                                             tag_name=InnerTagName.MATH,
                                                             metadata={},
                                                             position=Position(
@@ -1234,6 +1308,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                             text="text",
                                             inner_tags=[
                                                 InnerTag(
+                                                    id="123",
                                                     tag_name=InnerTagName.BOLD,
                                                     metadata={},
                                                     position=Position(
@@ -1241,6 +1316,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                     ),
                                                     children=[
                                                         InnerTag(
+                                                            id="123",
                                                             tag_name=InnerTagName.UNDERLINE,
                                                             metadata={},
                                                             position=Position(
@@ -1249,6 +1325,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                                             ),
                                                             children=[
                                                                 InnerTag(
+                                                                    id="123",
                                                                     tag_name=InnerTagName.CONCEPT,
                                                                     metadata={
                                                                         "id": "C1"
@@ -1294,6 +1371,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                         text="A bold caption.",
                                         inner_tags=[
                                             InnerTag(
+                                                id="123",
                                                 tag_name=InnerTagName.BOLD,
                                                 metadata={},
                                                 position=Position(
@@ -1322,6 +1400,7 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                                 text="A bold caption.",
                                 inner_tags=[
                                     InnerTag(
+                                        id="123",
                                         tag_name=InnerTagName.BOLD,
                                         metadata={},
                                         position=Position(start_index=2, end_index=6),

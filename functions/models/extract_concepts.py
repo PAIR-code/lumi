@@ -21,6 +21,7 @@ from models.prompts import make_concept_extraction_prompt
 from dataclasses import dataclass
 from pydantic import BaseModel
 
+from shared.utils import get_unique_id
 from shared.lumi_doc import (
     ConceptContent,
     LumiConcept,
@@ -114,6 +115,7 @@ def annotate_concepts_in_place(
             for match in re.finditer(pattern, span.text, re.IGNORECASE):
                 start, end = match.span()
                 new_tag = InnerTag(
+                    id=get_unique_id(),
                     tag_name=InnerTagName.CONCEPT,
                     metadata={"concept_id": concept.id},
                     position=Position(start_index=start, end_index=end),
