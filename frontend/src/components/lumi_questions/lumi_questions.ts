@@ -118,10 +118,6 @@ export class LumiQuestions extends MobxLitElement {
       ? this.dismissedAnswers.has(latestAnswer.id)
       : false;
 
-    if (personalSummary) {
-      allAnswers.push(personalSummary);
-    }
-
     if (this.isHistoryShowAll)
       return { answers: allAnswers, canDismiss: false };
     if (!isLatestAnswerDismissed && latestAnswer)
