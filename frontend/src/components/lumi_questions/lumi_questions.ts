@@ -281,7 +281,7 @@ export class LumiQuestions extends MobxLitElement {
                   );
                   this.setHistoryVisible?.(true);
                 }}
-                >See all</pr-button
+                >See all answers</pr-button
               >
             </div>
           `
@@ -306,7 +306,7 @@ export class LumiQuestions extends MobxLitElement {
           .icon=${"arrow_back"}
           variant="default"
         ></pr-icon-button>
-        <span>All responses</span>
+        <span>Answers</span>
       </div>
     `;
   }
