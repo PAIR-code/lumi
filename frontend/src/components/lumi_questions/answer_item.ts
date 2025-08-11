@@ -174,6 +174,8 @@ export class AnswerItem extends MobxLitElement {
   }
 
   private renderContent() {
+    if (this.isAnswerCollapsed) return nothing;
+
     if (this.isLoading) {
       return html`
         <div class="spinner">
@@ -183,6 +185,7 @@ export class AnswerItem extends MobxLitElement {
     }
 
     return html`
+      ${this.renderHighlightedText()}
       <div class="answer">
         ${this.answer.responseContent.map((content: LumiContent) => {
           return renderContent({
@@ -224,6 +227,19 @@ export class AnswerItem extends MobxLitElement {
     `;
   }
 
+  private getTitleText() {
+    const { query, highlight } = this.answer.request;
+    if (query) return query;
+
+    if (!highlight) return "";
+
+    if (this.isAnswerCollapsed) {
+      return `Explain "${highlight}"`;
+    }
+
+    return "Explain text";
+  }
+
   override render() {
     const classes = {
       "history-item": true,
@@ -252,7 +268,7 @@ export class AnswerItem extends MobxLitElement {
                 ?disabled=${this.isLoading}
               ></pr-icon-button>
               <span class="question-text" title=${this.answer.request.query}
-                >${this.answer.request.query}</span
+                >${this.getTitleText()}</span
               >
             </div>
             ${this.renderCancelButton()}

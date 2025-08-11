@@ -66,6 +66,7 @@ $history-item-horizontal-padding: common.$spacing-large;
   background: var(--md-sys-color-surface-container);
   padding: common.$spacing-medium;
   border-radius: 4px;
+  margin: 0 $history-item-horizontal-padding;
 
   span {
     @include common.overflow-ellipsis;
