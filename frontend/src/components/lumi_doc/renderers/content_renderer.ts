@@ -66,18 +66,14 @@ function renderSpans(
   monospace = false
 ): TemplateResult[] {
   return spans.map((span) => {
-    const tempHighlights = props.highlightManager.getSpanHighlights(span.id);
-    const answerHighlights =
-      props.answerHighlightManager.getSpanHighlights(span.id);
-    const highlights = [...tempHighlights, ...answerHighlights];
-
     const spanContent = renderLumiSpan({
       span,
       monospace,
-      highlights,
       references: props.references,
       footnotes: props.footnotes,
       referencedSpans: props.referencedSpans,
+      highlightManager: props.highlightManager,
+      answerHighlightManager: props.answerHighlightManager,
       onSpanReferenceClicked: props.onSpanReferenceClicked,
       onPaperReferenceClick: props.onPaperReferenceClick,
       onFootnoteClick: props.onFootnoteClick,
@@ -206,9 +202,10 @@ export function renderContent(props: ContentRendererProperties) {
     props.content.id
   );
 
-  const isFigureContent = props.content.imageContent != null ||
-      props.content.figureContent != null ||
-      props.content.htmlFigureContent != null;
+  const isFigureContent =
+    props.content.imageContent != null ||
+    props.content.figureContent != null ||
+    props.content.htmlFigureContent != null;
 
   const contentRendererContainerClassesObject: { [key: string]: boolean } = {
     ["content-renderer-container"]: true,

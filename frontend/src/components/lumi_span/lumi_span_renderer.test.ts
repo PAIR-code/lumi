@@ -20,6 +20,7 @@ import { expect } from "@esm-bundle/chai";
 
 import { renderLumiSpan } from "./lumi_span_renderer";
 import { Highlight, InnerTagName, LumiSpan } from "../../shared/lumi_doc";
+import { HighlightManager } from "../../shared/highlight_manager";
 
 describe("renderLumiSpan", () => {
   it("renders a simple span", async () => {
@@ -94,8 +95,11 @@ describe("renderLumiSpan", () => {
       },
     ];
 
+    const highlightManager = new HighlightManager();
+    highlightManager.addHighlights(highlights);
+
     const el = await fixture(
-      html`<div>${renderLumiSpan({ span, highlights })}</div>`
+      html`<div>${renderLumiSpan({ span, highlightManager })}</div>`
     );
     const highlightedEls = el.querySelectorAll("span.yellow");
     expect(highlightedEls.length).to.equal(11); // 'highlighted'.length

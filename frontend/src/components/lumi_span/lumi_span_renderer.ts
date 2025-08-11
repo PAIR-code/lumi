@@ -28,6 +28,8 @@ import {
   LumiSpan,
 } from "../../shared/lumi_doc";
 import { flattenTags } from "./lumi_span_utils";
+import { HighlightManager } from "../../shared/highlight_manager";
+import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;
@@ -45,6 +47,9 @@ interface InlineSpanCitation {
 
 export interface LumiSpanRendererProperties {
   span: LumiSpan;
+  additionalHighlights?: Highlight[];
+  highlightManager?: HighlightManager;
+  answerHighlightManager?: AnswerHighlightManager;
   references?: LumiReference[];
   footnotes?: LumiFootnote[];
   referencedSpans?: LumiSpan[];
@@ -56,7 +61,6 @@ export interface LumiSpanRendererProperties {
     target: HTMLElement
   ) => void;
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
-  highlights?: Highlight[];
   monospace?: boolean;
 }
 
@@ -203,10 +207,7 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
           @click=${(e: MouseEvent) => {
             if (onFootnoteClick) {
               e.stopPropagation();
-              onFootnoteClick(
-                footnote,
-                e.currentTarget as HTMLElement
-              );
+              onFootnoteClick(footnote, e.currentTarget as HTMLElement);
             }
           }}
           >${index}</sup
@@ -263,6 +264,23 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
   return insertions;
 }
 
+function getHighlightsFromManagers(
+  spanId: string,
+  highlightManager?: HighlightManager,
+  answerHighlightManager?: AnswerHighlightManager
+) {
+  const highlights = [];
+  if (highlightManager) {
+    highlights.push(...highlightManager.getSpanHighlights(spanId));
+  }
+
+  if (answerHighlightManager) {
+    highlights.push(...answerHighlightManager.getSpanHighlights(spanId));
+  }
+
+  return highlights;
+}
+
 /**
  * Renders the content of a LumiSpan, including text and inner tags.
  * This logic was extracted from the `lumi-span` component to allow for
@@ -271,7 +289,22 @@ function createInsertionsMap(props: LumiSpanRendererProperties) {
 export function renderLumiSpan(
   props: LumiSpanRendererProperties
 ): TemplateResult {
-  const { span, highlights = [], monospace = false } = props;
+  const {
+    span,
+    highlightManager,
+    answerHighlightManager,
+    additionalHighlights = [],
+    monospace = false,
+  } = props;
+
+  const highlights = [
+    ...additionalHighlights,
+    ...getHighlightsFromManagers(
+      span.id,
+      highlightManager,
+      answerHighlightManager
+    ),
+  ];
   const spanText = span.text;
   const hasHighlight = highlights.length > 0;
 

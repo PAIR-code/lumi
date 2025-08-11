@@ -131,6 +131,8 @@ export class AnswerItem extends MobxLitElement {
             const spanContent = renderLumiSpan({
               span: copiedSpan,
               references: this.lumiDocManager?.lumiDoc.references,
+              highlightManager: this.highlightManager,
+              answerHighlightManager: this.answerHighlightManager,
             });
             return html`
               <div

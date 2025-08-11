@@ -49,6 +49,7 @@ export function renderAbstract(
     onCollapseChange,
     excerptSpanId = "",
     highlightManager,
+    answerHighlightManager,
     onConceptClick,
     onFootnoteClick,
     footnotes,
@@ -72,9 +73,7 @@ export function renderAbstract(
             ${content.textContent?.spans.map((span) => {
               if (isCollapsed && span.id !== excerptSpanId) return nothing;
 
-              const highlights: Highlight[] =
-                highlightManager.getSpanHighlights(span.id);
-
+              const highlights: Highlight[] = [];
               // Add a special highlight for the excerpt span when not collapsed
               if (!isCollapsed && span.id === excerptSpanId) {
                 highlights.push({
@@ -87,7 +86,9 @@ export function renderAbstract(
               return html`<lumi-span .span=${span}
                 >${renderLumiSpan({
                   span,
-                  highlights,
+                  additionalHighlights: highlights,
+                  answerHighlightManager,
+                  highlightManager,
                   onConceptClick,
                   footnotes,
                   onFootnoteClick,

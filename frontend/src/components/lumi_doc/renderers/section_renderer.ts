@@ -149,15 +149,11 @@ function getSpanIdsFromContent(content: LumiContent): string[] {
 }
 
 function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
-  const tempHighlights = props.highlightManager.getSpanHighlights(span.id);
-  const answerHighlights =
-    props.answerHighlightManager.getSpanHighlights(span.id);
-  const highlights = [...tempHighlights, ...answerHighlights];
-
   return html`<lumi-span .span=${span}
     >${renderLumiSpan({
       span,
-      highlights,
+      highlightManager: props.highlightManager,
+      answerHighlightManager: props.answerHighlightManager,
       references: props.references,
       footnotes: props.footnotes,
       onPaperReferenceClick: props.onPaperReferenceClick,
