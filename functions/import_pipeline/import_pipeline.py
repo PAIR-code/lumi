@@ -196,17 +196,16 @@ def convert_model_output_to_lumi_doc(
             # Parse the reference content for inner tags.
             # Note: References are not split into multiple sentences/spans.
             # The entire reference content is treated as a single span.
-            cleaned_text, inner_tags = (
-                convert_html_to_lumi.parse_text_and_extract_inner_tags(item["content"])
+            spans = convert_html_to_lumi.convert_raw_output_to_spans(
+                item["content"], skip_tokenize=True
             )
-            lumi_references.append(
-                LumiReference(
-                    id=item["id"],
-                    span=LumiSpan(
-                        id=get_unique_id(), text=cleaned_text, inner_tags=inner_tags
-                    ),
+            if spans:
+                lumi_references.append(
+                    LumiReference(
+                        id=item["id"],
+                        span=spans[0],
+                    )
                 )
-            )
 
     return LumiDoc(
         markdown="",
@@ -229,11 +228,8 @@ def preprocess_and_replace_figures(
         """Helper to create a LumiSpan for a caption."""
         if not caption_text:
             return None
-        cleaned_caption_text, caption_inner_tags = (
-            convert_html_to_lumi.parse_text_and_extract_inner_tags(caption_text)
-        )
-        caption_spans = convert_html_to_lumi.create_lumi_spans(
-            cleaned_caption_text, caption_inner_tags, skip_tokenize=True
+        caption_spans = convert_html_to_lumi.convert_raw_output_to_spans(
+            caption_text, skip_tokenize=True
         )
         return caption_spans[0] if caption_spans else None
 
@@ -297,7 +293,8 @@ def preprocess_and_replace_figures(
         placeholder_map[placeholder_id] = LumiContent(
             id=id,
             html_figure_content=HtmlFigureContent(
-                html=html_content.strip(), caption=caption_span
+                html=markdown_utils.postprocess_content_text(html_content.strip()),
+                caption=caption_span,
             ),
         )
         return placeholder_id

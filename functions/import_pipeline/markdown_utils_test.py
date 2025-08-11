@@ -200,6 +200,50 @@ Hello, world again!"""
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )
 
+        with self.subTest("slashes preceding dollar signs aren't escaped"):
+            self.maxDiff = None
+            markdown_input = r"This is not an equation: \$40"
+            expected_html = r"""<p>This is not an equation: \$40</p>
+"""
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+    def test_postprocess_content_text(self):
+        with self.subTest("test_unescape_dollar"):
+            text_input = "This should be an unescaped dollar sign: \\$."
+            expected = "This should be an unescaped dollar sign: $."
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(text_input), expected
+            )
+
+        with self.subTest("test_remove_lumi_tag"):
+            text_input = "This text has a [[l-some_tag]] that should be removed."
+            expected = "This text has a  that should be removed."
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(text_input), expected
+            )
+
+        with self.subTest("test_both_dollar_and_tag"):
+            text_input = "A price of \\$50 [[l-price_tag]] is a good deal."
+            expected = "A price of $50  is a good deal."
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(text_input), expected
+            )
+
+        with self.subTest("test_empty_string"):
+            text_input = ""
+            expected = ""
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(text_input), expected
+            )
+
+        with self.subTest("test_no_special_chars"):
+            text_input = "This is a regular sentence with no special processing needed."
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(text_input), text_input
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

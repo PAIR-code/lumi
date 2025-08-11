@@ -27,8 +27,9 @@ from unittest.mock import MagicMock
 
 # Third-party library imports
 from dacite import from_dict, Config
+from threading import Timer
 from firebase_admin import initialize_app, firestore
-from firebase_functions import https_fn, logger
+from firebase_functions import https_fn, logger, options
 from firebase_functions.firestore_fn import (
     on_document_written,
     Event,
@@ -86,6 +87,9 @@ _VERSIONS_COLLECTION = "versions"
 _LOGS_QUERY_COLLECTION = "query_logs"
 _USER_FEEDBACK_COLLECTION = "user_feedback"
 
+DOCUMENT_REQUESTED_FUNCTION_TIMEOUT = 540
+DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER = 10
+
 initialize_app()
 
 
@@ -106,8 +110,8 @@ def _is_locally_emulated() -> bool:
 
 
 @on_document_written(
-    timeout_sec=540,
-    memory=512,
+    timeout_sec=DOCUMENT_REQUESTED_FUNCTION_TIMEOUT,
+    memory=options.MemoryOption.GB_2,
     document=_ARXIV_DOCS_COLLECTION
     + "/{arxivId}/"
     + _VERSIONS_COLLECTION
@@ -135,6 +139,13 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
         .document(version)
     )
 
+    delay = (
+        DOCUMENT_REQUESTED_FUNCTION_TIMEOUT - DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER
+    )
+    timer = Timer(delay, _write_timeout_error, args=(versioned_doc_ref, after_data))
+    if loading_status != LoadingStatus.TIMEOUT:
+        timer.start()
+
     if loading_status == LoadingStatus.WAITING:
         # Write metadata to "arxiv_metadata" collection
         _save_lumi_metadata(arxiv_id, version, after_data)
@@ -144,6 +155,25 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
         # Add summaries to existing LumiDoc data
         _add_summaries_to_lumi_doc(versioned_doc_ref, after_data)
 
+    timer.cancel()
+
+
+def _write_timeout_error(versioned_doc_ref, doc_data):
+    """
+    This function will be called if the timeout is reached.
+    """
+    logger.error("Document load timed out")
+    doc = convert_keys(doc_data, "camel_to_snake")
+    doc["loading_status"] = LoadingStatus.TIMEOUT
+    doc["loading_error"] = "Paper import exceeded time limit"
+    lumi_doc_json = convert_keys(doc, "snake_to_camel")
+    versioned_doc_ref.update(lumi_doc_json)
+
+    raise https_fn.HttpsError(
+        https_fn.FunctionsErrorCode.DEADLINE_EXCEEDED,
+        "This paper cannot be loaded (time limit exceeded)",
+    )
+
 
 def _save_lumi_metadata(arxiv_id, version, doc_data):
     """
@@ -152,10 +182,7 @@ def _save_lumi_metadata(arxiv_id, version, doc_data):
     collection.
     """
     db = firestore.client()
-    doc_ref = (
-        db.collection(_ARXIV_METADATA_COLLECTION)
-        .document(arxiv_id)
-    )
+    doc_ref = db.collection(_ARXIV_METADATA_COLLECTION).document(arxiv_id)
     metadata_dict = doc_data.get("metadata", {})
     doc_ref.set(metadata_dict)
 
@@ -192,10 +219,12 @@ def _add_lumi_doc(versioned_doc_ref, doc_data):
         versioned_doc_ref.update(lumi_doc_json)
     except Exception as e:
         logger.error(f"Error importing doc {arxiv_id}v{version}: {e}")
-        versioned_doc_ref.update({
-            "loadingStatus": LoadingStatus.ERROR,
-            "loadingError": f"Error importing document: {e}",
-        })
+        versioned_doc_ref.update(
+            {
+                "loadingStatus": LoadingStatus.ERROR,
+                "loadingError": f"Error importing document: {e}",
+            }
+        )
 
 
 def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
@@ -230,10 +259,12 @@ def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
         versioned_doc_ref.update(lumi_doc_json)
     except Exception as e:
         logger.error(f"Error summarizing doc {arxiv_id}v{version}: {e}")
-        versioned_doc_ref.update({
-            "loadingStatus": LoadingStatus.ERROR,
-            "loadingError": f"Error summarizing document: {e}",
-        })
+        versioned_doc_ref.update(
+            {
+                "loadingStatus": LoadingStatus.ERROR,
+                "loadingError": f"Error summarizing document: {e}",
+            }
+        )
 
 
 @https_fn.on_call()
@@ -320,6 +351,11 @@ def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
             lumi_doc = doc.to_dict()
             loading_status = lumi_doc.get("loadingStatus")
 
+            if loading_status == LoadingStatus.TIMEOUT:
+                raise https_fn.HttpsError(
+                    https_fn.FunctionsErrorCode.DEADLINE_EXCEEDED,
+                    "This paper cannot be loaded (time limit exceeded)",
+                )
             if loading_status != LoadingStatus.ERROR:
                 return
 

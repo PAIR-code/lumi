@@ -92,7 +92,8 @@ class SummariesTest(unittest.TestCase):
             # Mock return values for gemini.call_predict_with_schema
             mock_call_predict_with_schema.return_value = [
                 LabelSchema(id="sec1", label="Summary for <b>Section One</b>"),
-                LabelSchema(id="sec2", label="Summary for Section Two")
+                LabelSchema(id="sec2", label="Summary for Section Two"),
+                LabelSchema(id="sec3", label="Summary for *Section Three*")
             ]
 
             section_data = _get_all_sections_with_text(self.mock_document)
@@ -101,7 +102,7 @@ class SummariesTest(unittest.TestCase):
             options = FetchLumiSummariesRequestOptions(include_section_summaries=True)
             summaries = generate_lumi_summaries(self.mock_document, options)
 
-            self.assertEqual(len(summaries.section_summaries), 2)
+            self.assertEqual(len(summaries.section_summaries), 3)
             self.assertEqual(summaries.section_summaries[0].id, "sec1")
             self.assertEqual(summaries.section_summaries[0].summary.text, "Summary for Section One")
             self.assertEqual(len(summaries.section_summaries[0].summary.inner_tags), 1)
@@ -111,6 +112,12 @@ class SummariesTest(unittest.TestCase):
             self.assertEqual(summaries.section_summaries[1].id, "sec2")
             self.assertEqual(summaries.section_summaries[1].summary.text, "Summary for Section Two")
             self.assertEqual(len(summaries.section_summaries[1].summary.inner_tags), 0)
+
+            self.assertEqual(summaries.section_summaries[2].id, "sec3")
+            self.assertEqual(summaries.section_summaries[2].summary.text, "Summary for Section Three")
+            self.assertEqual(len(summaries.section_summaries[2].summary.inner_tags), 1)
+            self.assertEqual(summaries.section_summaries[2].summary.inner_tags[0].tag_name, InnerTagName.EM)
+            self.assertEqual(summaries.section_summaries[2].summary.inner_tags[0].position, Position(start_index=12, end_index=25))
 
             # Check that the mock was called with the correct schema type
             mock_call_predict_with_schema.assert_called_once_with(expected_prompt, response_schema=list[LabelSchema])

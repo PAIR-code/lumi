@@ -168,7 +168,10 @@ export class HomeGallery extends MobxLitElement {
             this.unsubscribeListeners.get(paperId)?.();
             this.unsubscribeListeners.delete(paperId);
             this.snackbarService.show("Document loaded.");
-          } else if (data.loadingStatus === LoadingStatus.ERROR) {
+          } else if (
+            data.loadingStatus === LoadingStatus.ERROR || 
+            data.loadingStatus === LoadingStatus.TIMEOUT
+          ) {
             this.historyService.deletePaper(paperId);
             this.unsubscribeListeners.get(paperId)?.();
             this.unsubscribeListeners.delete(paperId);

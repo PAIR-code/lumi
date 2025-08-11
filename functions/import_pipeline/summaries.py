@@ -33,7 +33,9 @@ from shared.lumi_doc import (
 )
 from shared import prompt_utils
 import models.gemini as gemini
-from import_pipeline.convert_html_to_lumi import parse_text_and_extract_inner_tags
+from import_pipeline.convert_html_to_lumi import (
+    convert_raw_output_to_spans,
+)
 from shared.utils import get_unique_id
 
 
@@ -68,11 +70,14 @@ _PROMPT_JSON_OUTPUT_INSTRUCTIONS = """Please return the list of items and their 
 
 def _create_summary_span(raw_label: str) -> LumiSpan:
     """Parses a raw string label, potentially with formatting, into a LumiSpan."""
-    cleaned_text, inner_tags = parse_text_and_extract_inner_tags(raw_label)
+    spans = convert_raw_output_to_spans(raw_label, skip_tokenize=True)
+    if spans:
+        return spans[0]
+
     return LumiSpan(
         id=get_unique_id(),
-        text=cleaned_text,
-        inner_tags=inner_tags,
+        text=raw_label,
+        inner_tags=[],
     )
 
 

@@ -32,7 +32,7 @@ PDF_IMPORT_FORMATTING_INSTRUCTIONS = rf"""Within these structural tags (but do N
         Try to convert latex equations into something supported by KaTeX html rendering. 
         \begin{{equation}} and \end{{equation}} should be replaced with $$ and $$
         \begin{{align}} and \end{{align}} with equations inside should also instead by wrapped in $$ and $$
-
+        True dollar signs should be represented with \$ just as in latex.
 *   **Headings:** Maintain the hierarchical header structure from the file, using `#` or `##` markdown headers. Do *not* use `*header*` style. Assume most academic papers will start with "Abstract" and "Introduction" as the first major headers (though "Abstract" will be wrapped in its own `{import_tags.L_ABSTRACT_START}` block). Maintain any numbering (e.g., "I. INTRODUCTION", "A. CONTRIBUTIONS").
 *   **Figures with Subfigures:** For figures that contain subfigures (like in the LaTeX `figure*` environment with `\begin{{subfigure\}}` contained within `\begin{{figure\}}`), use the following structure:
     *   Wrap the entire figure block with `{import_tags.L_FIG_START_PREFIX}FIG_ID{import_tags.L_FIG_END}` and `{import_tags.L_FIG_START_PREFIX}FIG_ID{import_tags.L_FIG_END}`. `FIG_ID` should be a unique identifier for the figure, like the one from `\label{{fig:interf_NVIDIA}}`.

@@ -34,6 +34,7 @@ from shared.lumi_doc import (
 )
 from shared.utils import get_unique_id
 from import_pipeline.tokenize import tokenize_sentences
+from import_pipeline.markdown_utils import postprocess_content_text, markdown_to_html
 
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
 ORDERED_LIST_TAG = "ol"
@@ -124,10 +125,10 @@ def convert_to_lumi_sections(
         elif tag not in visited_tags and tag.name in TAGS_TO_PROCESS:
             if not section_stack:
                 # If content appears before any heading, create a default section to hold it.
-                # This section has a heading level of 0.
+                # This section has a heading level of 1.
                 default_section = LumiSection(
                     id=get_unique_id(),
-                    heading=Heading(heading_level=0, text=""),
+                    heading=Heading(heading_level=1, text=""),
                     contents=[],
                     sub_sections=[],
                 )
@@ -413,7 +414,7 @@ def create_lumi_spans(
             lumi_spans.append(
                 LumiSpan(
                     id=get_unique_id(),
-                    text=cleaned_text,
+                    text=postprocess_content_text(cleaned_text),
                     inner_tags=all_inner_tags,
                 )
             )
@@ -437,10 +438,26 @@ def create_lumi_spans(
         lumi_spans.append(
             LumiSpan(
                 id=get_unique_id(),
-                text=sentence_text,
+                text=postprocess_content_text(sentence_text),
                 inner_tags=tags_relative_to_sentence,
             )
         )
         cleaned_text_search_offset = sentence_start_in_cleaned + sentence_len
 
     return lumi_spans
+
+
+def convert_raw_output_to_spans(
+    output_text: str, skip_tokenize=False
+) -> List[LumiSpan]:
+    html = markdown_to_html(output_text)
+    soup = bs4.BeautifulSoup(html, "html.parser")
+
+    children = list(soup.children)
+    if not children:
+        return []
+
+    text = _get_text(children[0])
+
+    cleaned_text, inner_tags = parse_text_and_extract_inner_tags(text)
+    return create_lumi_spans(cleaned_text, inner_tags, skip_tokenize=skip_tokenize)

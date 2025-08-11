@@ -208,6 +208,7 @@ export enum LoadingStatus {
   SUMMARIZING = "SUMMARIZING",
   SUCCESS = "SUCCESS",
   ERROR = "ERROR",
+  TIMEOUT = "TIMEOUT",
 }
 
 export interface LumiDoc {

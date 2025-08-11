@@ -43,7 +43,7 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
         self, mock_get_unique_id, mock_convert_html_get_unique_id
     ):
         self.maxDiff = None
-        markdown_input = f"Some text {import_tags.L_IMG_START_PREFIX}fig1.png{import_tags.L_IMG_END} and more text {import_tags.L_HTML_START_PREFIX}T1{import_tags.L_HTML_END}<div>...</div>{import_tags.L_HTML_START_PREFIX}T1{import_tags.L_HTML_END}{import_tags.L_HTML_CAP_START_PREFIX}T1{import_tags.L_HTML_CAP_END}Cap{import_tags.L_HTML_CAP_START_PREFIX}T1{import_tags.L_HTML_CAP_END}"
+        markdown_input = f"Some text {import_tags.L_IMG_START_PREFIX}fig1.png{import_tags.L_IMG_END} and more text {import_tags.L_HTML_START_PREFIX}T1{import_tags.L_HTML_END}<div>\$[[l-ref]]</div>{import_tags.L_HTML_START_PREFIX}T1{import_tags.L_HTML_END}{import_tags.L_HTML_CAP_START_PREFIX}T1{import_tags.L_HTML_CAP_END}Cap{import_tags.L_HTML_CAP_START_PREFIX}T1{import_tags.L_HTML_CAP_END}"
         placeholder_map = {}
 
         # The mock needs to provide enough unique IDs for all calls within preprocess_and_replace_figures.
@@ -71,7 +71,7 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
         # Validate HtmlFigureContent
         html_content = placeholder_map[html_placeholder_id].html_figure_content
         self.assertIsNotNone(html_content)
-        self.assertEqual(html_content.html, "<div>...</div>")
+        self.assertEqual(html_content.html, "<div>$</div>")
         self.assertIsNotNone(html_content.caption)
         self.assertEqual(html_content.caption.text, "Cap")
         self.assertEqual(html_content.caption.id, "caption_id_1")
@@ -125,7 +125,7 @@ class PreprocessAndReplaceFiguresTest(unittest.TestCase):
 
 
 class ImportPipelineTest(unittest.TestCase):
-    @patch.object(import_pipeline, "get_unique_id", return_value="123")
+    @patch.object(convert_html_to_lumi, "get_unique_id", return_value="123")
     @patch("import_pipeline.markdown_utils.parse_lumi_import")
     def test_convert_model_output_to_lumi_doc_with_references(
         self, mock_parse_lumi_import, mock_get_unique_id
@@ -140,7 +140,7 @@ class ImportPipelineTest(unittest.TestCase):
             "content": "",
             "references": [
                 {"id": "ref1", "content": "This is a <b>bold</b> reference."},
-                {"id": "ref2", "content": "This is an <i>italic</i> one."},
+                {"id": "ref2", "content": "This is an *italic* one."},
             ],
         }
 
@@ -167,7 +167,7 @@ class ImportPipelineTest(unittest.TestCase):
                     text="This is an italic one.",
                     inner_tags=[
                         InnerTag(
-                            tag_name=InnerTagName.ITALIC,
+                            tag_name=InnerTagName.EM,
                             metadata={},
                             position=Position(start_index=11, end_index=17),
                             children=[],
