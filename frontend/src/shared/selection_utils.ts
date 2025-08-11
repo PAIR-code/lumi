@@ -44,7 +44,7 @@ export interface HighlightSelection {
  */
 export interface SelectionInfo {
   selectedText: string;
-  lastParentSpan: HTMLElement;
+  parentSpan: HTMLElement;
   highlightSelection: HighlightSelection[];
 }
 
@@ -73,7 +73,7 @@ function getOffsetInLumiSpan(textNode: Node): number {
  */
 export function getSelectionInfo(
   selection: Selection,
-  shadowRoot: ShadowRoot
+  shadowRoots: ShadowRoot[]
 ): SelectionInfo | null {
   const selectedText = selection.toString().trim();
   if (selectedText.length === 0) {
@@ -82,7 +82,7 @@ export function getSelectionInfo(
 
   // @ts-ignore
   const composedRanges = selection.getComposedRanges({
-    shadowRoots: [shadowRoot],
+    shadowRoots,
   });
   if (composedRanges.length === 0) {
     return null;
@@ -141,18 +141,18 @@ export function getSelectionInfo(
     });
   }
 
-  const lastParentSpan = findParent(
-    range.endContainer,
+  const firstParentSpan = findParent(
+    range.startContainer,
     (el) => el.tagName.toLowerCase() === "span"
   );
 
-  if (!lastParentSpan) {
+  if (!firstParentSpan) {
     return null;
   }
 
   return {
     selectedText,
-    lastParentSpan,
+    parentSpan: firstParentSpan,
     highlightSelection,
   };
 }

@@ -56,3 +56,11 @@ ul.papers {
   @include typescale.body-small;
   color: var(--md-sys-color-on-surface-variant);
 }
+
+.zero-state {
+  @include typescale.body-small;
+  font-style: italic;
+  text-align: center;
+
+  color: var(--md-sys-color-on-surface-higher);
+}

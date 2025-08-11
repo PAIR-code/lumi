@@ -16,10 +16,10 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
+import { CSSResultGroup, html, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
-import { makeObservable, observable, computed, action } from "mobx";
+import { computed, makeObservable } from "mobx";
 import "../lumi_concept/lumi_concept";
 import "../lumi_questions/lumi_questions";
 import "../tab_component/tab_component";
@@ -42,19 +42,8 @@ import {
   DialogService,
   HistoryDialogProps,
 } from "../../services/dialog.service";
-
-const MOBILE_TABS = {
-  ANSWERS: "Ask Lumi",
-  TOC: "Table of Contents",
-  CONCEPTS: "Concepts",
-};
-
-const TABS = {
-  TOC: "Table of Contents",
-  CONCEPTS: "Concepts",
-};
-
-const DEFAULT_CONCEPT_IS_COLLAPSED = true;
+import { SIDEBAR_TABS, SIDEBAR_TABS_MOBILE } from "../../shared/constants";
+import { FloatingPanelService } from "../../services/floating_panel_service";
 
 /**
  * A sidebar component that displays a list of concepts.
@@ -64,24 +53,24 @@ export class LumiSidebar extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly documentStateService = core.getService(DocumentStateService);
-  private readonly historyService = core.getService(HistoryService);
+  private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly analyticsService = core.getService(AnalyticsService);
   private readonly dialogService = core.getService(DialogService);
+  private readonly collapseManager = this.documentStateService.collapseManager;
 
   @query(".tabs-container.mobile")
   private readonly tabsContainer!: HTMLDivElement;
 
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
-  @observable private conceptCollapsedState = new Map<string, boolean>();
 
   @computed get areAnyConceptsCollapsed() {
+    if (!this.collapseManager) return true;
     return (
       this.documentStateService.lumiDocManager?.lumiDoc.concepts.some(
         (concept) =>
-          this.conceptCollapsedState.get(concept.name) ??
-          DEFAULT_CONCEPT_IS_COLLAPSED
-      ) ?? DEFAULT_CONCEPT_IS_COLLAPSED
+          this.collapseManager!.conceptCollapsedState.get(concept.name) ?? true
+      ) ?? true
     );
   }
 
@@ -90,40 +79,16 @@ export class LumiSidebar extends MobxLitElement {
     makeObservable(this);
   }
 
-  protected override firstUpdated(_changedProperties: PropertyValues): void {
-    this.setAllConceptCollapsed(DEFAULT_CONCEPT_IS_COLLAPSED);
-  }
-
-  @action
-  private setAllConceptCollapsed(isCollapsed: boolean) {
-    this.documentStateService.lumiDocManager?.lumiDoc.concepts.forEach(
-      (concept) => {
-        this.conceptCollapsedState.set(concept.name, isCollapsed);
-      }
-    );
-  }
-
-  @action
-  private setConceptCollapsed(conceptName: string, isCollapsed: boolean) {
-    this.analyticsService.trackAction(AnalyticsAction.SIDEBAR_TOGGLE_CONCEPT);
-    this.conceptCollapsedState.set(conceptName, isCollapsed);
-  }
-
-  @action
-  private toggleAllConcepts() {
-    this.analyticsService.trackAction(
-      AnalyticsAction.SIDEBAR_TOGGLE_ALL_CONCEPTS
-    );
-    const areAnyCollapsed = this.areAnyConceptsCollapsed;
-    const newCollapseState = areAnyCollapsed ? false : true;
-    this.setAllConceptCollapsed(newCollapseState);
-  }
-
-  @property()
-  onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
-
   private openHistoryDialog() {
     this.dialogService.show(new HistoryDialogProps());
+  }
+
+  private registerShadowRoot(shadowRoot: ShadowRoot) {
+    this.floatingPanelService.registerShadowRoot(shadowRoot);
+  }
+
+  private unregisterShadowRoot(shadowRoot: ShadowRoot) {
+    this.floatingPanelService.unregisterShadowRoot(shadowRoot);
   }
 
   private renderHeader() {
@@ -142,9 +107,8 @@ export class LumiSidebar extends MobxLitElement {
     };
 
     return html`
-      <div class=${classMap(classes)} slot=${MOBILE_TABS.ANSWERS}>
+      <div class=${classMap(classes)} slot=${SIDEBAR_TABS_MOBILE.ANSWERS}>
         <lumi-questions
-          .onTextSelection=${this.onTextSelection}
           .isHistoryShowAll=${this.documentStateService.isHistoryShowAll}
           .setHistoryVisible=${(isVisible: boolean) =>
             this.documentStateService.setHistoryShowAll(isVisible)}
@@ -154,6 +118,8 @@ export class LumiSidebar extends MobxLitElement {
   }
 
   private renderConcepts() {
+    if (!this.collapseManager) return nothing;
+
     const concepts =
       this.documentStateService.lumiDocManager?.lumiDoc.concepts || [];
 
@@ -162,13 +128,18 @@ export class LumiSidebar extends MobxLitElement {
       : "unfold_less";
 
     return html`
-      <div class="concepts-container" slot=${TABS.CONCEPTS}>
+      <div class="concepts-container" slot=${SIDEBAR_TABS.CONCEPTS}>
         <div class="header">
           <div class="heading">Concepts (${concepts.length + 1})</div>
           <pr-icon-button
             variant="default"
             .icon=${toggleAllIcon}
-            @click=${this.toggleAllConcepts}
+            @click=${() => {
+              this.analyticsService.trackAction(
+                AnalyticsAction.SIDEBAR_TOGGLE_ALL_CONCEPTS
+              );
+              this.collapseManager?.toggleAllConcepts();
+            }}
           ></pr-icon-button>
         </div>
         <div class="concepts-list">
@@ -177,11 +148,19 @@ export class LumiSidebar extends MobxLitElement {
               html`<lumi-concept
                 .concept=${concept}
                 .labelsToShow=${["description"]}
-                .onTextSelection=${this.onTextSelection}
-                .isCollapsed=${this.conceptCollapsedState.get(concept.name) ??
-                true}
+                .registerShadowRoot=${this.registerShadowRoot.bind(this)}
+                .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
+                .isCollapsed=${this.collapseManager!.conceptCollapsedState.get(
+                  concept.name
+                ) ?? true}
                 .setIsCollapsed=${(isCollapsed: boolean) => {
-                  this.setConceptCollapsed(concept.name, isCollapsed);
+                  this.analyticsService.trackAction(
+                    AnalyticsAction.SIDEBAR_TOGGLE_CONCEPT
+                  );
+                  this.collapseManager?.setConceptCollapsed(
+                    concept.name,
+                    isCollapsed
+                  );
                 }}
               ></lumi-concept>`
           )}
@@ -192,7 +171,7 @@ export class LumiSidebar extends MobxLitElement {
 
   private renderToc() {
     return html`
-      <div class="toc-container" slot=${TABS.TOC}>
+      <div class="toc-container" slot=${SIDEBAR_TABS.TOC}>
         <table-of-contents
           .sections=${this.documentStateService.lumiDocManager?.lumiDoc
             .sections}
@@ -230,11 +209,13 @@ export class LumiSidebar extends MobxLitElement {
         <div class="divider"></div>
         <div class="tabs-container">
           <tab-component
-            .tabs=${Object.values(TABS)}
-            @tab-selected=${() => {
+            .tabs=${Object.values(SIDEBAR_TABS)}
+            .selectedTab=${this.collapseManager?.sidebarTabSelection}
+            @tab-selected=${(e: CustomEvent) => {
               this.analyticsService.trackAction(
                 AnalyticsAction.SIDEBAR_TAB_CHANGE
               );
+              this.collapseManager?.setSidebarTabSelection(e.detail.tab);
             }}
           >
             ${this.renderConcepts()} ${this.renderToc()}
@@ -245,7 +226,7 @@ export class LumiSidebar extends MobxLitElement {
   }
 
   private renderMobileCollapseButton() {
-    const icon = this.documentStateService.isMobileSidebarCollapsed
+    const icon = this.collapseManager?.isMobileSidebarCollapsed
       ? "keyboard_arrow_down"
       : "keyboard_arrow_up";
     return html`
@@ -253,7 +234,7 @@ export class LumiSidebar extends MobxLitElement {
         class="mobile-collapse-button"
         @click=${() => {
           this.tabsContainer.scrollTop = 0;
-          this.documentStateService.toggleMobileSidebarCollapsed();
+          this.collapseManager?.toggleMobileSidebarCollapsed();
         }}
       >
         <pr-icon icon=${icon}></pr-icon>
@@ -262,7 +243,7 @@ export class LumiSidebar extends MobxLitElement {
   }
 
   private renderMobileTabContents() {
-    if (this.documentStateService.isMobileSidebarCollapsed) return nothing;
+    if (this.collapseManager?.isMobileSidebarCollapsed) return nothing;
 
     return html`
       ${this.renderQuestions()} ${this.renderConcepts()} ${this.renderToc()}
@@ -278,7 +259,7 @@ export class LumiSidebar extends MobxLitElement {
       ["tabs-container"]: true,
       ["mobile"]: true,
       ["is-mobile-sidebar-collapsed"]:
-        this.documentStateService.isMobileSidebarCollapsed,
+        this.collapseManager?.isMobileSidebarCollapsed ?? true,
     });
 
     return html`
@@ -286,15 +267,17 @@ export class LumiSidebar extends MobxLitElement {
         ${this.renderHeader()}
         <div class=${tabsContainerClasses}>
           <tab-component
-            @tab-selected=${() => {
+            .tabs=${Object.values(SIDEBAR_TABS_MOBILE)}
+            .selectedTab=${this.collapseManager?.sidebarTabSelection}
+            @tab-selected=${(e: CustomEvent) => {
               this.analyticsService.trackAction(
                 AnalyticsAction.SIDEBAR_TAB_CHANGE
               );
-              if (this.documentStateService.isMobileSidebarCollapsed) {
-                this.documentStateService.toggleMobileSidebarCollapsed();
+              this.collapseManager?.setSidebarTabSelection(e.detail.tab);
+              if (this.collapseManager?.isMobileSidebarCollapsed) {
+                this.collapseManager?.toggleMobileSidebarCollapsed();
               }
             }}
-            .tabs=${Object.values(MOBILE_TABS)}
           >
             ${this.renderMobileTabContents()}
           </tab-component>

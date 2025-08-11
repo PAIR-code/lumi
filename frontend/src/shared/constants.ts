@@ -28,3 +28,18 @@ export const VIEWPORT_SMALL_MAX_HEIGHT = 720;
 
 export const MAX_IMPORT_URL_LENGTH = 100;
 export const MAX_QUERY_INPUT_LENGTH = 1000;
+
+/** Sidebar tabs. */
+export const SIDEBAR_TABS = {
+  TOC: "Table of Contents",
+  CONCEPTS: "Concepts",
+};
+
+export const SIDEBAR_TABS_MOBILE = {
+  ANSWERS: "Ask Lumi",
+  TOC: "Table of Contents",
+  CONCEPTS: "Concepts",
+};
+
+export const INITIAL_SIDEBAR_TAB_DESKTOP = SIDEBAR_TABS.TOC;
+export const INITIAL_SIDEBAR_TAB_MOBILE = SIDEBAR_TABS_MOBILE.ANSWERS;

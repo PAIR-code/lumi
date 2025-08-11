@@ -56,8 +56,8 @@ export class AnswerItem extends MobxLitElement {
   @property({ type: Object }) lumiDocManager?: LumiDocManager;
   @property({ type: Object }) highlightManager?: HighlightManager;
   @property({ type: Object }) collapseManager?: CollapseManager;
-  @property()
-  onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
+  @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
+  @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
   @property()
   onReferenceClick: (highlightedSpans: HighlightSelection[]) => void = () => {};
   @property() onDismiss?: (answerId: string) => void;
@@ -68,6 +68,20 @@ export class AnswerItem extends MobxLitElement {
   @state() private areReferencesShown = false;
   @state() private isAnswerCollapsed = false;
   @state() private referencedSpans: LumiSpan[] = [];
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (this.shadowRoot) {
+      this.registerShadowRoot(this.shadowRoot);
+    }
+  }
+
+  override disconnectedCallback(): void {
+    if (this.shadowRoot) {
+      this.unregisterShadowRoot(this.shadowRoot);
+    }
+    super.disconnectedCallback();
+  }
 
   private toggleReferences() {
     this.areReferencesShown = !this.areReferencesShown;
@@ -94,22 +108,6 @@ export class AnswerItem extends MobxLitElement {
       if (this.isLoading) {
         this.isAnswerCollapsed = false;
       }
-    }
-  }
-
-  private handleMouseUp(e: MouseEvent) {
-    const selection = window.getSelection();
-    if (!selection || !this.shadowRoot) {
-      return;
-    }
-
-    const selectionInfo = getSelectionInfo(selection, this.shadowRoot);
-    if (selectionInfo) {
-      this.onTextSelection(selectionInfo);
-      // Stop the event from propagating. This prevents the `md-menu` from
-      // immediately closing, as it interprets the `mouseup` event on the
-      // document as an "outside click".
-      e.stopPropagation();
     }
   }
 
@@ -242,14 +240,7 @@ export class AnswerItem extends MobxLitElement {
     };
 
     return html`
-      <div
-        class=${classMap(historyItemClasses)}
-        @mouseup=${(e: MouseEvent) => {
-          window.setTimeout(() => {
-            this.handleMouseUp(e);
-          });
-        }}
-      >
+      <div class=${classMap(historyItemClasses)}>
         <div class=${classMap(questionAnswerContainerStyles)}>
           <div class="question">
             <div class="left">

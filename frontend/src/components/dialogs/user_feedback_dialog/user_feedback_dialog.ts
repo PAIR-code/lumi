@@ -103,6 +103,7 @@ export class UserFeedbackDialog extends MobxLitElement {
           <pr-textarea
             .value=${this.feedbackText}
             variant="outlined"
+            size="large"
             @change=${(e: CustomEvent) => {
               this.feedbackText = e.detail.value;
             }}
@@ -112,7 +113,10 @@ export class UserFeedbackDialog extends MobxLitElement {
         </div>
         <div slot="actions">
           <pr-button
-            @click=${() => this.dialog.close()}
+            @click=${() => {
+              this.feedbackText = "";
+              this.dialog.close();
+            }}
             variant="default"
             ?disabled=${this.isLoading}
             >Cancel</pr-button

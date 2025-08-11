@@ -54,7 +54,13 @@ export class HistoryView extends MobxLitElement {
     `;
   }
 
+  private renderZeroState() {
+    return html`<div class="zero-state">No paper history yet</div>`;
+  }
+
   override render() {
+    if (!this.papers.length) return this.renderZeroState();
+
     return html`
       <ul class="papers">
         ${this.papers.concat(this.papers).map(

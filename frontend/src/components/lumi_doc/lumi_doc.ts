@@ -87,8 +87,6 @@ export class LumiDocViz extends MobxLitElement {
   @property({ type: Object }) highlightManager!: HighlightManager;
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
   @property()
-  onTextSelection: (selectionInfo: SelectionInfo) => void = () => {};
-  @property()
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void = () => {};
   @property() onPaperReferenceClick: (
     reference: LumiReference,
@@ -101,6 +99,8 @@ export class LumiDocViz extends MobxLitElement {
   @property() onConceptClick: (conceptId: string, target: HTMLElement) => void =
     () => {};
   @property() onScroll: () => void = () => {};
+  @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
+  @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
 
   @state() hoveredSpanId: string | null = null;
 
@@ -112,20 +112,18 @@ export class LumiDocViz extends MobxLitElement {
     super();
   }
 
-  private handleMouseOrTouchUp(e: Event) {
-    const selection = window.getSelection();
-    if (!selection || !this.shadowRoot) {
-      return;
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (this.shadowRoot) {
+      this.registerShadowRoot(this.shadowRoot);
     }
+  }
 
-    const selectionInfo = getSelectionInfo(selection, this.shadowRoot);
-    if (selectionInfo) {
-      this.onTextSelection(selectionInfo);
-      // Stop the event from propagating. This prevents the `md-menu` from
-      // immediately closing, as it interprets the `mouseup` event on the
-      // document as an "outside click".
-      e.stopPropagation();
+  override disconnectedCallback(): void {
+    if (this.shadowRoot) {
+      this.unregisterShadowRoot(this.shadowRoot);
     }
+    super.disconnectedCallback();
   }
 
   private onSpanSummaryMouseEnter(spanIds: string[]) {
@@ -153,31 +151,9 @@ export class LumiDocViz extends MobxLitElement {
       ? new Date(publishedTimestamp).toLocaleDateString()
       : "";
     return html`
-      <div class="collapse-toggle-container">
-        <multi-icon-toggle
-          .selection=${this.collapseManager.getOverallCollapseState()}
-          @onCollapseAll=${() => {
-            this.collapseManager.setAllSectionsCollapsed(true);
-          }}
-          @onExpandAll=${() => {
-            this.collapseManager.setAllSectionsCollapsed(false);
-          }}
-        >
-        </multi-icon-toggle>
-      </div>
       <div
         class="lumi-doc"
-        @touchend=${(e: TouchEvent) => {
-          window.setTimeout(() => {
-            this.handleMouseOrTouchUp(e);
-          });
-        }}
         @scroll=${this.onScroll.bind(this)}
-        @mouseup=${(e: MouseEvent) => {
-          window.setTimeout(() => {
-            this.handleMouseOrTouchUp(e);
-          });
-        }}
       >
         <div class="lumi-doc-content">
           <div class="title-section">

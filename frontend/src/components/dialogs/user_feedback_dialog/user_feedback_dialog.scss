@@ -15,8 +15,13 @@
  * limitations under the License.
  */
 @use "../../../sass/common";
+@use "../../../sass/typescale";
 
 .content {
   @include common.flex-column;
   gap: common.$spacing-small;
+}
+
+.dialog-explanation {
+  @include typescale.body-medium;
 }

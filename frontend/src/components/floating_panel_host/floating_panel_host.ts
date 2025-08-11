@@ -141,9 +141,10 @@ export class FloatingPanelHost extends MobxLitElement {
           ${ref(this.menuRef)}
           quick
           @closed=${this.handleMenuClosed}
-          positioning="fixed"
-          anchor-corner="end-end"
-          menu-corner="start-start"
+          .stayOpenOnOutsideClick=${true}
+          positioning="popover"
+          anchor-corner="start-start"
+          menu-corner="end-start"
         >
           ${this.renderContent()}
         </md-menu>
