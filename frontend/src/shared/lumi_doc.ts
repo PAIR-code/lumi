@@ -36,10 +36,15 @@ export const HIGHLIGHT_COLORS = [
 ] as const;
 export type HighlightColor = (typeof HIGHLIGHT_COLORS)[number];
 
+export declare interface HighlightMetadata {
+  [key: string]: any;
+}
+
 export interface Highlight {
   color: HighlightColor;
   spanId: string;
   position?: Position; // Highlights the entire span if the position is undefined.
+  metadata?: HighlightMetadata;
 }
 
 export interface Citation {

@@ -30,6 +30,8 @@ import {
 import { flattenTags } from "./lumi_span_utils";
 import { HighlightManager } from "../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
+import { LumiAnswer } from "../../shared/api";
+import { HIGHLIGHT_METADATA_ANSWER_KEY } from "../../shared/constants";
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;
@@ -44,6 +46,9 @@ interface InlineSpanCitation {
   index: number;
   id: string;
 }
+
+const GENERAL_HIGHLIGHT_KEY = "general_highlight_key";
+const COLOR_HIGHLIGHT_KEY = "highlight_color";
 
 export interface LumiSpanRendererProperties {
   span: LumiSpan;
@@ -61,6 +66,7 @@ export interface LumiSpanRendererProperties {
     target: HTMLElement
   ) => void;
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
+  onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   monospace?: boolean;
 }
 
@@ -81,12 +87,20 @@ function renderEquation(
 function renderFormattedCharacter(
   props: LumiSpanRendererProperties,
   character: string,
-  classesAndMetadata: { [key: string]: InnerTagMetadata }
+  classesAndMetadata: { [key: string]: { [key: string]: any } }
 ): TemplateResult {
   const classesObject: { [key: string]: boolean } = {};
   Object.keys(classesAndMetadata).forEach((key) => {
     classesObject[key] = true;
   });
+
+  const highlightMetadata = classesAndMetadata[GENERAL_HIGHLIGHT_KEY];
+  if (highlightMetadata) {
+    classesObject[highlightMetadata[COLOR_HIGHLIGHT_KEY]] = true;
+    if (highlightMetadata[HIGHLIGHT_METADATA_ANSWER_KEY]) {
+      classesObject["clickable"] = true;
+    }
+  }
 
   // REFERENCE, SPAN_REFERENCE, and FOOTNOTE tags are handled by the insertions map now.
   if (
@@ -112,6 +126,17 @@ function renderFormattedCharacter(
       if (metadata["conceptId"] && props.onConceptClick) {
         props.onConceptClick(
           metadata["conceptId"],
+          e.currentTarget as HTMLElement
+        );
+      }
+    }
+
+    if (classesAndMetadata[GENERAL_HIGHLIGHT_KEY]) {
+      const metadata = classesAndMetadata[GENERAL_HIGHLIGHT_KEY];
+      const answer = metadata[HIGHLIGHT_METADATA_ANSWER_KEY];
+      if (answer && props.onAnswerHighlightClick) {
+        props.onAnswerHighlightClick(
+          answer as LumiAnswer,
           e.currentTarget as HTMLElement
         );
       }
@@ -350,8 +375,17 @@ export function renderLumiSpan(
     const endIndex = position ? position.endIndex : props.span.text.length;
 
     for (let i = startIndex; i < endIndex; i++) {
-      if (formattingCounters[i]) {
-        formattingCounters[i][highlight.color] = {};
+      const currentCounter = formattingCounters[i];
+      if (currentCounter) {
+        currentCounter[GENERAL_HIGHLIGHT_KEY] = {
+          [COLOR_HIGHLIGHT_KEY]: highlight.color,
+        };
+        if (highlight.metadata) {
+          currentCounter[GENERAL_HIGHLIGHT_KEY] = {
+            ...highlight.metadata,
+            ...currentCounter[GENERAL_HIGHLIGHT_KEY],
+          };
+        }
       }
     }
   });

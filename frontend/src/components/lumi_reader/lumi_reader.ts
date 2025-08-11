@@ -42,6 +42,7 @@ import {
 } from "../../shared/callables";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import {
+  AnswerHighlightTooltipProps,
   ConceptTooltipProps,
   FloatingPanelService,
   FootnoteTooltipProps,
@@ -346,6 +347,14 @@ export class LumiReader extends MobxLitElement {
     this.floatingPanelService.show(props, target);
   };
 
+  private readonly handleAnswerHighlightClick = (
+    answer: LumiAnswer,
+    target: HTMLElement
+  ) => {
+    const props = new AnswerHighlightTooltipProps(answer);
+    this.floatingPanelService.show(props, target);
+  };
+
   override render() {
     const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
 
@@ -397,6 +406,7 @@ export class LumiReader extends MobxLitElement {
           .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
           .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
           .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
+          .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
         ></lumi-doc>
       </div>
     `;

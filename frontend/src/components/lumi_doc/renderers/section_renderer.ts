@@ -36,6 +36,7 @@ import "../../lumi_span/lumi_span";
 import { CollapseManager } from "../../../shared/collapse_manager";
 import { getAllContents } from "../../../shared/lumi_doc_utils";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
+import { LumiAnswer } from "../../../shared/api";
 
 const EMPTY_PLACEHOLDER_TEXT = "section";
 
@@ -60,6 +61,7 @@ export interface SectionRendererProperties {
     target: HTMLElement
   ) => void;
   onFootnoteClick: (footnote: LumiFootnote, target: HTMLElement) => void;
+  onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   isSubsection: boolean;
 }
 
@@ -253,6 +255,7 @@ function renderContents(
     collapseManager,
     references,
     footnotes,
+    onAnswerHighlightClick,
     onPaperReferenceClick,
     onFootnoteClick,
   } = props;
@@ -290,6 +293,7 @@ function renderContents(
         highlightManager,
         answerHighlightManager,
         collapseManager,
+        onAnswerHighlightClick,
         onPaperReferenceClick,
         onFootnoteClick,
       });

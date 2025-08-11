@@ -24,6 +24,7 @@ import "../../lumi_span/lumi_span";
 import "../../../pair-components/icon";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { HighlightManager } from "../../../shared/highlight_manager";
+import { LumiAnswer } from "../../../shared/api";
 
 export interface ContentSummaryRendererProperties {
   content: LumiContent;
@@ -36,6 +37,7 @@ export interface ContentSummaryRendererProperties {
   onSpanSummaryMouseLeave: () => void;
   highlightManager?: HighlightManager;
   answerHighlightManager?: AnswerHighlightManager;
+  onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
 }
 
 function getFocusState(focusedSpanId: string | null, spanIds: string[]) {
@@ -108,6 +110,7 @@ function renderSpanSummaries(props: ContentSummaryRendererProperties) {
             span: summary.summary,
             highlightManager: props.highlightManager,
             answerHighlightManager: props.answerHighlightManager,
+            onAnswerHighlightClick: props.onAnswerHighlightClick,
           })}</lumi-span
         >
       </div>`;
@@ -134,6 +137,7 @@ function renderSummaries(props: ContentSummaryRendererProperties) {
                 span: props.summary.summary,
                 highlightManager: props.highlightManager,
                 answerHighlightManager: props.answerHighlightManager,
+                onAnswerHighlightClick: props.onAnswerHighlightClick,
               })}</lumi-span
             >`
           : nothing}

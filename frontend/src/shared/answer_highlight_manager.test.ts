@@ -57,7 +57,7 @@ describe("AnswerHighlightManager", () => {
     expect(manager.highlightedSpans.size).to.equal(2);
     const span1Highlights = manager.getSpanHighlights("span-1");
     expect(span1Highlights).to.have.lengthOf(1);
-    expect(span1Highlights[0].color).to.equal("blue");
+    expect(span1Highlights[0].color).to.equal("green");
     expect(span1Highlights[0].position).to.deep.equal({
       startIndex: 0,
       endIndex: 5,
@@ -65,7 +65,7 @@ describe("AnswerHighlightManager", () => {
 
     const span2Highlights = manager.getSpanHighlights("span-2");
     expect(span2Highlights).to.have.lengthOf(1);
-    expect(span2Highlights[0].color).to.equal("blue");
+    expect(span2Highlights[0].color).to.equal("green");
     expect(span2Highlights[0].position).to.be.undefined;
   });
 
@@ -95,7 +95,6 @@ describe("AnswerHighlightManager", () => {
     expect(manager.getSpanHighlights("span-1")).to.have.lengthOf(1);
     expect(manager.getSpanHighlights("span-2")).to.be.empty;
   });
-
 
   it("should handle answers with no highlighted spans gracefully", () => {
     const answerWithoutHighlights: LumiAnswer = {

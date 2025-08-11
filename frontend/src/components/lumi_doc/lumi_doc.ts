@@ -66,6 +66,7 @@ import { HighlightManager } from "../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 
 import { LumiFootnote, LumiReference } from "../../shared/lumi_doc";
+import { LumiAnswer } from "../../shared/api";
 
 /**
  * Displays a Lumi Document.
@@ -100,6 +101,10 @@ export class LumiDocViz extends MobxLitElement {
   ) => void = () => {};
   @property() onConceptClick: (conceptId: string, target: HTMLElement) => void =
     () => {};
+  @property() onAnswerHighlightClick: (
+    answer: LumiAnswer,
+    target: HTMLElement
+  ) => void = () => {};
   @property() onScroll: () => void = () => {};
   @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
   @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
@@ -214,6 +219,7 @@ export class LumiDocViz extends MobxLitElement {
                 onFocusOnSpan: this.onFocusOnSpan,
                 onPaperReferenceClick: this.onPaperReferenceClick,
                 onFootnoteClick: this.onFootnoteClick,
+                onAnswerHighlightClick: this.onAnswerHighlightClick,
                 isSubsection: false,
               })}
             </lumi-section>`;

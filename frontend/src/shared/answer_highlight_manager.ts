@@ -19,6 +19,7 @@ import { action, makeObservable, observable } from "mobx";
 import { Highlight } from "./lumi_doc";
 import { LumiAnswer } from "./api";
 import { HighlightManagerBase } from "./highlight_manager";
+import { HIGHLIGHT_METADATA_ANSWER_KEY } from "./constants";
 
 const ANSWER_HIGHLIGHT_COLOR = "green";
 
@@ -59,6 +60,9 @@ export class AnswerHighlightManager extends HighlightManagerBase {
         spanId,
         position,
         color: ANSWER_HIGHLIGHT_COLOR,
+        metadata: {
+          [HIGHLIGHT_METADATA_ANSWER_KEY]: answer,
+        },
       };
 
       const existing = this.highlightedSpans.get(spanId) || [];
