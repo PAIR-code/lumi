@@ -23,6 +23,7 @@ import {
 } from "../../../shared/lumi_doc";
 import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import { HighlightManager } from "../../../shared/highlight_manager";
+import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 
 import "../../lumi_span/lumi_span";
 import "../../../pair-components/icon_button";
@@ -33,6 +34,7 @@ export interface AbstractRendererProperties {
   onCollapseChange: (isCollapsed: boolean) => void;
   excerptSpanId?: string;
   highlightManager: HighlightManager;
+  answerHighlightManager: AnswerHighlightManager;
   onConceptClick?: (conceptId: string, target: HTMLElement) => void;
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
   footnotes?: LumiFootnote[];

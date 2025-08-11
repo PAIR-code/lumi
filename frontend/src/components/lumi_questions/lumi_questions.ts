@@ -264,6 +264,8 @@ export class LumiQuestions extends MobxLitElement {
               .isLoading=${answer.isLoading || false}
               .lumiDocManager=${this.documentStateService.lumiDocManager}
               .highlightManager=${this.documentStateService.highlightManager}
+              .answerHighlightManager=${this.historyService
+                .answerHighlightManager}
               .collapseManager=${this.documentStateService.collapseManager}
             ></answer-item>
           `;

@@ -43,6 +43,7 @@ import {
 } from "../../shared/selection_utils";
 import { HighlightManager } from "../../shared/highlight_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
+import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 
 /**
  * An answer item in the Lumi questions history.
@@ -55,6 +56,7 @@ export class AnswerItem extends MobxLitElement {
   @property({ type: Boolean }) isLoading = false;
   @property({ type: Object }) lumiDocManager?: LumiDocManager;
   @property({ type: Object }) highlightManager?: HighlightManager;
+  @property({ type: Object }) answerHighlightManager?: AnswerHighlightManager;
   @property({ type: Object }) collapseManager?: CollapseManager;
   @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
   @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
@@ -197,6 +199,7 @@ export class AnswerItem extends MobxLitElement {
             spanSummaries: new Map(),
             focusedSpanId: null,
             highlightManager: this.highlightManager!,
+            answerHighlightManager: this.answerHighlightManager!,
             collapseManager: this.collapseManager!,
             onSpanSummaryMouseEnter: () => {},
             onSpanSummaryMouseLeave: () => {},

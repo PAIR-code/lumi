@@ -35,6 +35,7 @@ import "../../lumi_content/lumi_html_figure_content";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { renderContentSummary } from "./content_summary_renderer";
 import { CollapseManager } from "../../../shared/collapse_manager";
+import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 
 export interface ContentRendererProperties {
   parentComponent: LitElement;
@@ -49,6 +50,7 @@ export interface ContentRendererProperties {
   onSpanSummaryMouseEnter: (spanIds: string[]) => void;
   onSpanSummaryMouseLeave: () => void;
   highlightManager: HighlightManager;
+  answerHighlightManager: AnswerHighlightManager;
   collapseManager: CollapseManager;
   onSpanReferenceClicked?: (referenceId: string) => void;
   onPaperReferenceClick?: (
@@ -64,7 +66,10 @@ function renderSpans(
   monospace = false
 ): TemplateResult[] {
   return spans.map((span) => {
-    const highlights = props.highlightManager.getSpanHighlights(span.id);
+    const tempHighlights = props.highlightManager.getSpanHighlights(span.id);
+    const answerHighlights =
+      props.answerHighlightManager.getSpanHighlights(span.id);
+    const highlights = [...tempHighlights, ...answerHighlights];
 
     const spanContent = renderLumiSpan({
       span,

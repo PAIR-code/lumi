@@ -63,6 +63,7 @@ import { styles as footnotesRendererStyles } from "./renderers/footnotes_rendere
 import { LumiDocManager } from "../../shared/lumi_doc_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
 import { HighlightManager } from "../../shared/highlight_manager";
+import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 
 import { LumiFootnote, LumiReference } from "../../shared/lumi_doc";
 
@@ -85,6 +86,7 @@ export class LumiDocViz extends MobxLitElement {
   @property({ type: Object }) lumiDocManager!: LumiDocManager;
   @property({ type: Object }) collapseManager!: CollapseManager;
   @property({ type: Object }) highlightManager!: HighlightManager;
+  @property({ type: Object }) answerHighlightManager!: AnswerHighlightManager;
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
   @property()
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void = () => {};
@@ -181,6 +183,7 @@ export class LumiDocViz extends MobxLitElement {
             onConceptClick: this.onConceptClick.bind(this),
             excerptSpanId: this.lumiDoc.summaries?.abstractExcerptSpanId,
             highlightManager: this.highlightManager,
+            answerHighlightManager: this.answerHighlightManager,
             footnotes: this.lumiDoc.footnotes,
           })}
           ${this.lumiDoc.sections.map((section) => {
@@ -206,6 +209,7 @@ export class LumiDocViz extends MobxLitElement {
                 onSpanSummaryMouseLeave:
                   this.onSpanSummaryMouseLeave.bind(this),
                 highlightManager: this.highlightManager,
+                answerHighlightManager: this.answerHighlightManager,
                 collapseManager: this.collapseManager,
                 onFocusOnSpan: this.onFocusOnSpan,
                 onPaperReferenceClick: this.onPaperReferenceClick,

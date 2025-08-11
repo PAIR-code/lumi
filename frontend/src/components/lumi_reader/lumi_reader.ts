@@ -385,6 +385,7 @@ export class LumiReader extends MobxLitElement {
         <lumi-doc
           .lumiDocManager=${this.documentStateService.lumiDocManager}
           .highlightManager=${this.documentStateService.highlightManager}
+          .answerHighlightManager=${this.historyService.answerHighlightManager}
           .collapseManager=${this.documentStateService.collapseManager}
           .getImageUrl=${this.getImageUrl.bind(this)}
           .onConceptClick=${this.handleConceptClick.bind(this)}
