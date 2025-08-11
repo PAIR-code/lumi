@@ -198,6 +198,9 @@ frontend/storybook-static/
 local_image_bucket/*
 !local_image_bucket/README.md
 
+# Import
+functions/papers
+
 # GCA
 GEMINI.md
 model_context
