@@ -91,6 +91,9 @@ export class LumiDocViz extends MobxLitElement {
     reference: LumiReference,
     target: HTMLElement
   ) => void = () => {};
+  @property() onConceptClick: (conceptId: string, target: HTMLElement) => void =
+    () => {};
+  @property() onScroll: () => void = () => {};
 
   @state() hoveredSpanId: string | null = null;
 
@@ -162,6 +165,7 @@ export class LumiDocViz extends MobxLitElement {
             this.handleMouseOrTouchUp(e);
           });
         }}
+        @scroll=${this.onScroll.bind(this)}
         @mouseup=${(e: MouseEvent) => {
           window.setTimeout(() => {
             this.handleMouseOrTouchUp(e);
@@ -190,6 +194,7 @@ export class LumiDocViz extends MobxLitElement {
             onCollapseChange: (isCollapsed: boolean) => {
               this.collapseManager.setAbstractCollapsed(isCollapsed);
             },
+            onConceptClick: this.onConceptClick.bind(this),
             excerptSpanId: this.lumiDoc.summaries?.abstractExcerptSpanId,
             highlightManager: this.highlightManager,
           })}

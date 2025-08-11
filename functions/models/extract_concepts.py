@@ -15,12 +15,20 @@
 
 import uuid
 from typing import List
+import re
 from models.gemini import client, call_predict_with_schema
 from models.prompts import make_concept_extraction_prompt
 from dataclasses import dataclass
 from pydantic import BaseModel
 
-from shared.lumi_doc import ConceptContent, LumiConcept
+from shared.lumi_doc import (
+    ConceptContent,
+    LumiConcept,
+    LumiSpan,
+    InnerTag,
+    InnerTagName,
+    Position,
+)
 
 
 @dataclass
@@ -83,3 +91,32 @@ def extract_concepts(abstract: str):
     except Exception as e:
         print(f"An unexpected error occurred in extract_concepts: {e}")
         return []
+
+
+def annotate_concepts_in_place(
+    spans: List[LumiSpan], concepts: List[LumiConcept]
+) -> List[LumiSpan]:
+    """
+    Finds occurrences of concept names in LumiSpans and adds CONCEPT inner tags.
+
+    Args:
+        spans: A list of LumiSpan objects to be annotated.
+        concepts: A list of LumiConcept objects to search for.
+
+    Returns:
+        The list of LumiSpan objects with added inner tags for concepts.
+    """
+    for span in spans:
+        for concept in concepts:
+            # Use word boundaries to avoid matching substrings within words.
+            # The pattern is case-insensitive.
+            pattern = r"\b" + re.escape(concept.name) + r"\b"
+            for match in re.finditer(pattern, span.text, re.IGNORECASE):
+                start, end = match.span()
+                new_tag = InnerTag(
+                    tag_name=InnerTagName.CONCEPT,
+                    metadata={"concept_id": concept.id},
+                    position=Position(start_index=start, end_index=end),
+                    children=[],
+                )
+                span.inner_tags.append(new_tag)

@@ -28,6 +28,7 @@ export enum AnalyticsAction {
 
   // lumi_reader
   READER_TEXT_SELECTION = "reader_text_selection",
+  READER_CONCEPT_CLICK = "reader_concept_click",
 
   // sidebar
   SIDEBAR_TOGGLE_ALL_CONCEPTS = "sidebar_toggle_all_concepts",

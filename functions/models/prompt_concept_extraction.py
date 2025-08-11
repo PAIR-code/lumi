@@ -23,7 +23,7 @@ CONCEPT_EXTRACTION_PROMPT = """You are an expert academic assistant tasked with 
     (e.g., "description") and a 'value' (the actual description/detail).
 
     You should include exactly 1 'content' with the label 'description' for each concept, where the description is
-    concise, at most 8-16 words.
+    a concise definition of the concept, at most 8-16 words.
 
     DO NOT include 'id' or 'in_text_citations' in your JSON output; these will be
     handled by the downstream parsing script.

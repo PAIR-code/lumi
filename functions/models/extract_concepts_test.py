@@ -16,7 +16,12 @@
 import unittest
 from unittest.mock import patch
 from models import extract_concepts
-from shared.lumi_doc import LumiConcept, ConceptContent
+from shared.lumi_doc import (
+    LumiConcept,
+    ConceptContent,
+    LumiSpan,
+    InnerTagName,
+)
 
 
 VALID_CONCEPTS_OBJECT = extract_concepts.LLMResponseSchema(
@@ -89,6 +94,80 @@ class TestExtractConcepts(unittest.TestCase):
             expected_concepts = []
             actual_concepts = extract_concepts.parse_lumi_concepts(None)
             self.assertEqual(expected_concepts, actual_concepts)
+
+
+class TestAnnotateConceptsInPlace(unittest.TestCase):
+    def test_annotates_single_concept(self):
+        """Tests that a single concept is correctly identified and tagged."""
+        spans = [
+            LumiSpan(
+                id="s1",
+                text="This paper is about Large Language Models.",
+                inner_tags=[],
+            )
+        ]
+        concepts = [
+            LumiConcept(
+                id="c1", name="Large Language Models", contents=[], in_text_citations=[]
+            )
+        ]
+
+        extract_concepts.annotate_concepts_in_place(spans, concepts)
+
+        self.assertEqual(len(spans[0].inner_tags), 1)
+        tag = spans[0].inner_tags[0]
+        self.assertEqual(tag.tag_name, InnerTagName.CONCEPT)
+        self.assertEqual(tag.metadata["concept_id"], "c1")
+        self.assertEqual(tag.position.start_index, 20)
+        self.assertEqual(tag.position.end_index, 41)
+
+    def test_annotates_multiple_concepts_and_spans(self):
+        """Tests annotation across multiple spans and with multiple concepts."""
+        spans = [
+            LumiSpan(id="s1", text="We use Semantic Search.", inner_tags=[]),
+            LumiSpan(
+                id="s2",
+                text="The future is Large Language Models.",
+                inner_tags=[],
+            ),
+        ]
+        concepts = [
+            LumiConcept(
+                id="c1", name="Large Language Models", contents=[], in_text_citations=[]
+            ),
+            LumiConcept(
+                id="c2", name="Semantic Search", contents=[], in_text_citations=[]
+            ),
+        ]
+
+        extract_concepts.annotate_concepts_in_place(spans, concepts)
+
+        # Check first span
+        self.assertEqual(len(spans[0].inner_tags), 1)
+        tag1 = spans[0].inner_tags[0]
+        self.assertEqual(tag1.metadata["concept_id"], "c2")
+        self.assertEqual(tag1.position.start_index, 7)
+        self.assertEqual(tag1.position.end_index, 22)
+
+        # Check second span
+        self.assertEqual(len(spans[1].inner_tags), 1)
+        tag2 = spans[1].inner_tags[0]
+        self.assertEqual(tag2.metadata["concept_id"], "c1")
+        self.assertEqual(tag2.position.start_index, 14)
+        self.assertEqual(tag2.position.end_index, 35)
+
+    def test_no_concept_in_text(self):
+        """Tests that no tags are added if the concept name is not in the text."""
+        spans = [LumiSpan(id="s1", text="This is a simple sentence.", inner_tags=[])]
+        concepts = [
+            LumiConcept(
+                id="c1", name="Nonexistent Concept", contents=[], in_text_citations=[]
+            )
+        ]
+
+        extract_concepts.annotate_concepts_in_place(spans, concepts)
+
+        self.assertEqual(len(spans[0].inner_tags), 0)
 
 
 if __name__ == "__main__":

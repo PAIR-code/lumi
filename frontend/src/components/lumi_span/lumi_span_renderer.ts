@@ -42,6 +42,7 @@ export interface LumiSpanRendererProperties {
   references?: LumiReference[];
   onReferenceClicked?: (referenceId: string) => void;
   onSpanReferenceClicked?: (referenceId: string) => void;
+  onConceptClick?: (conceptId: string, target: HTMLElement) => void;
   onPaperReferenceClick?: (
     reference: LumiReference,
     target: HTMLElement
@@ -88,11 +89,20 @@ function renderFormattedCharacter(
     >`;
   }
 
-  const onClick = () => {
+  const onClick = (e: MouseEvent) => {
     if (Object.keys(classesObject).includes(InnerTagName.SPAN_REFERENCE)) {
       const metadata = classesAndMetadata[InnerTagName.SPAN_REFERENCE];
       if (metadata["id"] && props.onSpanReferenceClicked) {
         props.onSpanReferenceClicked(metadata["id"]);
+      }
+    }
+    if (Object.keys(classesObject).includes(InnerTagName.CONCEPT)) {
+      const metadata = classesAndMetadata[InnerTagName.CONCEPT];
+      if (metadata["conceptId"] && props.onConceptClick) {
+        props.onConceptClick(
+          metadata["conceptId"],
+          e.currentTarget as HTMLElement
+        );
       }
     }
   };
