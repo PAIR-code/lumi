@@ -201,24 +201,35 @@ export function renderContent(props: ContentRendererProperties) {
     props.content.id
   );
 
+  const isFigureContent = props.content.imageContent != null ||
+      props.content.figureContent != null ||
+      props.content.htmlFigureContent != null;
+
   const contentRendererContainerClassesObject: { [key: string]: boolean } = {
     ["content-renderer-container"]: true,
+    ["has-summary"]: props.summary != null,
     ["collapsed"]: isCollapsed,
+    ["is-figure-content"]: isFigureContent,
   };
 
   return html`
-    <div class=${classMap(contentRendererContainerClassesObject)}>
-      <div class=${classMap(mainContentClassesObject)} @click=${onContentClick}>
-        ${renderMainContent(props)}
+    <div class="content-renderer-grid-container">
+      <div class=${classMap(contentRendererContainerClassesObject)}>
+        <div
+          class=${classMap(mainContentClassesObject)}
+          @click=${onContentClick}
+        >
+          ${renderMainContent(props)}
+        </div>
+        ${renderContentSummary({
+          ...props,
+          isCollapsed,
+          onCollapseChange: () => {
+            props.collapseManager.toggleMobileSummaryCollapse(props.content.id);
+            props.parentComponent.requestUpdate();
+          },
+        })}
       </div>
-      ${renderContentSummary({
-        ...props,
-        isCollapsed,
-        onCollapseChange: () => {
-          props.collapseManager.toggleMobileSummaryCollapse(props.content.id);
-          props.parentComponent.requestUpdate();
-        },
-      })}
     </div>
   `;
 }

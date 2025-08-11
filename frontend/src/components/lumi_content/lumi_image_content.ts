@@ -45,7 +45,7 @@ export class LumiImageContent extends MobxLitElement {
   @property({ type: Object }) content!: ImageContent | FigureContent;
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
 
-  @observable.shallow private imageUrls = new Map<string, string>();
+  @observable.shallow private imageUrls = new Map<string, string | null>();
   @state() private isLoading = true;
 
   constructor() {
@@ -69,13 +69,17 @@ export class LumiImageContent extends MobxLitElement {
     await Promise.all(
       imageContents.map(async (image) => {
         if (image.storagePath) {
-          const url = await this.getImageUrl!(image.storagePath);
-          this.imageUrls.set(image.storagePath, url);
+          try {
+            const url = await this.getImageUrl!(image.storagePath);
+            this.imageUrls.set(image.storagePath, url);
+            this.isLoading = false;
+          } catch {
+            this.imageUrls.set(image.storagePath, null);
+            this.isLoading = false;
+          }
         }
       })
     );
-
-    this.isLoading = false;
   }
 
   override updated(changedProperties: Map<string, unknown>) {
@@ -102,23 +106,34 @@ export class LumiImageContent extends MobxLitElement {
     `;
   }
 
+  private renderLoading() {
+    return html`<div class="loading-image-placeholder"></div>`;
+  }
+
+  private renderImageError() {
+    return html`<div class="image-error-placeholder">Error loading image</div>`;
+  }
+
   private renderSingleImage(imageContent: ImageContent): TemplateResult {
     const imageUrl = imageContent.storagePath
       ? this.imageUrls.get(imageContent.storagePath)
       : undefined;
 
     return html`
-      <img src=${ifDefined(imageUrl)} alt=${ifDefined(imageContent.altText)} />
+      ${this.isLoading
+        ? this.renderLoading()
+        : imageUrl == null
+        ? this.renderImageError()
+        : html`<img
+            src=${ifDefined(imageUrl)}
+            alt=${ifDefined(imageContent.altText)}
+          />`}
       ${this.renderCaption(imageContent.caption)}
     `;
   }
 
   override render() {
     if (!this.content) return nothing;
-
-    if (this.isLoading) {
-      return html`<div>Loading image...</div>`;
-    }
 
     if (isFigureContent(this.content)) {
       const figureContent = this.content;

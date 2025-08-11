@@ -18,21 +18,33 @@
 @use "../../../sass/common";
 @use "../../../sass/typescale";
 
+.content-renderer-grid-container {
+  @include common.lumi-doc-grid;
+}
+
 .content-renderer-container {
+  grid-column: 2 / 4;
+
   display: grid;
   gap: 0 common.$spacing-medium;
 
-  grid-template-columns: 4fr 1fr;
-  &:not(.collapsed) {
+  grid-template-columns: 4fr 0fr;
+  &:not(.collapsed).has-summary {
     grid-template-columns: 2fr 1fr;
   }
 
   @include common.viewport-small {
-    grid-template-columns: 2fr 0.05fr;
+    grid-template-columns: 2fr 0fr;
 
-    &:not(.collapsed) {
+    &:not(.collapsed).has-summary {
       grid-template-columns: 2fr 1fr;
     }
+  }
+
+  &.is-figure-content {
+    grid-column: 1 / 4;
+    display: flex;
+    justify-content: center;
   }
 
   .main-content {

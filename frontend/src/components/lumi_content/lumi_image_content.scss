@@ -16,6 +16,11 @@
  */
 
 @use "../../sass/common";
+@use "../../sass/typescale";
+
+:host {
+  @include common.flex-row-align-center;
+}
 
 @mixin outer-image-container {
   display: flex;
@@ -27,6 +32,7 @@
 
 .single-image {
   @include outer-image-container;
+  max-width: common.$figure-max-width;
 
   img {
     max-width: 100%;
@@ -79,5 +85,48 @@
   > figcaption {
     margin-top: common.$spacing-large;
     font-weight: bold;
+  }
+}
+
+.image-error-placeholder,
+.loading-image-placeholder {
+  width: 100%;
+  border-radius: common.$spacing-large;
+}
+
+.image-error-placeholder {
+  @include common.flex-row-align-center;
+  justify-content: center;
+
+  @include typescale.body-small;
+  font-style: italic;
+
+  height: 80px;
+  background: var(--md-sys-color-error-container-high);
+  color: var(--md-sys-color-on-surface-higher);
+}
+
+.loading-image-placeholder {
+  height: 300px;
+
+  margin: common.$spacing-large 0;
+
+  background: var(--md-sys-color-surface-container);
+  border-radius: common.$spacing-large;
+
+  animation: loading infinite 1.5s ease-in-out;
+
+  @keyframes loading {
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+
+    100% {
+      opacity: 1;
+    }
   }
 }

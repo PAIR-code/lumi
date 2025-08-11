@@ -20,6 +20,8 @@
 .figure-content {
   overflow-x: auto;
   padding: 20px 0;
+
+  max-width: common.$figure-max-width;
 }
 
 figure {
