@@ -23,6 +23,7 @@ import "../../lumi_span/lumi_span";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { LumiFont } from "../../../shared/constants";
+import { LumiAnswer } from "../../../shared/api";
 
 export interface ReferencesRendererProperties {
   references: LumiReference[];
@@ -30,6 +31,7 @@ export interface ReferencesRendererProperties {
   onCollapseChange: (isCollapsed: boolean) => void;
   highlightManager?: HighlightManager;
   answerHighlightManager?: AnswerHighlightManager;
+  onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
 }
 
 function renderReference(
@@ -40,7 +42,8 @@ function renderReference(
     reference: true,
   });
 
-  const { highlightManager, answerHighlightManager } = props;
+  const { highlightManager, answerHighlightManager, onAnswerHighlightClick } =
+    props;
 
   return html`<lumi-span
     id=${reference.id}
@@ -50,6 +53,7 @@ function renderReference(
       span: reference.span,
       highlightManager,
       answerHighlightManager,
+      onAnswerHighlightClick,
       font: LumiFont.PAPER_TEXT,
     }}
   ></lumi-span>`;

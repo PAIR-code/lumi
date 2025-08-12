@@ -38,8 +38,13 @@ import {
 } from "../../services/analytics.service";
 import { DialogService } from "../../services/dialog.service";
 import { SIDEBAR_TABS, SIDEBAR_TABS_MOBILE } from "../../shared/constants";
-import { FloatingPanelService } from "../../services/floating_panel_service";
+import {
+  AnswerHighlightTooltipProps,
+  FloatingPanelService,
+} from "../../services/floating_panel_service";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import { HistoryService } from "../../services/history.service";
+import { LumiAnswer } from "../../shared/api";
 
 /**
  * A sidebar component that displays a list of concepts.
@@ -49,7 +54,7 @@ export class LumiSidebar extends LightMobxLitElement {
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly analyticsService = core.getService(AnalyticsService);
-  private readonly dialogService = core.getService(DialogService);
+  private readonly historyService = core.getService(HistoryService);
   private readonly collapseManager = this.documentStateService.collapseManager;
 
   @query(".tabs-container.mobile")
@@ -102,6 +107,14 @@ export class LumiSidebar extends LightMobxLitElement {
     `;
   }
 
+  private readonly handleAnswerHighlightClick = (
+    answer: LumiAnswer,
+    target: HTMLElement
+  ) => {
+    const props = new AnswerHighlightTooltipProps(answer);
+    this.floatingPanelService.show(props, target);
+  };
+
   private renderConcepts() {
     if (!this.collapseManager) return nothing;
 
@@ -133,6 +146,9 @@ export class LumiSidebar extends LightMobxLitElement {
               html`<lumi-concept
                 .concept=${concept}
                 .labelsToShow=${["description"]}
+                .highlightManager=${this.documentStateService.highlightManager}
+                .answerHighlightManager=${this.historyService
+                  .answerHighlightManager}
                 .registerShadowRoot=${this.registerShadowRoot.bind(this)}
                 .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
                 .isCollapsed=${this.collapseManager!.conceptCollapsedState.get(
@@ -147,6 +163,9 @@ export class LumiSidebar extends LightMobxLitElement {
                     isCollapsed
                   );
                 }}
+                .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(
+                  this
+                )}
               ></lumi-concept>`
           )}
         </div>

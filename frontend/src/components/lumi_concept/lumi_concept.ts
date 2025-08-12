@@ -20,13 +20,15 @@ import { CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { LumiConcept, LumiSpan } from "../../shared/lumi_doc";
-import { getSelectionInfo, SelectionInfo } from "../../shared/selection_utils";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
 
 import { styles } from "./lumi_concept.scss";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
+import { HighlightManager } from "../../shared/highlight_manager";
+import { LumiAnswer } from "../../shared/api";
 
 /**
  * Displays a Lumi Concept.
@@ -35,6 +37,14 @@ import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_el
 export class LumiConceptViz extends LightMobxLitElement {
   @property({ type: Object }) concept!: LumiConcept;
   @property({ type: Object }) labelsToShow: string[] = [];
+  @property({ type: Object }) highlightManager!: HighlightManager;
+  @property({ type: Object }) answerHighlightManager!: AnswerHighlightManager;
+
+  @property() onAnswerHighlightClick: (
+    answer: LumiAnswer,
+    target: HTMLElement
+  ) => void = () => {};
+
   @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
   @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
 
@@ -91,7 +101,12 @@ export class LumiConceptViz extends LightMobxLitElement {
           <lumi-span
             .span=${tempSpan}
             .noScrollContext=${true}
-            .spanProperties=${{ span: tempSpan }}
+            .spanProperties=${{
+              span: tempSpan,
+              highlightManager: this.highlightManager,
+              answerHighlightManager: this.answerHighlightManager,
+              onAnswerHighlightClick: this.onAnswerHighlightClick,
+            }}
           ></lumi-span>
         </div>`;
     });

@@ -214,6 +214,9 @@ export class LumiDocViz extends LightMobxLitElement {
             onCollapseChange: (isCollapsed: boolean) => {
               this.collapseManager.setReferencesCollapsed(isCollapsed);
             },
+            highlightManager: this.highlightManager,
+            answerHighlightManager: this.answerHighlightManager,
+            onAnswerHighlightClick: this.onAnswerHighlightClick,
           })}
           ${renderFootnotes({
             footnotes: this.lumiDoc.footnotes || [],
