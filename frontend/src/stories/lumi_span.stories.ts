@@ -44,7 +44,7 @@ class MockSpanParent extends LitElement {
       >${renderLumiSpan({
         span: this.span,
         onReferenceClicked: this.args.onReferenceClick,
-        highlights: this.args.highlights,
+        additionalHighlights: this.args.highlights,
       })}</lumi-span
     >`;
   }

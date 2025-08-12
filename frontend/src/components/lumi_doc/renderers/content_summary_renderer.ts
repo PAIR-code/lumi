@@ -22,6 +22,9 @@ import { FocusState } from "../../../shared/types";
 import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import "../../lumi_span/lumi_span";
 import "../../../pair-components/icon";
+import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
+import { HighlightManager } from "../../../shared/highlight_manager";
+import { LumiAnswer } from "../../../shared/api";
 
 export interface ContentSummaryRendererProperties {
   content: LumiContent;
@@ -32,6 +35,9 @@ export interface ContentSummaryRendererProperties {
   onCollapseChange: () => void;
   onSpanSummaryMouseEnter: (spanIds: string[]) => void;
   onSpanSummaryMouseLeave: () => void;
+  highlightManager?: HighlightManager;
+  answerHighlightManager?: AnswerHighlightManager;
+  onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
 }
 
 function getFocusState(focusedSpanId: string | null, spanIds: string[]) {
@@ -100,7 +106,12 @@ function renderSpanSummaries(props: ContentSummaryRendererProperties) {
           .classMap=${{ "span-summary-text": true }}
           .span=${summary.summary}
           .focusState=${focusState}
-          >${renderLumiSpan({ span: summary.summary })}</lumi-span
+          >${renderLumiSpan({
+            span: summary.summary,
+            highlightManager: props.highlightManager,
+            answerHighlightManager: props.answerHighlightManager,
+            onAnswerHighlightClick: props.onAnswerHighlightClick,
+          })}</lumi-span
         >
       </div>`;
     })}
@@ -122,7 +133,12 @@ function renderSummaries(props: ContentSummaryRendererProperties) {
                 "summary-span": true,
               }}
               .span=${props.summary.summary}
-              >${renderLumiSpan({ span: props.summary.summary })}</lumi-span
+              >${renderLumiSpan({
+                span: props.summary.summary,
+                highlightManager: props.highlightManager,
+                answerHighlightManager: props.answerHighlightManager,
+                onAnswerHighlightClick: props.onAnswerHighlightClick,
+              })}</lumi-span
             >`
           : nothing}
       </div>

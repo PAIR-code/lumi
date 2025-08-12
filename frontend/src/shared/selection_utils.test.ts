@@ -17,6 +17,7 @@
 
 import { expect } from "@esm-bundle/chai";
 import { fixture, html } from "@open-wc/testing";
+import { CITATION_CLASSNAME, FOOTNOTE_CLASSNAME } from "./constants";
 
 import { getSelectionInfo } from "./selection_utils";
 import "./lumi_doc";
@@ -46,6 +47,36 @@ function createCharacterSpans(text: string): HTMLSpanElement {
     const charSpan = document.createElement("span");
     charSpan.textContent = char;
     outerSpan.appendChild(charSpan);
+  }
+  return outerSpan;
+}
+
+/**
+ * Test helper to create the DOM structure with inline elements like citations.
+ * @param text The text content for the lumi-span.
+ * @param inlinePositions An object where keys are indices to insert an inline
+ * element and values are the elements themselves.
+ * @returns A span element containing character-spans and inline elements.
+ */
+function createCharacterSpansWithInlines(
+  text: string,
+  inlinePositions: { [index: number]: HTMLElement }
+): HTMLSpanElement {
+  const outerSpan = document.createElement("span");
+  outerSpan.className = "outer-span";
+  let textIndex = 0;
+  for (const char of text) {
+    if (inlinePositions[textIndex]) {
+      outerSpan.appendChild(inlinePositions[textIndex]);
+    }
+    const charSpan = document.createElement("span");
+    charSpan.textContent = char;
+    outerSpan.appendChild(charSpan);
+    textIndex++;
+  }
+  // Handle insertion at the very end
+  if (inlinePositions[textIndex]) {
+    outerSpan.appendChild(inlinePositions[textIndex]);
   }
   return outerSpan;
 }
@@ -82,6 +113,51 @@ describe("getSelectionInfo", () => {
     expect(selectionInfo!.selectedText).to.equal("is some");
     expect(selectionInfo!.highlightSelection).to.deep.equal([
       { spanId: "test-span-1", position: { startIndex: 5, endIndex: 12 } },
+    ]);
+  });
+
+  it("should correctly calculate offset with inline citation and footnote tags", async () => {
+    const el = await fixture(html` <parent-with-shadow></parent-with-shadow> `);
+    const lumiSpan = document.createElement("lumi-span");
+    lumiSpan.id = "test-span-inline";
+    const textContent = "Some text.";
+
+    // Create mock inline elements
+    const citation = document.createElement("span");
+    citation.className = CITATION_CLASSNAME;
+    citation.textContent = "[1]";
+
+    const footnote = document.createElement("sup");
+    footnote.className = FOOTNOTE_CLASSNAME;
+    footnote.textContent = "2";
+
+    // "[1]S<sup>2</sup>ome text."
+    const characterSpans = createCharacterSpansWithInlines(textContent, {
+      0: citation,
+      1: footnote,
+    });
+    lumiSpan.appendChild(characterSpans);
+    el.shadowRoot!.appendChild(lumiSpan);
+
+    const startNode = characterSpans.children[7].firstChild!; // 1st "t" in "text"
+    const endNode = characterSpans.children[10].firstChild!; // 2nd "t" in "text"
+
+    const selection = window.getSelection()!;
+    const range = document.createRange();
+    range.setStart(startNode, 0);
+    range.setEnd(endNode, 1);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    const selectionInfo = getSelectionInfo(selection, [el.shadowRoot!]);
+
+    expect(selectionInfo).to.not.be.null;
+    expect(selectionInfo!.selectedText).to.equal("text");
+    expect(selectionInfo!.highlightSelection).to.deep.equal([
+      {
+        spanId: "test-span-inline",
+        position: { startIndex: 5, endIndex: 9 },
+      },
     ]);
   });
 

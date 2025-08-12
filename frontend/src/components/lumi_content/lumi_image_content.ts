@@ -27,6 +27,8 @@ import { styles } from "./lumi_image_content.scss";
 import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { makeObservable, observable } from "mobx";
 import { classMap } from "lit/directives/class-map.js";
+import { HighlightManager } from "../../shared/highlight_manager";
+import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 
 function isFigureContent(
   content: ImageContent | FigureContent
@@ -44,6 +46,8 @@ export class LumiImageContent extends MobxLitElement {
 
   @property({ type: Object }) content!: ImageContent | FigureContent;
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
+  @property({ type: Object }) highlightManager?: HighlightManager;
+  @property({ type: Object }) answerHighlightManager?: AnswerHighlightManager;
 
   @observable.shallow private imageUrls = new Map<string, string | null>();
   @state() private isLoading = true;
@@ -100,7 +104,11 @@ export class LumiImageContent extends MobxLitElement {
     return html`
       <figcaption>
         <lumi-span .span=${caption}
-          >${renderLumiSpan({ span: caption })}</lumi-span
+          >${renderLumiSpan({
+            span: caption,
+            highlightManager: this.highlightManager,
+            answerHighlightManager: this.answerHighlightManager,
+          })}</lumi-span
         >
       </figcaption>
     `;

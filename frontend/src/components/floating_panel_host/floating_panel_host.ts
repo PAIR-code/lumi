@@ -25,6 +25,7 @@ import { reaction } from "mobx";
 
 import { core } from "../../core/core";
 import {
+  AnswerHighlightTooltipProps,
   ConceptTooltipProps,
   FloatingPanelService,
   FootnoteTooltipProps,
@@ -38,6 +39,7 @@ import { styles } from "./floating_panel_host.scss";
 import "../reference_tooltip/reference_tooltip";
 import "../concept_tooltip/concept_tooltip";
 import "../footnote_tooltip/footnote_tooltip";
+import "../answer_highlight_tooltip/answer_highlight_tooltip";
 
 /**
  * A host component that displays and positions a floating panel using md-menu.
@@ -126,6 +128,14 @@ export class FloatingPanelHost extends MobxLitElement {
     if (contentProps instanceof FootnoteTooltipProps) {
       return html`<div class="panel">
         <footnote-tooltip .props=${contentProps}></footnote-tooltip>
+      </div>`;
+    }
+
+    if (contentProps instanceof AnswerHighlightTooltipProps) {
+      return html`<div class="panel">
+        <answer-highlight-tooltip
+          .props=${contentProps}
+        ></answer-highlight-tooltip>
       </div>`;
     }
 

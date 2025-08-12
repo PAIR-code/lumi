@@ -22,6 +22,7 @@ import { PaperData } from "../shared/types_local_storage";
 import { LocalStorageService } from "./local_storage.service";
 import { ArxivMetadata } from "../shared/lumi_doc";
 import { PERSONAL_SUMMARY_QUERY_NAME } from "../shared/constants";
+import { AnswerHighlightManager } from "../shared/answer_highlight_manager";
 
 const PAPER_KEY_PREFIX = "lumi-paper:";
 
@@ -38,9 +39,11 @@ export class HistoryService extends Service {
   temporaryAnswers: LumiAnswer[] = [];
   paperMetadata = new Map<string, ArxivMetadata>();
   personalSummaries = new Map<string, LumiAnswer>();
+  readonly answerHighlightManager: AnswerHighlightManager;
 
   constructor(private readonly sp: ServiceProvider) {
     super();
+    this.answerHighlightManager = new AnswerHighlightManager();
     makeObservable(this, {
       answers: observable.shallow,
       temporaryAnswers: observable.shallow,
@@ -76,6 +79,7 @@ export class HistoryService extends Service {
   override initialize(): void {
     // Load all paper data from local storage on initialization
     const paperKeys = this.sp.localStorageService.listKeys(PAPER_KEY_PREFIX);
+    const allAnswers: LumiAnswer[] = [];
     for (const key of paperKeys) {
       const paperData = this.sp.localStorageService.getData<PaperData | null>(
         key,
@@ -85,11 +89,13 @@ export class HistoryService extends Service {
         const paperId = paperData.metadata.paperId;
         this.paperMetadata.set(paperId, paperData.metadata);
         this.answers.set(paperId, paperData.history);
+        allAnswers.push(...paperData.history);
         if (paperData.personalSummary) {
           this.personalSummaries.set(paperId, paperData.personalSummary);
         }
       }
     }
+    this.answerHighlightManager.populateFromAnswers(allAnswers);
   }
 
   /**
@@ -134,6 +140,7 @@ export class HistoryService extends Service {
   addAnswer(docId: string, answer: LumiAnswer) {
     const currentAnswers = this.getAnswers(docId);
     this.answers.set(docId, [answer, ...currentAnswers]);
+    this.answerHighlightManager.addAnswer(answer);
     this.syncPaperToLocalStorage(docId);
   }
 
@@ -260,6 +267,7 @@ export class HistoryService extends Service {
     this.paperMetadata.clear();
     this.answers.clear();
     this.personalSummaries.clear();
+    this.answerHighlightManager.clearHighlights();
   }
   private syncPaperToLocalStorage(docId: string) {
     const paperData = this.getPaperData(docId);

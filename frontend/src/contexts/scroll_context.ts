@@ -37,7 +37,7 @@ export class ScrollState {
   scrollToSpan = (id: string) => {
     const element = this.spanMap.get(id)?.value;
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
       console.warn(`[ScrollContext] Span with id "${id}" not found.`);
     }

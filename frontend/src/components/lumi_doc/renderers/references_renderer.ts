@@ -21,23 +21,36 @@ import { LumiReference } from "../../../shared/lumi_doc";
 import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 
 import "../../lumi_span/lumi_span";
+import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
+import { HighlightManager } from "../../../shared/highlight_manager";
 
 export interface ReferencesRendererProperties {
   references: LumiReference[];
   isCollapsed: boolean;
   onCollapseChange: (isCollapsed: boolean) => void;
+  highlightManager?: HighlightManager;
+  answerHighlightManager?: AnswerHighlightManager;
 }
 
-function renderReference(reference: LumiReference) {
+function renderReference(
+  props: ReferencesRendererProperties,
+  reference: LumiReference
+) {
   const lumiSpanClasses = classMap({
     reference: true,
   });
+
+  const { highlightManager, answerHighlightManager } = props;
 
   return html`<lumi-span
     id=${reference.id}
     class=${lumiSpanClasses}
     .span=${reference.span}
-    >${renderLumiSpan({ span: reference.span })}</lumi-span
+    >${renderLumiSpan({
+      span: reference.span,
+      highlightManager,
+      answerHighlightManager,
+    })}</lumi-span
   >`;
 }
 
@@ -61,7 +74,7 @@ export function renderReferences(
         </h2>
         ${isCollapsed
           ? nothing
-          : references.map((reference) => renderReference(reference))}
+          : references.map((reference) => renderReference(props, reference))}
       </div>
     </div>
   `;

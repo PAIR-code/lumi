@@ -35,6 +35,8 @@ import "../lumi_section";
 import "../../lumi_span/lumi_span";
 import { CollapseManager } from "../../../shared/collapse_manager";
 import { getAllContents } from "../../../shared/lumi_doc_utils";
+import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
+import { LumiAnswer } from "../../../shared/api";
 
 const EMPTY_PLACEHOLDER_TEXT = "section";
 
@@ -51,6 +53,7 @@ export interface SectionRendererProperties {
   onSpanSummaryMouseEnter: (spanIds: string[]) => void;
   onSpanSummaryMouseLeave: () => void;
   highlightManager: HighlightManager;
+  answerHighlightManager: AnswerHighlightManager;
   collapseManager: CollapseManager;
   onFocusOnSpan: (highlightedSpans: HighlightSelection[]) => void;
   onPaperReferenceClick: (
@@ -58,6 +61,7 @@ export interface SectionRendererProperties {
     target: HTMLElement
   ) => void;
   onFootnoteClick: (footnote: LumiFootnote, target: HTMLElement) => void;
+  onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   isSubsection: boolean;
 }
 
@@ -147,11 +151,11 @@ function getSpanIdsFromContent(content: LumiContent): string[] {
 }
 
 function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
-  const highlights = props.highlightManager.getSpanHighlights(span.id);
   return html`<lumi-span .span=${span}
     >${renderLumiSpan({
       span,
-      highlights,
+      highlightManager: props.highlightManager,
+      answerHighlightManager: props.answerHighlightManager,
       references: props.references,
       footnotes: props.footnotes,
       onPaperReferenceClick: props.onPaperReferenceClick,
@@ -247,9 +251,11 @@ function renderContents(
     onSpanSummaryMouseEnter,
     onSpanSummaryMouseLeave,
     highlightManager,
+    answerHighlightManager,
     collapseManager,
     references,
     footnotes,
+    onAnswerHighlightClick,
     onPaperReferenceClick,
     onFootnoteClick,
   } = props;
@@ -285,7 +291,9 @@ function renderContents(
         onSpanSummaryMouseEnter,
         onSpanSummaryMouseLeave,
         highlightManager,
+        answerHighlightManager,
         collapseManager,
+        onAnswerHighlightClick,
         onPaperReferenceClick,
         onFootnoteClick,
       });

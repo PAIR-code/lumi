@@ -19,6 +19,7 @@ import { action, makeObservable, observable } from "mobx";
 import { Service } from "./service";
 import { HighlightSelection } from "../shared/selection_utils";
 import { LumiConcept, LumiFootnote, LumiReference } from "../shared/lumi_doc";
+import { LumiAnswer } from "../shared/api";
 
 /** Base class for all floating panel content props. */
 export abstract class FloatingPanelContentProps {}
@@ -59,6 +60,13 @@ export class ConceptTooltipProps extends FloatingPanelContentProps {
 /** Props for the FootnoteTooltip component. */
 export class FootnoteTooltipProps extends FloatingPanelContentProps {
   constructor(public footnote: LumiFootnote) {
+    super();
+  }
+}
+
+/** Props for the AnswerHighlightTooltip component. */
+export class AnswerHighlightTooltipProps extends FloatingPanelContentProps {
+  constructor(public answer: LumiAnswer) {
     super();
   }
 }

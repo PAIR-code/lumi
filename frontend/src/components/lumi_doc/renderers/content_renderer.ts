@@ -35,6 +35,8 @@ import "../../lumi_content/lumi_html_figure_content";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { renderContentSummary } from "./content_summary_renderer";
 import { CollapseManager } from "../../../shared/collapse_manager";
+import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
+import { LumiAnswer } from "../../../shared/api";
 
 export interface ContentRendererProperties {
   parentComponent: LitElement;
@@ -49,6 +51,7 @@ export interface ContentRendererProperties {
   onSpanSummaryMouseEnter: (spanIds: string[]) => void;
   onSpanSummaryMouseLeave: () => void;
   highlightManager: HighlightManager;
+  answerHighlightManager: AnswerHighlightManager;
   collapseManager: CollapseManager;
   onSpanReferenceClicked?: (referenceId: string) => void;
   onPaperReferenceClick?: (
@@ -56,6 +59,7 @@ export interface ContentRendererProperties {
     target: HTMLElement
   ) => void;
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
+  onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
 }
 
 function renderSpans(
@@ -64,18 +68,18 @@ function renderSpans(
   monospace = false
 ): TemplateResult[] {
   return spans.map((span) => {
-    const highlights = props.highlightManager.getSpanHighlights(span.id);
-
     const spanContent = renderLumiSpan({
       span,
       monospace,
-      highlights,
       references: props.references,
       footnotes: props.footnotes,
       referencedSpans: props.referencedSpans,
+      highlightManager: props.highlightManager,
+      answerHighlightManager: props.answerHighlightManager,
       onSpanReferenceClicked: props.onSpanReferenceClicked,
       onPaperReferenceClick: props.onPaperReferenceClick,
       onFootnoteClick: props.onFootnoteClick,
+      onAnswerHighlightClick: props.onAnswerHighlightClick,
     });
 
     const { focusState } = getFocusState(props.focusedSpanId, [span.id]);
@@ -201,9 +205,10 @@ export function renderContent(props: ContentRendererProperties) {
     props.content.id
   );
 
-  const isFigureContent = props.content.imageContent != null ||
-      props.content.figureContent != null ||
-      props.content.htmlFigureContent != null;
+  const isFigureContent =
+    props.content.imageContent != null ||
+    props.content.figureContent != null ||
+    props.content.htmlFigureContent != null;
 
   const contentRendererContainerClassesObject: { [key: string]: boolean } = {
     ["content-renderer-container"]: true,
