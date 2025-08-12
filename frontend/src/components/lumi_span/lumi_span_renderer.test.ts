@@ -31,7 +31,7 @@ describe("renderLumiSpan", () => {
     };
 
     const el = await fixture(html`<div>${renderLumiSpan({ span })}</div>`);
-    expect(el.textContent).to.equal("hello world");
+    expect(el.textContent?.trim()).to.equal("hello world");
   });
 
   it("renders a span with bold text", async () => {

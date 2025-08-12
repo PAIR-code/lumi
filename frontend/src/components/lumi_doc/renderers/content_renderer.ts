@@ -27,7 +27,6 @@ import {
   TextContent,
 } from "../../../shared/lumi_doc";
 import { FocusState } from "../../../shared/types";
-import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import "../../lumi_span/lumi_span";
 
 import "../../lumi_content/lumi_image_content";
@@ -62,6 +61,7 @@ export interface ContentRendererProperties {
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
   onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   font?: LumiFont;
+  noGrid?: boolean; // whether to wrap the content in grid layout
 }
 
 function renderSpans(
@@ -70,7 +70,7 @@ function renderSpans(
   monospace = false
 ): TemplateResult[] {
   return spans.map((span) => {
-    const spanContent = renderLumiSpan({
+    const spanProperties = {
       span,
       monospace,
       references: props.references,
@@ -83,12 +83,14 @@ function renderSpans(
       onFootnoteClick: props.onFootnoteClick,
       onAnswerHighlightClick: props.onAnswerHighlightClick,
       font: props.font,
-    });
+    };
 
     const { focusState } = getFocusState(props.focusedSpanId, [span.id]);
-    return html`<lumi-span .span=${span} .focusState=${focusState}
-      >${spanContent}</lumi-span
-    >`;
+    return html`<lumi-span
+      .span=${span}
+      .focusState=${focusState}
+      .spanProperties=${spanProperties}
+    ></lumi-span>`;
   });
 }
 
@@ -220,8 +222,13 @@ export function renderContent(props: ContentRendererProperties) {
     ["is-figure-content"]: isFigureContent,
   };
 
+  const shouldRenderGrid = !props.noGrid;
+  const outerContainerclasses = classMap({
+    "content-renderer-grid-container": shouldRenderGrid,
+  });
+
   return html`
-    <div class="content-renderer-grid-container">
+    <div class=${outerContainerclasses}>
       <div class=${classMap(contentRendererContainerClassesObject)}>
         <div
           class=${classMap(mainContentClassesObject)}

@@ -29,6 +29,10 @@ import { classMap } from "lit/directives/class-map.js";
 
 import { styles } from "./lumi_section.scss";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import {
+  renderSection,
+  SectionRendererProperties,
+} from "./renderers/section_renderer";
 
 /**
  * Displays a lumi section
@@ -50,6 +54,7 @@ export class LumiSectionViz extends LightMobxLitElement {
   private sectionRef: Ref<HTMLElement> = createRef();
 
   @property({ type: Object }) section!: LumiSection;
+  @property({ type: Object }) sectionProperties!: SectionRendererProperties;
 
   override firstUpdated(_changedProperties: PropertyValues): void {
     this.id = this.section.id;
@@ -82,7 +87,7 @@ export class LumiSectionViz extends LightMobxLitElement {
         id=${this.section.id}
         class="section-ref-container"
       >
-        <slot></slot>
+        ${renderSection(this.sectionProperties)}
       </div>
     `;
   }

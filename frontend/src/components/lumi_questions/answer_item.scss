@@ -103,7 +103,7 @@ answer-item {
 }
 
 .answer {
-  padding: 0 $history-item-horizontal-padding $history-item-vertical-padding;
+  padding: 0 $history-item-horizontal-padding common.$spacing-xl;
 }
 
 .mentions-text {

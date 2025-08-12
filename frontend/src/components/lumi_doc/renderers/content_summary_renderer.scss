@@ -64,6 +64,11 @@
     }
   }
 
+  .span-summaries {
+    @include common.flex-column;
+    gap: common.$spacing-small;
+  }
+
   &.collapsed {
     .summary,
     .span-summaries,

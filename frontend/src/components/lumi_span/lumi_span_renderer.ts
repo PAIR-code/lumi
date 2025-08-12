@@ -100,6 +100,10 @@ function renderFormattedCharacter(
     classesObject[key] = true;
   });
 
+  if (props.font) {
+    classesObject[props.font] = true;
+  }
+
   const highlightMetadata = classesAndMetadata[GENERAL_HIGHLIGHT_KEY];
   if (highlightMetadata) {
     classesObject[highlightMetadata[COLOR_HIGHLIGHT_KEY]] = true;
@@ -158,14 +162,19 @@ function renderNonformattedCharacters(
   props: LumiSpanRendererProperties,
   value: string
 ): TemplateResult {
-  const characterClasses = classMap({
+  const characterClasses: { [key: string]: boolean } = {
     ["character"]: true,
-    "font-paper-text": props.font === LumiFont.PAPER_TEXT,
-  });
+  };
+
+  if (props.font) {
+    characterClasses[props.font] = true;
+  }
+
   return html`${value
     .split("")
     .map(
-      (character) => html`<span class=${characterClasses}>${character}</span>`
+      (character) =>
+        html`<span class=${classMap(characterClasses)}>${character}</span>`
     )}`;
 }
 
@@ -337,6 +346,8 @@ export function renderLumiSpan(
     monospace = false,
   } = props;
 
+  if (!span) return html``;
+
   const highlights = [
     ...additionalHighlights,
     ...getHighlightsFromManagers(
@@ -352,10 +363,18 @@ export function renderLumiSpan(
 
   const insertions = createInsertionsMap(props);
 
+  // Wrap all the character parts in a single parent span.
+  const spanClasses = {
+    monospace,
+    "lumi-span-renderer-element": true,
+  };
+
   // If there are no inner tags or highlights, and no insertions,
   // we can just return the plain text.
   if (!hasHighlight && !allInnerTags.length && insertions.size === 0) {
-    return renderNonformattedCharacters(props, span.text);
+    return html`<span class=${classMap(spanClasses)}>
+      ${renderNonformattedCharacters(props, span.text)}
+    </span>`;
   }
 
   // Create an array of objects, one for each character in the span's text.
@@ -467,11 +486,6 @@ export function renderLumiSpan(
     partsTemplateResults.push(...insertions.get(spanText.length)!);
   }
 
-  // Wrap all the character parts in a single parent span.
-  const spanClasses = {
-    monospace,
-    "lumi-span-renderer-element": true,
-  };
   return html`<span class=${classMap(spanClasses)}
     >${partsTemplateResults}</span
   >`;

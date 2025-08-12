@@ -50,7 +50,8 @@ export const CITATION_CLASSNAME = "citation-marker";
 export const FOOTNOTE_CLASSNAME = "footnote-marker";
 
 export enum LumiFont {
-  PAPER_TEXT = "paper_text",
+  PAPER_TEXT = "paper-text",
+  SPAN_SUMMARY_TEXT = "span-summary-text",
   DEFAULT = "default",
 }
 

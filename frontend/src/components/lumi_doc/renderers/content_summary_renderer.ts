@@ -19,12 +19,12 @@ import { html, nothing } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 import { LumiContent, LumiSummary } from "../../../shared/lumi_doc";
 import { FocusState } from "../../../shared/types";
-import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import "../../lumi_span/lumi_span";
 import "../../../pair-components/icon";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
+import { LumiFont } from "../../../shared/constants";
 
 export interface ContentSummaryRendererProperties {
   content: LumiContent;
@@ -106,13 +106,14 @@ function renderSpanSummaries(props: ContentSummaryRendererProperties) {
           .classMap=${{ "span-summary-text": true }}
           .span=${summary.summary}
           .focusState=${focusState}
-          >${renderLumiSpan({
+          .spanProperties=${{
             span: summary.summary,
             highlightManager: props.highlightManager,
             answerHighlightManager: props.answerHighlightManager,
             onAnswerHighlightClick: props.onAnswerHighlightClick,
-          })}</lumi-span
-        >
+            font: LumiFont.SPAN_SUMMARY_TEXT,
+          }}
+        ></lumi-span>
       </div>`;
     })}
   `;
@@ -133,13 +134,13 @@ function renderSummaries(props: ContentSummaryRendererProperties) {
                 "summary-span": true,
               }}
               .span=${props.summary.summary}
-              >${renderLumiSpan({
+              .spanProperties=${{
                 span: props.summary.summary,
                 highlightManager: props.highlightManager,
                 answerHighlightManager: props.answerHighlightManager,
                 onAnswerHighlightClick: props.onAnswerHighlightClick,
-              })}</lumi-span
-            >`
+              }}
+            ></lumi-span>`
           : nothing}
       </div>
       <div class="span-summaries">${renderSpanSummaries(props)}</div>

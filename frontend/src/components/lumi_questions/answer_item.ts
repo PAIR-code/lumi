@@ -16,8 +16,7 @@
  */
 
 import "@material/web/progress/circular-progress";
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
+import { html, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { consume } from "@lit/context";
@@ -25,7 +24,6 @@ import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { LumiAnswer } from "../../shared/api";
 import { LumiContent, LumiSpan } from "../../shared/lumi_doc";
 import { getReferencedSpanIdsFromContent } from "../../shared/lumi_doc_utils";
-import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { LumiDocManager } from "../../shared/lumi_doc_manager";
 
 import "../../pair-components/icon";
@@ -34,13 +32,8 @@ import "../lumi_span/lumi_span";
 import { renderContent } from "../lumi_doc/renderers/content_renderer";
 
 import { styles } from "./answer_item.scss";
-import { styles as spanStyles } from "../lumi_span/lumi_span_renderer.scss";
 
-import {
-  getSelectionInfo,
-  HighlightSelection,
-  SelectionInfo,
-} from "../../shared/selection_utils";
+import { HighlightSelection } from "../../shared/selection_utils";
 import { HighlightManager } from "../../shared/highlight_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
@@ -127,19 +120,21 @@ export class AnswerItem extends LightMobxLitElement {
           ${this.referencedSpans.map((span, i) => {
             // Make a copy of the span and use a separate unique id.
             const copiedSpan = { ...span, id: `${span.id}-ref` };
-            const spanContent = renderLumiSpan({
-              span: copiedSpan,
-              references: this.lumiDocManager?.lumiDoc.references,
-              highlightManager: this.highlightManager,
-              answerHighlightManager: this.answerHighlightManager,
-            });
             return html`
               <div
                 class="reference-item"
                 @click=${() => this.onReferenceClick([{ spanId: span.id }])}
               >
                 <span class="number">${i + 1}.</span>
-                <lumi-span .span=${copiedSpan}>${spanContent}</lumi-span>
+                <lumi-span
+                  .span=${copiedSpan}
+                  .spanProperties=${{
+                    span: copiedSpan,
+                    references: this.lumiDocManager?.lumiDoc.references,
+                    highlightManager: this.highlightManager,
+                    answerHighlightManager: this.answerHighlightManager,
+                  }}
+                ></lumi-span>
               </div>
             `;
           })}
@@ -206,6 +201,7 @@ export class AnswerItem extends LightMobxLitElement {
             onSpanSummaryMouseLeave: () => {},
             onSpanReferenceClicked:
               this.onAnswerSpanReferenceClicked.bind(this),
+            noGrid: true,
           });
         })}
       </div>

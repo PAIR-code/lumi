@@ -21,7 +21,6 @@ import { customElement, property } from "lit/decorators.js";
 
 import { LumiConcept, LumiSpan } from "../../shared/lumi_doc";
 import { getSelectionInfo, SelectionInfo } from "../../shared/selection_utils";
-import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
@@ -85,15 +84,15 @@ export class LumiConceptViz extends LightMobxLitElement {
         innerTags: [],
       };
 
-      const spanContent = renderLumiSpan({ span: tempSpan });
-
       return html` <style>
           ${styles}
         </style>
         <div class="lumi-concept-content">
-          <lumi-span .span=${tempSpan} .noScrollContext=${true}
-            >${spanContent}</lumi-span
-          >
+          <lumi-span
+            .span=${tempSpan}
+            .noScrollContext=${true}
+            .spanProperties=${{ span: tempSpan }}
+          ></lumi-span>
         </div>`;
     });
   }

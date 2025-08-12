@@ -25,8 +25,14 @@
   }
 
   .character {
-    &.font-paper-text {
+    // Fonts
+    &.paper-text {
       @include common.lumi-paper-text;
+    }
+
+    &.span-summary-text {
+      @include typescale.label-small;
+      font-size: 12px;
     }
 
     // Enum classes for lumi_doc.ts/InnerTagName

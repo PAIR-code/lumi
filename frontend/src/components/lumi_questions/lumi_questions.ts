@@ -307,7 +307,7 @@ export class LumiQuestions extends LightMobxLitElement {
           .icon=${"arrow_back"}
           variant="default"
         ></pr-icon-button>
-        <span>Answers</span>
+        <div class="all-answers-title">Answers</div>
       </div>
     `;
   }
@@ -317,14 +317,21 @@ export class LumiQuestions extends LightMobxLitElement {
     const isLoading = this.historyService.isAnswerLoading;
 
     if (this.isHistoryShowAll) {
-      return html` ${this.renderBackButton()} ${this.renderHistory()} `;
+      return html`<style>
+          ${styles}
+        </style>
+        <div class="lumi-questions-host">
+          ${this.renderBackButton()} ${this.renderHistory()}
+        </div>`;
     }
 
     return html`
       <style>
         ${styles}
       </style>
-      ${this.renderSearch()} ${this.renderHistory()}
+      <div class="lumi-questions-host">
+        ${this.renderSearch()} ${this.renderHistory()}
+      </div>
     `;
   }
 }

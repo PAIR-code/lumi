@@ -17,9 +17,9 @@
 
 import { html, nothing, TemplateResult } from "lit";
 import { LumiFootnote } from "../../../shared/lumi_doc";
-import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 
 import "../../lumi_span/lumi_span";
+import { LumiFont } from "../../../shared/constants";
 
 export interface FootnotesRendererProperties {
   footnotes: LumiFootnote[];
@@ -30,9 +30,10 @@ export interface FootnotesRendererProperties {
 function renderFootnote(footnote: LumiFootnote, index: number) {
   return html`<div class="footnote-item">
     <span class="footnote-index">${index + 1}.</span>
-    <lumi-span .span=${footnote.span}
-      >${renderLumiSpan({ span: footnote.span })}</lumi-span
-    >
+    <lumi-span
+      .span=${footnote.span}
+      .spanProperties=${{ span: footnote.span, font: LumiFont.PAPER_TEXT }}
+    ></lumi-span>
   </div>`;
 }
 

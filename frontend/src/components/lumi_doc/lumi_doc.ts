@@ -67,7 +67,6 @@ import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_el
  */
 @customElement("lumi-doc")
 export class LumiDocViz extends LightMobxLitElement {
-
   @property({ type: Object }) lumiDocManager!: LumiDocManager;
   @property({ type: Object }) collapseManager!: CollapseManager;
   @property({ type: Object }) highlightManager!: HighlightManager;
@@ -179,8 +178,9 @@ export class LumiDocViz extends LightMobxLitElement {
             const isCollapsed = this.collapseManager?.getCollapseState(
               section.id
             );
-            return html`<lumi-section .section=${section}>
-              ${renderSection({
+            return html`<lumi-section
+              .section=${section}
+              .sectionProperties=${{
                 parentComponent: this,
                 section,
                 references: this.lumiDoc.references,
@@ -204,7 +204,8 @@ export class LumiDocViz extends LightMobxLitElement {
                 onFootnoteClick: this.onFootnoteClick,
                 onAnswerHighlightClick: this.onAnswerHighlightClick,
                 isSubsection: false,
-              })}
+              }}
+            >
             </lumi-section>`;
           })}
           ${renderReferences({

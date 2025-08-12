@@ -22,7 +22,6 @@ import { styles } from "./table_of_contents.scss";
 import { LumiSection, LumiSpan, LumiSummaries } from "../../shared/lumi_doc";
 import { classMap } from "lit/directives/class-map.js";
 import { LumiSummaryMaps } from "../../shared/lumi_summary_maps";
-import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 
 @customElement("table-of-contents")
 export class TableOfContents extends MobxLitElement {
@@ -80,9 +79,11 @@ export class TableOfContents extends MobxLitElement {
     if (!span) return nothing;
 
     return html`
-      <lumi-span class="item-summary" .span=${span}
-        >${renderLumiSpan({ span })}</lumi-span
-      >
+      <lumi-span
+        class="item-summary"
+        .span=${span}
+        .spanProperties=${{ span }}
+      ></lumi-span>
     `;
   }
 

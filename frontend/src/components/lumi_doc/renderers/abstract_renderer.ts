@@ -21,12 +21,12 @@ import {
   LumiAbstract,
   LumiFootnote,
 } from "../../../shared/lumi_doc";
-import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 
 import "../../lumi_span/lumi_span";
 import "../../../pair-components/icon_button";
+import { LumiFont } from "../../../shared/constants";
 
 export interface AbstractRendererProperties {
   abstract: LumiAbstract;
@@ -83,8 +83,9 @@ export function renderAbstract(
                 });
               }
 
-              return html`<lumi-span .span=${span}
-                >${renderLumiSpan({
+              return html`<lumi-span
+                .span=${span}
+                .spanProperties=${{
                   span,
                   additionalHighlights: highlights,
                   answerHighlightManager,
@@ -92,8 +93,9 @@ export function renderAbstract(
                   onConceptClick,
                   footnotes,
                   onFootnoteClick,
-                })}</lumi-span
-              >`;
+                  font: LumiFont.PAPER_TEXT,
+                }}
+              ></lumi-span>`;
             })}
           </div>`;
         })}
