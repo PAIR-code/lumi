@@ -200,7 +200,6 @@ export class LumiQuestions extends LightMobxLitElement {
           }}
         ></pr-icon-button>
         <pr-textarea
-          .focused=${true}
           .value=${this.query}
           size=${textareaSize}
           .maxLength=${MAX_QUERY_INPUT_LENGTH}
