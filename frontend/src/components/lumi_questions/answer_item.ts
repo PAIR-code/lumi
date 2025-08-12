@@ -171,9 +171,7 @@ export class AnswerItem extends LightMobxLitElement {
     this.onReferenceClick([{ spanId: referenceId }]);
   }
 
-  private renderContent() {
-    if (this.isAnswerCollapsed) return nothing;
-
+  private renderAnswer() {
     if (this.isLoading) {
       return html`
         <div class="spinner">
@@ -182,30 +180,31 @@ export class AnswerItem extends LightMobxLitElement {
       `;
     }
 
-    return html`
-      ${this.renderHighlightedText()}
-      <div class="answer">
-        ${this.answer.responseContent.map((content: LumiContent) => {
-          return renderContent({
-            parentComponent: this,
-            content,
-            references: this.lumiDocManager?.lumiDoc.references,
-            referencedSpans: this.referencedSpans,
-            summary: null,
-            spanSummaries: new Map(),
-            focusedSpanId: null,
-            highlightManager: this.highlightManager!,
-            answerHighlightManager: this.answerHighlightManager!,
-            collapseManager: this.collapseManager!,
-            onSpanSummaryMouseEnter: () => {},
-            onSpanSummaryMouseLeave: () => {},
-            onSpanReferenceClicked:
-              this.onAnswerSpanReferenceClicked.bind(this),
-            dense: true,
-          });
-        })}
-      </div>
-    `;
+    return html`<div class="answer">
+      ${this.answer.responseContent.map((content: LumiContent) => {
+        return renderContent({
+          parentComponent: this,
+          content,
+          references: this.lumiDocManager?.lumiDoc.references,
+          referencedSpans: this.referencedSpans,
+          summary: null,
+          spanSummaries: new Map(),
+          focusedSpanId: null,
+          highlightManager: this.highlightManager!,
+          answerHighlightManager: this.answerHighlightManager!,
+          collapseManager: this.collapseManager!,
+          onSpanSummaryMouseEnter: () => {},
+          onSpanSummaryMouseLeave: () => {},
+          onSpanReferenceClicked: this.onAnswerSpanReferenceClicked.bind(this),
+          dense: true,
+        });
+      })}
+    </div>`;
+  }
+
+  private renderContent() {
+    if (this.isAnswerCollapsed) return nothing;
+    return html` ${this.renderHighlightedText()} ${this.renderAnswer()} `;
   }
 
   private renderCancelButton() {
