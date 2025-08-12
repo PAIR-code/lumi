@@ -32,6 +32,7 @@ import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
 
 import { LumiDoc, LoadingStatus, ArxivMetadata } from "../../shared/lumi_doc";
+import { ArxivCollection } from "../../shared/lumi_collection";
 import {
   requestArxivDocImportCallable,
   RequestArxivDocImportResult,
@@ -164,7 +165,6 @@ export class HomeGallery extends MobxLitElement {
           // to 'complete' and unsubscribe.
           if (data.loadingStatus === LoadingStatus.SUCCESS) {
             this.historyService.addPaper(paperId, metadata);
-            this.homeService.addDocument(data);
             this.unsubscribeListeners.get(paperId)?.();
             this.unsubscribeListeners.delete(paperId);
             this.snackbarService.show("Document loaded.");
@@ -187,15 +187,48 @@ export class HomeGallery extends MobxLitElement {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
     ).map(item => item.metadata);
-
+    const papersToShow = this.homeService.currentMetadata ?? historyItems;
     return html`
       ${this.renderLinkInput()}
-      ${this.renderCollection(historyItems)}
+      ${this.renderCollectionMenu()}
+      ${this.renderCollection(papersToShow)}
+    `;
+  }
+
+  private renderCollectionMenu() {
+    const collections = this.homeService.collections;
+    return html`
+      <div class="nav-menu">
+        ${collections.map(collection => this.renderCollectionNavItem(collection))}
+      </div>
+    `;
+  }
+
+  private renderCollectionNavItem(collection: ArxivCollection) {
+    const classes = classMap({
+      "nav-item": true,
+      "active": collection.collectionId === this.homeService.currentCollectionId
+    });
+
+    const navigate = () => {
+      this.routerService.navigate(
+        Pages.COLLECTION, { 'collection_id': collection.collectionId }
+      );
+    };
+
+    return html`
+      <div class=${classes} role="button" @click=${navigate}>
+        ${collection.title}
+      </div>
     `;
   }
 
   private renderCollection(items: ArxivMetadata[]) {
     const renderItem = (metadata: ArxivMetadata) => {
+      if (!metadata) {
+        return html`<paper-card></paper-card>`;
+      }
+
       const navigate = () => {
         this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
           document_id: metadata.paperId,
@@ -243,7 +276,7 @@ export class HomeGallery extends MobxLitElement {
         <pr-textarea
           ?disabled=${this.isLoadingMetadata}
           ?focused=${autoFocus}
-          size="large"
+          size="medium"
           .value=${this.paperInput}
           .maxLength=${MAX_IMPORT_URL_LENGTH}
           @change=${(e: CustomEvent) => {
@@ -280,6 +313,7 @@ export class PaperCard extends MobxLitElement {
   @property({ type: String }) status = '';
 
   override render() {
+    // TODO: Render loading state for paper card if no metadata
     if (!this.metadata) {
       return nothing;
     }

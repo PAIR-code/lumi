@@ -59,10 +59,10 @@ def process_csv(csv_path, db):
 
                     # # 3b. Update Collections
                     collection_ref = db.collection(
-                        functions_main.COLLECTIONS_COLLECTION
+                        functions_main._ARXIV_COLLECTIONS_COLLECTION
                     ).document(collection_name)
                     collection_ref.set(
-                        {"arxiv_ids": firestore.ArrayUnion([arxiv_id])}, merge=True
+                        {"paperIds": firestore.ArrayUnion([arxiv_id])}, merge=True
                     )
                     print(f"✅ Added {arxiv_id} to collection '{collection_name}'.")
 

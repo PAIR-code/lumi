@@ -63,13 +63,7 @@ export class App extends LightMobxLitElement {
 
     switch (this.routerService.activePage) {
       case Pages.HOME:
-        return html`
-          <page-header></page-header>
-          <home-gallery-tabs></home-gallery-tabs>
-          <div class="content">
-            <home-gallery></home-gallery>
-          </div>
-        `;
+        return this.renderGallery();
       case Pages.SETTINGS:
         return html`
           <page-header></page-header>
@@ -77,6 +71,8 @@ export class App extends LightMobxLitElement {
             <settings-page></settings-page>
           </div>
         `;
+      case Pages.COLLECTION:
+        return this.renderGallery();
       case Pages.ARXIV_DOCUMENT:
         return html`
           <lumi-reader documentId=${params.document_id}></lumi-reader>
@@ -84,6 +80,16 @@ export class App extends LightMobxLitElement {
       default:
         return this.render404();
     }
+  }
+
+  private renderGallery() {
+    return html`
+      <page-header></page-header>
+      <home-gallery-tabs></home-gallery-tabs>
+      <div class="content">
+        <home-gallery></home-gallery>
+      </div>
+    `;
   }
 
   private render404(message = "Page not found") {

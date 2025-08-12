@@ -23,11 +23,13 @@ import { Service } from "./service";
 import { AnalyticsService } from "./analytics.service";
 import { DocumentStateService } from "./document_state.service";
 import { HistoryService } from "./history.service";
+import { HomeService } from "./home.service";
 
 interface ServiceProvider {
   analyticsService: AnalyticsService;
   documentStateService: DocumentStateService;
   historyService: HistoryService;
+  homeService: HomeService;
 }
 
 /**
@@ -54,6 +56,10 @@ export class RouterService extends Service {
     {
       name: Pages.SETTINGS,
       path: "/settings",
+    },
+    {
+      name: Pages.COLLECTION,
+      path: "/collections/:collection_id",
     },
     {
       name: Pages.ARXIV_DOCUMENT,
@@ -102,6 +108,13 @@ export class RouterService extends Service {
         this.activeRoute.path
       );
     }
+
+    // If gallery page, load collections
+    const currentPage = this.getPage(this.activeRoute);
+    if (currentPage === Pages.HOME || currentPage === Pages.COLLECTION) {
+      const currentCollectionId = this.activeRoute.params["collection_id"];
+      this.sp.homeService.loadCollections(currentCollectionId);
+    }
   }
 
   setNav(isOpen: boolean) {
@@ -148,6 +161,7 @@ export type RouteChange = router5.SubscribeState;
  */
 export enum Pages {
   ARXIV_DOCUMENT = "ARXIV",
+  COLLECTION = "COLLECTION",
   HOME = "HOME",
   SETTINGS = "SETTINGS",
 }
