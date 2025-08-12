@@ -49,5 +49,10 @@ export const HIGHLIGHT_METADATA_ANSWER_KEY = "answer";
 export const CITATION_CLASSNAME = "citation-marker";
 export const FOOTNOTE_CLASSNAME = "footnote-marker";
 
+export enum LumiFont {
+  PAPER_TEXT = "paper_text",
+  DEFAULT = "default",
+}
+
 // Keep in sync with constants.py
 export const PERSONAL_SUMMARY_QUERY_NAME = "Summary";

@@ -37,6 +37,7 @@ import { CollapseManager } from "../../../shared/collapse_manager";
 import { getAllContents } from "../../../shared/lumi_doc_utils";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
+import { LumiFont } from "../../../shared/constants";
 
 const EMPTY_PLACEHOLDER_TEXT = "section";
 
@@ -296,6 +297,7 @@ function renderContents(
         onAnswerHighlightClick,
         onPaperReferenceClick,
         onFootnoteClick,
+        font: LumiFont.PAPER_TEXT,
       });
     })}
     ${renderSubsections(props)}

@@ -82,7 +82,7 @@ describe("lumi-doc", () => {
       ></lumi-doc>`
     );
 
-    const title = el.shadowRoot!.querySelector("h1");
+    const title = el.querySelector("h1");
     expect(title).to.exist;
     expect(title!.textContent).to.contain("Test Paper");
   });
@@ -97,7 +97,7 @@ describe("lumi-doc", () => {
       ></lumi-doc>`
     );
 
-    const openInNewButton = el.shadowRoot!.querySelector(
+    const openInNewButton = el.querySelector(
       'pr-icon-button[icon="open_in_new"]'
     ) as HTMLElement;
     openInNewButton.click();

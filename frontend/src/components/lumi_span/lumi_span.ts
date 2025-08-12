@@ -29,6 +29,7 @@ import { classMap } from "lit/directives/class-map.js";
 
 import { styles } from "./lumi_span.scss";
 import { styles as rendererStyles } from "./lumi_span_renderer.scss";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * A span visualization in the Lumi visualization.
@@ -41,17 +42,7 @@ import { styles as rendererStyles } from "./lumi_span_renderer.scss";
  * work correctly across component boundaries.
  */
 @customElement("lumi-span")
-export class LumiSpanViz extends MobxLitElement {
-  static override styles: CSSResultGroup = [
-    styles,
-    rendererStyles,
-    css`
-      :host {
-        display: inline;
-        position: relative;
-      }
-    `,
-  ];
+export class LumiSpanViz extends LightMobxLitElement {
 
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
@@ -103,6 +94,9 @@ export class LumiSpanViz extends MobxLitElement {
 
   override render() {
     return html`
+      <style>
+        ${styles}
+      </style>
       <span
         ${ref(this.spanRef)}
         id=${this.span.id}

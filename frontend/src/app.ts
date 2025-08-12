@@ -37,10 +37,11 @@ import { SettingsService } from "./services/settings.service";
 import { SnackbarService } from "./services/snackbar.service";
 
 import { styles } from "./app.scss";
+import { LightMobxLitElement } from "./components/light_mobx_lit_element/light_mobx_lit_element";
 
 /** App main component. */
 @customElement("lumi-app")
-export class App extends MobxLitElement {
+export class App extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly routerService = core.getService(RouterService);
@@ -91,6 +92,9 @@ export class App extends MobxLitElement {
 
   override render() {
     return html`
+      <style>
+        ${styles}
+      </style>
       <div class="app-wrapper mode--${this.settingsService.colorMode}">
         <main>
           <div class="content-wrapper">${this.renderPageContent()}</div>

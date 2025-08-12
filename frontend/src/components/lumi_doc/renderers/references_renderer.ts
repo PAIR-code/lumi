@@ -62,7 +62,7 @@ export function renderReferences(
   return html`
     <div class="references-renderer-container">
       <div class="references">
-        <h2 class="header">
+        <h2 class="references-header">
           <pr-icon-button
             variant="default"
             @click=${() => {

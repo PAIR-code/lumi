@@ -53,13 +53,6 @@ import "../../pair-components/icon_button";
 import "../multi_icon_toggle/multi_icon_toggle";
 
 import { styles } from "./lumi_doc.scss";
-import { styles as sectionRendererStyles } from "./renderers/section_renderer.scss";
-import { styles as contentRendererStyles } from "./renderers/content_renderer.scss";
-import { styles as contentSummaryRendererStyles } from "./renderers/content_summary_renderer.scss";
-import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
-import { styles as abstractRendererStyles } from "./renderers/abstract_renderer.scss";
-import { styles as referencesRendererStyles } from "./renderers/references_renderer.scss";
-import { styles as footnotesRendererStyles } from "./renderers/footnotes_renderer.scss";
 import { LumiDocManager } from "../../shared/lumi_doc_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
 import { HighlightManager } from "../../shared/highlight_manager";
@@ -67,22 +60,13 @@ import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 
 import { LumiFootnote, LumiReference } from "../../shared/lumi_doc";
 import { LumiAnswer } from "../../shared/api";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * Displays a Lumi Document.
  */
 @customElement("lumi-doc")
-export class LumiDocViz extends MobxLitElement {
-  static override styles: CSSResultGroup = [
-    styles,
-    sectionRendererStyles,
-    contentRendererStyles,
-    contentSummaryRendererStyles,
-    spanRendererStyles,
-    abstractRendererStyles,
-    referencesRendererStyles,
-    footnotesRendererStyles,
-  ];
+export class LumiDocViz extends LightMobxLitElement {
 
   @property({ type: Object }) lumiDocManager!: LumiDocManager;
   @property({ type: Object }) collapseManager!: CollapseManager;
@@ -158,10 +142,10 @@ export class LumiDocViz extends MobxLitElement {
       ? new Date(publishedTimestamp).toLocaleDateString()
       : "";
     return html`
-      <div
-        class="lumi-doc"
-        @scroll=${this.onScroll.bind(this)}
-      >
+      <style>
+        ${styles}
+      </style>
+      <div class="lumi-doc" @scroll=${this.onScroll.bind(this)}>
         <div class="lumi-doc-content">
           <div class="title-section">
             <h1 class="main-column title">

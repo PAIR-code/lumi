@@ -44,14 +44,13 @@ import {
 import { HighlightManager } from "../../shared/highlight_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * An answer item in the Lumi questions history.
  */
 @customElement("answer-item")
-export class AnswerItem extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles, spanStyles];
-
+export class AnswerItem extends LightMobxLitElement {
   @property({ type: Object }) answer!: LumiAnswer;
   @property({ type: Boolean }) isLoading = false;
   @property({ type: Object }) lumiDocManager?: LumiDocManager;
@@ -261,6 +260,9 @@ export class AnswerItem extends MobxLitElement {
     };
 
     return html`
+      <style>
+        ${styles}
+      </style>
       <div class=${classMap(historyItemClasses)}>
         <div class=${classMap(questionAnswerContainerStyles)}>
           <div class="question">

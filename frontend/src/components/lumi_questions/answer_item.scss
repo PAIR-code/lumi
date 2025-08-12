@@ -20,7 +20,7 @@
 $history-item-vertical-padding: common.$spacing-medium;
 $history-item-horizontal-padding: common.$spacing-large;
 
-:host {
+answer-item {
   display: block;
   height: 100%;
 }
@@ -98,6 +98,7 @@ $history-item-horizontal-padding: common.$spacing-large;
 
   .question-text {
     @include common.overflow-ellipsis;
+    @include typescale.title-medium;
   }
 }
 

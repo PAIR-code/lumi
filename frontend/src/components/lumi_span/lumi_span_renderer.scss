@@ -25,6 +25,10 @@
   }
 
   .character {
+    &.font-paper-text {
+      @include common.lumi-paper-text;
+    }
+
     // Enum classes for lumi_doc.ts/InnerTagName
     &.b,
     &.strong {

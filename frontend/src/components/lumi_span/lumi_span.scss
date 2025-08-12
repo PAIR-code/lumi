@@ -18,6 +18,11 @@
 @use "../../sass/colors";
 @use "../../sass/typescale";
 
+lumi-span {
+  display: inline;
+  position: relative;
+}
+
 .outer-span {
   &.focused {
     background-color: var(--md-sys-color-highlight-cyan-light);

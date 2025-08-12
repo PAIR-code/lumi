@@ -35,6 +35,7 @@ import {
   HIGHLIGHT_METADATA_ANSWER_KEY,
   CITATION_CLASSNAME,
   FOOTNOTE_CLASSNAME,
+  LumiFont,
 } from "../../shared/constants";
 
 interface FormattingCounter {
@@ -72,6 +73,7 @@ export interface LumiSpanRendererProperties {
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
   onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   monospace?: boolean;
+  font?: LumiFont;
 }
 
 function renderEquation(
@@ -152,10 +154,19 @@ function renderFormattedCharacter(
   >`;
 }
 
-function renderNonformattedCharacters(value: string): TemplateResult {
+function renderNonformattedCharacters(
+  props: LumiSpanRendererProperties,
+  value: string
+): TemplateResult {
+  const characterClasses = classMap({
+    ["character"]: true,
+    "font-paper-text": props.font === LumiFont.PAPER_TEXT,
+  });
   return html`${value
     .split("")
-    .map((character) => html`<span>${character}</span>`)}`;
+    .map(
+      (character) => html`<span class=${characterClasses}>${character}</span>`
+    )}`;
 }
 
 function createInsertionsMap(props: LumiSpanRendererProperties) {
@@ -344,7 +355,7 @@ export function renderLumiSpan(
   // If there are no inner tags or highlights, and no insertions,
   // we can just return the plain text.
   if (!hasHighlight && !allInnerTags.length && insertions.size === 0) {
-    return renderNonformattedCharacters(span.text);
+    return renderNonformattedCharacters(props, span.text);
   }
 
   // Create an array of objects, one for each character in the span's text.
@@ -457,7 +468,10 @@ export function renderLumiSpan(
   }
 
   // Wrap all the character parts in a single parent span.
-  const spanClasses = { monospace, "lumi-span-renderer-element": true };
+  const spanClasses = {
+    monospace,
+    "lumi-span-renderer-element": true,
+  };
   return html`<span class=${classMap(spanClasses)}
     >${partsTemplateResults}</span
   >`;

@@ -21,7 +21,7 @@ $input-container-height: 50px;
 $lumi-questions-gap: common.$spacing-medium;
 $button-height: 32px;
 
-:host {
+lumi-questions {
   @include common.flex-column;
   gap: $lumi-questions-gap;
   height: 100%;

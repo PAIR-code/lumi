@@ -28,7 +28,7 @@ import { LumiSection } from "../../shared/lumi_doc";
 import { classMap } from "lit/directives/class-map.js";
 
 import { styles } from "./lumi_section.scss";
-import { styles as rendererStyles } from "./renderers/section_renderer.scss";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * Displays a lumi section
@@ -41,8 +41,8 @@ import { styles as rendererStyles } from "./renderers/section_renderer.scss";
  * work correctly across component boundaries.
  */
 @customElement("lumi-section")
-export class LumiSectionViz extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles, rendererStyles];
+export class LumiSectionViz extends LightMobxLitElement {
+  static override styles: CSSResultGroup = [styles];
 
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
@@ -74,6 +74,9 @@ export class LumiSectionViz extends MobxLitElement {
 
   override render() {
     return html`
+      <style>
+        ${styles}
+      </style>
       <div
         ${ref(this.sectionRef)}
         id=${this.section.id}

@@ -53,14 +53,13 @@ import { createTemporaryAnswer } from "../../shared/answer_utils";
 import { RouterService } from "../../services/router.service";
 import { SnackbarService } from "../../services/snackbar.service";
 import { FirebaseService } from "../../services/firebase.service";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
  */
 @customElement("lumi-questions")
-export class LumiQuestions extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles];
-
+export class LumiQuestions extends LightMobxLitElement {
   private readonly analyticsService = core.getService(AnalyticsService);
   private readonly dialogService = core.getService(DialogService);
   private readonly documentStateService = core.getService(DocumentStateService);
@@ -321,7 +320,12 @@ export class LumiQuestions extends MobxLitElement {
       return html` ${this.renderBackButton()} ${this.renderHistory()} `;
     }
 
-    return html`${this.renderSearch()} ${this.renderHistory()} `;
+    return html`
+      <style>
+        ${styles}
+      </style>
+      ${this.renderSearch()} ${this.renderHistory()}
+    `;
   }
 }
 

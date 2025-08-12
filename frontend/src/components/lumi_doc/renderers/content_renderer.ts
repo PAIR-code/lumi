@@ -37,6 +37,7 @@ import { renderContentSummary } from "./content_summary_renderer";
 import { CollapseManager } from "../../../shared/collapse_manager";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
+import { LumiFont } from "../../../shared/constants";
 
 export interface ContentRendererProperties {
   parentComponent: LitElement;
@@ -60,6 +61,7 @@ export interface ContentRendererProperties {
   ) => void;
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
   onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
+  font?: LumiFont;
 }
 
 function renderSpans(
@@ -80,6 +82,7 @@ function renderSpans(
       onPaperReferenceClick: props.onPaperReferenceClick,
       onFootnoteClick: props.onFootnoteClick,
       onAnswerHighlightClick: props.onAnswerHighlightClick,
+      font: props.font,
     });
 
     const { focusState } = getFocusState(props.focusedSpanId, [span.id]);
