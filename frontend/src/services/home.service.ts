@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { LumiDoc } from "../shared/lumi_doc";
 import { action, makeObservable, observable } from "mobx";
 
 import { FirebaseService } from "./firebase.service";
@@ -28,25 +27,6 @@ interface ServiceProvider {
 export class HomeService extends Service {
   constructor(private readonly sp: ServiceProvider) {
     super();
-    makeObservable(this, {
-      documents: observable.shallow,
-      addDocument: action,
-    });
-  }
-
-  // observable.shallow functions similarly to obsevable.ref except for collections.
-  // I.e. this list will be made observable, but its contents will not.
-  documents: LumiDoc[] = [];
-
-  addDocument(doc: LumiDoc) {
-    // Avoid adding duplicates
-    const paperExists = this.documents.find(
-      (d) =>
-        d.metadata?.paperId === doc.metadata?.paperId &&
-        d.metadata?.version === doc.metadata?.version
-    );
-    if (!paperExists) {
-      this.documents.push(doc);
-    }
+    makeObservable(this, {});
   }
 }
