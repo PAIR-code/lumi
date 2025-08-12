@@ -187,11 +187,11 @@ export class HomeGallery extends MobxLitElement {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
     ).map(item => item.metadata);
-
+    const papersToShow = this.homeService.currentMetadata ?? historyItems;
     return html`
       ${this.renderLinkInput()}
       ${this.renderCollectionMenu()}
-      ${this.renderCollection(historyItems)}
+      ${this.renderCollection(papersToShow)}
     `;
   }
 
@@ -225,6 +225,10 @@ export class HomeGallery extends MobxLitElement {
 
   private renderCollection(items: ArxivMetadata[]) {
     const renderItem = (metadata: ArxivMetadata) => {
+      if (!metadata) {
+        return html`<paper-card></paper-card>`;
+      }
+
       const navigate = () => {
         this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
           document_id: metadata.paperId,
@@ -309,6 +313,7 @@ export class PaperCard extends MobxLitElement {
   @property({ type: String }) status = '';
 
   override render() {
+    // TODO: Render loading state for paper card if no metadata
     if (!this.metadata) {
       return nothing;
     }

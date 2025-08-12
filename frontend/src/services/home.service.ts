@@ -71,6 +71,12 @@ export class HomeService extends Service {
     return this.currentCollection?.collectionId;
   }
 
+  get currentMetadata() {
+    return this.currentCollection?.paperIds.map(
+      id => this.paperToMetadataMap[id]
+    ) ?? undefined;
+  }
+
   /**
    * Fetches `arxiv_collections` documents from Firestore
    * (called on home page load), then sets current collection
