@@ -201,7 +201,7 @@ export class AnswerItem extends LightMobxLitElement {
             onSpanSummaryMouseLeave: () => {},
             onSpanReferenceClicked:
               this.onAnswerSpanReferenceClicked.bind(this),
-            noGrid: true,
+            dense: true,
           });
         })}
       </div>

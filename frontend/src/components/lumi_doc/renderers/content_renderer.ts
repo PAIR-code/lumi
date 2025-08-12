@@ -61,7 +61,7 @@ export interface ContentRendererProperties {
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
   onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   font?: LumiFont;
-  noGrid?: boolean; // whether to wrap the content in grid layout
+  dense?: boolean; // whether to render the content to fill parent with lower density
 }
 
 function renderSpans(
@@ -204,6 +204,7 @@ export function renderContent(props: ContentRendererProperties) {
     "main-content": true,
     "pre-container": props.content.textContent?.tagName === "pre",
     "code-container": props.content.textContent?.tagName === "code",
+    dense: props.dense ?? false,
   };
 
   const isCollapsed = props.collapseManager.getMobileSummaryCollapseState(
@@ -222,9 +223,9 @@ export function renderContent(props: ContentRendererProperties) {
     ["is-figure-content"]: isFigureContent,
   };
 
-  const shouldRenderGrid = !props.noGrid;
   const outerContainerclasses = classMap({
-    "content-renderer-grid-container": shouldRenderGrid,
+    "content-renderer-grid-container": true,
+    ["dense"]: props.dense ?? false,
   });
 
   return html`
