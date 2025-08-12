@@ -219,7 +219,6 @@ export class LumiQuestions extends LightMobxLitElement {
           title="Ask Lumi"
           icon="search"
           ?disabled=${!this.query || isLoading}
-          .loading=${isNonSummaryAnswerLoading}
           @click=${this.handleSearch}
           variant="outlined"
         ></pr-icon-button>
