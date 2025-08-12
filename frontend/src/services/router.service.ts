@@ -58,6 +58,10 @@ export class RouterService extends Service {
       path: "/settings",
     },
     {
+      name: Pages.COLLECTION,
+      path: "/collections/:collection_id",
+    },
+    {
       name: Pages.ARXIV_DOCUMENT,
       path: "/arxiv/:document_id",
     },
@@ -104,8 +108,12 @@ export class RouterService extends Service {
         this.activeRoute.path
       );
     }
-    if (this.getPage(this.activeRoute) === Pages.HOME) {
-      this.sp.homeService.loadCollections();
+
+    // If gallery page, load collections
+    const currentPage = this.getPage(this.activeRoute);
+    if (currentPage === Pages.HOME || currentPage === Pages.COLLECTION) {
+      const currentCollectionId = this.activeRoute.params["collection_id"];
+      this.sp.homeService.loadCollections(currentCollectionId);
     }
   }
 
@@ -153,6 +161,7 @@ export type RouteChange = router5.SubscribeState;
  */
 export enum Pages {
   ARXIV_DOCUMENT = "ARXIV",
+  COLLECTION = "COLLECTION",
   HOME = "HOME",
   SETTINGS = "SETTINGS",
 }

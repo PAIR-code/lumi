@@ -19,12 +19,14 @@ import { action, makeObservable, observable } from "mobx";
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
   where
 } from "firebase/firestore";
 import { ArxivCollection } from "../shared/lumi_collection";
+import { ArxivMetadata } from "../shared/lumi_doc";
 
 import { FirebaseService } from "./firebase.service";
 import { Service } from "./service";
@@ -38,8 +40,10 @@ export class HomeService extends Service {
     super();
     makeObservable(this, {
       collections: observable,
+      currentCollection: observable,
       hasLoadedCollections: observable,
       isLoadingCollections: observable,
+      paperToMetadataMap: observable,
     });
   }
 
@@ -48,28 +52,74 @@ export class HomeService extends Service {
   hasLoadedCollections = false;
   isLoadingCollections = false;
 
+  // Map of paper ID to arXiv metadata
+  paperToMetadataMap: Record<string, ArxivMetadata> = {};
+
+  // Current collection based on page route (undefined if home page)
+  currentCollection: ArxivCollection|undefined = undefined;
+
+  /** Sets current collection (called from loadCollections). */
+  setCurrentCollection(currentCollectionId: string|undefined) {
+    this.currentCollection = this.collections.find(
+      collection => collection.collectionId === currentCollectionId
+    );
+    // Load papers for current collection
+    this.loadMetadata(this.currentCollection?.paperIds ?? []);
+  }
+
+  get currentCollectionId() {
+    return this.currentCollection?.collectionId;
+  }
+
   /**
    * Fetches `arxiv_collections` documents from Firestore
-   * (called on home page load)
+   * (called on home page load), then sets current collection
    * @param forceReload Whether to fetch documents even if previously fetched
    */
-  async loadCollections(forceReload = false) {
-    if (this.hasLoadedCollections && !forceReload) {
-      return;
+  async loadCollections(
+    currentCollectionId: string|undefined,
+    forceReload = false
+  ) {
+    // First, load collections
+    if (!this.hasLoadedCollections || forceReload) {
+      this.isLoadingCollections = true;
+      try {
+        this.collections = (await getDocs(
+          query(
+            collection(this.sp.firebaseService.firestore, 'arxiv_collections'),
+            where('priority', '>=', 0),
+            orderBy('priority', 'desc'),
+          ),
+        )).docs.map((doc) => doc.data() as ArxivCollection);
+        this.hasLoadedCollections = true;
+      } catch (e) {
+        console.log(e);
+      }
+      this.isLoadingCollections = false;
     }
+    // Then. set current collection
+    this.setCurrentCollection(currentCollectionId);
+  }
 
-    this.isLoadingCollections = true;
-    try {
-      this.collections = (await getDocs(
-        query(
-          collection(this.sp.firebaseService.firestore, 'arxiv_collections'),
-          where('priority', '>=', 0),
-          orderBy('priority', 'desc'),
-        ),
-      )).docs.map((doc) => doc.data() as ArxivCollection);
-      this.hasLoadedCollections = true;
-    } catch (e) {
-      console.log(e);
+  /**
+   * Fetches `arxiv_metadata` document matching each given paper ID
+   * and stores in paperMap
+   * @param paperIds documents to load
+   * @param forceReload Whether to fetch documents even if previously fetched
+   */
+  async loadMetadata(paperIds: string[], forceReload = false) {
+    for (const paperId of paperIds) {
+      if (this.paperToMetadataMap[paperId] && !forceReload) {
+        break;
+      }
+      try {
+        const metadata = (await getDoc(
+          doc(this.sp.firebaseService.firestore, 'arxiv_metadata', paperId)
+        )).data() as ArxivMetadata;
+        this.paperToMetadataMap[paperId] = metadata;
+      } catch (e) {
+        console.log(`Error loading ${paperId}: ${e}`);
+      }
     }
   }
 }

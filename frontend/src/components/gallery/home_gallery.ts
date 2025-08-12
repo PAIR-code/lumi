@@ -205,8 +205,19 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderCollectionNavItem(collection: ArxivCollection) {
+    const classes = classMap({
+      "nav-item": true,
+      "active": collection.collectionId === this.homeService.currentCollectionId
+    });
+
+    const navigate = () => {
+      this.routerService.navigate(
+        Pages.COLLECTION, { 'collection_id': collection.collectionId }
+      );
+    };
+
     return html`
-      <div class="nav-item" role="button">
+      <div class=${classes} role="button" @click=${navigate}>
         ${collection.title}
       </div>
     `;
