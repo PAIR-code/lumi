@@ -29,6 +29,11 @@ import { classMap } from "lit/directives/class-map.js";
 
 import { styles } from "./lumi_span.scss";
 import { styles as rendererStyles } from "./lumi_span_renderer.scss";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import {
+  LumiSpanRendererProperties,
+  renderLumiSpan,
+} from "./lumi_span_renderer";
 
 /**
  * A span visualization in the Lumi visualization.
@@ -41,18 +46,7 @@ import { styles as rendererStyles } from "./lumi_span_renderer.scss";
  * work correctly across component boundaries.
  */
 @customElement("lumi-span")
-export class LumiSpanViz extends MobxLitElement {
-  static override styles: CSSResultGroup = [
-    styles,
-    rendererStyles,
-    css`
-      :host {
-        display: inline;
-        position: relative;
-      }
-    `,
-  ];
-
+export class LumiSpanViz extends LightMobxLitElement {
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
 
@@ -63,6 +57,7 @@ export class LumiSpanViz extends MobxLitElement {
   @property({ type: Boolean }) monospace = false;
   @property({ type: String }) focusState = FocusState.DEFAULT;
   @property({ type: Object }) classMap: { [key: string]: boolean } = {};
+  @property({ type: Object }) spanProperties!: LumiSpanRendererProperties;
 
   // Can be passed if this span should be excluded from the scroll context.
   @property({ type: Boolean }) noScrollContext = false;
@@ -103,12 +98,15 @@ export class LumiSpanViz extends MobxLitElement {
 
   override render() {
     return html`
+      <style>
+        ${styles}
+      </style>
       <span
         ${ref(this.spanRef)}
         id=${this.span.id}
         class=${classMap(this.getSpanClassesObject())}
       >
-        <slot></slot>
+        ${renderLumiSpan(this.spanProperties)}
       </span>
     `;
   }

@@ -19,6 +19,11 @@
 @use "./sass/common";
 @use "./sass/typescale";
 
+lumi-app {
+  @include common.full-percentage;
+  display: block;
+}
+
 :host,
 .app-wrapper,
 main,

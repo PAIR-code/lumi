@@ -18,7 +18,7 @@
 
 $mobile-sidebar-collapsed-height: 98px;
 
-:host {
+lumi-reader {
   @include common.full-percentage;
   display: flex;
   overflow: auto;
@@ -26,39 +26,40 @@ $mobile-sidebar-collapsed-height: 98px;
   @include common.viewport-small {
     flex-direction: column;
   }
-}
 
-.sidebar-wrapper {
-  min-width: 280px;
-  max-width: 320px;
-  width: 35%;
+  .sidebar-wrapper {
+    min-width: 280px;
+    max-width: 320px;
+    width: 35%;
 
-  z-index: 1;
+    z-index: 1;
 
-  flex-shrink: 0;
-  height: 100%;
+    flex-shrink: 0;
+    height: 100%;
 
-  @include common.viewport-small {
-    min-width: inherit;
-    max-width: inherit;
-    width: inherit;
+    @include common.viewport-small {
+      min-width: inherit;
+      max-width: inherit;
+      width: inherit;
 
-    height: min-content;
-    max-height: 65%;
-    border-bottom: common.$border;
+      height: min-content;
+      max-height: 65%;
+      border-bottom: common.$border;
 
-    &.is-mobile-sidebar-collapsed {
-      height: $mobile-sidebar-collapsed-height;
-      max-height: $mobile-sidebar-collapsed-height;
+      &.is-mobile-sidebar-collapsed {
+        height: $mobile-sidebar-collapsed-height;
+        max-height: $mobile-sidebar-collapsed-height;
+      }
     }
   }
-}
 
-.doc-wrapper {
-  flex-grow: 1;
-  overflow-y: auto;
-}
+  .doc-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
 
-.doc-wrapper {
-  height: 100%;
+  .doc-wrapper {
+    height: 100%;
+  }
+
 }

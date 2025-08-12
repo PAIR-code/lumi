@@ -37,7 +37,9 @@
 
   .abstract-header {
     @include common.flex-row-align-center;
+    @include typescale.headline-large;
     @include common.lumi-paper-text-font;
+    gap: common.$spacing-small;
     margin: 0;
 
     @include common.viewport-small {

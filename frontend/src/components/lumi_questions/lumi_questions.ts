@@ -53,14 +53,13 @@ import { createTemporaryAnswer } from "../../shared/answer_utils";
 import { RouterService } from "../../services/router.service";
 import { SnackbarService } from "../../services/snackbar.service";
 import { FirebaseService } from "../../services/firebase.service";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
  */
 @customElement("lumi-questions")
-export class LumiQuestions extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles];
-
+export class LumiQuestions extends LightMobxLitElement {
   private readonly analyticsService = core.getService(AnalyticsService);
   private readonly dialogService = core.getService(DialogService);
   private readonly documentStateService = core.getService(DocumentStateService);
@@ -308,7 +307,7 @@ export class LumiQuestions extends MobxLitElement {
           .icon=${"arrow_back"}
           variant="default"
         ></pr-icon-button>
-        <span>Answers</span>
+        <div class="all-answers-title">Answers</div>
       </div>
     `;
   }
@@ -318,10 +317,22 @@ export class LumiQuestions extends MobxLitElement {
     const isLoading = this.historyService.isAnswerLoading;
 
     if (this.isHistoryShowAll) {
-      return html` ${this.renderBackButton()} ${this.renderHistory()} `;
+      return html`<style>
+          ${styles}
+        </style>
+        <div class="lumi-questions-host">
+          ${this.renderBackButton()} ${this.renderHistory()}
+        </div>`;
     }
 
-    return html`${this.renderSearch()} ${this.renderHistory()} `;
+    return html`
+      <style>
+        ${styles}
+      </style>
+      <div class="lumi-questions-host">
+        ${this.renderSearch()} ${this.renderHistory()}
+      </div>
+    `;
   }
 }
 

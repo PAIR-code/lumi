@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-@use "../../../sass/common";
-@use "../../../sass/typescale";
+import { MobxLitElement } from "@adobe/lit-mobx";
 
-.references-renderer-container {
-  @include common.lumi-doc-grid;
-
-  .references {
-    grid-column: common.$content-grid-col;
-    padding-bottom: common.$spacing-xl;
-
-    @include common.flex-column;
-    gap: common.$spacing-xl;
-
-    @include common.lumi-paper-text-font;
-
-    .references-header {
-      @include common.flex-row-align-center;
-      @include typescale.headline-large;
-      @include common.lumi-paper-text-font;
-      margin: 0;
-
-      @include common.viewport-small {
-        font-size: common.$mobile-header-font-size;
-      }
-    }
+export class LightMobxLitElement extends MobxLitElement {
+  // Override createRenderRoot to return the element itself,
+  // effectively rendering to the Light DOM instead of Shadow DOM.
+  createRenderRoot() {
+    return this;
   }
 }

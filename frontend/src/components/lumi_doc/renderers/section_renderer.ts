@@ -27,7 +27,6 @@ import {
 } from "../../../shared/lumi_doc";
 import { LumiSummaryMaps } from "../../../shared/lumi_summary_maps";
 import { renderContent } from "./content_renderer";
-import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { HighlightSelection } from "../../../shared/selection_utils";
 
@@ -37,6 +36,7 @@ import { CollapseManager } from "../../../shared/collapse_manager";
 import { getAllContents } from "../../../shared/lumi_doc_utils";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
+import { LumiFont } from "../../../shared/constants";
 
 const EMPTY_PLACEHOLDER_TEXT = "section";
 
@@ -151,8 +151,9 @@ function getSpanIdsFromContent(content: LumiContent): string[] {
 }
 
 function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
-  return html`<lumi-span .span=${span}
-    >${renderLumiSpan({
+  return html`<lumi-span
+    .span=${span}
+    .spanProperties=${{
       span,
       highlightManager: props.highlightManager,
       answerHighlightManager: props.answerHighlightManager,
@@ -160,8 +161,8 @@ function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
       footnotes: props.footnotes,
       onPaperReferenceClick: props.onPaperReferenceClick,
       onFootnoteClick: props.onFootnoteClick,
-    })}</lumi-span
-  >`;
+    }}
+  ></lumi-span>`;
 }
 
 function renderSectionSummaryPanel(
@@ -296,6 +297,7 @@ function renderContents(
         onAnswerHighlightClick,
         onPaperReferenceClick,
         onFootnoteClick,
+        font: LumiFont.PAPER_TEXT,
       });
     })}
     ${renderSubsections(props)}

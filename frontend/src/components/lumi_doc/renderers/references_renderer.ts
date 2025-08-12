@@ -18,11 +18,11 @@
 import { html, nothing, TemplateResult } from "lit";
 import { classMap } from "lit/directives/class-map.js";
 import { LumiReference } from "../../../shared/lumi_doc";
-import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 
 import "../../lumi_span/lumi_span";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { HighlightManager } from "../../../shared/highlight_manager";
+import { LumiFont } from "../../../shared/constants";
 
 export interface ReferencesRendererProperties {
   references: LumiReference[];
@@ -46,12 +46,13 @@ function renderReference(
     id=${reference.id}
     class=${lumiSpanClasses}
     .span=${reference.span}
-    >${renderLumiSpan({
+    .spanProperties=${{
       span: reference.span,
       highlightManager,
       answerHighlightManager,
-    })}</lumi-span
-  >`;
+      font: LumiFont.PAPER_TEXT,
+    }}
+  ></lumi-span>`;
 }
 
 export function renderReferences(
@@ -62,7 +63,7 @@ export function renderReferences(
   return html`
     <div class="references-renderer-container">
       <div class="references">
-        <h2 class="header">
+        <h2 class="references-header">
           <pr-icon-button
             variant="default"
             @click=${() => {

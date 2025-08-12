@@ -17,25 +17,22 @@
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 
 import { LumiConcept, LumiSpan } from "../../shared/lumi_doc";
 import { getSelectionInfo, SelectionInfo } from "../../shared/selection_utils";
-import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
 
 import { styles } from "./lumi_concept.scss";
-import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * Displays a Lumi Concept.
  */
 @customElement("lumi-concept")
-export class LumiConceptViz extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles, spanRendererStyles];
-
+export class LumiConceptViz extends LightMobxLitElement {
   @property({ type: Object }) concept!: LumiConcept;
   @property({ type: Object }) labelsToShow: string[] = [];
   @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
@@ -69,9 +66,9 @@ export class LumiConceptViz extends MobxLitElement {
     const icon = this.isCollapsed ? "chevron_right" : "expand_more";
 
     return html`
-      <div class="header" @click=${this.toggleCollapse}>
+      <div class="lumi-concept-header" @click=${this.toggleCollapse}>
         <pr-icon-button variant="default" .icon=${icon}></pr-icon-button>
-        <h2 class="heading">${this.concept.name}</h2>
+        <h2 class="lumi-concept-heading">${this.concept.name}</h2>
       </div>
       ${this.isCollapsed ? nothing : this.renderContents()}
     `;
@@ -87,13 +84,16 @@ export class LumiConceptViz extends MobxLitElement {
         innerTags: [],
       };
 
-      const spanContent = renderLumiSpan({ span: tempSpan });
-
-      return html`<div class="content">
-        <lumi-span .span=${tempSpan} .noScrollContext=${true}
-          >${spanContent}</lumi-span
-        >
-      </div>`;
+      return html` <style>
+          ${styles}
+        </style>
+        <div class="lumi-concept-content">
+          <lumi-span
+            .span=${tempSpan}
+            .noScrollContext=${true}
+            .spanProperties=${{ span: tempSpan }}
+          ></lumi-span>
+        </div>`;
     });
   }
 }

@@ -19,7 +19,6 @@ import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { FootnoteTooltipProps } from "../../services/floating_panel_service";
-import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { styles } from "./footnote_tooltip.scss";
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
@@ -43,9 +42,10 @@ export class FootnoteTooltip extends MobxLitElement {
 
     return html`
       <div class="footnote-tooltip-component">
-        <lumi-span .span=${footnote.span}
-          >${renderLumiSpan({ span: footnote.span })}</lumi-span
-        >
+        <lumi-span
+          .span=${footnote.span}
+          .spanProperties=${{ span: footnote.span }}
+        ></lumi-span>
       </div>
     `;
   }

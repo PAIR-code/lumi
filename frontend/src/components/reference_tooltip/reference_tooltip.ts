@@ -20,7 +20,6 @@ import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { ReferenceTooltipProps } from "../../services/floating_panel_service";
-import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import "../lumi_span/lumi_span";
 
 import { styles } from "./reference_tooltip.scss";
@@ -41,12 +40,14 @@ export class ReferenceTooltip extends MobxLitElement {
     }
 
     const referenceContent = this.props.reference.span;
-    const lumiSpanRenderer = renderLumiSpan({
-      span: referenceContent,
-    });
 
     return html`<div class="reference-tooltip-component">
-      <lumi-span .span=${referenceContent}>${lumiSpanRenderer}</lumi-span>
+      <lumi-span
+        .span=${referenceContent}
+        .spanProperties=${{
+          span: referenceContent,
+        }}
+      ></lumi-span>
     </div>`;
   }
 }

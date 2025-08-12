@@ -24,7 +24,6 @@ import { FigureContent, ImageContent, LumiSpan } from "../../shared/lumi_doc";
 import "../lumi_span/lumi_span";
 
 import { styles } from "./lumi_image_content.scss";
-import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 import { makeObservable, observable } from "mobx";
 import { classMap } from "lit/directives/class-map.js";
 import { HighlightManager } from "../../shared/highlight_manager";
@@ -103,13 +102,14 @@ export class LumiImageContent extends MobxLitElement {
     }
     return html`
       <figcaption>
-        <lumi-span .span=${caption}
-          >${renderLumiSpan({
+        <lumi-span
+          .span=${caption}
+          .spanProperties=${{
             span: caption,
             highlightManager: this.highlightManager,
             answerHighlightManager: this.answerHighlightManager,
-          })}</lumi-span
-        >
+          }}
+        ></lumi-span>
       </figcaption>
     `;
   }

@@ -27,7 +27,6 @@ import {
   TextContent,
 } from "../../../shared/lumi_doc";
 import { FocusState } from "../../../shared/types";
-import { renderLumiSpan } from "../../lumi_span/lumi_span_renderer";
 import "../../lumi_span/lumi_span";
 
 import "../../lumi_content/lumi_image_content";
@@ -37,6 +36,7 @@ import { renderContentSummary } from "./content_summary_renderer";
 import { CollapseManager } from "../../../shared/collapse_manager";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
+import { LumiFont } from "../../../shared/constants";
 
 export interface ContentRendererProperties {
   parentComponent: LitElement;
@@ -60,6 +60,8 @@ export interface ContentRendererProperties {
   ) => void;
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
   onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
+  font?: LumiFont;
+  dense?: boolean; // whether to render the content to fill parent with lower density
 }
 
 function renderSpans(
@@ -68,7 +70,7 @@ function renderSpans(
   monospace = false
 ): TemplateResult[] {
   return spans.map((span) => {
-    const spanContent = renderLumiSpan({
+    const spanProperties = {
       span,
       monospace,
       references: props.references,
@@ -80,12 +82,15 @@ function renderSpans(
       onPaperReferenceClick: props.onPaperReferenceClick,
       onFootnoteClick: props.onFootnoteClick,
       onAnswerHighlightClick: props.onAnswerHighlightClick,
-    });
+      font: props.font,
+    };
 
     const { focusState } = getFocusState(props.focusedSpanId, [span.id]);
-    return html`<lumi-span .span=${span} .focusState=${focusState}
-      >${spanContent}</lumi-span
-    >`;
+    return html`<lumi-span
+      .span=${span}
+      .focusState=${focusState}
+      .spanProperties=${spanProperties}
+    ></lumi-span>`;
   });
 }
 
@@ -199,6 +204,7 @@ export function renderContent(props: ContentRendererProperties) {
     "main-content": true,
     "pre-container": props.content.textContent?.tagName === "pre",
     "code-container": props.content.textContent?.tagName === "code",
+    dense: props.dense ?? false,
   };
 
   const isCollapsed = props.collapseManager.getMobileSummaryCollapseState(
@@ -217,8 +223,13 @@ export function renderContent(props: ContentRendererProperties) {
     ["is-figure-content"]: isFigureContent,
   };
 
+  const outerContainerclasses = classMap({
+    "content-renderer-grid-container": true,
+    ["dense"]: props.dense ?? false,
+  });
+
   return html`
-    <div class="content-renderer-grid-container">
+    <div class=${outerContainerclasses}>
       <div class=${classMap(contentRendererContainerClassesObject)}>
         <div
           class=${classMap(mainContentClassesObject)}

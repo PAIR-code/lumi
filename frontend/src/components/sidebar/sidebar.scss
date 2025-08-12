@@ -17,7 +17,7 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-:host {
+.sidebar-host {
   @include common.flex-column;
   @include common.full-percentage;
   background-color: var(--md-sys-color-surface-variant);

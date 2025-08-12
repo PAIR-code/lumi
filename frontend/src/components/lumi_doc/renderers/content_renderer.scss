@@ -20,6 +20,10 @@
 
 .content-renderer-grid-container {
   @include common.lumi-doc-grid;
+
+  &.dense {
+    @include common.flex-column;
+  }
 }
 
 .content-renderer-container {
@@ -53,6 +57,11 @@
 
   .main-content {
     padding: 0 common.$document-content-horizontal-padding;
+
+    &.dense {
+      padding: 0;
+    }
+
     border-radius: common.$spacing-medium;
     overflow-x: auto;
 

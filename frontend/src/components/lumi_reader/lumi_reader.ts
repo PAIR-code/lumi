@@ -52,6 +52,14 @@ import {
 import { LumiAnswer, LumiAnswerRequest } from "../../shared/api";
 
 import { styles } from "./lumi_reader.scss";
+import { styles as sectionRendererStyles } from "../lumi_doc/renderers/section_renderer.scss";
+import { styles as contentRendererStyles } from "../lumi_doc/renderers/content_renderer.scss";
+import { styles as contentSummaryRendererStyles } from "../lumi_doc/renderers/content_summary_renderer.scss";
+import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
+import { styles as abstractRendererStyles } from "../lumi_doc/renderers/abstract_renderer.scss";
+import { styles as referencesRendererStyles } from "../lumi_doc/renderers/references_renderer.scss";
+import { styles as footnotesRendererStyles } from "../lumi_doc/renderers/footnotes_renderer.scss";
+
 import {
   getSelectionInfo,
   HighlightSelection,
@@ -68,13 +76,14 @@ import {
   PERSONAL_SUMMARY_QUERY_NAME,
   SIDEBAR_TABS_MOBILE,
 } from "../../shared/constants";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * The component responsible for fetching a single document and passing it
  * to the lumi-doc component.
  */
 @customElement("lumi-reader")
-export class LumiReader extends MobxLitElement {
+export class LumiReader extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly firebaseService = core.getService(FirebaseService);
@@ -376,39 +385,52 @@ export class LumiReader extends MobxLitElement {
     });
 
     return html`
-      <div
-        class=${sidebarWrapperClasses}
-        @mousedown=${() => {
-          this.floatingPanelService.hide();
-        }}
-      >
-        <lumi-sidebar></lumi-sidebar>
-      </div>
-      <div
-        class="doc-wrapper"
-        @mousedown=${() => {
-          this.floatingPanelService.hide();
-          this.documentStateService.highlightManager?.clearHighlights();
-        }}
-      >
-        <lumi-doc
-          .lumiDocManager=${this.documentStateService.lumiDocManager}
-          .highlightManager=${this.documentStateService.highlightManager}
-          .answerHighlightManager=${this.historyService.answerHighlightManager}
-          .collapseManager=${this.documentStateService.collapseManager}
-          .getImageUrl=${this.getImageUrl.bind(this)}
-          .onConceptClick=${this.handleConceptClick.bind(this)}
-          .onScroll=${this.handleScroll.bind(this)}
-          .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
-            this.documentStateService.focusOnSpan(highlights, "gray");
+      <style>
+        ${styles}
+        ${abstractRendererStyles}
+        ${sectionRendererStyles}
+        ${contentRendererStyles}
+        ${contentSummaryRendererStyles}
+        ${spanRendererStyles}
+        ${referencesRendererStyles}
+        ${footnotesRendererStyles}
+      </style>
+        <div
+          class=${sidebarWrapperClasses}
+          @mousedown=${() => {
+            this.floatingPanelService.hide();
           }}
-          .registerShadowRoot=${this.registerShadowRoot.bind(this)}
-          .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
-          .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
-          .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
-          .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
-        ></lumi-doc>
-      </div>
+        >
+          <lumi-sidebar></lumi-sidebar>
+        </div>
+        <div
+          class="doc-wrapper"
+          @mousedown=${() => {
+            this.floatingPanelService.hide();
+            this.documentStateService.highlightManager?.clearHighlights();
+          }}
+        >
+          <lumi-doc
+            .lumiDocManager=${this.documentStateService.lumiDocManager}
+            .highlightManager=${this.documentStateService.highlightManager}
+            .answerHighlightManager=${this.historyService
+              .answerHighlightManager}
+            .collapseManager=${this.documentStateService.collapseManager}
+            .getImageUrl=${this.getImageUrl.bind(this)}
+            .onConceptClick=${this.handleConceptClick.bind(this)}
+            .onScroll=${this.handleScroll.bind(this)}
+            .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
+              this.documentStateService.focusOnSpan(highlights, "gray");
+            }}
+            .registerShadowRoot=${this.registerShadowRoot.bind(this)}
+            .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
+            .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
+            .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
+            .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(
+              this
+            )}
+          ></lumi-doc>
+        </div>
     `;
   }
 }

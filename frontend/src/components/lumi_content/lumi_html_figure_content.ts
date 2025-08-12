@@ -29,7 +29,6 @@ import {
 } from "./lumi_html_figure_utils";
 
 import { styles } from "./lumi_html_figure_content.scss";
-import { renderLumiSpan } from "../lumi_span/lumi_span_renderer";
 
 /**
  * A component to render sanitized HTML content for figures like tables,
@@ -75,9 +74,10 @@ export class LumiHtmlFigureContent extends MobxLitElement {
     // Assumes a lumi-span component exists to render the caption.
     return html`
       <figcaption>
-        <lumi-span .span=${this.content.caption}
-          >${renderLumiSpan({ span: this.content.caption })}</lumi-span
-        >
+        <lumi-span
+          .span=${this.content.caption}
+          .spanProperties=${{ span: this.content.caption }}
+        ></lumi-span>
       </figcaption>
     `;
   }

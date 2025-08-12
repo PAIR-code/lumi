@@ -94,14 +94,10 @@ export function getSelectionInfo(
     return null;
   }
 
-  // @ts-ignore
-  const composedRanges = selection.getComposedRanges({
-    shadowRoots,
-  });
-  if (composedRanges.length === 0) {
+  const range = selection.getRangeAt(0);
+  if (!range) {
     return null;
   }
-  const range = composedRanges[0];
 
   const startLumiSpan = findParent(
     range.startContainer,

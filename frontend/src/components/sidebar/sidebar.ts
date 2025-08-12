@@ -39,14 +39,13 @@ import {
 import { DialogService } from "../../services/dialog.service";
 import { SIDEBAR_TABS, SIDEBAR_TABS_MOBILE } from "../../shared/constants";
 import { FloatingPanelService } from "../../services/floating_panel_service";
+import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 /**
  * A sidebar component that displays a list of concepts.
  */
 @customElement("lumi-sidebar")
-export class LumiSidebar extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles];
-
+export class LumiSidebar extends LightMobxLitElement {
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly analyticsService = core.getService(AnalyticsService);
@@ -275,7 +274,12 @@ export class LumiSidebar extends MobxLitElement {
 
   override render() {
     return html`
-      ${this.renderContentsDesktop()} ${this.renderContentsMobile()}
+      <style>
+        ${styles}
+      </style>
+      <div class="sidebar-host">
+        ${this.renderContentsDesktop()} ${this.renderContentsMobile()}
+      </div>
     `;
   }
 }

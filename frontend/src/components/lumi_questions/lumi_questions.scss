@@ -21,66 +21,70 @@ $input-container-height: 50px;
 $lumi-questions-gap: common.$spacing-medium;
 $button-height: 32px;
 
-:host {
+.lumi-questions-host {
   @include common.flex-column;
   gap: $lumi-questions-gap;
   height: 100%;
-}
 
-.history-container {
-  @include common.flex-column;
-  gap: common.$spacing-large;
+  .history-container {
+    @include common.flex-column;
+    gap: common.$spacing-large;
 
-  &:not(.is-history-show-all) {
-    height: calc(100% - $button-height - $lumi-questions-gap);
+    &:not(.is-history-show-all) {
+      height: calc(100% - $button-height - $lumi-questions-gap);
 
-    &:not(.show-see-all-button) {
-      height: calc(100%);
+      &:not(.show-see-all-button) {
+        height: calc(100%);
+      }
     }
   }
-}
 
-.search-input {
-  flex-grow: 1;
-}
-
-.history-controls {
-  @include common.flex-row-align-center;
-}
-
-.back-button-container {
-  background: var(--md-sys-color-surface-variant);
-
-  @include common.flex-row-align-center;
-  gap: common.$spacing-medium;
-  position: sticky;
-  top: 0;
-  z-index: 2; // Above answer sticky headings.
-
-  span {
-    @include typescale.label-large;
-  }
-}
-
-.input-container {
-  @include common.flex-row-align-center;
-  padding: common.$spacing-medium common.$sidebar-padding;
-
-  background: var(--md-sys-color-surface);
-  border-radius: common.$border-radius-small;
-  border: common.$border;
-
-  max-width: common.$info-content-max-width;
-  gap: common.$spacing-medium;
-  width: 100%;
-
-  flex-shrink: 0;
-
-  pr-textarea {
+  .search-input {
     flex-grow: 1;
   }
 
-  pr-icon-button {
-    flex-shrink: 1;
+  .history-controls {
+    @include common.flex-row-align-center;
+  }
+
+  .back-button-container {
+    background: var(--md-sys-color-surface-variant);
+
+    @include common.flex-row-align-center;
+    gap: common.$spacing-medium;
+    position: sticky;
+    top: 0;
+    z-index: 2; // Above answer sticky headings.
+
+    span {
+      @include typescale.label-large;
+    }
+  }
+
+  .input-container {
+    @include common.flex-row-align-center;
+    padding: common.$spacing-medium common.$sidebar-padding;
+
+    background: var(--md-sys-color-surface);
+    border-radius: common.$border-radius-small;
+    border: common.$border;
+
+    max-width: common.$info-content-max-width;
+    gap: common.$spacing-medium;
+    width: 100%;
+
+    flex-shrink: 0;
+
+    pr-textarea {
+      flex-grow: 1;
+    }
+
+    pr-icon-button {
+      flex-shrink: 1;
+    }
+  }
+
+  .all-answers-title {
+    @include typescale.label-large;
   }
 }
