@@ -23,11 +23,13 @@ import { Service } from "./service";
 import { AnalyticsService } from "./analytics.service";
 import { DocumentStateService } from "./document_state.service";
 import { HistoryService } from "./history.service";
+import { HomeService } from "./home.service";
 
 interface ServiceProvider {
   analyticsService: AnalyticsService;
   documentStateService: DocumentStateService;
   historyService: HistoryService;
+  homeService: HomeService;
 }
 
 /**
@@ -101,6 +103,9 @@ export class RouterService extends Service {
         this.activePage,
         this.activeRoute.path
       );
+    }
+    if (this.getPage(this.activeRoute) === Pages.HOME) {
+      this.sp.homeService.loadCollections();
     }
   }
 

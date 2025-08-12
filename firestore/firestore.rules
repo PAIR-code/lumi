@@ -17,5 +17,11 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false; // Use Cloud functions
     }
+
+    // arxiv_collections
+    match /arxiv_collections/{collection_id} {
+      allow read: if true;
+      allow write: if false; // Use Cloud functions
+    }
   }
 }

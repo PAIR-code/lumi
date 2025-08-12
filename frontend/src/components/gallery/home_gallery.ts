@@ -32,6 +32,7 @@ import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
 
 import { LumiDoc, LoadingStatus, ArxivMetadata } from "../../shared/lumi_doc";
+import { ArxivCollection } from "../../shared/lumi_collection";
 import {
   requestArxivDocImportCallable,
   RequestArxivDocImportResult,
@@ -189,7 +190,25 @@ export class HomeGallery extends MobxLitElement {
 
     return html`
       ${this.renderLinkInput()}
+      ${this.renderCollectionMenu()}
       ${this.renderCollection(historyItems)}
+    `;
+  }
+
+  private renderCollectionMenu() {
+    const collections = this.homeService.collections;
+    return html`
+      <div class="nav-menu">
+        ${collections.map(collection => this.renderCollectionNavItem(collection))}
+      </div>
+    `;
+  }
+
+  private renderCollectionNavItem(collection: ArxivCollection) {
+    return html`
+      <div class="nav-item" role="button">
+        ${collection.title}
+      </div>
     `;
   }
 
@@ -242,7 +261,7 @@ export class HomeGallery extends MobxLitElement {
         <pr-textarea
           ?disabled=${this.isLoadingMetadata}
           ?focused=${autoFocus}
-          size="large"
+          size="medium"
           .value=${this.paperInput}
           .maxLength=${MAX_IMPORT_URL_LENGTH}
           @change=${(e: CustomEvent) => {

@@ -16,6 +16,15 @@
  */
 
 import { action, makeObservable, observable } from "mobx";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  where
+} from "firebase/firestore";
+import { ArxivCollection } from "../shared/lumi_collection";
 
 import { FirebaseService } from "./firebase.service";
 import { Service } from "./service";
@@ -27,6 +36,40 @@ interface ServiceProvider {
 export class HomeService extends Service {
   constructor(private readonly sp: ServiceProvider) {
     super();
-    makeObservable(this, {});
+    makeObservable(this, {
+      collections: observable,
+      hasLoadedCollections: observable,
+      isLoadingCollections: observable,
+    });
+  }
+
+  // All collections to show in gallery nav
+  collections: ArxivCollection[] = [];
+  hasLoadedCollections = false;
+  isLoadingCollections = false;
+
+  /**
+   * Fetches `arxiv_collections` documents from Firestore
+   * (called on home page load)
+   * @param forceReload Whether to fetch documents even if previously fetched
+   */
+  async loadCollections(forceReload = false) {
+    if (this.hasLoadedCollections && !forceReload) {
+      return;
+    }
+
+    this.isLoadingCollections = true;
+    try {
+      this.collections = (await getDocs(
+        query(
+          collection(this.sp.firebaseService.firestore, 'arxiv_collections'),
+          where('priority', '>=', 0),
+          orderBy('priority', 'desc'),
+        ),
+      )).docs.map((doc) => doc.data() as ArxivCollection);
+      this.hasLoadedCollections = true;
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
