@@ -168,5 +168,8 @@ answer-item {
   justify-content: center;
   padding: 20px 0;
 
-  --md-circular-progress-size: 36px;
+  pr-circular-progress {
+    --pr-color: var(--md-sys-color-primary);
+    opacity: 0.5;
+  }
 }

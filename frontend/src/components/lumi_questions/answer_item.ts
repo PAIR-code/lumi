@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import "@material/web/progress/circular-progress";
 import { html, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
@@ -28,6 +27,7 @@ import { LumiDocManager } from "../../shared/lumi_doc_manager";
 
 import "../../pair-components/icon";
 import "../../pair-components/icon_button";
+import "../../pair-components/circular_progress";
 import "../lumi_span/lumi_span";
 import { renderContent } from "../lumi_doc/renderers/content_renderer";
 
@@ -177,7 +177,7 @@ export class AnswerItem extends LightMobxLitElement {
     if (this.isLoading) {
       return html`
         <div class="spinner">
-          <md-circular-progress indeterminate></md-circular-progress>
+          <pr-circular-progress></pr-circular-progress>
         </div>
       `;
     }
