@@ -63,6 +63,8 @@ export class Header extends MobxLitElement {
     switch (activePage) {
       case Pages.HOME:
         return APP_NAME;
+      case Pages.COLLECTION:
+        return APP_NAME;
       case Pages.SETTINGS:
         return "Settings";
       default:
