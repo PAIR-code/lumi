@@ -29,11 +29,11 @@ export class SnackbarService extends Service {
     this.toastRef = toastRef;
   }
 
-  show(message: string) {
+  show(message: string, time: number = 2500) {
     if (!this.toastRef?.value) {
       console.error("Toast ref not set.");
       return;
     }
-    this.toastRef.value.show(message);
+    this.toastRef.value.show(message, time);
   }
 }

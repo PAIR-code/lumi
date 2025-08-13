@@ -31,7 +31,12 @@ import { Pages, RouterService } from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
 
-import { LumiDoc, LoadingStatus, ArxivMetadata } from "../../shared/lumi_doc";
+import {
+  LumiDoc,
+  LoadingStatus,
+  ArxivMetadata,
+  LOADING_STATUS_ERROR_STATES,
+} from "../../shared/lumi_doc";
 import { ArxivCollection } from "../../shared/lumi_collection";
 import {
   requestArxivDocImportCallable,
@@ -169,7 +174,9 @@ export class HomeGallery extends MobxLitElement {
             this.unsubscribeListeners.delete(paperId);
             this.snackbarService.show("Document loaded.");
           } else if (
-            data.loadingStatus === LoadingStatus.ERROR || 
+            LOADING_STATUS_ERROR_STATES.includes(
+              data.loadingStatus as LoadingStatus
+            ) ||
             data.loadingStatus === LoadingStatus.TIMEOUT
           ) {
             this.historyService.deletePaper(paperId);
@@ -186,11 +193,10 @@ export class HomeGallery extends MobxLitElement {
   override render() {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
-    ).map(item => item.metadata);
+    ).map((item) => item.metadata);
     const papersToShow = this.homeService.currentMetadata ?? historyItems;
     return html`
-      ${this.renderLinkInput()}
-      ${this.renderCollectionMenu()}
+      ${this.renderLinkInput()} ${this.renderCollectionMenu()}
       ${this.renderCollection(papersToShow)}
     `;
   }
@@ -199,7 +205,9 @@ export class HomeGallery extends MobxLitElement {
     const collections = this.homeService.collections;
     return html`
       <div class="nav-menu">
-        ${collections.map(collection => this.renderCollectionNavItem(collection))}
+        ${collections.map((collection) =>
+          this.renderCollectionNavItem(collection)
+        )}
       </div>
     `;
   }
@@ -207,13 +215,13 @@ export class HomeGallery extends MobxLitElement {
   private renderCollectionNavItem(collection: ArxivCollection) {
     const classes = classMap({
       "nav-item": true,
-      "active": collection.collectionId === this.homeService.currentCollectionId
+      active: collection.collectionId === this.homeService.currentCollectionId,
     });
 
     const navigate = () => {
-      this.routerService.navigate(
-        Pages.COLLECTION, { 'collection_id': collection.collectionId }
-      );
+      this.routerService.navigate(Pages.COLLECTION, {
+        collection_id: collection.collectionId,
+      });
     };
 
     return html`
@@ -241,25 +249,21 @@ export class HomeGallery extends MobxLitElement {
         this.historyService.deletePaper(metadata.paperId);
       };
 
-      const status = this.unsubscribeListeners.has(metadata.paperId) ? 'loading' : '';
+      const status = this.unsubscribeListeners.has(metadata.paperId)
+        ? "loading"
+        : "";
       return html`
-        <paper-card
-          .metadata=${metadata}
-          .status=${status}
-          @click=${navigate}
-        >
+        <paper-card .metadata=${metadata} .status=${status} @click=${navigate}>
         </paper-card>
       `;
     };
     const renderEmpty = () => {
-      return html`
-        <div class="empty-message">No papers available</div>
-      `;
+      return html` <div class="empty-message">No papers available</div> `;
     };
 
     return html`
       <div class="preview-gallery">
-        ${items.map(item => renderItem(item))}
+        ${items.map((item) => renderItem(item))}
         ${items.length === 0 ? renderEmpty() : nothing}
       </div>
     `;
@@ -310,7 +314,7 @@ export class PaperCard extends MobxLitElement {
   @property() metadata: ArxivMetadata | null = null;
   @property({ type: Boolean }) disabled = false;
   @property({ type: Number }) summaryMaxCharacters = 250;
-  @property({ type: String }) status = '';
+  @property({ type: String }) status = "";
 
   override render() {
     // TODO: Render loading state for paper card if no metadata
@@ -321,9 +325,10 @@ export class PaperCard extends MobxLitElement {
     const classes = { "preview-item": true, disabled: this.disabled };
 
     // If summary is over max characters, abbreviate
-    const summary = this.metadata.summary.length <= this.summaryMaxCharacters ?
-      this.metadata.summary :
-      `${this.metadata.summary.slice(0, this.summaryMaxCharacters)}...`;
+    const summary =
+      this.metadata.summary.length <= this.summaryMaxCharacters
+        ? this.metadata.summary
+        : `${this.metadata.summary.slice(0, this.summaryMaxCharacters)}...`;
 
     return html`
       <div class=${classMap(classes)}>

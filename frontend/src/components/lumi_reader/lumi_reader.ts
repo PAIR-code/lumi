@@ -34,6 +34,7 @@ import {
   LoadingStatus,
   LumiReference,
   LumiFootnote,
+  LOADING_STATUS_ERROR_STATES,
 } from "../../shared/lumi_doc";
 import {
   getArxivMetadata,
@@ -77,6 +78,7 @@ import {
   SIDEBAR_TABS_MOBILE,
 } from "../../shared/constants";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import { FirebaseError } from "firebase/app";
 
 /**
  * The component responsible for fetching a single document and passing it
@@ -177,10 +179,11 @@ export class LumiReader extends LightMobxLitElement {
             }
           }
 
-          const message =
-            data.loadingStatus === LoadingStatus.ERROR
-              ? `Error loading document: ${this.documentId}`
-              : "Document loaded";
+          const message = LOADING_STATUS_ERROR_STATES.includes(
+            data.loadingStatus as LoadingStatus
+          )
+            ? `Error loading document: ${this.documentId}`
+            : "Document loaded";
           this.snackbarService.show(message);
         } else {
           this.snackbarService.show(`Document ${this.documentId} not found.`);
@@ -272,7 +275,13 @@ export class LumiReader extends LightMobxLitElement {
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
       console.error("Error getting Lumi response:", e);
-      this.snackbarService.show("Error: Could not get response from Lumi.");
+      let message = "Error: Could not get response from Lumi.";
+      if ((e as FirebaseError).code === "functions/resource-exhausted") {
+        message =
+          "Model quota exceeded. Add your own API key in Home > Settings";
+      }
+
+      this.snackbarService.show(message, 5000);
     } finally {
       this.historyService.removeTemporaryAnswer(tempAnswer.id);
     }
@@ -395,42 +404,39 @@ export class LumiReader extends LightMobxLitElement {
         ${referencesRendererStyles}
         ${footnotesRendererStyles}
       </style>
-        <div
-          class=${sidebarWrapperClasses}
-          @mousedown=${() => {
-            this.floatingPanelService.hide();
+      <div
+        class=${sidebarWrapperClasses}
+        @mousedown=${() => {
+          this.floatingPanelService.hide();
+        }}
+      >
+        <lumi-sidebar></lumi-sidebar>
+      </div>
+      <div
+        class="doc-wrapper"
+        @mousedown=${() => {
+          this.floatingPanelService.hide();
+          this.documentStateService.highlightManager?.clearHighlights();
+        }}
+      >
+        <lumi-doc
+          .lumiDocManager=${this.documentStateService.lumiDocManager}
+          .highlightManager=${this.documentStateService.highlightManager}
+          .answerHighlightManager=${this.historyService.answerHighlightManager}
+          .collapseManager=${this.documentStateService.collapseManager}
+          .getImageUrl=${this.getImageUrl.bind(this)}
+          .onConceptClick=${this.handleConceptClick.bind(this)}
+          .onScroll=${this.handleScroll.bind(this)}
+          .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
+            this.documentStateService.focusOnSpan(highlights, "gray");
           }}
-        >
-          <lumi-sidebar></lumi-sidebar>
-        </div>
-        <div
-          class="doc-wrapper"
-          @mousedown=${() => {
-            this.floatingPanelService.hide();
-            this.documentStateService.highlightManager?.clearHighlights();
-          }}
-        >
-          <lumi-doc
-            .lumiDocManager=${this.documentStateService.lumiDocManager}
-            .highlightManager=${this.documentStateService.highlightManager}
-            .answerHighlightManager=${this.historyService
-              .answerHighlightManager}
-            .collapseManager=${this.documentStateService.collapseManager}
-            .getImageUrl=${this.getImageUrl.bind(this)}
-            .onConceptClick=${this.handleConceptClick.bind(this)}
-            .onScroll=${this.handleScroll.bind(this)}
-            .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
-              this.documentStateService.focusOnSpan(highlights, "gray");
-            }}
-            .registerShadowRoot=${this.registerShadowRoot.bind(this)}
-            .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
-            .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
-            .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
-            .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(
-              this
-            )}
-          ></lumi-doc>
-        </div>
+          .registerShadowRoot=${this.registerShadowRoot.bind(this)}
+          .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
+          .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
+          .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
+          .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
+        ></lumi-doc>
+      </div>
     `;
   }
 }

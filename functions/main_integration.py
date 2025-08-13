@@ -173,8 +173,8 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
         print("✅ Status WAITING verified.")
 
         # 2. Verify the trigger moves it to ERROR.
-        error_doc = self._poll_for_status(doc_ref, LoadingStatus.ERROR)
-        self.assertEqual(error_doc["loadingStatus"], LoadingStatus.ERROR)
+        error_doc = self._poll_for_status(doc_ref, LoadingStatus.ERROR_DOCUMENT_LOAD)
+        self.assertEqual(error_doc["loadingStatus"], LoadingStatus.ERROR_DOCUMENT_LOAD)
         print("✅ Status ERROR verified.")
 
     def test_request_arxiv_doc_import_summarize_fails(self):
@@ -207,6 +207,6 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
         print("✅ Status WAITING verified.")
         self._poll_for_status(doc_ref, LoadingStatus.SUMMARIZING)
         print("✅ Status SUMMARIZING verified.")
-        error_doc = self._poll_for_status(doc_ref, LoadingStatus.ERROR)
-        self.assertEqual(error_doc["loadingStatus"], LoadingStatus.ERROR)
+        error_doc = self._poll_for_status(doc_ref, LoadingStatus.ERROR_SUMMARIZING)
+        self.assertEqual(error_doc["loadingStatus"], LoadingStatus.ERROR_SUMMARIZING)
         print("✅ Status ERROR verified.")

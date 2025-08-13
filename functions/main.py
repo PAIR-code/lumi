@@ -37,6 +37,8 @@ from firebase_functions.firestore_fn import (
     DocumentSnapshot,
 )
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
+from google.api_core import exceptions
+
 
 # Local application imports
 from answers import answers
@@ -151,28 +153,66 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
         # Write metadata to "arxiv_metadata" collection
         _save_lumi_metadata(arxiv_id, version, after_data)
         # Import source as LumiDoc
-        _add_lumi_doc(versioned_doc_ref, after_data)
+        try:
+            _add_lumi_doc(versioned_doc_ref, after_data)
+        except exceptions.TooManyRequests as e:
+            _write_error(
+                versioned_doc_ref,
+                after_data,
+                status=LoadingStatus.ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED,
+                error_message=f"Model quota exceeded loading document: {e}",
+            )
+        except Exception as e:
+            _write_error(
+                versioned_doc_ref,
+                after_data,
+                status=LoadingStatus.ERROR_DOCUMENT_LOAD,
+                error_message=f"Error loading document: {e}",
+            )
     elif loading_status == LoadingStatus.SUMMARIZING:
         # Add summaries to existing LumiDoc data
-        _add_summaries_to_lumi_doc(versioned_doc_ref, after_data)
+        try:
+            _add_summaries_to_lumi_doc(versioned_doc_ref, after_data)
+        except exceptions.TooManyRequests as e:
+            _write_error(
+                versioned_doc_ref,
+                after_data,
+                status=LoadingStatus.ERROR_SUMMARIZING_QUOTA_EXCEEDED,
+                error_message=f"Model quota exceeded summarizing document: {e}",
+            )
+        except Exception as e:
+            _write_error(
+                versioned_doc_ref,
+                after_data,
+                status=LoadingStatus.ERROR_SUMMARIZING,
+                error_message=f"Error summarizing document: {e}",
+            )
 
     timer.cancel()
 
 
 def _write_timeout_error(versioned_doc_ref, doc_data):
+    _write_error(
+        versioned_doc_ref=versioned_doc_ref,
+        doc_data=doc_data,
+        status=LoadingStatus.TIMEOUT,
+        error_message="This paper cannot be loaded (time limit exceeded)",
+    )
+
+
+def _write_error(versioned_doc_ref, doc_data, status, error_message):
     """
     This function will be called if the timeout is reached.
     """
     logger.error("Document load timed out")
     doc = convert_keys(doc_data, "camel_to_snake")
-    doc["loading_status"] = LoadingStatus.TIMEOUT
-    doc["loading_error"] = "Paper import exceeded time limit"
+    doc["loading_status"] = status
+    doc["loading_error"] = error_message
     lumi_doc_json = convert_keys(doc, "snake_to_camel")
     versioned_doc_ref.update(lumi_doc_json)
 
     raise https_fn.HttpsError(
-        https_fn.FunctionsErrorCode.DEADLINE_EXCEEDED,
-        "This paper cannot be loaded (time limit exceeded)",
+        https_fn.FunctionsErrorCode.DEADLINE_EXCEEDED, error_message
     )
 
 
@@ -203,29 +243,20 @@ def _add_lumi_doc(versioned_doc_ref, doc_data):
     version = metadata.version
     concepts = extract_concepts.extract_concepts(metadata.summary)
 
-    try:
-        if os.environ.get("FUNCTION_RUN_MODE") == "testing":
-            test_config = doc_data.get("testConfig", {})
-            if test_config.get("importBehavior") == "fail":
-                raise Exception("Simulated import failure via testConfig")
+    if os.environ.get("FUNCTION_RUN_MODE") == "testing":
+        test_config = doc_data.get("testConfig", {})
+        if test_config.get("importBehavior") == "fail":
+            raise Exception("Simulated import failure via testConfig")
 
-        lumi_doc = import_pipeline.import_arxiv_latex_and_pdf(
-            arxiv_id=arxiv_id,
-            version=version,
-            concepts=concepts,
-            metadata=metadata,
-        )
-        lumi_doc.loading_status = LoadingStatus.SUMMARIZING
-        lumi_doc_json = convert_keys(asdict(lumi_doc), "snake_to_camel")
-        versioned_doc_ref.update(lumi_doc_json)
-    except Exception as e:
-        logger.error(f"Error importing doc {arxiv_id}v{version}: {e}")
-        versioned_doc_ref.update(
-            {
-                "loadingStatus": LoadingStatus.ERROR,
-                "loadingError": f"Error importing document: {e}",
-            }
-        )
+    lumi_doc = import_pipeline.import_arxiv_latex_and_pdf(
+        arxiv_id=arxiv_id,
+        version=version,
+        concepts=concepts,
+        metadata=metadata,
+    )
+    lumi_doc.loading_status = LoadingStatus.SUMMARIZING
+    lumi_doc_json = convert_keys(asdict(lumi_doc), "snake_to_camel")
+    versioned_doc_ref.update(lumi_doc_json)
 
 
 def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
@@ -239,33 +270,22 @@ def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
     """
     metadata_dict = doc_data.get("metadata", {})
     metadata = ArxivMetadata(**convert_keys(metadata_dict, "camel_to_snake"))
-    arxiv_id = metadata.paper_id
-    version = metadata.version
 
-    try:
-        if os.environ.get("FUNCTION_RUN_MODE") == "testing":
-            test_config = doc_data.get("testConfig", {})
-            if test_config.get("summaryBehavior") == "fail":
-                time.sleep(2)
-                raise Exception("Simulated summary failure via testConfig")
+    if os.environ.get("FUNCTION_RUN_MODE") == "testing":
+        test_config = doc_data.get("testConfig", {})
+        if test_config.get("summaryBehavior") == "fail":
+            time.sleep(2)
+            raise Exception("Simulated summary failure via testConfig")
 
-        doc = from_dict(
-            data_class=LumiDoc,
-            data=convert_keys(doc_data, "camel_to_snake"),
-            config=Config(check_types=False),
-        )
-        doc.summaries = summaries.generate_lumi_summaries(doc)
-        doc.loading_status = LoadingStatus.SUCCESS
-        lumi_doc_json = convert_keys(asdict(doc), "snake_to_camel")
-        versioned_doc_ref.update(lumi_doc_json)
-    except Exception as e:
-        logger.error(f"Error summarizing doc {arxiv_id}v{version}: {e}")
-        versioned_doc_ref.update(
-            {
-                "loadingStatus": LoadingStatus.ERROR,
-                "loadingError": f"Error summarizing document: {e}",
-            }
-        )
+    doc = from_dict(
+        data_class=LumiDoc,
+        data=convert_keys(doc_data, "camel_to_snake"),
+        config=Config(check_types=False),
+    )
+    doc.summaries = summaries.generate_lumi_summaries(doc)
+    doc.loading_status = LoadingStatus.SUCCESS
+    lumi_doc_json = convert_keys(asdict(doc), "snake_to_camel")
+    versioned_doc_ref.update(lumi_doc_json)
 
 
 @https_fn.on_call()
@@ -472,7 +492,18 @@ def get_lumi_response(req: https_fn.CallableRequest) -> dict:
             "Highlight exceeds max length.",
         )
 
-    lumi_answer = answers.generate_lumi_answer(doc, lumi_request)
+    try:
+        lumi_answer = answers.generate_lumi_answer(doc, lumi_request)
+    except exceptions.TooManyRequests as e:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.RESOURCE_EXHAUSTED,
+            f"Gemini quota exceeded: {e}",
+        )
+    except Exception as e:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.UNAVAILABLE,
+            f"Model call failed: {e}",
+        )
 
     if not _is_locally_emulated():
         _log_query(doc, lumi_answer)
@@ -514,7 +545,19 @@ def get_personal_summary(req: https_fn.CallableRequest) -> dict:
         for p in past_papers_dict
     ]
 
-    summary = personal_summary.get_personal_summary(doc, past_papers)
+    try:
+        summary = personal_summary.get_personal_summary(doc, past_papers)
+    except exceptions.TooManyRequests as e:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.RESOURCE_EXHAUSTED,
+            f"Gemini quota exceeded: {e}",
+        )
+    except Exception as e:
+        raise https_fn.HttpsError(
+            https_fn.FunctionsErrorCode.UNAVAILABLE,
+            f"Model call failed: {e}",
+        )
+
     return convert_keys(asdict(summary), "snake_to_camel")
 
 
