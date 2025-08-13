@@ -22,6 +22,8 @@ import { ConceptTooltipProps } from "../../services/floating_panel_service";
 import { styles } from "./concept_tooltip.scss";
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
+import "../lumi_concept/lumi_concept_contents";
+
 /**
  * A tooltip component to display information about a LumiConcept.
  */
@@ -41,15 +43,9 @@ export class ConceptTooltip extends MobxLitElement {
     return html`
       <div class="concept-tooltip-component">
         <div class="concept-name">${concept.name}</div>
-        <div class="concept-contents">
-          ${concept.contents.map(
-            (content) => html`
-              <div class="content-item">
-                <span class="content-value">${content.value}</span>
-              </div>
-            `
-          )}
-        </div>
+        <lumi-concept-contents
+          .contents=${concept.contents}
+        ></lumi-concept-contents>
       </div>
     `;
   }

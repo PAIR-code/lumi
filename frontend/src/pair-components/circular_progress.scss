@@ -1,6 +1,5 @@
 /**
- * @license
- * Copyright 2025 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@use "../../sass/common";
-@use "../../sass/typescale";
 
-:host {
-  max-width: 300px;
+.loading-spinner {
+  display: inline-block;
+
+  border-bottom: 4px solid transparent;
+  border-left: 4px solid var(--pr-color);
+  border-right: 4px solid var(--pr-color);
+  border-top: 4px solid var(--pr-color);
+  border-radius: 50%;
+  width: var(--pr-spinner-line-height, var(--pr-body-line-height));
+  height: var(--pr-spinner-line-height, var(--pr-body-line-height));
+  animation: loading 2s linear infinite;
 }
 
-.concept-tooltip-component {
-  display: flex;
-  flex-direction: column;
-  gap: common.$spacing-medium;
-  padding: common.$spacing-large;
-
-  max-width: 300px;
-}
-
-.concept-name {
-  @include typescale.label-medium;
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

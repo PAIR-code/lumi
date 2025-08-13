@@ -57,3 +57,5 @@ export enum LumiFont {
 
 // Keep in sync with constants.py
 export const PERSONAL_SUMMARY_QUERY_NAME = "Summary";
+export const CONCEPT_CONTENT_LABEL_DEFINITION = "definition";
+export const CONCEPT_CONTENT_LABEL_RELEVANCE = "relevance";

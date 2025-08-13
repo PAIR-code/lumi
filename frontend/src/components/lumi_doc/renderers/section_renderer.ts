@@ -364,7 +364,9 @@ function renderSectionSummary(props: SectionRendererProperties) {
 export function renderSection(
   props: SectionRendererProperties
 ): TemplateResult | typeof nothing {
-  const { section, isCollapsed, onCollapseChange } = props;
+  if (!props) return nothing;
+
+  const { section } = props;
   if (!section.contents.length && !section.heading?.text) {
     return nothing;
   }

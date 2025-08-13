@@ -27,6 +27,7 @@ import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager
 import "../../lumi_span/lumi_span";
 import "../../../pair-components/icon_button";
 import { LumiFont } from "../../../shared/constants";
+import { LumiAnswer } from "../../../shared/api";
 
 export interface AbstractRendererProperties {
   abstract: LumiAbstract;
@@ -35,6 +36,7 @@ export interface AbstractRendererProperties {
   excerptSpanId?: string;
   highlightManager: HighlightManager;
   answerHighlightManager: AnswerHighlightManager;
+  onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   onConceptClick?: (conceptId: string, target: HTMLElement) => void;
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
   footnotes?: LumiFootnote[];
@@ -50,6 +52,7 @@ export function renderAbstract(
     excerptSpanId = "",
     highlightManager,
     answerHighlightManager,
+    onAnswerHighlightClick,
     onConceptClick,
     onFootnoteClick,
     footnotes,
@@ -89,6 +92,7 @@ export function renderAbstract(
                   span,
                   additionalHighlights: highlights,
                   answerHighlightManager,
+                  onAnswerHighlightClick,
                   highlightManager,
                   onConceptClick,
                   footnotes,

@@ -29,8 +29,9 @@
     @include common.flex-column;
     gap: common.$spacing-medium;
 
-    .header {
+    .footnotes-header {
       @include common.flex-row-align-center;
+      @include typescale.headline-large;
       @include common.lumi-paper-text-font;
       margin: 0 0 common.$spacing-medium 0;
 

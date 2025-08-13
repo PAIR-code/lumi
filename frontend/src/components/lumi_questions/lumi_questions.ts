@@ -200,7 +200,6 @@ export class LumiQuestions extends LightMobxLitElement {
           }}
         ></pr-icon-button>
         <pr-textarea
-          .focused=${true}
           .value=${this.query}
           size=${textareaSize}
           .maxLength=${MAX_QUERY_INPUT_LENGTH}
@@ -220,7 +219,6 @@ export class LumiQuestions extends LightMobxLitElement {
           title="Ask Lumi"
           icon="search"
           ?disabled=${!this.query || isLoading}
-          .loading=${isNonSummaryAnswerLoading}
           @click=${this.handleSearch}
           variant="outlined"
         ></pr-icon-button>
