@@ -226,7 +226,7 @@ export class HomeGallery extends MobxLitElement {
   private renderCollection(items: ArxivMetadata[]) {
     const renderItem = (metadata: ArxivMetadata) => {
       if (!metadata) {
-        return html`<paper-card></paper-card>`;
+        return nothing;
       }
 
       const navigate = () => {
