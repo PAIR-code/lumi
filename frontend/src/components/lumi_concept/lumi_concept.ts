@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-import { LumiConcept, LumiSpan } from "../../shared/lumi_doc";
+import { LumiConcept } from "../../shared/lumi_doc";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
+import "./lumi_concept_contents";
 
 import { styles } from "./lumi_concept.scss";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
@@ -36,7 +36,6 @@ import { LumiAnswer } from "../../shared/api";
 @customElement("lumi-concept")
 export class LumiConceptViz extends LightMobxLitElement {
   @property({ type: Object }) concept!: LumiConcept;
-  @property({ type: Object }) labelsToShow: string[] = [];
   @property({ type: Object }) highlightManager!: HighlightManager;
   @property({ type: Object }) answerHighlightManager!: AnswerHighlightManager;
 
@@ -76,40 +75,29 @@ export class LumiConceptViz extends LightMobxLitElement {
     const icon = this.isCollapsed ? "chevron_right" : "expand_more";
 
     return html`
-      <div class="lumi-concept-header" @click=${this.toggleCollapse}>
-        <pr-icon-button variant="default" .icon=${icon}></pr-icon-button>
-        <h2 class="lumi-concept-heading">${this.concept.name}</h2>
+      <style>
+        ${styles}
+      </style>
+      <div class="lumi-concept-host">
+        <div class="lumi-concept-header" @click=${this.toggleCollapse}>
+          <pr-icon-button variant="default" .icon=${icon}></pr-icon-button>
+          <h2 class="lumi-concept-heading">${this.concept.name}</h2>
+        </div>
+        ${this.isCollapsed ? nothing : this.renderContents()}
       </div>
-      ${this.isCollapsed ? nothing : this.renderContents()}
     `;
   }
 
   private renderContents() {
-    return this.concept.contents.map((content, index) => {
-      if (!this.labelsToShow.includes(content.label)) return html``;
-
-      const tempSpan: LumiSpan = {
-        id: `${this.concept.name}-content-${index}`,
-        text: content.value,
-        innerTags: [],
-      };
-
-      return html` <style>
-          ${styles}
-        </style>
-        <div class="lumi-concept-content">
-          <lumi-span
-            .span=${tempSpan}
-            .noScrollContext=${true}
-            .spanProperties=${{
-              span: tempSpan,
-              highlightManager: this.highlightManager,
-              answerHighlightManager: this.answerHighlightManager,
-              onAnswerHighlightClick: this.onAnswerHighlightClick,
-            }}
-          ></lumi-span>
-        </div>`;
-    });
+    return html`
+      <lumi-concept-contents
+        .contents=${this.concept.contents}
+        .highlightManager=${this.highlightManager}
+        .answerHighlightManager=${this.answerHighlightManager}
+        .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+      >
+      </lumi-concept-contents>
+    `;
   }
 }
 

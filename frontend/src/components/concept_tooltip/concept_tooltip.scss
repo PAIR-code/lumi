@@ -26,21 +26,10 @@
   flex-direction: column;
   gap: common.$spacing-medium;
   padding: common.$spacing-large;
+
+  max-width: 300px;
 }
 
 .concept-name {
-  @include typescale.label-small;
-}
-
-.concept-contents {
-  @include common.flex-column;
-  gap: common.$spacing-small;
-}
-
-.content-item {
-  @include common.flex-column;
-}
-
-.content-value {
-  @include typescale.body-small;
+  @include typescale.label-medium;
 }

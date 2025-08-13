@@ -145,7 +145,6 @@ export class LumiSidebar extends LightMobxLitElement {
             (concept) =>
               html`<lumi-concept
                 .concept=${concept}
-                .labelsToShow=${["description"]}
                 .highlightManager=${this.documentStateService.highlightManager}
                 .answerHighlightManager=${this.historyService
                   .answerHighlightManager}

@@ -41,7 +41,7 @@ export const SIDEBAR_TABS_MOBILE = {
   CONCEPTS: "Concepts",
 };
 
-export const INITIAL_SIDEBAR_TAB_DESKTOP = SIDEBAR_TABS.TOC;
+export const INITIAL_SIDEBAR_TAB_DESKTOP = SIDEBAR_TABS.CONCEPTS;
 export const INITIAL_SIDEBAR_TAB_MOBILE = SIDEBAR_TABS_MOBILE.ANSWERS;
 
 export const HIGHLIGHT_METADATA_ANSWER_KEY = "answer";
@@ -57,3 +57,5 @@ export enum LumiFont {
 
 // Keep in sync with constants.py
 export const PERSONAL_SUMMARY_QUERY_NAME = "Summary";
+export const CONCEPT_CONTENT_LABEL_DEFINITION = "definition";
+export const CONCEPT_CONTENT_LABEL_RELEVANCE = "relevance";

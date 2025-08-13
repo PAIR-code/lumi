@@ -14,34 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-.lumi-concept-host {
-  @include common.flex-column;
-  gap: common.$spacing-xl;
-  padding: common.$spacing-medium common.$spacing-large;
+$header-border-radius: 16px;
 
-  flex-shrink: 0;
+lumi-concept-contents {
+  @include common.flex-column-align-center;
+  gap: common.$spacing-large;
 
-  background: var(--md-sys-color-surface);
-  border-radius: common.$border-radius-medium;
-
-  .lumi-concept-header {
-    @include typescale.title-small;
-    @include common.flex-row-align-center;
-    gap: common.$spacing-small;
-    cursor: pointer;
+  .content-item {
+    @include common.flex-row;
+    gap: common.$spacing-large;
   }
 
-  .lumi-concept-label {
+  .content-title {
     @include typescale.label-small;
+    color: var(--md-sys-color-on-surface-variant);
   }
 
-  .lumi-concept-heading {
-    @include typescale.title-small;
-    margin: 0;
+  .content-value {
+    @include typescale.body-small;
     color: var(--md-sys-color-on-surface-high);
+  }
+
+  .no-show-all-button:last-child {
+    padding-bottom: common.$spacing-xl;
   }
 }

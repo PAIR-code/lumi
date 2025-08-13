@@ -12,45 +12,54 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+from shared.constants import CONCEPT_CONTENT_LABEL_DEFINITION, CONCEPT_CONTENT_LABEL_RELEVANCE
 
-CONCEPT_EXTRACTION_PROMPT = """You are an expert academic assistant tasked with extracting key concepts and terms
-    from research paper abstracts. For each concept, provide its name and a brief
-    description or relevant detail from the abstract.
+CONCEPT_EXTRACTION_PROMPT = f"""You are an expert academic assistant tasked with extracting key concepts and terms
+    from research paper abstracts. For each concept, provide its name and two content items:
+    1. A general definition of the concept.
+    2. Its specific relevance to the provided abstract.
 
     Your output MUST be a JSON object with a single key 'concepts', which contains
     a list of concept objects. Each concept object must have 'name' and 'contents'.
-    The 'contents' field should be a list of objects, where each object has a 'label'
-    (e.g., "description") and a 'value' (the actual description/detail).
+    The 'contents' field should be a list of two objects.
 
-    You should include exactly 1 'content' with the label 'description' for each concept, where the description is
-    a concise definition of the concept, at most 8-16 words.
+    - The first content object MUST have a `label` of "{CONCEPT_CONTENT_LABEL_DEFINITION}" and a `value` containing a concise, general definition of the concept (8-16 words).
+    - The second content object MUST have a `label` of "{CONCEPT_CONTENT_LABEL_RELEVANCE}" and a `value` explaining why this concept is important in the context of this specific paper.
 
     DO NOT include 'id' or 'in_text_citations' in your JSON output; these will be
     handled by the downstream parsing script.
 
     Example JSON output structure:
-    {
+    {{
       "concepts": [
-        {
+        {{
           "name": "Large Language Models",
           "contents": [
-            {
-              "label": "description",
+            {{
+              "label": "{CONCEPT_CONTENT_LABEL_DEFINITION}",
               "value": "Advanced AI models capable of understanding and generating human language."
-            }
+            }},
+            {{
+              "label": "{CONCEPT_CONTENT_LABEL_RELEVANCE}",
+              "value": "This paper uses Large Language Models to develop a new method for semantic search."
+            }}
           ]
-        },
-        {
+        }},
+        {{
           "name": "Semantic Search",
           "contents": [
-            {
-              "label": "description",
+            {{
+              "label": "{CONCEPT_CONTENT_LABEL_DEFINITION}",
               "value": "A search technique that understands the meaning and context of queries."
-            }
+            }},
+            {{
+              "label": "{CONCEPT_CONTENT_LABEL_RELEVANCE}",
+              "value": "The core contribution of this work is a novel semantic search algorithm."
+            }}
           ]
-        }
+        }}
       ]
-    }
+    }}
 """
 
 
