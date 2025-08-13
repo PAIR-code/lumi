@@ -127,8 +127,8 @@ export class LumiSidebar extends LightMobxLitElement {
 
     return html`
       <div class="concepts-container" slot=${SIDEBAR_TABS.CONCEPTS}>
-        <div class="header">
-          <div class="heading">Concepts (${concepts.length + 1})</div>
+        <div class="header concepts">
+          <div class="heading">${concepts.length + 1} concepts</div>
           <pr-icon-button
             variant="default"
             .icon=${toggleAllIcon}
@@ -209,7 +209,6 @@ export class LumiSidebar extends LightMobxLitElement {
     return html`
       <div class="contents-desktop">
         ${this.renderHeader()} ${this.renderQuestions()}
-        <div class="divider"></div>
         <div class="tabs-container">
           <tab-component
             .tabs=${Object.values(SIDEBAR_TABS)}

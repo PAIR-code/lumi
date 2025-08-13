@@ -20,13 +20,10 @@
 
 .lumi-concept-host {
   @include common.flex-column;
-  gap: common.$spacing-xl;
-  padding: common.$spacing-medium common.$spacing-large;
-
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  gap: common.$spacing-medium;
+  padding: common.$spacing-medium;
   flex-shrink: 0;
-
-  background: var(--md-sys-color-surface);
-  border-radius: common.$border-radius-medium;
 
   .lumi-concept-header {
     @include typescale.title-small;
@@ -42,6 +39,13 @@
   .lumi-concept-heading {
     @include typescale.title-small;
     margin: 0;
+    color: var(--md-sys-color-on-surface-high);
+  }
+
+  .lumi-concept-content {
+    @include typescale.body-small;
+
+    display: block;
     color: var(--md-sys-color-on-surface-high);
   }
 }

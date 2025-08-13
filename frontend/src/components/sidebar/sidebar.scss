@@ -69,7 +69,7 @@
   gap: common.$spacing-small;
   padding: 0 common.$sidebar-padding common.$sidebar-padding;
 
-  background: var(--md-sys-color-surface-container);
+  background: var(--md-sys-color-surface-variant);
   z-index: 1; // To be above the lumi answer item responses container
 
   &.mobile {
@@ -97,6 +97,11 @@
   padding-top: common.$spacing-medium;
   padding-bottom: common.$spacing-medium;
   z-index: 1;
+
+  &.concepts {
+    background: none;
+    padding: common.$spacing-medium;
+  }
 }
 
 .heading {
@@ -106,20 +111,18 @@
 }
 
 .concepts-container {
-  @include common.viewport-small {
-    padding: 0 common.$sidebar-padding common.$sidebar-padding;
-  }
-}
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: common.$spacing-medium 0 common.$spacing-medium common.$spacing-medium;
 
-.toc-container {
   @include common.viewport-small {
-    padding: 0 common.$sidebar-padding;
+    border-color: transparent;
+    border-radius: 0;
   }
 }
 
 .concepts-list {
   @include common.flex-column;
-  gap: common.$spacing-large;
 }
 
 .dialog-explanation {
