@@ -140,10 +140,12 @@ h1 {
 .nav-item {
   @include common.flex-row;
   @include typescale.label-medium;
+  align-items: center;
   background: var(--md-sys-color-secondary-container-low);
   border: 2px solid var(--md-sys-color-secondary-container);
   border-radius: common.$spacing-medium;
   color: var(--md-sys-color-secondary);
+  gap: common.$spacing-small;
   min-width: 60px;
   padding: common.$spacing-medium common.$spacing-large;
 
@@ -159,5 +161,13 @@ h1 {
     background: var(--md-sys-color-primary);
     border-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
+
+    pr-icon {
+      --pr-icon-color: var(--md-sys-color-on-primary);
+    }
+  }
+
+  pr-icon {
+    --pr-icon-color: var(--md-sys-color-secondary);
   }
 }

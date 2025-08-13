@@ -16,6 +16,7 @@
  */
 
 import "../../pair-components/textarea";
+import "../../pair-components/icon";
 import "../../pair-components/icon_button";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
@@ -202,8 +203,8 @@ export class HomeGallery extends MobxLitElement {
       case GalleryView.IMPORT:
         return html`
           <div class="center-wrapper">
-            ${this.renderLinkInput()}
             ${this.renderCollectionMenu()}
+            ${this.renderLinkInput()}
             ${this.renderLoadingMessages(historyItems)}
           </div>
         `;
@@ -245,8 +246,27 @@ export class HomeGallery extends MobxLitElement {
     const collections = this.homeService.collections;
     return html`
       <div class="nav-menu">
+        ${this.renderImportNavItem()}
         ${this.renderLocalCollectionNavItem()}
         ${collections.map(collection => this.renderCollectionNavItem(collection))}
+      </div>
+    `;
+  }
+
+  private renderImportNavItem() {
+    const classes = classMap({
+      "nav-item": true,
+      "active": this.routerService.activePage === Pages.HOME,
+    });
+
+    const navigate = () => {
+      this.routerService.navigate(Pages.HOME);
+    };
+
+    return html`
+      <div class=${classes} role="button" @click=${navigate}>
+        <pr-icon icon="new_window" size="small"></pr-icon>
+        <span>Load papers</span>
       </div>
     `;
   }
@@ -263,7 +283,8 @@ export class HomeGallery extends MobxLitElement {
 
     return html`
       <div class=${classes} role="button" @click=${navigate}>
-        My collection
+        <pr-icon icon="bookmarks" size="small"></pr-icon>
+        <span>My collection</span>
       </div>
     `;
   }
@@ -283,7 +304,7 @@ export class HomeGallery extends MobxLitElement {
 
     return html`
       <div class=${classes} role="button" @click=${navigate}>
-        ${collection.title}
+        <span>${collection.title}</span>
       </div>
     `;
   }
