@@ -37,6 +37,14 @@ To run the local emulator:
 firebase emulators:start
 ```
 
+To run with local emulator data:
+
+```
+firebase emulators:start --import .local_emulator_data
+```
+
+To view the hard-coded collection in the emulator, navigate to: http://localhost:4201/#/collections/test_collection
+
 ## Deployment
 
 To deploy functions:
