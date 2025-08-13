@@ -37,7 +37,9 @@ def import_papers(args):
     Iterates through PAPERS_TO_IMPORT and calls the main import script for each.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    main_script_path = os.path.join(script_dir, "..", "functions/import_test_script.py")
+    main_script_path = os.path.join(
+        script_dir, "..", "functions/script_local_import.py"
+    )
 
     # 3. Main Loop
     for arxiv_id, version in PAPERS_TO_IMPORT.items():
