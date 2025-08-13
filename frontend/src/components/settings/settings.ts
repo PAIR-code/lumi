@@ -16,6 +16,7 @@
  */
 
 import "../../pair-components/button";
+import "./tos_content";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html } from "lit";
@@ -51,7 +52,7 @@ export class Settings extends MobxLitElement {
           </pr-button>
         </div>
         <div class="section">
-          <p>Terms of service to be added here.</p>
+          <tos-content></tos-content>
         </div>
       </div>
     `;
