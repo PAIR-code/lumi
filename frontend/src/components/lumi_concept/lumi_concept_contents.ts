@@ -17,10 +17,6 @@
 
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import {
-  CONCEPT_CONTENT_LABEL_DEFINITION,
-  CONCEPT_CONTENT_LABEL_RELEVANCE,
-} from "../../shared/constants";
 import { ConceptContent, LumiSpan } from "../../shared/lumi_doc";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { styles } from "./lumi_concept_contents.scss";
@@ -75,8 +71,6 @@ export class LumiConceptContents extends LightMobxLitElement {
           text: content.value,
           innerTags: [],
         };
-
-        const isLastChild = index === this.contents.length - 1;
 
         return html`
           <div class=${contentItemClasses}>
