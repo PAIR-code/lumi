@@ -49,7 +49,7 @@ export function renderFootnotes(
   return html`
     <div class="footnotes-renderer-container">
       <div class="footnotes">
-        <h2 class="header">
+        <h2 class="footnotes-header">
           <pr-icon-button
             variant="default"
             @click=${() => {
