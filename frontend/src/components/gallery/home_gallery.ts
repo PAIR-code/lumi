@@ -49,6 +49,7 @@ import { makeObservable, observable, ObservableMap } from "mobx";
 import { PaperData } from "../../shared/types_local_storage";
 import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
+import { GalleryView } from "../../shared/types";
 
 /** Gallery for home/landing page */
 @customElement("home-gallery")
@@ -60,6 +61,8 @@ export class HomeGallery extends MobxLitElement {
   private readonly firebaseService = core.getService(FirebaseService);
   private readonly historyService = core.getService(HistoryService);
   private readonly snackbarService = core.getService(SnackbarService);
+
+  @property() galleryView: GalleryView = GalleryView.IMPORT;
 
   // Paper URL or ID for text input box
   @state() private paperInput: string = "";
@@ -191,31 +194,63 @@ export class HomeGallery extends MobxLitElement {
   }
 
   override render() {
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    ).map((item) => item.metadata);
-    const papersToShow = this.homeService.currentMetadata ?? historyItems;
-    return html`
-      ${this.renderLinkInput()} ${this.renderCollectionMenu()}
-      ${this.renderCollection(papersToShow)}
-    `;
+    switch(this.galleryView) {
+      case GalleryView.IMPORT:
+        return html`
+          ${this.renderLinkInput()}
+          ${this.renderCollectionMenu()}
+        `;
+      case GalleryView.CURRENT:
+        const currentPapers = this.homeService.currentMetadata ?? [];
+        return html`
+          ${this.renderCollectionMenu()}
+          ${this.renderCollection(currentPapers)}
+        `;
+      case GalleryView.LOCAL:
+        const historyItems = sortPaperDataByTimestamp(
+          this.historyService.getPaperHistory()
+        ).map(item => item.metadata);
+        return html`
+          ${this.renderCollectionMenu()}
+          ${this.renderCollection(historyItems)}
+        `;
+      default:
+        return nothing;
+    }
   }
 
   private renderCollectionMenu() {
     const collections = this.homeService.collections;
     return html`
       <div class="nav-menu">
-        ${collections.map((collection) =>
-          this.renderCollectionNavItem(collection)
-        )}
+        ${this.renderLocalCollectionNavItem()}
+        ${collections.map(collection => this.renderCollectionNavItem(collection))}
+      </div>
+    `;
+  }
+
+  private renderLocalCollectionNavItem() {
+    const classes = classMap({
+      "nav-item": true,
+      "active": this.routerService.activePage === Pages.LOCAL_STORAGE_COLLECTION
+    });
+
+    const navigate = () => {
+      this.routerService.navigate(Pages.LOCAL_STORAGE_COLLECTION);
+    };
+
+    return html`
+      <div class=${classes} role="button" @click=${navigate}>
+        My collection
       </div>
     `;
   }
 
   private renderCollectionNavItem(collection: ArxivCollection) {
+    const isCurrent = collection.collectionId === this.homeService.currentCollectionId;
     const classes = classMap({
       "nav-item": true,
-      active: collection.collectionId === this.homeService.currentCollectionId,
+      "active": isCurrent && this.routerService.activePage === Pages.COLLECTION
     });
 
     const navigate = () => {

@@ -39,6 +39,8 @@ import { SnackbarService } from "./services/snackbar.service";
 import { styles } from "./app.scss";
 import { LightMobxLitElement } from "./components/light_mobx_lit_element/light_mobx_lit_element";
 
+import { GalleryView } from "./shared/types";
+
 /** App main component. */
 @customElement("lumi-app")
 export class App extends LightMobxLitElement {
@@ -72,7 +74,9 @@ export class App extends LightMobxLitElement {
           </div>
         `;
       case Pages.COLLECTION:
-        return this.renderGallery();
+        return this.renderGallery(GalleryView.CURRENT);
+      case Pages.LOCAL_STORAGE_COLLECTION:
+        return this.renderGallery(GalleryView.LOCAL);
       case Pages.ARXIV_DOCUMENT:
         return html`
           <lumi-reader documentId=${params.document_id}></lumi-reader>
@@ -82,12 +86,12 @@ export class App extends LightMobxLitElement {
     }
   }
 
-  private renderGallery() {
+  private renderGallery(galleryView: GalleryView = GalleryView.IMPORT) {
     return html`
       <page-header></page-header>
       <home-gallery-tabs></home-gallery-tabs>
       <div class="content">
-        <home-gallery></home-gallery>
+        <home-gallery .galleryView=${galleryView}></home-gallery>
       </div>
     `;
   }
