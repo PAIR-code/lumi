@@ -59,6 +59,22 @@ h1 {
   }
 }
 
+.loading-section {
+  @include common.flex-column;
+  @include typescale.body-small;
+  color: var(--md-sys-color-outline);
+  gap: common.$spacing-small;
+}
+
+.center-wrapper {
+  align-items: center;
+  @include common.flex-column;
+  gap: common.$spacing-xl;
+  justify-content: center;
+  flex-grow: 1;
+  width: 100%;
+}
+
 .preview-gallery {
   display: grid;
   gap: common.$spacing-large;

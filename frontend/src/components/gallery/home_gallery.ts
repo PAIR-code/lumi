@@ -26,7 +26,7 @@ import { classMap } from "lit/directives/class-map.js";
 
 import { core } from "../../core/core";
 import { HomeService } from "../../services/home.service";
-import { HistoryService } from "../../services/history.service";
+  import { HistoryService } from "../../services/history.service";
 import { Pages, RouterService } from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
@@ -45,7 +45,7 @@ import {
 import { extractArxivId } from "../../shared/string_utils";
 
 import { styles } from "./home_gallery.scss";
-import { makeObservable, observable, ObservableMap } from "mobx";
+import { makeObservable, observable, ObservableMap, toJS } from "mobx";
 import { PaperData } from "../../shared/types_local_storage";
 import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
@@ -194,11 +194,18 @@ export class HomeGallery extends MobxLitElement {
   }
 
   override render() {
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    ).map(item => item.metadata);
+
     switch(this.galleryView) {
       case GalleryView.IMPORT:
         return html`
-          ${this.renderLinkInput()}
-          ${this.renderCollectionMenu()}
+          <div class="center-wrapper">
+            ${this.renderLinkInput()}
+            ${this.renderCollectionMenu()}
+            ${this.renderLoadingMessages(historyItems)}
+          </div>
         `;
       case GalleryView.CURRENT:
         const currentPapers = this.homeService.currentMetadata ?? [];
@@ -207,9 +214,6 @@ export class HomeGallery extends MobxLitElement {
           ${this.renderCollection(currentPapers)}
         `;
       case GalleryView.LOCAL:
-        const historyItems = sortPaperDataByTimestamp(
-          this.historyService.getPaperHistory()
-        ).map(item => item.metadata);
         return html`
           ${this.renderCollectionMenu()}
           ${this.renderCollection(historyItems)}
@@ -217,6 +221,24 @@ export class HomeGallery extends MobxLitElement {
       default:
         return nothing;
     }
+  }
+
+  private renderLoadingMessages(metadata: ArxivMetadata[]) {
+    return html`
+      <div class="loading-section">
+        ${metadata.map(
+          item => {
+            if (this.unsubscribeListeners.get(item.paperId)) {
+              return html`
+                <div class="loading-message">
+                  Loading <i>${item.title} (${item.paperId})</i>
+                </div>
+              `;
+            }
+          }
+        )}
+      </div>
+    `;
   }
 
   private renderCollectionMenu() {
