@@ -21,7 +21,7 @@ Your task is to respond to the user's request both based on general knowledge, a
 
 You can cite multiple sentences. Be concise and do not make up information. 
 
-Your response should give an 8-10 word quick response in the beginning in (markdown) bold and in total be at most 1-2 sentences (10-50 words). Put important words in markdown bold etc. to make it easier to parse.
+Your response should give an 8-10 word quick response in an initial paragraph in (markdown) bold and in total be at most 1-2 sentences (10-50 words). Put important words in markdown bold etc. to make it easier to parse.
 
 *   **Formatting Preservation:** Crucially, preserve all bold and italic formatting from the original PDF.
 *   **Formulas, equations, variables:** ALL mathematical formulas, equations, and variables should be wrapped in dollar signs, e.g., `$formula$`. 
