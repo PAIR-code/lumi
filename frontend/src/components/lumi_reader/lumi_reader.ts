@@ -85,6 +85,7 @@ import {
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { FirebaseError } from "firebase/app";
 import { RouterService } from "../../services/router.service";
+import { BannerService } from "../../services/banner.service";
 
 const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
   LoadingStatus.SUCCESS,
@@ -109,6 +110,7 @@ export class LumiReader extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly bannerService = core.getService(BannerService);
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly firebaseService = core.getService(FirebaseService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
@@ -153,6 +155,23 @@ export class LumiReader extends LightMobxLitElement {
     if (this.unsubscribeListener) {
       this.unsubscribeListener();
     }
+  }
+
+  private setLoadingStatus(status: LoadingStatus) {
+    if (status === this.loadingStatus) return;
+
+    if (status === LoadingStatus.SUMMARIZING) {
+      this.bannerService.setBannerProperties({
+        message: "Loading summaries...",
+        icon: "hourglass",
+      });
+    } else {
+      if (this.bannerService.isBannerOpen) {
+        this.bannerService.clearBannerProperties();
+      }
+    }
+
+    this.loadingStatus = status;
   }
 
   private registerShadowRoot(shadowRoot: ShadowRoot) {
@@ -200,7 +219,7 @@ export class LumiReader extends LightMobxLitElement {
             this.documentStateService.setDocument(data);
           }
 
-          this.loadingStatus = data.loadingStatus as LoadingStatus;
+          this.setLoadingStatus(data.loadingStatus as LoadingStatus);
           this.metadata = data.metadata;
           this.requestUpdate();
 
@@ -416,7 +435,7 @@ export class LumiReader extends LightMobxLitElement {
 
   private renderLoadingMetadata() {
     return html`<div class="loading-metadata-container status-container">
-      <div class="loading-metadata status-loading-container">
+      <div class="loading-metadata status-inner-container">
         <div class="spinner">
           <pr-circular-progress></pr-circular-progress>
         </div>
