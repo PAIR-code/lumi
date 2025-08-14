@@ -43,6 +43,11 @@
   }
 }
 
+pr-circular-progress {
+  --pr-color: var(--md-sys-color-primary);
+  opacity: 0.5;
+}
+
 @mixin flex-row {
   display: flex;
   flex-direction: row;

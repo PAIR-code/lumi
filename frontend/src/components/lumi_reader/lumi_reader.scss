@@ -62,4 +62,18 @@ lumi-reader {
     height: 100%;
   }
 
+  .loading-metadata-container {
+    @include common.flex-row-align-center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    .loading-metadata {
+      @include common.flex-column-align-center;
+      gap: common.$spacing-large;
+      justify-content: center;
+      color: var(--md-sys-color-on-surface-higher);
+    }
+  }
 }

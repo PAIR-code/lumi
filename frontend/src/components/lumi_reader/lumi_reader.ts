@@ -17,10 +17,12 @@
 
 import "../lumi_doc/lumi_doc";
 import "../sidebar/sidebar";
+import "../loading_document/loading_document";
+import "../../pair-components/circular_progress";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { CSSResultGroup, html, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
 import { provide } from "@lit/context";
 
@@ -35,6 +37,7 @@ import {
   LumiReference,
   LumiFootnote,
   LOADING_STATUS_ERROR_STATES,
+  ArxivMetadata,
 } from "../../shared/lumi_doc";
 import {
   getArxivMetadata,
@@ -79,12 +82,10 @@ import {
 } from "../../shared/constants";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { FirebaseError } from "firebase/app";
+import { RouterService } from "../../services/router.service";
 
 const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
   LoadingStatus.SUCCESS,
-  LoadingStatus.ERROR_SUMMARIZING,
-  LoadingStatus.ERROR_SUMMARIZING_QUOTA_EXCEEDED,
-  LoadingStatus.ERROR_SUMMARIZING_INVALID_RESPONSE,
   LoadingStatus.SUMMARIZING,
 ];
 
@@ -96,17 +97,20 @@ const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
 export class LumiReader extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
+  private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly documentStateService = core.getService(DocumentStateService);
   private readonly firebaseService = core.getService(FirebaseService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly historyService = core.getService(HistoryService);
-  private readonly documentStateService = core.getService(DocumentStateService);
+  private readonly routerService = core.getService(RouterService);
   private readonly snackbarService = core.getService(SnackbarService);
-  private readonly analyticsService = core.getService(AnalyticsService);
 
   @provide({ context: scrollContext })
   private scrollState = new ScrollState();
 
   @property({ type: String }) documentId = "";
+  @state() loadingStatus = LoadingStatus.UNSET;
+  @state() metadata?: ArxivMetadata;
 
   private unsubscribeListener?: Unsubscribe;
 
@@ -177,7 +181,16 @@ export class LumiReader extends LightMobxLitElement {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data() as LumiDoc;
-          this.documentStateService.setDocument(data);
+
+          if (
+            data.loadingStatus === LoadingStatus.SUCCESS ||
+            data.loadingStatus === LoadingStatus.SUMMARIZING
+          ) {
+            this.documentStateService.setDocument(data);
+          }
+
+          this.loadingStatus = data.loadingStatus as LoadingStatus;
+          this.metadata = data.metadata;
           this.requestUpdate();
 
           if (
@@ -189,12 +202,15 @@ export class LumiReader extends LightMobxLitElement {
             }
           }
 
-          const message = LOADING_STATUS_ERROR_STATES.includes(
-            data.loadingStatus as LoadingStatus
-          )
-            ? `Error loading document: ${this.documentId}`
-            : "Document loaded";
-          this.snackbarService.show(message);
+          if (
+            LOADING_STATUS_ERROR_STATES.includes(
+              data.loadingStatus as LoadingStatus
+            )
+          ) {
+            this.snackbarService.show(
+              `Error loading document: ${this.documentId}`
+            );
+          }
         } else {
           this.snackbarService.show(`Document ${this.documentId} not found.`);
         }
@@ -383,26 +399,27 @@ export class LumiReader extends LightMobxLitElement {
     this.floatingPanelService.show(props, target);
   };
 
-  override render() {
-    const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
+  private renderLoadingMetadata() {
+    return html`<div class="loading-metadata-container">
+      <div class="loading-metadata">
+        <div class="spinner">
+          <pr-circular-progress></pr-circular-progress>
+        </div>
+        <span class="loading-metadata-text">Loading document</span>
+      </div>
+    </div>`;
+  }
 
-    // TODO: Add more descriptive/accurate message based on document status
-    if (!currentDoc) return html`<div>Document loading...</div>`;
+  private renderImportingDocumentLoadingState(metadata?: ArxivMetadata) {
+    return html`<loading-document
+      .onBackClick=${() => {
+        this.routerService.navigateToDefault();
+      }}
+      .metadata=${metadata}
+    ></loading-document>`;
+  }
 
-    if (
-      currentDoc.loadingStatus === LoadingStatus.LOADING ||
-      currentDoc.loadingStatus === LoadingStatus.WAITING
-    ) {
-      return html`<div class="loading-message">Loading document...</div>`;
-    }
-
-    const sidebarWrapperClasses = classMap({
-      ["sidebar-wrapper"]: true,
-      ["is-mobile-sidebar-collapsed"]:
-        this.documentStateService.collapseManager?.isMobileSidebarCollapsed ??
-        false,
-    });
-
+  private renderWithStyles(content: TemplateResult) {
     return html`
       <style>
         ${styles}
@@ -414,6 +431,32 @@ export class LumiReader extends LightMobxLitElement {
         ${referencesRendererStyles}
         ${footnotesRendererStyles}
       </style>
+      ${content}
+    `;
+  }
+
+  override render() {
+    if (this.loadingStatus === LoadingStatus.UNSET) {
+      return this.renderWithStyles(this.renderLoadingMetadata());
+    }
+
+    if (
+      this.loadingStatus === LoadingStatus.LOADING ||
+      this.loadingStatus === LoadingStatus.WAITING
+    ) {
+      return this.renderWithStyles(
+        this.renderImportingDocumentLoadingState(this.metadata)
+      );
+    }
+
+    const sidebarWrapperClasses = classMap({
+      ["sidebar-wrapper"]: true,
+      ["is-mobile-sidebar-collapsed"]:
+        this.documentStateService.collapseManager?.isMobileSidebarCollapsed ??
+        false,
+    });
+
+    return this.renderWithStyles(html`
       <div
         class=${sidebarWrapperClasses}
         @mousedown=${() => {
@@ -447,7 +490,7 @@ export class LumiReader extends LightMobxLitElement {
           .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
         ></lumi-doc>
       </div>
-    `;
+    `);
   }
 }
 
