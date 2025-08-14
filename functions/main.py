@@ -166,7 +166,10 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
         DOCUMENT_REQUESTED_FUNCTION_TIMEOUT - DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER
     )
     timer = Timer(delay, _write_timeout_error, args=(versioned_doc_ref, after_data))
-    if loading_status != LoadingStatus.TIMEOUT:
+    if (
+        loading_status == LoadingStatus.WAITING
+        or loading_status == LoadingStatus.SUMMARIZING
+    ):
         timer.start()
 
     if loading_status == LoadingStatus.WAITING:
