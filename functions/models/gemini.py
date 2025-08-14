@@ -27,21 +27,25 @@ client = genai.Client(api_key=api_config.USER_API_KEY)
 T = TypeVar("T")
 
 
-def call_predict(
-    query="The opposite of happy is", model="gemini-2.5-flash-preview-05-20"
-) -> str:
+class GeminiInvalidResponseException(Exception):
+    pass
+
+
+def call_predict(query="The opposite of happy is", model="gemini-2.5-flash") -> str:
     response = client.models.generate_content(
         model=model,
         contents=query,
         config=types.GenerateContentConfig(temperature=0),
     )
+    if not response.text:
+        raise GeminiInvalidResponseException()
     return response.text
 
 
 def call_predict_with_schema(
     query: str,
     response_schema: Type[T],
-    model="gemini-2.5-flash-preview-05-20",
+    model="gemini-2.5-flash",
 ) -> T | List[T] | None:
     """Calls Gemini with a response schema for structured output."""
     start_time = time.time()
@@ -58,6 +62,8 @@ def call_predict_with_schema(
             },
         )
         print(f"  > Gemini with schema call took: {time.time() - start_time:.2f}s")
+        if not response.parsed:
+            raise GeminiInvalidResponseException()
         return response.parsed
     except Exception as e:
         print(f"An error occurred during predict with schema API call: {e}")
@@ -111,6 +117,9 @@ def format_pdf_with_latex(
     print(f"  > Gemini format PDF call took: {time.time() - start_time:.2f}s")
 
     response_text = response.text
+    if not response_text:
+        raise GeminiInvalidResponseException()
+
     if L_REFERENCES_START in response_text and L_REFERENCES_END not in response_text:
         response_text += L_REFERENCES_END
     return response_text

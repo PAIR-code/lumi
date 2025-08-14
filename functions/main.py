@@ -39,6 +39,7 @@ from firebase_functions.firestore_fn import (
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 from google.api_core import exceptions
 
+from models.gemini import GeminiInvalidResponseException
 
 # Local application imports
 from answers import answers
@@ -173,10 +174,11 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
         timer.start()
 
     if loading_status == LoadingStatus.WAITING:
-        # Write metadata to "arxiv_metadata" collection
-        _save_lumi_metadata(arxiv_id, version, after_data)
-        # Import source as LumiDoc
         try:
+            # Write metadata to "arxiv_metadata" collection
+            _save_lumi_metadata(arxiv_id, version, after_data)
+
+            # Import source as LumiDoc
             _add_lumi_doc(versioned_doc_ref, after_data)
         except exceptions.TooManyRequests as e:
             _write_error(
@@ -185,6 +187,13 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
                 status=LoadingStatus.ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED,
                 error_message=f"Model quota exceeded loading document: {e}",
             )
+        except GeminiInvalidResponseException as e:
+            _write_error(
+                versioned_doc_ref,
+                after_data,
+                status=LoadingStatus.ERROR_DOCUMENT_LOAD_INVALID_RESPONSE,
+                error_message=f"Invalid response loading document: {e}",
+            )
         except Exception as e:
             _write_error(
                 versioned_doc_ref,
@@ -192,6 +201,8 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
                 status=LoadingStatus.ERROR_DOCUMENT_LOAD,
                 error_message=f"Error loading document: {e}",
             )
+        finally:
+            timer.cancel()
     elif loading_status == LoadingStatus.SUMMARIZING:
         # Add summaries to existing LumiDoc data
         try:
@@ -203,6 +214,13 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
                 status=LoadingStatus.ERROR_SUMMARIZING_QUOTA_EXCEEDED,
                 error_message=f"Model quota exceeded summarizing document: {e}",
             )
+        except GeminiInvalidResponseException as e:
+            _write_error(
+                versioned_doc_ref,
+                after_data,
+                status=LoadingStatus.ERROR_SUMMARIZING_INVALID_RESPONSE,
+                error_message=f"Invalid response summarizing document: {e}",
+            )
         except Exception as e:
             _write_error(
                 versioned_doc_ref,
@@ -210,8 +228,8 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
                 status=LoadingStatus.ERROR_SUMMARIZING,
                 error_message=f"Error summarizing document: {e}",
             )
-
-    timer.cancel()
+        finally:
+            timer.cancel()
 
 
 def _write_timeout_error(versioned_doc_ref, doc_data):
