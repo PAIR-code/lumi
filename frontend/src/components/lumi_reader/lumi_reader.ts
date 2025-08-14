@@ -80,6 +80,14 @@ import {
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { FirebaseError } from "firebase/app";
 
+const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
+  LoadingStatus.SUCCESS,
+  LoadingStatus.ERROR_SUMMARIZING,
+  LoadingStatus.ERROR_SUMMARIZING_QUOTA_EXCEEDED,
+  LoadingStatus.ERROR_SUMMARIZING_INVALID_RESPONSE,
+  LoadingStatus.SUMMARIZING,
+];
+
 /**
  * The component responsible for fetching a single document and passing it
  * to the lumi-doc component.
@@ -172,7 +180,9 @@ export class LumiReader extends LightMobxLitElement {
           this.documentStateService.setDocument(data);
           this.requestUpdate();
 
-          if (data.loadingStatus === LoadingStatus.SUCCESS) {
+          if (
+            LOADING_STATES_ALLOW_PERSONAL_SUMMARY.includes(data.loadingStatus)
+          ) {
             // Once the document is fully loaded, check for personal summary.
             if (!this.historyService.personalSummaries.has(this.documentId)) {
               this.fetchPersonalSummary();
