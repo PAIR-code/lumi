@@ -20,19 +20,19 @@
 
 :host {
   width: 100%;
-
   @include common.flex-column;
-  gap: common.$spacing-small;
 }
 
 .tabs-header {
   @include common.flex-row;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
-
+  height: max-content;
   position: sticky;
   top: 0;
-  background-color: var(--md-sys-color-surface-variant);
   z-index: 2; // Above sticky headers in tab content
+
+  @include common.viewport-small {
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
 }
 
 .tab-button {
@@ -43,15 +43,33 @@
   flex: 1;
   padding: common.$spacing-small common.$spacing-large;
   background: none;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: common.$spacing-medium common.$spacing-medium 0 0;
   cursor: pointer;
   white-space: nowrap;
   color: var(--md-sys-color-on-surface-higher);
+  transform: translateY(1px);
 
   &.selected {
     color: var(--md-sys-color-primary);
-    border-bottom: 2px solid var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface);
+    border-color: var(--md-sys-color-outline-variant);
+    border-bottom-color: var(--md-sys-color-surface);
     font-weight: 500;
+  }
+
+  @include common.viewport-small {
+    border-right-color: var(--md-sys-color-outline-variant);
+    border-radius: 0;
+    border-top: none;
+    transform: none;
+
+    &.selected {
+      background: var(--md-sys-color-secondary-container);
+      border-top-color: var(--md-sys-color-secondary-container);
+      border-left-color: var(--md-sys-color-secondary-container);
+      border-bottom-color: var(--md-sys-color-secondary-container);
+    }
   }
 }
 

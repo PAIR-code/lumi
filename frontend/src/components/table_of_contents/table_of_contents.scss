@@ -17,15 +17,18 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-$item-border-radius: 8px;
+$item-border-radius: common.$spacing-medium;
 $tab-spacing: common.$spacing-medium;
 
 .toc-container {
   background: var(--md-sys-color-surface);
-  border-radius: $item-border-radius;
+  border-radius: 0 $item-border-radius $item-border-radius $item-border-radius;
   border: 1px solid var(--md-sys-color-outline-variant);
 
-  margin: common.$spacing-large 0;
+  @include common.viewport-small {
+    border-color: transparent;
+    border-radius: 0;
+  }
 }
 
 .toc-list {
