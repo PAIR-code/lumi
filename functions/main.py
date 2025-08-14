@@ -411,13 +411,22 @@ def get_arxiv_metadata(req: https_fn.CallableRequest) -> dict:
             "Incorrect arxiv_id length.",
         )
 
-    metadata_list = fetch_utils.fetch_arxiv_metadata(arxiv_ids=[arxiv_id])
-    if not metadata_list:
+    db = firestore.client()
+    doc_ref = db.collection(_ARXIV_METADATA_COLLECTION).document(arxiv_id)
+    doc = doc_ref.get()
+
+    if not doc.exists:
         raise https_fn.HttpsError(
             https_fn.FunctionsErrorCode.NOT_FOUND,
             "The request paper metadata was not found.",
         )
-    metadata = metadata_list[0]
+
+    metadata_dict = doc.to_dict()
+    metadata = from_dict(
+        data_class=ArxivMetadata,
+        data=convert_keys(metadata_dict, "camel_to_snake"),
+        config=Config(check_types=False),
+    )
 
     return convert_keys(asdict(metadata), "snake_to_camel")
 

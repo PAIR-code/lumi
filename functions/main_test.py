@@ -204,8 +204,8 @@ class TestMainGetArxivMetadata(unittest.TestCase):
     def setUp(self, initialize_app_mock):
         self.client = create_app("get_arxiv_metadata", "main.py").test_client()
 
-    @patch("main.fetch_utils.fetch_arxiv_metadata")
-    def test_get_arxiv_metadata_success(self, mock_fetch):
+    @patch("main.firestore")
+    def test_get_arxiv_metadata_success(self, mock_firestore):
         # Arrange
         mock_metadata = ArxivMetadata(
             paper_id="1234.5678",
@@ -216,7 +216,17 @@ class TestMainGetArxivMetadata(unittest.TestCase):
             updated_timestamp="2023-01-01T00:00:00Z",
             published_timestamp="2023-01-01T00:00:00Z",
         )
-        mock_fetch.return_value = [mock_metadata]
+        mock_metadata_dict = convert_keys(asdict(mock_metadata), "snake_to_camel")
+
+        mock_db = MagicMock()
+        mock_firestore.client.return_value = mock_db
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = mock_metadata_dict
+        mock_db.collection.return_value.document.return_value.get.return_value = (
+            mock_doc
+        )
+
         payload = {"arxiv_id": "1234.5678"}
 
         # Act
@@ -224,16 +234,23 @@ class TestMainGetArxivMetadata(unittest.TestCase):
 
         # Assert
         self.assertEqual(response.status_code, 200)
-        mock_fetch.assert_called_once_with(arxiv_ids=["1234.5678"])
+        mock_db.collection.assert_called_once_with("arxiv_metadata")
+        mock_db.collection.return_value.document.assert_called_once_with("1234.5678")
         response_data = response.get_json()
         expected_result = convert_keys(asdict(mock_metadata), "snake_to_camel")
         self.assertIn("result", response_data)
         self.assertEqual(response_data["result"], expected_result)
 
-    @patch("main.fetch_utils.fetch_arxiv_metadata")
-    def test_get_arxiv_metadata_not_found(self, mock_fetch):
+    @patch("main.firestore")
+    def test_get_arxiv_metadata_not_found(self, mock_firestore):
         # Arrange
-        mock_fetch.return_value = []
+        mock_db = MagicMock()
+        mock_firestore.client.return_value = mock_db
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = (
+            mock_doc
+        )
         payload = {"arxiv_id": "0000.0000"}
 
         # Act
@@ -241,7 +258,7 @@ class TestMainGetArxivMetadata(unittest.TestCase):
 
         # Assert
         self.assertEqual(response.status_code, 404)
-        mock_fetch.assert_called_once_with(arxiv_ids=["0000.0000"])
+        mock_db.collection.return_value.document.assert_called_once_with("0000.0000")
         response_data = response.get_json()
         self.assertIn("error", response_data)
         self.assertEqual(response_data["error"]["status"], "NOT_FOUND")
