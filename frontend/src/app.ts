@@ -106,7 +106,7 @@ export class App extends LightMobxLitElement {
       <div class="app-wrapper mode--${this.settingsService.colorMode}">
         <main>
           <div class="content-wrapper">${this.renderPageContent()}</div>
-          <project-dialog></project-dialog>
+          <tos-dialog></tos-dialog>
           <floating-panel-host></floating-panel-host>
           <lumi-dialogs></lumi-dialogs>
           <lit-toast ${ref(this.toastRef)}></lit-toast>
