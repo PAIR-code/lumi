@@ -45,7 +45,6 @@ export enum FocusState {
 
 /** Different views for main gallery page (used in home-gallery component). */
 export enum GalleryView {
-  IMPORT = 'import', // show text input box for importing papers
+  LOCAL = 'local', // show paper import, user's collection from local storage
   CURRENT = 'current', // show papers for current collection
-  LOCAL = 'local', // show "My Collection" papers from local storage
 }

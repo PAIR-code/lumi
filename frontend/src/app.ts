@@ -75,8 +75,6 @@ export class App extends LightMobxLitElement {
         `;
       case Pages.COLLECTION:
         return this.renderGallery(GalleryView.CURRENT);
-      case Pages.LOCAL_STORAGE_COLLECTION:
-        return this.renderGallery(GalleryView.LOCAL);
       case Pages.ARXIV_DOCUMENT:
         return html`
           <lumi-reader documentId=${params.document_id}></lumi-reader>
@@ -86,7 +84,7 @@ export class App extends LightMobxLitElement {
     }
   }
 
-  private renderGallery(galleryView: GalleryView = GalleryView.IMPORT) {
+  private renderGallery(galleryView: GalleryView = GalleryView.LOCAL) {
     return html`
       <page-header></page-header>
       <home-gallery-tabs></home-gallery-tabs>

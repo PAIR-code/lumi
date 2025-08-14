@@ -65,8 +65,6 @@ export class Header extends MobxLitElement {
         return APP_NAME;
       case Pages.COLLECTION:
         return APP_NAME;
-      case Pages.LOCAL_STORAGE_COLLECTION:
-        return APP_NAME;
       case Pages.SETTINGS:
         return "Settings";
       default:

@@ -63,7 +63,7 @@ export class HomeGallery extends MobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly snackbarService = core.getService(SnackbarService);
 
-  @property() galleryView: GalleryView = GalleryView.IMPORT;
+  @property() galleryView: GalleryView = GalleryView.LOCAL;
 
   // Paper URL or ID for text input box
   @state() private paperInput: string = "";
@@ -200,14 +200,6 @@ export class HomeGallery extends MobxLitElement {
     ).map(item => item.metadata);
 
     switch(this.galleryView) {
-      case GalleryView.IMPORT:
-        return html`
-          <div class="center-wrapper">
-            ${this.renderCollectionMenu()}
-            ${this.renderLinkInput()}
-            ${this.renderLoadingMessages(historyItems)}
-          </div>
-        `;
       case GalleryView.CURRENT:
         const currentPapers = this.homeService.currentMetadata ?? [];
         return html`
@@ -217,6 +209,8 @@ export class HomeGallery extends MobxLitElement {
       case GalleryView.LOCAL:
         return html`
           ${this.renderCollectionMenu()}
+          ${this.renderLinkInput()}
+          ${this.renderLoadingMessages(historyItems)}
           ${this.renderCollection(historyItems)}
         `;
       default:
@@ -246,27 +240,8 @@ export class HomeGallery extends MobxLitElement {
     const collections = this.homeService.collections;
     return html`
       <div class="nav-menu">
-        ${this.renderImportNavItem()}
         ${this.renderLocalCollectionNavItem()}
         ${collections.map(collection => this.renderCollectionNavItem(collection))}
-      </div>
-    `;
-  }
-
-  private renderImportNavItem() {
-    const classes = classMap({
-      "nav-item": true,
-      "active": this.routerService.activePage === Pages.HOME,
-    });
-
-    const navigate = () => {
-      this.routerService.navigate(Pages.HOME);
-    };
-
-    return html`
-      <div class=${classes} role="button" @click=${navigate}>
-        <pr-icon icon="new_window" size="small"></pr-icon>
-        <span>Load papers</span>
       </div>
     `;
   }
@@ -274,11 +249,11 @@ export class HomeGallery extends MobxLitElement {
   private renderLocalCollectionNavItem() {
     const classes = classMap({
       "nav-item": true,
-      "active": this.routerService.activePage === Pages.LOCAL_STORAGE_COLLECTION
+      "active": this.routerService.activePage === Pages.HOME
     });
 
     const navigate = () => {
-      this.routerService.navigate(Pages.LOCAL_STORAGE_COLLECTION);
+      this.routerService.navigate(Pages.HOME);
     };
 
     return html`
