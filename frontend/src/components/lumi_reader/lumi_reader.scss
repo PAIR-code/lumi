@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 @use "../../sass/common";
+@use "../../sass/typescale";
 
 $mobile-sidebar-collapsed-height: 98px;
 
@@ -62,18 +63,42 @@ lumi-reader {
     height: 100%;
   }
 
-  .loading-metadata-container {
+  .status-container {
     @include common.flex-row-align-center;
     justify-content: center;
 
     width: 100%;
     height: 100%;
 
-    .loading-metadata {
+    .status-inner-container {
       @include common.flex-column-align-center;
       gap: common.$spacing-large;
+      padding: common.$spacing-xl;
       justify-content: center;
+    }
+  }
+
+  .loading-metadata-container {
+    .loading-metadata {
       color: var(--md-sys-color-on-surface-higher);
+    }
+  }
+
+  .error-container {
+    .error-inner-container {
+      gap: common.$spacing-xxl;
+
+      .open-button {
+        display: inline-block;
+      }
+
+      .error-header {
+        @include typescale.display-small;
+      }
+
+      .error-body {
+        @include typescale.body-medium;
+      }
     }
   }
 }

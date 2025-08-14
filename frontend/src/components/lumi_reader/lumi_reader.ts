@@ -19,6 +19,8 @@ import "../lumi_doc/lumi_doc";
 import "../sidebar/sidebar";
 import "../loading_document/loading_document";
 import "../../pair-components/circular_progress";
+import "../../pair-components/button";
+import "../../pair-components/icon_button";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, TemplateResult } from "lit";
@@ -87,6 +89,15 @@ import { RouterService } from "../../services/router.service";
 const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
   LoadingStatus.SUCCESS,
   LoadingStatus.SUMMARIZING,
+  LoadingStatus.ERROR_SUMMARIZING,
+  LoadingStatus.ERROR_SUMMARIZING_INVALID_RESPONSE,
+  LoadingStatus.ERROR_SUMMARIZING_QUOTA_EXCEEDED,
+];
+
+const LOADING_STATES_RENDER_ERROR: string[] = [
+  LoadingStatus.ERROR_DOCUMENT_LOAD_INVALID_RESPONSE,
+  LoadingStatus.ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED,
+  LoadingStatus.ERROR_DOCUMENT_LOAD,
 ];
 
 /**
@@ -399,9 +410,13 @@ export class LumiReader extends LightMobxLitElement {
     this.floatingPanelService.show(props, target);
   };
 
+  private readonly handleHomeClick = () => {
+    this.routerService.navigateToDefault();
+  };
+
   private renderLoadingMetadata() {
-    return html`<div class="loading-metadata-container">
-      <div class="loading-metadata">
+    return html`<div class="loading-metadata-container status-container">
+      <div class="loading-metadata status-loading-container">
         <div class="spinner">
           <pr-circular-progress></pr-circular-progress>
         </div>
@@ -410,11 +425,38 @@ export class LumiReader extends LightMobxLitElement {
     </div>`;
   }
 
+  private renderError(metadata?: ArxivMetadata) {
+    return html`<div class="error-container status-container">
+      <div class="error-inner-container status-inner-container">
+        <span class="error-header">Something went wrong...</span>
+        <span class="error-body"
+          >Could not import: "${metadata?.title}"
+          <pr-icon-button
+            class="open-button"
+            variant="default"
+            icon="open_in_new"
+            @click=${() => {
+              const paperId = this.metadata?.paperId;
+              if (paperId) {
+                window.open("https://arxiv.org/abs/" + paperId);
+              }
+            }}
+            title="Open in arXiv"
+          >
+          </pr-icon-button>
+        </span>
+        <div class="error-footer">
+          <pr-button variant="tonal" @click=${this.handleHomeClick}
+            >Back to Lumi home</pr-button
+          >
+        </div>
+      </div>
+    </div>`;
+  }
+
   private renderImportingDocumentLoadingState(metadata?: ArxivMetadata) {
     return html`<loading-document
-      .onBackClick=${() => {
-        this.routerService.navigateToDefault();
-      }}
+      .onBackClick=${this.handleHomeClick}
       .metadata=${metadata}
     ></loading-document>`;
   }
@@ -447,6 +489,10 @@ export class LumiReader extends LightMobxLitElement {
       return this.renderWithStyles(
         this.renderImportingDocumentLoadingState(this.metadata)
       );
+    }
+
+    if (LOADING_STATES_RENDER_ERROR.includes(this.loadingStatus)) {
+      return this.renderWithStyles(this.renderError(this.metadata));
     }
 
     const sidebarWrapperClasses = classMap({
