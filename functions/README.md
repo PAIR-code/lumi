@@ -101,11 +101,13 @@ python3 script_firebase_update_collections.py [--overwrite_paper_ids]
 - `--overwrite_paper_ids`: (Optional) If set, this will overwrite the `paper_ids` array in the Firestore collection with the one defined in the script. Use with caution. Defaults to `False`.
 
 ---
+
 ### `script_firebase_list.py`
 
 Lists document IDs from the `arxiv_docs` collection that match a specific `loadingStatus`.
 
 **Usage:**
+
 ```bash
 python3 script_firebase_list.py --loading_status <status> [--output_file]
 ```
@@ -120,9 +122,11 @@ python3 script_firebase_list.py --loading_status <status> [--output_file]
 Runs `script_firebase_list.py` for every status in `LoadingStatus`.
 
 **Usage:**
+
 ```bash
 python3 script_firebase_list_all.py
 ```
+
 This script takes no arguments.
 
 ---
@@ -153,3 +157,4 @@ python3 script_firebase_update_status.py --paper_ids_file <path_to_txt> --status
 
 - `--paper_ids_file`: (Required) Path to a text file containing a list of paper IDs, one per line.
 - `--status`: (Required) The new `LoadingStatus` to set for the papers.
+- `--delay`: (Optional) Seconds to wait between importing each paper. Defaults to 0.

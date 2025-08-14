@@ -14,13 +14,14 @@
 # ==============================================================================
 import argparse
 import sys
+import time
 
 from firebase_admin import firestore
 import main as functions_main
 from shared.types import LoadingStatus
 
 
-def update_paper_statuses(db, paper_ids_file, new_status):
+def update_paper_statuses(db, paper_ids_file, new_status, delay):
     """
     Updates the loading_status for a list of papers in Firestore.
     """
@@ -77,6 +78,10 @@ def update_paper_statuses(db, paper_ids_file, new_status):
             first_version_doc.reference.update({"loadingStatus": new_status})
             print(f"✅ Successfully updated status for '{paper_id}' to '{new_status}'.")
 
+            if delay > 0:
+                print(f"⏳ Waiting {delay} seconds before continuing")
+                time.sleep(delay)
+
         except Exception as e:
             print(f"❌ Failed to update status for '{paper_id}'. Error: {e}")
 
@@ -96,10 +101,16 @@ if __name__ == "__main__":
         choices=[s.value for s in LoadingStatus],
         help="The new LoadingStatus to set for the papers.",
     )
+    parser.add_argument(
+        "--delay",
+        default=0,
+        help="How many seconds to wait between paper imports",
+    )
     args = parser.parse_args()
 
     update_paper_statuses(
         db=firestore.client(),
         paper_ids_file=args.paper_ids_file,
         new_status=args.status,
+        delay=args.delay,
     )
