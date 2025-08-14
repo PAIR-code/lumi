@@ -201,6 +201,9 @@ local_image_bucket/*
 # Import
 functions/papers
 
+# Local scripts
+functions/.script*
+
 # GCA
 GEMINI.md
 model_context
