@@ -91,7 +91,7 @@ def generate_lumi_answer(
 
     # Parse the markdown response to create LumiContent objects.
     response_sections = convert_html_to_lumi.convert_to_lumi_sections(
-        html_response, placeholder_map={}
+        html_response, placeholder_map={}, strip_double_brackets=True
     )
 
     response_content: List[LumiContent] = []

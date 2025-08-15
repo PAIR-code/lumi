@@ -257,6 +257,51 @@ Hello, world again!"""
                 markdown_utils.postprocess_content_text(text_input), text_input
             )
 
+        with self.subTest("test_strip_double_brackets"):
+            # Test case: Remove simple [[content]]
+            text_input = "Remove this [[content]]."
+            expected = "Remove this ."
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(
+                    text_input, strip_double_brackets=True
+                ),
+                expected,
+            )
+
+            # Test case: Do not remove when flag is False (default)
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(text_input), text_input
+            )
+
+            # Test case: Multiple instances
+            text_input_multi = "Remove [[content1]] and [[content2]]."
+            expected_multi = "Remove  and ."
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(
+                    text_input_multi, strip_double_brackets=True
+                ),
+                expected_multi,
+            )
+
+            # Test case: Empty brackets
+            text_input_empty = "Remove empty [[]]."
+            expected_empty = "Remove empty ."
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(
+                    text_input_empty, strip_double_brackets=True
+                ),
+                expected_empty,
+            )
+
+            # Test case: No double brackets
+            text_input_none = "Nothing to remove here."
+            self.assertEqual(
+                markdown_utils.postprocess_content_text(
+                    text_input_none, strip_double_brackets=True
+                ),
+                text_input_none,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
