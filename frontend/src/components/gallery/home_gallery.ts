@@ -16,6 +16,7 @@
  */
 
 import "../../pair-components/textarea";
+import "../../pair-components/icon";
 import "../../pair-components/icon_button";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
@@ -26,7 +27,7 @@ import { classMap } from "lit/directives/class-map.js";
 
 import { core } from "../../core/core";
 import { HomeService } from "../../services/home.service";
-import { HistoryService } from "../../services/history.service";
+  import { HistoryService } from "../../services/history.service";
 import { Pages, RouterService } from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
@@ -45,10 +46,11 @@ import {
 import { extractArxivId } from "../../shared/string_utils";
 
 import { styles } from "./home_gallery.scss";
-import { makeObservable, observable, ObservableMap } from "mobx";
+import { makeObservable, observable, ObservableMap, toJS } from "mobx";
 import { PaperData } from "../../shared/types_local_storage";
 import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
+import { GalleryView } from "../../shared/types";
 
 /** Gallery for home/landing page */
 @customElement("home-gallery")
@@ -60,6 +62,8 @@ export class HomeGallery extends MobxLitElement {
   private readonly firebaseService = core.getService(FirebaseService);
   private readonly historyService = core.getService(HistoryService);
   private readonly snackbarService = core.getService(SnackbarService);
+
+  @property() galleryView: GalleryView = GalleryView.LOCAL;
 
   // Paper URL or ID for text input box
   @state() private paperInput: string = "";
@@ -191,13 +195,82 @@ export class HomeGallery extends MobxLitElement {
   }
 
   override render() {
+    return html`${this.renderContent()}${this.renderDialog()}`;
+  }
+
+  private renderContent() {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
-    ).map((item) => item.metadata);
-    const papersToShow = this.homeService.currentMetadata ?? historyItems;
+    ).map(item => item.metadata);
+
+    switch(this.galleryView) {
+      case GalleryView.CURRENT:
+        const currentPapers = this.homeService.currentMetadata ?? [];
+        return html`
+          ${this.renderCollectionMenu()}
+          ${this.renderCollection(currentPapers)}
+        `;
+      case GalleryView.LOCAL:
+        return html`
+          ${this.renderCollectionMenu()}
+          ${this.renderCollection(historyItems)}
+        `;
+      default:
+        return nothing;
+    }
+  }
+
+  // TODO: Move document loading logic to MobXService and move this dialog
+  // to app.ts
+  private renderDialog() {
+    if (!this.homeService.showUploadDialog) {
+      return nothing;
+    }
+
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    ).map(item => item.metadata);
+
+    const close = () => {
+      this.homeService.setShowUploadDialog(false);
+    }
+
     return html`
-      ${this.renderLinkInput()} ${this.renderCollectionMenu()}
-      ${this.renderCollection(papersToShow)}
+      <pr-dialog
+        .showDialog=${this.homeService.showUploadDialog}
+        .onClose=${close}
+        showCloseButton
+        enableEscape
+      >
+        <div slot="title">Upload papers</div>
+        <div class="dialog-content">
+          ${this.renderLinkInput()}
+          ${this.renderLoadingMessages(historyItems)}
+        </div>
+        <div slot="actions-right">
+          <pr-button @click=${close}>
+            Done
+          </pr-button>
+        </div>
+      </pr-dialog>
+    `;
+  }
+
+  private renderLoadingMessages(metadata: ArxivMetadata[]) {
+    return html`
+      <div class="loading-section">
+        ${metadata.map(
+          item => {
+            if (this.unsubscribeListeners.get(item.paperId)) {
+              return html`
+                <div class="loading-message">
+                  Loading <i>${item.title} (${item.paperId})</i>
+                </div>
+              `;
+            }
+          }
+        )}
+      </div>
     `;
   }
 
@@ -205,17 +278,35 @@ export class HomeGallery extends MobxLitElement {
     const collections = this.homeService.collections;
     return html`
       <div class="nav-menu">
-        ${collections.map((collection) =>
-          this.renderCollectionNavItem(collection)
-        )}
+        ${this.renderLocalCollectionNavItem()}
+        ${collections.map(collection => this.renderCollectionNavItem(collection))}
+      </div>
+    `;
+  }
+
+  private renderLocalCollectionNavItem() {
+    const classes = classMap({
+      "nav-item": true,
+      "active": this.routerService.activePage === Pages.HOME
+    });
+
+    const navigate = () => {
+      this.routerService.navigate(Pages.HOME);
+    };
+
+    return html`
+      <div class=${classes} role="button" @click=${navigate}>
+        <pr-icon icon="bookmarks" size="small"></pr-icon>
+        <span>My collection</span>
       </div>
     `;
   }
 
   private renderCollectionNavItem(collection: ArxivCollection) {
+    const isCurrent = collection.collectionId === this.homeService.currentCollectionId;
     const classes = classMap({
       "nav-item": true,
-      active: collection.collectionId === this.homeService.currentCollectionId,
+      "active": isCurrent && this.routerService.activePage === Pages.COLLECTION
     });
 
     const navigate = () => {
@@ -226,7 +317,7 @@ export class HomeGallery extends MobxLitElement {
 
     return html`
       <div class=${classes} role="button" @click=${navigate}>
-        ${collection.title}
+        <span>${collection.title}</span>
       </div>
     `;
   }

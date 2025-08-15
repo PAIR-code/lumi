@@ -15,11 +15,12 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
+import { CSSResultGroup, html, nothing } from "lit";
 
 import { customElement, property } from "lit/decorators.js";
 import { Ref, createRef, ref } from "lit/directives/ref.js";
 
+import "./icon_button";
 import { styles } from "./dialog.scss";
 
 /** Dialog component. */
@@ -28,6 +29,10 @@ export class Dialog extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   @property() showDialog = false;
+  @property({ type: Boolean }) showCloseButton = false;
+  @property({ type: Boolean }) enableEscape = false;
+  @property() onOpen: () => void = () => {};
+  @property() onClose: () => void = () => {};
 
   dialogRef: Ref<Element> = createRef();
 
@@ -42,20 +47,45 @@ export class Dialog extends MobxLitElement {
   openDialog() {
     if (this.dialogRef?.value) {
       (this.dialogRef.value as HTMLDialogElement).showModal();
+      this.onOpen();
     }
   }
 
   closeDialog() {
     if (this.dialogRef?.value) {
       (this.dialogRef.value as HTMLDialogElement).close();
+      this.onClose();
     }
   }
 
   override render() {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!this.enableEscape) {
+        e.preventDefault();
+      } else if (e.key === "Escape") {
+        this.closeDialog();
+      }
+    };
+
     return html`
-      <dialog ${ref(this.dialogRef)}>
+      <dialog ${ref(this.dialogRef)} @keydown=${handleKeyDown}>
+        <div class="dialog-header">
+          <slot name="title"></slot>
+          ${this.showCloseButton ? this.renderCloseButton() : nothing}
+        </div>
         <slot></slot>
+        <div class="dialog-actions">
+          <div class="left"><slot name="actions-left"</slot></div>
+          <div class="right"><slot name="actions-right"></slot></div>
+        </div>
       </dialog>
+    `;
+  }
+
+  private renderCloseButton() {
+    return html`
+      <pr-icon-button color="neutral" icon="close" variant="default" @click=${this.closeDialog}>
+      </pr-icon-button>
     `;
   }
 }

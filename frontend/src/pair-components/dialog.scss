@@ -28,15 +28,41 @@ dialog {
   border-radius: common.$spacing-medium;
   color: var(--md-sys-color-on-surface);
   flex-direction: column;
+  gap: common.$spacing-xl;
   max-height: calc(100% - common.$spacing-xxl * 2);
-  max-width: common.$tos-dialog-max-width;
+  max-width: 100%;
   outline: none;
   overflow: auto;
   padding: common.$spacing-xxl;
+  width: common.$tos-dialog-max-width;
 
   &.fullscreen {
     height: calc(100% - common.$spacing-xxl * 2);
     width: calc(100% - common.$spacing-xxl * 2);
+  }
+}
+
+.dialog-header {
+  @include common.flex-row;
+  @include typescale.title-large;
+  align-items: center;
+  gap: common.$spacing-medium;
+  justify-content: space-between;
+}
+
+.dialog-actions {
+  @include common.flex-row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: common.$spacing-medium;
+  justify-content: space-between;
+
+  &.left,
+  &.right {
+    @include common.flex-row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: common.$spacing-medium;
   }
 }
 

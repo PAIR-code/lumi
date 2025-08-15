@@ -26,9 +26,9 @@ import { SettingsService } from "../../services/settings.service";
 
 import { styles } from "./project_dialog.scss";
 
-/** Project dialog for replacing current project with selected example. */
-@customElement("project-dialog")
-export class ProjectDialog extends MobxLitElement {
+/** Terms of service dialog. */
+@customElement("tos-dialog")
+export class TosDialog extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly settingsService = core.getService(SettingsService);
@@ -40,14 +40,8 @@ export class ProjectDialog extends MobxLitElement {
   }
 
   override render() {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        this.closeDialog();
-      }
-    };
-
     return html`
-      <pr-dialog .showDialog=${!this.acceptedTOS} @keydown=${handleKeyDown}>
+      <pr-dialog .showDialog=${!this.acceptedTOS} .onClose=${this.closeDialog}>
         ${this.renderTOS()}
       </pr-dialog>
     `;
@@ -55,7 +49,7 @@ export class ProjectDialog extends MobxLitElement {
 
   closeDialog() {
     this.acceptedTOS = true;
-    this.settingsService.setTOSConfirmed(true);
+    this.settingsService?.setTOSConfirmed(true);
   }
 
   renderTOS() {
@@ -68,14 +62,12 @@ export class ProjectDialog extends MobxLitElement {
     };
 
     return html`
-      <div class="content">
-        <h1>🍭 Welcome to Lumi</h1>
-        <tos-content></tos-content>
-        <div class="action-buttons">
-          <pr-button color="tertiary" variant="outlined" @click=${handleClick}>
-            Acknowledge
-          </pr-button>
-        </div>
+      <div slot="title">🍭 Welcome to Lumi</div>
+      <tos-content></tos-content>
+      <div slot="actions-right">
+        <pr-button color="tertiary" variant="outlined" @click=${handleClick}>
+          Acknowledge
+        </pr-button>
       </div>
     `;
   }
@@ -83,6 +75,6 @@ export class ProjectDialog extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "project-dialog": ProjectDialog;
+    "tos-dialog": TosDialog;
   }
 }

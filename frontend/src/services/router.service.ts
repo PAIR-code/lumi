@@ -111,7 +111,10 @@ export class RouterService extends Service {
 
     // If gallery page, load collections
     const currentPage = this.getPage(this.activeRoute);
-    if (currentPage === Pages.HOME || currentPage === Pages.COLLECTION) {
+    if (
+      currentPage === Pages.HOME ||
+      currentPage === Pages.COLLECTION
+    ) {
       const currentCollectionId = this.activeRoute.params["collection_id"];
       this.sp.homeService.loadCollections(currentCollectionId);
     }

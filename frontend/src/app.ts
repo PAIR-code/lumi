@@ -43,6 +43,8 @@ import { BANNER_HEIGHT } from "./components/banner/banner";
 import { styles } from "./app.scss";
 import { LightMobxLitElement } from "./components/light_mobx_lit_element/light_mobx_lit_element";
 
+import { GalleryView } from "./shared/types";
+
 /** App main component. */
 @customElement("lumi-app")
 export class App extends LightMobxLitElement {
@@ -77,7 +79,7 @@ export class App extends LightMobxLitElement {
           </div>
         `;
       case Pages.COLLECTION:
-        return this.renderGallery();
+        return this.renderGallery(GalleryView.CURRENT);
       case Pages.ARXIV_DOCUMENT:
         return html`
           <lumi-reader documentId=${params.document_id}></lumi-reader>
@@ -87,12 +89,12 @@ export class App extends LightMobxLitElement {
     }
   }
 
-  private renderGallery() {
+  private renderGallery(galleryView: GalleryView = GalleryView.LOCAL) {
     return html`
       <page-header></page-header>
       <home-gallery-tabs></home-gallery-tabs>
       <div class="content">
-        <home-gallery></home-gallery>
+        <home-gallery .galleryView=${galleryView}></home-gallery>
       </div>
     `;
   }
@@ -134,7 +136,7 @@ export class App extends LightMobxLitElement {
         ${this.renderBanner()}
         <main style=${mainStyles}>
           <div class="content-wrapper">${this.renderPageContent()}</div>
-          <project-dialog></project-dialog>
+          <tos-dialog></tos-dialog>
           <floating-panel-host></floating-panel-host>
           <lumi-dialogs></lumi-dialogs>
           <lit-toast ${ref(this.toastRef)}></lit-toast>

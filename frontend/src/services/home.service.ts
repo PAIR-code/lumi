@@ -44,6 +44,7 @@ export class HomeService extends Service {
       hasLoadedCollections: observable,
       isLoadingCollections: observable,
       paperToMetadataMap: observable,
+      showUploadDialog: observable,
     });
   }
 
@@ -57,6 +58,14 @@ export class HomeService extends Service {
 
   // Current collection based on page route (undefined if home page)
   currentCollection: ArxivCollection|undefined = undefined;
+
+  // Whether or not to show "upload papers" dialog
+  showUploadDialog = false;
+
+  /** Sets visibility for "upload papers" dialog. */
+  setShowUploadDialog(showUpload: boolean) {
+    this.showUploadDialog = showUpload;
+  }
 
   /** Sets current collection (called from loadCollections). */
   setCurrentCollection(currentCollectionId: string|undefined) {

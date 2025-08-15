@@ -42,3 +42,9 @@ export enum FocusState {
   FOCUSED = "focused",
   UNFOCUSED = "unfocused",
 }
+
+/** Different views for main gallery page (used in home-gallery component). */
+export enum GalleryView {
+  LOCAL = 'local', // show paper import, user's collection from local storage
+  CURRENT = 'current', // show papers for current collection
+}
