@@ -78,7 +78,7 @@ def update_paper_statuses(db, paper_ids_file, new_status, delay):
             first_version_doc.reference.update({"loadingStatus": new_status})
             print(f"✅ Successfully updated status for '{paper_id}' to '{new_status}'.")
 
-            if delay > 0:
+            if int(delay) > 0:
                 print(f"⏳ Waiting {delay} seconds before continuing")
                 time.sleep(delay)
 
@@ -103,6 +103,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--delay",
+        type=int,
         default=0,
         help="How many seconds to wait between paper imports",
     )
