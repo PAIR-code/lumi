@@ -85,7 +85,7 @@ export class LumiDocViz extends LightMobxLitElement {
   @property() onConceptClick: (conceptId: string, target: HTMLElement) => void =
     () => {};
   @property() onImageClick?: (
-    storagePath: string,
+    info: { storagePath: string; caption?: string },
     target: HTMLElement
   ) => void = () => {};
   @property() onAnswerHighlightClick: (

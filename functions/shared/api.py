@@ -27,13 +27,21 @@ class HighlightSelection:
 
 
 @dataclass
+class ImageInfo:
+    """Information about an image for a request."""
+
+    image_storage_path: str
+    caption: Optional[str] = None
+
+
+@dataclass
 class LumiAnswerRequest:
     """Request object for getting a Lumi answer."""
 
     query: Optional[str] = None
     highlight: Optional[str] = None
     highlighted_spans: Optional[List[HighlightSelection]] = None
-    image_storage_path: Optional[str] = None
+    image: Optional[ImageInfo] = None
 
 
 @dataclass

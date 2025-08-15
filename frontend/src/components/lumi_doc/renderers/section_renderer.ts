@@ -61,7 +61,10 @@ export interface SectionRendererProperties {
     target: HTMLElement
   ) => void;
   onFootnoteClick: (footnote: LumiFootnote, target: HTMLElement) => void;
-  onImageClick?: (storagePath: string, target: HTMLElement) => void;
+  onImageClick?: (
+    info: { storagePath: string; caption?: string },
+    target: HTMLElement
+  ) => void;
   onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   isSubsection: boolean;
 }

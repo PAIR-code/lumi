@@ -19,7 +19,7 @@ import { action, makeObservable, observable } from "mobx";
 import { Service } from "./service";
 import { HighlightSelection } from "../shared/selection_utils";
 import { LumiConcept, LumiFootnote, LumiReference } from "../shared/lumi_doc";
-import { LumiAnswer } from "../shared/api";
+import { ImageInfo, LumiAnswer } from "../shared/api";
 
 /** Base class for all floating panel content props. */
 export abstract class FloatingPanelContentProps {}
@@ -32,15 +32,15 @@ export class SmartHighlightMenuProps extends FloatingPanelContentProps {
     public onDefine: (
       text: string,
       highlightedSpans: HighlightSelection[],
-      imageStoragePath?: string
+      imageInfo?: ImageInfo
     ) => void,
     public onAsk: (
       highlightedText: string,
       query: string,
       highlightedSpans: HighlightSelection[],
-      imageStoragePath?: string
+      imageInfo?: ImageInfo
     ) => void,
-    public imageStoragePath?: string
+    public imageInfo?: ImageInfo
   ) {
     super();
   }

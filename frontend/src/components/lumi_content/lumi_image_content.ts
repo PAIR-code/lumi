@@ -31,6 +31,7 @@ import { classMap } from "lit/directives/class-map.js";
 import { HighlightManager } from "../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
+import { ImageInfo } from "../../shared/api";
 
 function isFigureContent(
   content: ImageContent | FigureContent
@@ -51,7 +52,7 @@ export class LumiImageContent extends MobxLitElement {
   @property({ type: Object }) highlightManager?: HighlightManager;
   @property({ type: Object }) answerHighlightManager?: AnswerHighlightManager;
   @property({ type: Object }) onImageClick?: (
-    storagePath: string,
+    info: ImageInfo,
     target: HTMLElement
   ) => void;
 
@@ -168,10 +169,15 @@ export class LumiImageContent extends MobxLitElement {
 
     const handleImageClick = (e: MouseEvent) => {
       if (this.onImageClick && imageContent.storagePath) {
-        this.onImageClick(
-          imageContent.storagePath,
-          e.currentTarget as HTMLElement
-        );
+        const captionText = imageContent.caption
+          ? imageContent.caption.text
+          : undefined;
+
+        const image: ImageInfo = {
+          imageStoragePath: imageContent.storagePath,
+          caption: captionText,
+        };
+        this.onImageClick(image, e.currentTarget as HTMLElement);
       }
     };
 

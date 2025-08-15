@@ -146,7 +146,7 @@ export class AnswerItem extends LightMobxLitElement {
   }
 
   private renderImagePreview() {
-    const imageStoragePath = this.answer.request.imageStoragePath;
+    const imageStoragePath = this.answer.request.image?.imageStoragePath;
     if (!imageStoragePath) {
       return nothing;
     }
@@ -254,10 +254,10 @@ export class AnswerItem extends LightMobxLitElement {
   }
 
   private getTitleText() {
-    const { query, highlight, imageStoragePath } = this.answer.request;
+    const { query, highlight, image } = this.answer.request;
     if (query) return query;
 
-    if (imageStoragePath) {
+    if (image) {
       return "Explain image";
     }
 

@@ -39,21 +39,24 @@ def generate_lumi_answer(
     """
     query = request.query
     highlight = request.highlight
-    image_storage_path = request.image_storage_path
+    image_info = request.image
 
     all_spans = prompt_utils.get_all_spans_from_doc(doc)
     formatted_spans = prompt_utils.get_formatted_spans_list(all_spans)
     spans_string = "\n".join(formatted_spans)
 
-    if image_storage_path:
+    if image_info:
+        caption = image_info.caption or ""
         if query:
             prompt = prompts.LUMI_PROMPT_ANSWER_IMAGE.format(
                 spans_string=spans_string,
                 query=query,
+                caption=caption,
             )
         else:
             prompt = prompts.LUMI_PROMPT_DEFINE_IMAGE.format(
                 spans_string=spans_string,
+                caption=caption,
             )
     else:
         if query and highlight:
@@ -76,8 +79,8 @@ def generate_lumi_answer(
             # Should not happen with proper request validation
             raise ValueError("Request must include at least a query or a highlight.")
 
-    if image_storage_path:
-        image_bytes = image_utils.download_image_from_gcs(image_storage_path)
+    if image_info:
+        image_bytes = image_utils.download_image_from_gcs(image_info.image_storage_path)
         markdown_response = gemini.call_predict_with_image(
             prompt=prompt, image_bytes=image_bytes
         )

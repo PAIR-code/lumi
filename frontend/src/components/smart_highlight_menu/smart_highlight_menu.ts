@@ -58,7 +58,7 @@ export class SmartHighlightMenu extends MobxLitElement {
     this.props.onDefine(
       this.props.selectedText,
       this.props.highlightedSpans,
-      this.props.imageStoragePath
+      this.props.imageInfo
     );
     this.floatingPanelService.hide();
   }
@@ -77,7 +77,7 @@ export class SmartHighlightMenu extends MobxLitElement {
       this.props.selectedText,
       this.queryText,
       this.props.highlightedSpans,
-      this.props.imageStoragePath
+      this.props.imageInfo
     );
     this.floatingPanelService.hide();
   }

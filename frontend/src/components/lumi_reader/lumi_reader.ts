@@ -55,7 +55,7 @@ import {
   ReferenceTooltipProps,
   SmartHighlightMenuProps,
 } from "../../services/floating_panel_service";
-import { LumiAnswer, LumiAnswerRequest } from "../../shared/api";
+import { ImageInfo, LumiAnswer, LumiAnswerRequest } from "../../shared/api";
 
 import { styles } from "./lumi_reader.scss";
 import { styles as sectionRendererStyles } from "../lumi_doc/renderers/section_renderer.scss";
@@ -308,7 +308,7 @@ export class LumiReader extends LightMobxLitElement {
   private readonly handleDefine = async (
     text: string,
     highlightedSpans: HighlightSelection[],
-    imageStoragePath?: string
+    imageInfo?: ImageInfo
   ) => {
     if (!this.documentStateService.lumiDocManager) return;
 
@@ -316,7 +316,7 @@ export class LumiReader extends LightMobxLitElement {
       query: ``,
       highlight: text,
       highlightedSpans,
-      imageStoragePath,
+      image: imageInfo,
     };
 
     const tempAnswer = createTemporaryAnswer(request);
@@ -349,7 +349,7 @@ export class LumiReader extends LightMobxLitElement {
     highlightedText: string,
     query: string,
     highlightedSpans: HighlightSelection[],
-    imageStoragePath?: string
+    imageInfo?: ImageInfo
   ) => {
     const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
     if (!currentDoc) return;
@@ -358,7 +358,7 @@ export class LumiReader extends LightMobxLitElement {
       highlight: highlightedText,
       query: query,
       highlightedSpans,
-      imageStoragePath,
+      image: imageInfo,
     };
 
     this.checkOpenMobileSidebar();
@@ -410,7 +410,7 @@ export class LumiReader extends LightMobxLitElement {
   };
 
   private readonly handleImageClick = (
-    storagePath: string,
+    info: ImageInfo,
     target: HTMLElement
   ) => {
     this.analyticsService.trackAction(AnalyticsAction.READER_IMAGE_CLICK);
@@ -419,10 +419,12 @@ export class LumiReader extends LightMobxLitElement {
       [],
       this.handleDefine.bind(this),
       this.handleAsk.bind(this),
-      storagePath
+      info
     );
     this.floatingPanelService.show(props, target);
-    this.documentStateService.highlightManager?.addImageHighlight(storagePath);
+    this.documentStateService.highlightManager?.addImageHighlight(
+      info.imageStoragePath
+    );
   };
 
   private readonly handlePaperReferenceClick = (
