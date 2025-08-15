@@ -195,6 +195,10 @@ export class HomeGallery extends MobxLitElement {
   }
 
   override render() {
+    return html`${this.renderContent()}${this.renderDialog()}`;
+  }
+
+  private renderContent() {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
     ).map(item => item.metadata);
@@ -209,13 +213,47 @@ export class HomeGallery extends MobxLitElement {
       case GalleryView.LOCAL:
         return html`
           ${this.renderCollectionMenu()}
-          ${this.renderLinkInput()}
-          ${this.renderLoadingMessages(historyItems)}
           ${this.renderCollection(historyItems)}
         `;
       default:
         return nothing;
     }
+  }
+
+  // TODO: Move document loading logic to MobXService and move this dialog
+  // to app.ts
+  private renderDialog() {
+    if (!this.homeService.showUploadDialog) {
+      return nothing;
+    }
+
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    ).map(item => item.metadata);
+
+    const close = () => {
+      this.homeService.setShowUploadDialog(false);
+    }
+
+    return html`
+      <pr-dialog
+        .showDialog=${this.homeService.showUploadDialog}
+        .onClose=${close}
+        showCloseButton
+        enableEscape
+      >
+        <div slot="title">Upload papers</div>
+        <div class="dialog-content">
+          ${this.renderLinkInput()}
+          ${this.renderLoadingMessages(historyItems)}
+        </div>
+        <div slot="actions-right">
+          <pr-button @click=${close}>
+            Done
+          </pr-button>
+        </div>
+      </pr-dialog>
+    `;
   }
 
   private renderLoadingMessages(metadata: ArxivMetadata[]) {

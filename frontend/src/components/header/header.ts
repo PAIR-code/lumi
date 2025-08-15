@@ -27,6 +27,7 @@ import {
   DialogService,
   UserFeedbackDialogProps,
 } from "../../services/dialog.service";
+import { HomeService } from "../../services/home.service";
 import { Pages, RouterService } from "../../services/router.service";
 
 import { APP_NAME } from "../../shared/constants";
@@ -42,6 +43,7 @@ export class Header extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly homeService = core.getService(HomeService);
   private readonly routerService = core.getService(RouterService);
   private readonly dialogService = core.getService(DialogService);
 
@@ -73,7 +75,10 @@ export class Header extends MobxLitElement {
   }
 
   private renderActions() {
-    return html`${this.renderFeedbackButton()} ${this.renderSettingsButton()}`;
+    return html`
+      ${this.renderFeedbackButton()} ${this.renderSettingsButton()}
+      ${this.renderImportButton()}
+    `;
   }
 
   private renderHomeButton() {
@@ -88,6 +93,23 @@ export class Header extends MobxLitElement {
           icon="home"
           variant="default"
           @click=${handleClick}
+        >
+        </pr-icon-button>
+      </pr-tooltip>
+    `;
+  }
+
+  private renderImportButton() {
+    const openDialog = () => {
+      this.homeService.setShowUploadDialog(true);
+    };
+
+    return html`
+      <pr-tooltip text="Upload papers" position="BOTTOM_END">
+        <pr-icon-button
+          icon="new_window"
+          variant="tonal"
+          @click=${openDialog}
         >
         </pr-icon-button>
       </pr-tooltip>
@@ -139,3 +161,4 @@ declare global {
     "page-header": Header;
   }
 }
+
