@@ -66,6 +66,10 @@
     &:not(.is-only-image) {
       max-width: 45%;
     }
+
+    &.is-only-image {
+      width: 100%;
+    }
   }
 
   img {
