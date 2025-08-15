@@ -112,6 +112,24 @@ def _is_locally_emulated() -> bool:
     return os.environ.get("FUNCTIONS_EMULATOR") == "true"
 
 
+def _copy_fields_to_main_doc(arxiv_id, version_doc, db) -> None:
+    """
+    Mirror the updated timestamp and loading_status fields onto the (parent) lumi doc.
+
+    These fields indicate top level the most recently set loading status and updated timestamp
+    by any of the child versions, making it possible to query this collection by these
+    fields.
+    """
+    loading_status = version_doc.get("loadingStatus")
+    updated_timestamp = version_doc.get("updatedTimestamp")
+
+    doc_ref = db.collection(_ARXIV_DOCS_COLLECTION).document(arxiv_id)
+    doc_ref.set(
+        {"loadingStatus": loading_status, "updatedTimestamp": updated_timestamp},
+        merge=True,
+    )
+
+
 @on_document_written(
     timeout_sec=DOCUMENT_REQUESTED_FUNCTION_TIMEOUT,
     memory=options.MemoryOption.GB_2,
@@ -135,6 +153,8 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
     after_data = event.data.after.to_dict()
     loading_status = after_data.get("loadingStatus")
 
+    _copy_fields_to_main_doc(arxiv_id, after_data, db)
+
     versioned_doc_ref = (
         db.collection(_ARXIV_DOCS_COLLECTION)
         .document(arxiv_id)
@@ -146,7 +166,10 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
         DOCUMENT_REQUESTED_FUNCTION_TIMEOUT - DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER
     )
     timer = Timer(delay, _write_timeout_error, args=(versioned_doc_ref, after_data))
-    if loading_status != LoadingStatus.TIMEOUT:
+    if (
+        loading_status == LoadingStatus.WAITING
+        or loading_status == LoadingStatus.SUMMARIZING
+    ):
         timer.start()
 
     if loading_status == LoadingStatus.WAITING:
@@ -208,6 +231,7 @@ def _write_error(versioned_doc_ref, doc_data, status, error_message):
     doc = convert_keys(doc_data, "camel_to_snake")
     doc["loading_status"] = status
     doc["loading_error"] = error_message
+    doc["updated_timestamp"] = SERVER_TIMESTAMP
     lumi_doc_json = convert_keys(doc, "snake_to_camel")
     versioned_doc_ref.update(lumi_doc_json)
 
@@ -255,6 +279,7 @@ def _add_lumi_doc(versioned_doc_ref, doc_data):
         metadata=metadata,
     )
     lumi_doc.loading_status = LoadingStatus.SUMMARIZING
+    lumi_doc.updated_timestamp = SERVER_TIMESTAMP
     lumi_doc_json = convert_keys(asdict(lumi_doc), "snake_to_camel")
     versioned_doc_ref.update(lumi_doc_json)
 
@@ -284,6 +309,7 @@ def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
     )
     doc.summaries = summaries.generate_lumi_summaries(doc)
     doc.loading_status = LoadingStatus.SUCCESS
+    doc.updated_timestamp = SERVER_TIMESTAMP
     lumi_doc_json = convert_keys(asdict(doc), "snake_to_camel")
     versioned_doc_ref.update(lumi_doc_json)
 
@@ -385,6 +411,7 @@ def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
 
         doc_data = {
             "loadingStatus": LoadingStatus.WAITING,
+            "updatedTimestamp": SERVER_TIMESTAMP,
             "metadata": convert_keys(asdict(metadata), "snake_to_camel"),
         }
         if test_config and os.environ.get("FUNCTION_RUN_MODE") == "testing":

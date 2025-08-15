@@ -15,12 +15,13 @@
 
 import argparse
 import csv
+import time
 
 from firebase_admin import firestore
 import main as functions_main
 
 
-def process_csv(csv_path, db):
+def process_csv(csv_path, db, delay):
     """
     Reads a CSV file and triggers the import process for each paper.
 
@@ -66,6 +67,10 @@ def process_csv(csv_path, db):
                     )
                     print(f"✅ Added {arxiv_id} to collection '{collection_name}'.")
 
+                    if delay > 0:
+                        print(f"⏳ Waiting {delay} seconds before continuing")
+                        time.sleep(delay)
+
                 except Exception as e:
                     # 4. Error Handling
                     print(f"❌ Failed to process {arxiv_id}. Error: {e}")
@@ -88,7 +93,12 @@ if __name__ == "__main__":
         required=True,
         help="Path to the CSV file with 'arxiv_id' and 'collection' headers.",
     )
+    parser.add_argument(
+        "--delay",
+        default=10,
+        help="How many seconds to wait between paper imports",
+    )
     args = parser.parse_args()
 
     # 2. CSV Processing
-    process_csv(args.csv_file, firestore.client())
+    process_csv(args.csv_file, firestore.client(), delay=args.delay)
