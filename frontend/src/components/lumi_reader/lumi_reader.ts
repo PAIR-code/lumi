@@ -501,10 +501,7 @@ export class LumiReader extends LightMobxLitElement {
       return this.renderWithStyles(this.renderLoadingMetadata());
     }
 
-    if (
-      this.loadingStatus === LoadingStatus.LOADING ||
-      this.loadingStatus === LoadingStatus.WAITING
-    ) {
+    if (this.loadingStatus === LoadingStatus.WAITING) {
       return this.renderWithStyles(
         this.renderImportingDocumentLoadingState(this.metadata)
       );
