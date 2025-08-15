@@ -43,6 +43,25 @@ class ImageUtilsTest(unittest.TestCase):
             shutil.rmtree(self.source_dir)
 
     @patch('import_pipeline.image_utils.storage')
+    def test_download_image_from_gcs(self, mock_storage):
+        """Tests that image bytes are downloaded from GCS."""
+        storage_path = "test/image.png"
+        expected_bytes = b"dummy_image_data"
+
+        mock_bucket = MagicMock()
+        mock_blob = MagicMock()
+        mock_blob.download_as_bytes.return_value = expected_bytes
+        mock_bucket.blob.return_value = mock_blob
+        mock_storage.bucket.return_value = mock_bucket
+
+        result_bytes = image_utils.download_image_from_gcs(storage_path)
+
+        mock_storage.bucket.assert_called_once_with()
+        mock_bucket.blob.assert_called_once_with(storage_path)
+        mock_blob.download_as_bytes.assert_called_once_with()
+        self.assertEqual(result_bytes, expected_bytes)
+
+    @patch('import_pipeline.image_utils.storage')
     def test_extract_images_from_latex_source_cloud(self, mock_storage):
         """Tests that images are uploaded to cloud storage when run_locally=False."""
         file_id = "test_file_id"

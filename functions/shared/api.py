@@ -33,6 +33,7 @@ class LumiAnswerRequest:
     query: Optional[str] = None
     highlight: Optional[str] = None
     highlighted_spans: Optional[List[HighlightSelection]] = None
+    image_storage_path: Optional[str] = None
 
 
 @dataclass

@@ -22,7 +22,7 @@ from shared import prompt_utils
 from shared.api import LumiAnswer, LumiAnswerRequest
 from models import gemini
 from models import prompts
-from import_pipeline import convert_html_to_lumi, markdown_utils
+from import_pipeline import convert_html_to_lumi, markdown_utils, image_utils
 from shared.utils import get_unique_id
 
 
@@ -39,32 +39,51 @@ def generate_lumi_answer(
     """
     query = request.query
     highlight = request.highlight
+    image_storage_path = request.image_storage_path
 
     all_spans = prompt_utils.get_all_spans_from_doc(doc)
     formatted_spans = prompt_utils.get_formatted_spans_list(all_spans)
     spans_string = "\n".join(formatted_spans)
 
-    if query and highlight:
-        prompt = prompts.LUMI_PROMPT_ANSWER_WITH_CONTEXT.format(
-            spans_string=spans_string,
-            highlight=highlight,
-            query=query,
-        )
-    elif query:
-        prompt = prompts.LUMI_PROMPT_ANSWER.format(
-            spans_string=spans_string,
-            query=query,
-        )
-    elif highlight:
-        prompt = prompts.LUMI_PROMPT_DEFINE.format(
-            spans_string=spans_string,
-            highlight=highlight,
+    if image_storage_path:
+        if query:
+            prompt = prompts.LUMI_PROMPT_ANSWER_IMAGE.format(
+                spans_string=spans_string,
+                query=query,
+            )
+        else:
+            prompt = prompts.LUMI_PROMPT_DEFINE_IMAGE.format(
+                spans_string=spans_string,
+            )
+    else:
+        if query and highlight:
+            prompt = prompts.LUMI_PROMPT_ANSWER_WITH_CONTEXT.format(
+                spans_string=spans_string,
+                highlight=highlight,
+                query=query,
+            )
+        elif query:
+            prompt = prompts.LUMI_PROMPT_ANSWER.format(
+                spans_string=spans_string,
+                query=query,
+            )
+        elif highlight:
+            prompt = prompts.LUMI_PROMPT_DEFINE.format(
+                spans_string=spans_string,
+                highlight=highlight,
+            )
+        else:
+            # Should not happen with proper request validation
+            raise ValueError("Request must include at least a query or a highlight.")
+
+    if image_storage_path:
+        image_bytes = image_utils.download_image_from_gcs(image_storage_path)
+        markdown_response = gemini.call_predict_with_image(
+            prompt=prompt, image_bytes=image_bytes
         )
     else:
-        # Should not happen with proper request validation
-        raise ValueError("Request must include at least a query or a highlight.")
+        markdown_response = gemini.call_predict(prompt)
 
-    markdown_response = gemini.call_predict(prompt)
     html_response = markdown_utils.markdown_to_html(markdown_response)
 
     # Parse the markdown response to create LumiContent objects.

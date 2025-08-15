@@ -22,6 +22,7 @@ export interface LumiAnswerRequest {
   query?: string;
   highlight?: string;
   highlightedSpans?: HighlightSelection[];
+  imageStoragePath?: string;
 }
 
 // Kept in sync with: functions/shared/api.py

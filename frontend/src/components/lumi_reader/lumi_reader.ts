@@ -307,7 +307,8 @@ export class LumiReader extends LightMobxLitElement {
 
   private readonly handleDefine = async (
     text: string,
-    highlightedSpans: HighlightSelection[]
+    highlightedSpans: HighlightSelection[],
+    imageStoragePath?: string
   ) => {
     if (!this.documentStateService.lumiDocManager) return;
 
@@ -315,6 +316,7 @@ export class LumiReader extends LightMobxLitElement {
       query: ``,
       highlight: text,
       highlightedSpans,
+      imageStoragePath,
     };
 
     const tempAnswer = createTemporaryAnswer(request);
@@ -346,7 +348,8 @@ export class LumiReader extends LightMobxLitElement {
   private readonly handleAsk = async (
     highlightedText: string,
     query: string,
-    highlightedSpans: HighlightSelection[]
+    highlightedSpans: HighlightSelection[],
+    imageStoragePath?: string
   ) => {
     const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
     if (!currentDoc) return;
@@ -355,6 +358,7 @@ export class LumiReader extends LightMobxLitElement {
       highlight: highlightedText,
       query: query,
       highlightedSpans,
+      imageStoragePath,
     };
 
     this.checkOpenMobileSidebar();
@@ -403,6 +407,21 @@ export class LumiReader extends LightMobxLitElement {
       this.handleAsk.bind(this)
     );
     this.floatingPanelService.show(props, selectionInfo.parentSpan);
+  };
+
+  private readonly handleImageClick = (
+    storagePath: string,
+    target: HTMLElement
+  ) => {
+    this.analyticsService.trackAction(AnalyticsAction.READER_IMAGE_CLICK);
+    const props = new SmartHighlightMenuProps(
+      "",
+      [],
+      this.handleDefine.bind(this),
+      this.handleAsk.bind(this),
+      storagePath
+    );
+    this.floatingPanelService.show(props, target);
   };
 
   private readonly handlePaperReferenceClick = (
@@ -541,6 +560,7 @@ export class LumiReader extends LightMobxLitElement {
           .collapseManager=${this.documentStateService.collapseManager}
           .getImageUrl=${this.getImageUrl.bind(this)}
           .onConceptClick=${this.handleConceptClick.bind(this)}
+          .onImageClick=${this.handleImageClick.bind(this)}
           .onScroll=${this.handleScroll.bind(this)}
           .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
             this.documentStateService.focusOnSpan(highlights, "gray");

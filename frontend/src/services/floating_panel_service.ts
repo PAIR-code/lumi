@@ -31,13 +31,16 @@ export class SmartHighlightMenuProps extends FloatingPanelContentProps {
     public highlightedSpans: HighlightSelection[],
     public onDefine: (
       text: string,
-      highlightedSpans: HighlightSelection[]
+      highlightedSpans: HighlightSelection[],
+      imageStoragePath?: string
     ) => void,
     public onAsk: (
       highlightedText: string,
       query: string,
-      highlightedSpans: HighlightSelection[]
-    ) => void
+      highlightedSpans: HighlightSelection[],
+      imageStoragePath?: string
+    ) => void,
+    public imageStoragePath?: string
   ) {
     super();
   }

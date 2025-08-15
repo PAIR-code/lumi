@@ -72,3 +72,21 @@ And has asked the following question: "{query}"
 Please provide a concise answer to the question, using the highlighted text as context.
 """
 )
+
+LUMI_PROMPT_DEFINE_IMAGE = (
+    _LUMI_ANSWER_BASE_PROMPT
+    + """
+The user has a question about the attached image.
+
+Please provide a concise explanation of the image.
+"""
+)
+
+LUMI_PROMPT_ANSWER_IMAGE = (
+    _LUMI_ANSWER_BASE_PROMPT
+    + """
+The user has asked the following question about a given image: "{query}"
+
+Please provide a concise answer to the question, using the image as context.
+"""
+)

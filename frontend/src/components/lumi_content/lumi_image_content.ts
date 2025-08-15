@@ -47,6 +47,10 @@ export class LumiImageContent extends MobxLitElement {
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
   @property({ type: Object }) highlightManager?: HighlightManager;
   @property({ type: Object }) answerHighlightManager?: AnswerHighlightManager;
+  @property({ type: Object }) onImageClick?: (
+    storagePath: string,
+    target: HTMLElement
+  ) => void;
 
   @observable.shallow private imageUrls = new Map<string, string | null>();
   @state() private isLoading = true;
@@ -127,6 +131,15 @@ export class LumiImageContent extends MobxLitElement {
       ? this.imageUrls.get(imageContent.storagePath)
       : undefined;
 
+    const handleImageClick = (e: MouseEvent) => {
+      if (this.onImageClick && imageContent.storagePath) {
+        this.onImageClick(
+          imageContent.storagePath,
+          e.currentTarget as HTMLElement
+        );
+      }
+    };
+
     return html`
       ${this.isLoading
         ? this.renderLoading()
@@ -135,6 +148,8 @@ export class LumiImageContent extends MobxLitElement {
         : html`<img
             src=${ifDefined(imageUrl)}
             alt=${ifDefined(imageContent.altText)}
+            @click=${handleImageClick}
+            title="Click to ask question"
           />`}
       ${this.renderCaption(imageContent.caption)}
     `;

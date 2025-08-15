@@ -33,6 +33,30 @@ from shared.lumi_doc import ImageContent
 LOCAL_IMAGE_BUCKET_BASE = "../local_image_bucket/"
 TEMPORARY_EXTRACTION_DIR = "temp_extraction"
 
+
+def download_image_from_gcs(storage_path: str) -> bytes:
+    """
+    Downloads an image from Google Cloud Storage.
+
+    Args:
+        storage_path (str): The path to the image in the GCS bucket.
+
+    Returns:
+        bytes: The image data as bytes.
+
+    Raises:
+        Exception: If the image cannot be downloaded.
+    """
+    try:
+        cloud_bucket = storage.bucket()
+        blob = cloud_bucket.blob(storage_path)
+        image_bytes = blob.download_as_bytes()
+        return image_bytes
+    except Exception as e:
+        warnings.warn(f"Could not download image from GCS at {storage_path}: {e}")
+        raise
+
+
 def extract_images_from_latex_source(source_dir: str, image_contents: List[ImageContent], run_locally: bool = False) -> List[ImageMetadata]:
     """
     Finds image files from the LaTeX source directory by searching all
