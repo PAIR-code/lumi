@@ -72,6 +72,19 @@ export class DocumentStateService extends Service {
     this.scrollState?.scrollToSpan(spanId);
   }
 
+  scrollToImage(imageStoragePath: string) {
+    this.scrollState?.scrollToImage(imageStoragePath);
+  }
+
+  focusOnImage(imageStoragePath: string) {
+    if (!this.highlightManager) return;
+
+    this.highlightManager.clearHighlights();
+    this.highlightManager.addImageHighlight(imageStoragePath);
+
+    this.scrollToImage(imageStoragePath);
+  }
+
   focusOnSpan(
     highlightedSpans: HighlightSelection[],
     color: HighlightColor = "purple"
@@ -109,10 +122,6 @@ export class DocumentStateService extends Service {
     );
     this.highlightManager.addHighlights(highlights);
 
-    // A timeout is needed to ensure the DOM has updated (section expanded)
-    // before we try to scroll.
-    setTimeout(() => {
-      this.scrollToSpan(spanId);
-    }, 0);
+    this.scrollToSpan(spanId);
   }
 }

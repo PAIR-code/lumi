@@ -61,6 +61,10 @@ export interface SectionRendererProperties {
     target: HTMLElement
   ) => void;
   onFootnoteClick: (footnote: LumiFootnote, target: HTMLElement) => void;
+  onImageClick?: (
+    info: { storagePath: string; caption?: string },
+    target: HTMLElement
+  ) => void;
   onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   isSubsection: boolean;
 }
@@ -168,7 +172,7 @@ function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
 function renderSectionSummaryPanel(
   props: SectionRendererProperties
 ): TemplateResult | typeof nothing {
-  const { summaryMaps, section, getImageUrl, onFocusOnSpan } = props;
+  const { summaryMaps, section, getImageUrl, onFocusOnSpan, onImageClick } = props;
   const summary = summaryMaps?.sectionSummariesMap.get(section.id);
 
   if (!summary) return nothing;
@@ -218,12 +222,14 @@ function renderSectionSummaryPanel(
             return html`<lumi-image-content
               .content=${content.figureContent}
               .getImageUrl=${getImageUrl}
+              .onImageClick=${onImageClick}
             ></lumi-image-content>`;
           }
           if (content.imageContent) {
             return html`<lumi-image-content
               .getImageUrl=${getImageUrl}
               .content=${content.imageContent}
+              .onImageClick=${onImageClick}
             ></lumi-image-content>`;
           }
         })}
@@ -259,6 +265,7 @@ function renderContents(
     onAnswerHighlightClick,
     onPaperReferenceClick,
     onFootnoteClick,
+    onImageClick,
   } = props;
   if (isCollapsed) {
     return nothing;
@@ -297,6 +304,7 @@ function renderContents(
         onAnswerHighlightClick,
         onPaperReferenceClick,
         onFootnoteClick,
+        onImageClick,
         font: LumiFont.PAPER_TEXT,
       });
     })}

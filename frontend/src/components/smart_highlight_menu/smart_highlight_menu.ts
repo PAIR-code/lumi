@@ -55,7 +55,11 @@ export class SmartHighlightMenu extends MobxLitElement {
 
   private handleDefineClick() {
     this.analyticsService.trackAction(AnalyticsAction.MENU_EXPLAIN_CLICK);
-    this.props.onDefine(this.props.selectedText, this.props.highlightedSpans);
+    this.props.onDefine(
+      this.props.selectedText,
+      this.props.highlightedSpans,
+      this.props.imageInfo
+    );
     this.floatingPanelService.hide();
   }
 
@@ -72,7 +76,8 @@ export class SmartHighlightMenu extends MobxLitElement {
     this.props.onAsk(
       this.props.selectedText,
       this.queryText,
-      this.props.highlightedSpans
+      this.props.highlightedSpans,
+      this.props.imageInfo
     );
     this.floatingPanelService.hide();
   }

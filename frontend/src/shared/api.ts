@@ -18,10 +18,17 @@ import { LumiContent } from "./lumi_doc";
 import { HighlightSelection } from "./selection_utils";
 
 // Kept in sync with: functions/shared/api.py
+export interface ImageInfo {
+  imageStoragePath: string;
+  caption?: string;
+}
+
+// Kept in sync with: functions/shared/api.py
 export interface LumiAnswerRequest {
   query?: string;
   highlight?: string;
   highlightedSpans?: HighlightSelection[];
+  image?: ImageInfo;
 }
 
 // Kept in sync with: functions/shared/api.py

@@ -42,6 +42,26 @@ def call_predict(query="The opposite of happy is", model="gemini-2.5-flash") -> 
     return response.text
 
 
+def call_predict_with_image(
+    prompt: str, image_bytes: bytes, model="gemini-2.5-flash"
+) -> str:
+    """Calls Gemini with a prompt and an image."""
+    truncated_query = (prompt[:200] + "...") if len(prompt) > 200 else prompt
+    print(f"  > Calling Gemini with image, prompt: '{truncated_query}' \nimage: {image_bytes[:50]}")
+    response = client.models.generate_content(
+        model=model,
+        contents=[
+            prompt,
+            # When imported, paper images are all saved in PNG format.
+            types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
+        ],
+        config=types.GenerateContentConfig(temperature=0),
+    )
+    if not response.text:
+        raise GeminiInvalidResponseException()
+    return response.text
+
+
 def call_predict_with_schema(
     query: str,
     response_schema: Type[T],

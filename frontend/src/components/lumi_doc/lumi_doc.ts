@@ -84,6 +84,10 @@ export class LumiDocViz extends LightMobxLitElement {
   ) => void = () => {};
   @property() onConceptClick: (conceptId: string, target: HTMLElement) => void =
     () => {};
+  @property() onImageClick?: (
+    info: { storagePath: string; caption?: string },
+    target: HTMLElement
+  ) => void = () => {};
   @property() onAnswerHighlightClick: (
     answer: LumiAnswer,
     target: HTMLElement
@@ -202,6 +206,7 @@ export class LumiDocViz extends LightMobxLitElement {
                 onFocusOnSpan: this.onFocusOnSpan,
                 onPaperReferenceClick: this.onPaperReferenceClick,
                 onFootnoteClick: this.onFootnoteClick,
+                onImageClick: this.onImageClick,
                 onAnswerHighlightClick: this.onAnswerHighlightClick,
                 isSubsection: false,
               }}

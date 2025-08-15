@@ -32,6 +32,7 @@ export enum AnalyticsAction {
   // lumi_reader
   READER_TEXT_SELECTION = "reader_text_selection",
   READER_CONCEPT_CLICK = "reader_concept_click",
+  READER_IMAGE_CLICK = "reader_image_click",
 
   // sidebar
   SIDEBAR_TOGGLE_ALL_CONCEPTS = "sidebar_toggle_all_concepts",
@@ -45,6 +46,7 @@ export enum AnalyticsAction {
   QUESTIONS_SEE_ALL_CLICK = "questions_see_all_click",
   QUESTIONS_BACK_CLICK = "questions_back_click",
   QUESTIONS_REFERENCE_CLICK = "questions_reference_click",
+  QUESTIONS_IMAGE_REFERENCE_CLICK = "questions_image_reference_click",
 
   // smart_highlight_menu
   MENU_EXPLAIN_CLICK = "menu_explain_click",

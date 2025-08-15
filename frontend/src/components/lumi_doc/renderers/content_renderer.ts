@@ -59,6 +59,10 @@ export interface ContentRendererProperties {
     target: HTMLElement
   ) => void;
   onFootnoteClick?: (footnote: LumiFootnote, target: HTMLElement) => void;
+  onImageClick?: (
+    info: { storagePath: string; caption?: string },
+    target: HTMLElement
+  ) => void;
   onAnswerHighlightClick?: (answer: LumiAnswer, target: HTMLElement) => void;
   font?: LumiFont;
   dense?: boolean; // whether to render the content to fill parent with lower density
@@ -167,7 +171,7 @@ function renderTextContent(
 }
 
 function renderMainContent(props: ContentRendererProperties) {
-  const { content, getImageUrl } = props;
+  const { content, getImageUrl, onImageClick } = props;
   if (content.htmlFigureContent) {
     return html`<lumi-html-figure-content
       .content=${content.htmlFigureContent}
@@ -177,12 +181,18 @@ function renderMainContent(props: ContentRendererProperties) {
     return html`<lumi-image-content
       .content=${content.imageContent}
       .getImageUrl=${getImageUrl}
+      .onImageClick=${onImageClick}
+      .highlightManager=${props.highlightManager}
+      .answerHighlightManager=${props.answerHighlightManager}
     ></lumi-image-content>`;
   }
   if (content.figureContent) {
     return html`<lumi-image-content
       .content=${content.figureContent}
       .getImageUrl=${getImageUrl}
+      .onImageClick=${onImageClick}
+      .highlightManager=${props.highlightManager}
+      .answerHighlightManager=${props.answerHighlightManager}
     ></lumi-image-content>`;
   }
   if (content.textContent) {

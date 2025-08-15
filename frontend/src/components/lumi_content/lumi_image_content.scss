@@ -66,6 +66,10 @@
     &:not(.is-only-image) {
       max-width: 45%;
     }
+
+    &.is-only-image {
+      width: 100%;
+    }
   }
 
   img {
@@ -133,4 +137,12 @@
 
 figure {
   margin: common.$spacing-xs;
+}
+
+img {
+  cursor: pointer;
+}
+
+.highlighted {
+  outline: common.$spacing-small solid var(--md-sys-color-highlight-blue);
 }
