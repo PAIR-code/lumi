@@ -227,8 +227,12 @@ export class AnswerItem extends LightMobxLitElement {
   }
 
   private getTitleText() {
-    const { query, highlight } = this.answer.request;
+    const { query, highlight, imageStoragePath } = this.answer.request;
     if (query) return query;
+
+    if (imageStoragePath) {
+      return "Explain image";
+    }
 
     if (!highlight) return "";
 
