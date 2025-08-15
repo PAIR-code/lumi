@@ -23,10 +23,14 @@ import {
   getDocs,
   orderBy,
   query,
-  where
+  where,
 } from "firebase/firestore";
 import { ArxivCollection } from "../shared/lumi_collection";
-import { ArxivMetadata } from "../shared/lumi_doc";
+import {
+  ArxivMetadata,
+  FeaturedImage,
+  MetadataCollectionItem,
+} from "../shared/lumi_doc";
 
 import { FirebaseService } from "./firebase.service";
 import { Service } from "./service";
@@ -55,9 +59,10 @@ export class HomeService extends Service {
 
   // Map of paper ID to arXiv metadata
   paperToMetadataMap: Record<string, ArxivMetadata> = {};
+  paperToFeaturedImageMap: Record<string, FeaturedImage> = {};
 
   // Current collection based on page route (undefined if home page)
-  currentCollection: ArxivCollection|undefined = undefined;
+  currentCollection: ArxivCollection | undefined = undefined;
 
   // Whether or not to show "upload papers" dialog
   showUploadDialog = false;
@@ -68,9 +73,9 @@ export class HomeService extends Service {
   }
 
   /** Sets current collection (called from loadCollections). */
-  setCurrentCollection(currentCollectionId: string|undefined) {
+  setCurrentCollection(currentCollectionId: string | undefined) {
     this.currentCollection = this.collections.find(
-      collection => collection.collectionId === currentCollectionId
+      (collection) => collection.collectionId === currentCollectionId
     );
     // Load papers for current collection
     this.loadMetadata(this.currentCollection?.paperIds ?? []);
@@ -81,9 +86,11 @@ export class HomeService extends Service {
   }
 
   get currentMetadata() {
-    return this.currentCollection?.paperIds.map(
-      id => this.paperToMetadataMap[id]
-    ) ?? undefined;
+    return (
+      this.currentCollection?.paperIds.map(
+        (id) => this.paperToMetadataMap[id]
+      ) ?? undefined
+    );
   }
 
   /**
@@ -92,20 +99,25 @@ export class HomeService extends Service {
    * @param forceReload Whether to fetch documents even if previously fetched
    */
   async loadCollections(
-    currentCollectionId: string|undefined,
+    currentCollectionId: string | undefined,
     forceReload = false
   ) {
     // First, load collections
     if (!this.hasLoadedCollections || forceReload) {
       this.isLoadingCollections = true;
       try {
-        this.collections = (await getDocs(
-          query(
-            collection(this.sp.firebaseService.firestore, 'arxiv_collections'),
-            where('priority', '>=', 0),
-            orderBy('priority', 'desc'),
-          ),
-        )).docs.map((doc) => doc.data() as ArxivCollection);
+        this.collections = (
+          await getDocs(
+            query(
+              collection(
+                this.sp.firebaseService.firestore,
+                "arxiv_collections"
+              ),
+              where("priority", ">=", 0),
+              orderBy("priority", "desc")
+            )
+          )
+        ).docs.map((doc) => doc.data() as ArxivCollection);
         this.hasLoadedCollections = true;
       } catch (e) {
         console.log(e);
@@ -128,10 +140,15 @@ export class HomeService extends Service {
         break;
       }
       try {
-        const metadata = (await getDoc(
-          doc(this.sp.firebaseService.firestore, 'arxiv_metadata', paperId)
-        )).data() as ArxivMetadata;
-        this.paperToMetadataMap[paperId] = metadata;
+        const metadataItem = (
+          await getDoc(
+            doc(this.sp.firebaseService.firestore, "arxiv_metadata", paperId)
+          )
+        ).data() as MetadataCollectionItem;
+        this.paperToMetadataMap[paperId] = metadataItem.metadata;
+        if (metadataItem.featuredImage) {
+          this.paperToFeaturedImageMap[paperId] = metadataItem.featuredImage;
+        }
       } catch (e) {
         console.log(`Error loading ${paperId}: ${e}`);
       }

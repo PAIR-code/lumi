@@ -412,7 +412,7 @@ class ImportPipelineTest(unittest.TestCase):
             published_timestamp="",
             updated_timestamp="",
         )
-        result = import_pipeline.import_arxiv_latex_and_pdf(
+        result, _ = import_pipeline.import_arxiv_latex_and_pdf(
             arxiv_id, version, concepts, metadata
         )
 

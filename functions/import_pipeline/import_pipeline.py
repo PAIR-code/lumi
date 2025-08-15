@@ -15,7 +15,7 @@
 
 import re
 import tempfile
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from import_pipeline import fetch_utils
 from import_pipeline import markdown_utils
 from import_pipeline import image_utils
@@ -59,7 +59,7 @@ def import_arxiv_latex_and_pdf(
     debug=False,
     existing_model_output_file="",
     run_locally: bool = False,
-) -> LumiDoc:
+) -> Tuple[LumiDoc, str]:
     """
     Imports and processes the pdf and latex source with the given identifiers.
 
@@ -73,7 +73,7 @@ def import_arxiv_latex_and_pdf(
         run_locally (bool): If true, saves files locally instead of cloud.
 
     Returns:
-        LumiDoc: The processed document.
+        Tuple[LumiDoc, str]: The processed document and the first image storage path in the document.
     """
     # Fetch PDF bytes
     if not existing_model_output_file:
@@ -122,19 +122,23 @@ def import_arxiv_latex_and_pdf(
             concepts=concepts,
             file_id=arxiv_id,
         )
+        lumi_doc.metadata = metadata
 
         # Extract images from LaTeX source using info from the parsed LumiDoc
         all_image_contents = _collect_image_contents(lumi_doc)
         # This call updates the width/height on the image contents and writes
         # the images referenced in image contents to the cloud bucket.
-        image_utils.extract_images_from_latex_source(
+        images = image_utils.extract_images_from_latex_source(
             source_dir=temp_dir,
             image_contents=all_image_contents,
             run_locally=run_locally,
         )
 
-    lumi_doc.metadata = metadata
-    return lumi_doc
+        image_path = ""
+        if len(images) > 0:
+            image_path = images[0].storage_path
+
+    return lumi_doc, image_path
 
 
 def _collect_image_contents(doc: LumiDoc) -> List[ImageContent]:

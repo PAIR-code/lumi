@@ -55,14 +55,19 @@ from shared.constants import (
 )
 from shared.json_utils import convert_keys
 from shared.lumi_doc import LumiDoc, LumiSummaries
-from shared.types import ArxivMetadata, LoadingStatus
+from shared.types import (
+    ArxivMetadata,
+    LoadingStatus,
+    MetadataCollectionItem,
+    FeaturedImage,
+)
 from shared.types_local_storage import PaperData
 
 if os.environ.get("FUNCTION_RUN_MODE") == "testing":
 
     def import_delay(*args, **kwargs):
         time.sleep(2)
-        return main_testing_utils.create_mock_lumidoc()
+        return main_testing_utils.create_mock_lumidoc(), "image_path"
 
     def summary_delay(*args, **kwargs):
         time.sleep(2)
@@ -93,6 +98,13 @@ _USER_FEEDBACK_COLLECTION = "user_feedback"
 
 DOCUMENT_REQUESTED_FUNCTION_TIMEOUT = 540
 DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER = 10
+
+RELOAD_ERROR_STATES = [
+    LoadingStatus.ERROR_DOCUMENT_LOAD_INVALID_RESPONSE,
+    LoadingStatus.ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED,
+    LoadingStatus.ERROR_SUMMARIZING_INVALID_RESPONSE,
+    LoadingStatus.ERROR_SUMMARIZING_QUOTA_EXCEEDED,
+]
 
 initialize_app()
 
@@ -176,7 +188,14 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
     if loading_status == LoadingStatus.WAITING:
         try:
             # Write metadata to "arxiv_metadata" collection
-            _save_lumi_metadata(arxiv_id, version, after_data)
+            arxiv_metadata = from_dict(
+                data_class=ArxivMetadata,
+                data=convert_keys(after_data["metadata"], "camel_to_snake"),
+                config=Config(check_types=False),
+            )
+            _save_lumi_metadata(
+                arxiv_id, MetadataCollectionItem(metadata=arxiv_metadata)
+            )
 
             # Import source as LumiDoc
             _add_lumi_doc(versioned_doc_ref, after_data)
@@ -245,7 +264,7 @@ def _write_error(versioned_doc_ref, doc_data, status, error_message):
     """
     This function will be called if the timeout is reached.
     """
-    logger.error("Document load timed out")
+    logger.error("Errored:", error_message)
     doc = convert_keys(doc_data, "camel_to_snake")
     doc["loading_status"] = status
     doc["loading_error"] = error_message
@@ -258,7 +277,7 @@ def _write_error(versioned_doc_ref, doc_data, status, error_message):
     )
 
 
-def _save_lumi_metadata(arxiv_id, version, doc_data):
+def _save_lumi_metadata(arxiv_id: str, metadata_item: MetadataCollectionItem):
     """
     Takes in arxiv_id, version, doc data in dict (TypeScript) form.
     Extracts metadata and saves as new Firestore doc in "arxiv_metadata"
@@ -266,8 +285,8 @@ def _save_lumi_metadata(arxiv_id, version, doc_data):
     """
     db = firestore.client()
     doc_ref = db.collection(_ARXIV_METADATA_COLLECTION).document(arxiv_id)
-    metadata_dict = doc_data.get("metadata", {})
-    doc_ref.set(metadata_dict)
+    metadata_item_dict = convert_keys(asdict(metadata_item), "snake_to_camel")
+    doc_ref.set(metadata_item_dict)
 
 
 def _add_lumi_doc(versioned_doc_ref, doc_data):
@@ -290,16 +309,26 @@ def _add_lumi_doc(versioned_doc_ref, doc_data):
         if test_config.get("importBehavior") == "fail":
             raise Exception("Simulated import failure via testConfig")
 
-    lumi_doc = import_pipeline.import_arxiv_latex_and_pdf(
+    lumi_doc, first_image_path = import_pipeline.import_arxiv_latex_and_pdf(
         arxiv_id=arxiv_id,
         version=version,
         concepts=concepts,
         metadata=metadata,
     )
+
     lumi_doc.loading_status = LoadingStatus.SUMMARIZING
     lumi_doc.updated_timestamp = SERVER_TIMESTAMP
     lumi_doc_json = convert_keys(asdict(lumi_doc), "snake_to_camel")
     versioned_doc_ref.update(lumi_doc_json)
+
+    # Update the metadata metadata collection doc with the image path
+    _save_lumi_metadata(
+        arxiv_id,
+        MetadataCollectionItem(
+            featured_image=FeaturedImage(image_storage_path=first_image_path),
+            metadata=metadata,
+        ),
+    )
 
 
 def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
@@ -311,9 +340,6 @@ def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
     - Generates summaries for the existing LumiDoc data.
     - Updates the document with summaries and sets `loading_status` to `SUCCESS`.
     """
-    metadata_dict = doc_data.get("metadata", {})
-    metadata = ArxivMetadata(**convert_keys(metadata_dict, "camel_to_snake"))
-
     if os.environ.get("FUNCTION_RUN_MODE") == "testing":
         test_config = doc_data.get("testConfig", {})
         if test_config.get("summaryBehavior") == "fail":
@@ -424,7 +450,7 @@ def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
                     https_fn.FunctionsErrorCode.DEADLINE_EXCEEDED,
                     "This paper cannot be loaded (time limit exceeded)",
                 )
-            if loading_status != LoadingStatus.ERROR:
+            if loading_status not in RELOAD_ERROR_STATES:
                 return
 
         doc_data = {
@@ -467,13 +493,13 @@ def get_arxiv_metadata(req: https_fn.CallableRequest) -> dict:
         )
 
     metadata_dict = doc.to_dict()
-    metadata = from_dict(
-        data_class=ArxivMetadata,
+    metadata_item = from_dict(
+        data_class=MetadataCollectionItem,
         data=convert_keys(metadata_dict, "camel_to_snake"),
         config=Config(check_types=False),
     )
 
-    return convert_keys(asdict(metadata), "snake_to_camel")
+    return convert_keys(asdict(metadata_item.metadata), "snake_to_camel")
 
 
 def _log_query(doc: LumiDoc, lumi_answer: LumiAnswer):
