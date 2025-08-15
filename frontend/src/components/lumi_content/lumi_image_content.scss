@@ -142,3 +142,7 @@ figure {
 img {
   cursor: pointer;
 }
+
+.highlighted {
+  outline: common.$spacing-small solid var(--md-sys-color-highlight-blue);
+}

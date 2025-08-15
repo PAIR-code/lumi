@@ -23,6 +23,7 @@ import { Highlight } from "./lumi_doc";
  */
 export class HighlightManagerBase {
   highlightedSpans = new Map<string, Highlight[]>();
+  highlightedImages = new Set<string>();
 
   constructor() {
     makeObservable(this, this.getObservables());
@@ -31,9 +32,12 @@ export class HighlightManagerBase {
   getObservables() {
     return {
       highlightedSpans: observable.shallow,
+      highlightedImages: observable.shallow,
       addHighlights: action,
       removeHighlights: action,
       clearHighlights: action,
+      addImageHighlight: action,
+      removeImageHighlight: action,
     };
   }
 
@@ -54,8 +58,21 @@ export class HighlightManagerBase {
     }
   }
 
+  addImageHighlight(imageStoragePath: string) {
+    this.highlightedImages.add(imageStoragePath);
+  }
+
+  removeImageHighlight(imageStoragePath: string) {
+    this.highlightedImages.delete(imageStoragePath);
+  }
+
+  isImageHighlighted(imageStoragePath: string): boolean {
+    return this.highlightedImages.has(imageStoragePath);
+  }
+
   clearHighlights() {
     this.highlightedSpans.clear();
+    this.highlightedImages.clear();
   }
 }
 

@@ -46,6 +46,7 @@ export enum AnalyticsAction {
   QUESTIONS_SEE_ALL_CLICK = "questions_see_all_click",
   QUESTIONS_BACK_CLICK = "questions_back_click",
   QUESTIONS_REFERENCE_CLICK = "questions_reference_click",
+  QUESTIONS_IMAGE_REFERENCE_CLICK = "questions_image_reference_click",
 
   // smart_highlight_menu
   MENU_EXPLAIN_CLICK = "menu_explain_click",

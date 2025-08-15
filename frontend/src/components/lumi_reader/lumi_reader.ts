@@ -422,6 +422,7 @@ export class LumiReader extends LightMobxLitElement {
       storagePath
     );
     this.floatingPanelService.show(props, target);
+    this.documentStateService.highlightManager?.addImageHighlight(storagePath);
   };
 
   private readonly handlePaperReferenceClick = (

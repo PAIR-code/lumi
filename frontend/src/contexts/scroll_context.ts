@@ -25,6 +25,7 @@ import { Ref } from "lit/directives/ref.js";
 export class ScrollState {
   private spanMap = new Map<string, Ref<HTMLElement>>();
   private sectionMap = new Map<string, Ref<HTMLElement>>();
+  private imageMap = new Map<string, Ref<HTMLElement>>();
 
   registerSpan = (id: string, element: Ref<HTMLElement>) => {
     this.spanMap.set(id, element);
@@ -57,6 +58,23 @@ export class ScrollState {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
       console.warn(`[ScrollContext] Section with id "${id}" not found.`);
+    }
+  };
+
+  registerImage = (id: string, element: Ref<HTMLElement>) => {
+    this.imageMap.set(id, element);
+  };
+
+  unregisterImage = (id: string) => {
+    this.imageMap.delete(id);
+  };
+
+  scrollToImage = (id: string) => {
+    const element = this.imageMap.get(id)?.value;
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      console.warn(`[ScrollContext] Image with id "${id}" not found.`);
     }
   };
 }

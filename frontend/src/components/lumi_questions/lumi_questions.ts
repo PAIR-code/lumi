@@ -94,6 +94,13 @@ export class LumiQuestions extends LightMobxLitElement {
     this.documentStateService.focusOnSpan(highlightedSpans);
   }
 
+  private onImageReferenceClick(imageStoragePath: string) {
+    this.analyticsService.trackAction(
+      AnalyticsAction.QUESTIONS_IMAGE_REFERENCE_CLICK
+    );
+    this.documentStateService.focusOnImage(imageStoragePath);
+  }
+
   private onDismiss(answerId: string) {
     this.analyticsService.trackAction(AnalyticsAction.QUESTIONS_DISMISS_ANSWER);
     this.dismissedAnswers.add(answerId);
@@ -256,6 +263,7 @@ export class LumiQuestions extends LightMobxLitElement {
               .registerShadowRoot=${this.registerShadowRoot.bind(this)}
               .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
               .onReferenceClick=${this.onReferenceClick.bind(this)}
+              .onImageReferenceClick=${this.onImageReferenceClick.bind(this)}
               .onDismiss=${ifDefined(onDismiss)}
               .answer=${answer}
               .isLoading=${answer.isLoading || false}

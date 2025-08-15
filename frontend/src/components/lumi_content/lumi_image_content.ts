@@ -19,6 +19,8 @@ import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { createRef, ref, Ref } from "lit/directives/ref.js";
+import { consume } from "@lit/context";
 
 import { FigureContent, ImageContent, LumiSpan } from "../../shared/lumi_doc";
 import "../lumi_span/lumi_span";
@@ -28,6 +30,7 @@ import { makeObservable, observable } from "mobx";
 import { classMap } from "lit/directives/class-map.js";
 import { HighlightManager } from "../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
+import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 
 function isFigureContent(
   content: ImageContent | FigureContent
@@ -52,12 +55,26 @@ export class LumiImageContent extends MobxLitElement {
     target: HTMLElement
   ) => void;
 
+  @consume({ context: scrollContext, subscribe: true })
+  @property({ attribute: false })
+  private scrollContext?: ScrollState;
+
   @observable.shallow private imageUrls = new Map<string, string | null>();
   @state() private isLoading = true;
+
+  private readonly imageRefs = new Map<string, Ref<HTMLImageElement>>();
 
   constructor() {
     super();
     makeObservable(this);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.imageRefs.forEach((_, storagePath) => {
+      this.scrollContext?.unregisterImage(storagePath);
+    });
+    this.imageRefs.clear();
   }
 
   private async fetchImageUrls() {
@@ -96,6 +113,20 @@ export class LumiImageContent extends MobxLitElement {
     ) {
       this.fetchImageUrls();
     }
+
+    const imageContents = isFigureContent(this.content)
+      ? this.content.images
+      : [this.content];
+
+    for (const image of imageContents) {
+      if (image.storagePath) {
+        if (!this.imageRefs.has(image.storagePath)) {
+          continue;
+        }
+        const imageRef = this.imageRefs.get(image.storagePath)!;
+        this.scrollContext?.registerImage(image.storagePath, imageRef);
+      }
+    }
   }
 
   private renderCaption(
@@ -126,7 +157,11 @@ export class LumiImageContent extends MobxLitElement {
     return html`<div class="image-error-placeholder">Error loading image</div>`;
   }
 
-  private renderSingleImage(imageContent: ImageContent): TemplateResult {
+  private renderSingleImage(
+    imageContent: ImageContent
+  ): TemplateResult | typeof nothing {
+    if (!imageContent.storagePath) return nothing;
+
     const imageUrl = imageContent.storagePath
       ? this.imageUrls.get(imageContent.storagePath)
       : undefined;
@@ -140,12 +175,25 @@ export class LumiImageContent extends MobxLitElement {
       }
     };
 
+    const isHighlighted = this.highlightManager?.isImageHighlighted(
+      imageContent.storagePath
+    );
+
+    const imageClasses = classMap({
+      ["highlighted"]: isHighlighted ?? false,
+    });
+
+    const imageRef = createRef<HTMLImageElement>();
+    this.imageRefs.set(imageContent.storagePath, imageRef);
+
     return html`
       ${this.isLoading
         ? this.renderLoading()
         : imageUrl == null
         ? this.renderImageError()
         : html`<img
+            ${ref(imageRef)}
+            class=${imageClasses}
             src=${ifDefined(imageUrl)}
             alt=${ifDefined(imageContent.altText)}
             @click=${handleImageClick}

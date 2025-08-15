@@ -54,6 +54,8 @@ export class AnswerItem extends LightMobxLitElement {
   @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
   @property()
   onReferenceClick: (highlightedSpans: HighlightSelection[]) => void = () => {};
+  @property()
+  onImageReferenceClick: (imageStoragePath: string) => void = () => {};
   @property() onDismiss?: (answerId: string) => void;
 
   @consume({ context: scrollContext })
@@ -143,6 +145,27 @@ export class AnswerItem extends LightMobxLitElement {
     `;
   }
 
+  private renderImagePreview() {
+    const imageStoragePath = this.answer.request.imageStoragePath;
+    if (!imageStoragePath) {
+      return nothing;
+    }
+
+    return html`
+      <div class="highlight" .title="The image this answer is about">
+        <span>Image</span>
+        <pr-icon-button
+          icon="open_in_new"
+          ?disabled=${this.isLoading}
+          variant="default"
+          @click=${() => {
+            this.onImageReferenceClick(imageStoragePath);
+          }}
+        ></pr-icon-button>
+      </div>
+    `;
+  }
+
   private renderHighlightedText() {
     const highlightedSpans = this.answer.request.highlightedSpans;
     if (
@@ -158,6 +181,7 @@ export class AnswerItem extends LightMobxLitElement {
         <span>"${this.answer.request.highlight}"</span>
         <pr-icon-button
           icon="open_in_new"
+          ?disabled=${this.isLoading}
           variant="default"
           @click=${() => {
             this.onReferenceClick(highlightedSpans);
@@ -204,7 +228,10 @@ export class AnswerItem extends LightMobxLitElement {
 
   private renderContent() {
     if (this.isAnswerCollapsed) return nothing;
-    return html` ${this.renderHighlightedText()} ${this.renderAnswer()} `;
+    return html`
+      ${this.renderHighlightedText()} ${this.renderImagePreview()}
+      ${this.renderAnswer()}
+    `;
   }
 
   private renderCancelButton() {

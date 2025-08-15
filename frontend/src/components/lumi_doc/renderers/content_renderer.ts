@@ -179,6 +179,8 @@ function renderMainContent(props: ContentRendererProperties) {
       .content=${content.imageContent}
       .getImageUrl=${getImageUrl}
       .onImageClick=${onImageClick}
+      .highlightManager=${props.highlightManager}
+      .answerHighlightManager=${props.answerHighlightManager}
     ></lumi-image-content>`;
   }
   if (content.figureContent) {
@@ -186,6 +188,8 @@ function renderMainContent(props: ContentRendererProperties) {
       .content=${content.figureContent}
       .getImageUrl=${getImageUrl}
       .onImageClick=${onImageClick}
+      .highlightManager=${props.highlightManager}
+      .answerHighlightManager=${props.answerHighlightManager}
     ></lumi-image-content>`;
   }
   if (content.textContent) {
