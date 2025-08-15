@@ -17,16 +17,16 @@
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { ifDefined } from "lit/directives/if-defined.js";
+import { customElement, property } from "lit/decorators.js";
 import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { consume } from "@lit/context";
 
 import { FigureContent, ImageContent, LumiSpan } from "../../shared/lumi_doc";
 import "../lumi_span/lumi_span";
+import "../lumi_image/lumi_image";
 
 import { styles } from "./lumi_image_content.scss";
-import { makeObservable, observable } from "mobx";
+import { makeObservable } from "mobx";
 import { classMap } from "lit/directives/class-map.js";
 import { HighlightManager } from "../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
@@ -60,10 +60,7 @@ export class LumiImageContent extends MobxLitElement {
   @property({ attribute: false })
   private scrollContext?: ScrollState;
 
-  @observable.shallow private imageUrls = new Map<string, string | null>();
-  @state() private isLoading = true;
-
-  private readonly imageRefs = new Map<string, Ref<HTMLImageElement>>();
+  private readonly imageRefs = new Map<string, Ref<HTMLElement>>();
 
   constructor() {
     super();
@@ -71,50 +68,14 @@ export class LumiImageContent extends MobxLitElement {
   }
 
   override disconnectedCallback() {
-    super.disconnectedCallback();
     this.imageRefs.forEach((_, storagePath) => {
       this.scrollContext?.unregisterImage(storagePath);
     });
     this.imageRefs.clear();
+    super.disconnectedCallback();
   }
 
-  private async fetchImageUrls() {
-    if (!this.getImageUrl || !this.content) {
-      this.isLoading = false;
-      return;
-    }
-
-    this.isLoading = true;
-
-    this.imageUrls.clear();
-    const imageContents = isFigureContent(this.content)
-      ? this.content.images
-      : [this.content];
-
-    await Promise.all(
-      imageContents.map(async (image) => {
-        if (image.storagePath) {
-          try {
-            const url = await this.getImageUrl!(image.storagePath);
-            this.imageUrls.set(image.storagePath, url);
-            this.isLoading = false;
-          } catch {
-            this.imageUrls.set(image.storagePath, null);
-            this.isLoading = false;
-          }
-        }
-      })
-    );
-  }
-
-  override updated(changedProperties: Map<string, unknown>) {
-    if (
-      changedProperties.has("content") ||
-      changedProperties.has("getImageUrl")
-    ) {
-      this.fetchImageUrls();
-    }
-
+  override updated() {
     const imageContents = isFigureContent(this.content)
       ? this.content.images
       : [this.content];
@@ -122,7 +83,7 @@ export class LumiImageContent extends MobxLitElement {
     for (const image of imageContents) {
       if (image.storagePath) {
         if (!this.imageRefs.has(image.storagePath)) {
-          continue;
+          this.imageRefs.set(image.storagePath, createRef<HTMLElement>())
         }
         const imageRef = this.imageRefs.get(image.storagePath)!;
         this.scrollContext?.registerImage(image.storagePath, imageRef);
@@ -150,22 +111,10 @@ export class LumiImageContent extends MobxLitElement {
     `;
   }
 
-  private renderLoading() {
-    return html`<div class="loading-image-placeholder"></div>`;
-  }
-
-  private renderImageError() {
-    return html`<div class="image-error-placeholder">Error loading image</div>`;
-  }
-
   private renderSingleImage(
     imageContent: ImageContent
   ): TemplateResult | typeof nothing {
     if (!imageContent.storagePath) return nothing;
-
-    const imageUrl = imageContent.storagePath
-      ? this.imageUrls.get(imageContent.storagePath)
-      : undefined;
 
     const handleImageClick = (e: MouseEvent) => {
       if (this.onImageClick && imageContent.storagePath) {
@@ -185,26 +134,18 @@ export class LumiImageContent extends MobxLitElement {
       imageContent.storagePath
     );
 
-    const imageClasses = classMap({
-      ["highlighted"]: isHighlighted ?? false,
-    });
-
-    const imageRef = createRef<HTMLImageElement>();
-    this.imageRefs.set(imageContent.storagePath, imageRef);
+    const imageRef = this.imageRefs.get(imageContent.storagePath)!;
 
     return html`
-      ${this.isLoading
-        ? this.renderLoading()
-        : imageUrl == null
-        ? this.renderImageError()
-        : html`<img
-            ${ref(imageRef)}
-            class=${imageClasses}
-            src=${ifDefined(imageUrl)}
-            alt=${ifDefined(imageContent.altText)}
-            @click=${handleImageClick}
-            title="Click to ask question"
-          />`}
+      <lumi-image
+        ${ref(imageRef)}
+        .storagePath=${imageContent.storagePath}
+        .altText=${imageContent.altText}
+        .getImageUrl=${this.getImageUrl}
+        .onImageClick=${handleImageClick}
+        .highlighted=${isHighlighted}
+        title="Click to ask question"
+      ></lumi-image>
       ${this.renderCaption(imageContent.caption)}
     `;
   }

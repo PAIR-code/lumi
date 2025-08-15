@@ -201,7 +201,16 @@ export interface LumiAbstract {
   contents: LumiContent[];
 }
 
-// Kept in sync with: functions/shared/string_utils_test.py
+// Kept in sync with: functions/shared/types.py
+export interface FeaturedImage {
+  imageStoragePath: string;
+}
+
+export interface MetadataCollectionItem {
+  metadata: ArxivMetadata;
+  featuredImage?: FeaturedImage;
+}
+
 export interface ArxivMetadata {
   paperId: string;
   version: string;

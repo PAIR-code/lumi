@@ -18,6 +18,7 @@
 import "../../pair-components/textarea";
 import "../../pair-components/icon";
 import "../../pair-components/icon_button";
+import "../lumi_image/lumi_image";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
@@ -27,7 +28,7 @@ import { classMap } from "lit/directives/class-map.js";
 
 import { core } from "../../core/core";
 import { HomeService } from "../../services/home.service";
-  import { HistoryService } from "../../services/history.service";
+import { HistoryService } from "../../services/history.service";
 import { Pages, RouterService } from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
@@ -37,6 +38,7 @@ import {
   LoadingStatus,
   ArxivMetadata,
   LOADING_STATUS_ERROR_STATES,
+  FeaturedImage,
 } from "../../shared/lumi_doc";
 import { ArxivCollection } from "../../shared/lumi_collection";
 import {
@@ -51,6 +53,7 @@ import { PaperData } from "../../shared/types_local_storage";
 import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
 import { GalleryView } from "../../shared/types";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 /** Gallery for home/landing page */
 @customElement("home-gallery")
@@ -201,19 +204,17 @@ export class HomeGallery extends MobxLitElement {
   private renderContent() {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
-    ).map(item => item.metadata);
+    ).map((item) => item.metadata);
 
-    switch(this.galleryView) {
+    switch (this.galleryView) {
       case GalleryView.CURRENT:
         const currentPapers = this.homeService.currentMetadata ?? [];
         return html`
-          ${this.renderCollectionMenu()}
-          ${this.renderCollection(currentPapers)}
+          ${this.renderCollectionMenu()} ${this.renderCollection(currentPapers)}
         `;
       case GalleryView.LOCAL:
         return html`
-          ${this.renderCollectionMenu()}
-          ${this.renderCollection(historyItems)}
+          ${this.renderCollectionMenu()} ${this.renderCollection(historyItems)}
         `;
       default:
         return nothing;
@@ -229,11 +230,11 @@ export class HomeGallery extends MobxLitElement {
 
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
-    ).map(item => item.metadata);
+    ).map((item) => item.metadata);
 
     const close = () => {
       this.homeService.setShowUploadDialog(false);
-    }
+    };
 
     return html`
       <pr-dialog
@@ -244,13 +245,10 @@ export class HomeGallery extends MobxLitElement {
       >
         <div slot="title">Upload papers</div>
         <div class="dialog-content">
-          ${this.renderLinkInput()}
-          ${this.renderLoadingMessages(historyItems)}
+          ${this.renderLinkInput()} ${this.renderLoadingMessages(historyItems)}
         </div>
         <div slot="actions-right">
-          <pr-button @click=${close}>
-            Done
-          </pr-button>
+          <pr-button @click=${close}> Done </pr-button>
         </div>
       </pr-dialog>
     `;
@@ -259,17 +257,15 @@ export class HomeGallery extends MobxLitElement {
   private renderLoadingMessages(metadata: ArxivMetadata[]) {
     return html`
       <div class="loading-section">
-        ${metadata.map(
-          item => {
-            if (this.unsubscribeListeners.get(item.paperId)) {
-              return html`
-                <div class="loading-message">
-                  Loading <i>${item.title} (${item.paperId})</i>
-                </div>
-              `;
-            }
+        ${metadata.map((item) => {
+          if (this.unsubscribeListeners.get(item.paperId)) {
+            return html`
+              <div class="loading-message">
+                Loading <i>${item.title} (${item.paperId})</i>
+              </div>
+            `;
           }
-        )}
+        })}
       </div>
     `;
   }
@@ -279,7 +275,9 @@ export class HomeGallery extends MobxLitElement {
     return html`
       <div class="nav-menu">
         ${this.renderLocalCollectionNavItem()}
-        ${collections.map(collection => this.renderCollectionNavItem(collection))}
+        ${collections.map((collection) =>
+          this.renderCollectionNavItem(collection)
+        )}
       </div>
     `;
   }
@@ -287,7 +285,7 @@ export class HomeGallery extends MobxLitElement {
   private renderLocalCollectionNavItem() {
     const classes = classMap({
       "nav-item": true,
-      "active": this.routerService.activePage === Pages.HOME
+      active: this.routerService.activePage === Pages.HOME,
     });
 
     const navigate = () => {
@@ -303,10 +301,11 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderCollectionNavItem(collection: ArxivCollection) {
-    const isCurrent = collection.collectionId === this.homeService.currentCollectionId;
+    const isCurrent =
+      collection.collectionId === this.homeService.currentCollectionId;
     const classes = classMap({
       "nav-item": true,
-      "active": isCurrent && this.routerService.activePage === Pages.COLLECTION
+      active: isCurrent && this.routerService.activePage === Pages.COLLECTION,
     });
 
     const navigate = () => {
@@ -320,6 +319,10 @@ export class HomeGallery extends MobxLitElement {
         <span>${collection.title}</span>
       </div>
     `;
+  }
+
+  private getImageUrl() {
+    return (path: string) => this.firebaseService.getDownloadUrl(path);
   }
 
   private renderCollection(items: ArxivMetadata[]) {
@@ -343,8 +346,15 @@ export class HomeGallery extends MobxLitElement {
       const status = this.unsubscribeListeners.has(metadata.paperId)
         ? "loading"
         : "";
+      const image = this.homeService.paperToFeaturedImageMap[metadata.paperId];
       return html`
-        <paper-card .metadata=${metadata} .status=${status} @click=${navigate}>
+        <paper-card
+          .metadata=${metadata}
+          .image=${ifDefined(image)}
+          .status=${status}
+          .getImageUrl=${this.getImageUrl()}
+          @click=${navigate}
+        >
         </paper-card>
       `;
     };
@@ -402,10 +412,23 @@ export class HomeGallery extends MobxLitElement {
 export class PaperCard extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  @property() metadata: ArxivMetadata | null = null;
+  @property({ type: Object }) metadata: ArxivMetadata | null = null;
+  @property({ type: Object }) image: FeaturedImage | null = null;
   @property({ type: Boolean }) disabled = false;
   @property({ type: Number }) summaryMaxCharacters = 250;
   @property({ type: String }) status = "";
+  @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
+
+  private renderImage() {
+    if (this.image == null || this.getImageUrl == null) {
+      return html`<div class="preview-image"></div>`;
+    }
+    return html`<lumi-image
+      class="preview-image"
+      .storagePath=${this.image.imageStoragePath}
+      .getImageUrl=${this.getImageUrl}
+    ></lumi-image>`;
+  }
 
   override render() {
     // TODO: Render loading state for paper card if no metadata
@@ -423,7 +446,7 @@ export class PaperCard extends MobxLitElement {
 
     return html`
       <div class=${classMap(classes)}>
-        <div class="preview-image"></div>
+        ${this.renderImage()}
         <div class="preview-content">
           <div class="preview-title">${this.metadata.title}</div>
           ${this.renderStatusChip()}

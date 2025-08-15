@@ -15,6 +15,7 @@
 
 
 from enum import StrEnum
+from typing import Optional
 from dataclasses import dataclass
 
 
@@ -24,8 +25,8 @@ class LoadingStatus(StrEnum):
     """
 
     UNSET = "UNSET"
-    WAITING = "WAITING" # Importing paper into LumiDoc
-    SUMMARIZING = "SUMMARIZING" # Loading summaries after paper is imported
+    WAITING = "WAITING"  # Importing paper into LumiDoc
+    SUMMARIZING = "SUMMARIZING"  # Loading summaries after paper is imported
     SUCCESS = "SUCCESS"
     ERROR_DOCUMENT_LOAD = "ERROR_DOCUMENT_LOAD"
     ERROR_DOCUMENT_LOAD_INVALID_RESPONSE = "ERROR_DOCUMENT_LOAD_INVALID_RESPONSE"
@@ -34,6 +35,22 @@ class LoadingStatus(StrEnum):
     ERROR_SUMMARIZING_QUOTA_EXCEEDED = "ERROR_SUMMARIZING_QUOTA_EXCEEDED"
     ERROR_SUMMARIZING_INVALID_RESPONSE = "ERROR_SUMMARIZING_INVALID_RESPONSE"
     TIMEOUT = "TIMEOUT"
+
+
+# Kept in sync with shared/lumi_doc.ts
+@dataclass
+class FeaturedImage:
+    """Class for featured image."""
+
+    image_storage_path: str
+
+
+@dataclass
+class MetadataCollectionItem:
+    """Class for metadata collection item."""
+
+    metadata: "ArxivMetadata"
+    featured_image: Optional["FeaturedImage"] = None
 
 
 @dataclass

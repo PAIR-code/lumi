@@ -1,0 +1,80 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.image-container {
+  width: 100%;
+  height: 100%;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: common.$border-radius-small;
+  cursor: pointer;
+}
+
+.highlighted img {
+  outline: common.$spacing-small solid var(--md-sys-color-highlight-blue);
+}
+
+.image-error-placeholder,
+.loading-image-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+  border-radius: common.$spacing-large;
+}
+
+.image-error-placeholder {
+  @include common.flex-row-align-center;
+  justify-content: center;
+
+  @include typescale.body-small;
+  font-style: italic;
+
+  background: var(--md-sys-color-error-container-high);
+  color: var(--md-sys-color-on-surface-higher);
+}
+
+.loading-image-placeholder {
+  min-height: 300px;
+  background: var(--md-sys-color-surface-container);
+  border-radius: common.$spacing-large;
+  animation: loading infinite 1.5s ease-in-out;
+
+  @keyframes loading {
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+}
