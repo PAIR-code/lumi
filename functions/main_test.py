@@ -34,7 +34,7 @@ with patch("firebase_admin.initialize_app"):
 import main_testing_utils
 from shared.api import LumiAnswer, LumiAnswerRequest, UserFeedback
 from shared.json_utils import convert_keys
-from shared.lumi_doc import ArxivMetadata
+from shared.types import ArxivMetadata, MetadataCollectionItem
 from shared.types_local_storage import PaperData
 
 
@@ -207,14 +207,16 @@ class TestMainGetArxivMetadata(unittest.TestCase):
     @patch("main.firestore")
     def test_get_arxiv_metadata_success(self, mock_firestore):
         # Arrange
-        mock_metadata = ArxivMetadata(
-            paper_id="1234.5678",
-            version="1",
-            authors=["Test Author"],
-            title="Test Title",
-            summary="Test summary.",
-            updated_timestamp="2023-01-01T00:00:00Z",
-            published_timestamp="2023-01-01T00:00:00Z",
+        mock_metadata = MetadataCollectionItem(
+            metadata=ArxivMetadata(
+                paper_id="1234.5678",
+                version="1",
+                authors=["Test Author"],
+                title="Test Title",
+                summary="Test summary.",
+                updated_timestamp="2023-01-01T00:00:00Z",
+                published_timestamp="2023-01-01T00:00:00Z",
+            ),
         )
         mock_metadata_dict = convert_keys(asdict(mock_metadata), "snake_to_camel")
 
@@ -237,7 +239,7 @@ class TestMainGetArxivMetadata(unittest.TestCase):
         mock_db.collection.assert_called_once_with("arxiv_metadata")
         mock_db.collection.return_value.document.assert_called_once_with("1234.5678")
         response_data = response.get_json()
-        expected_result = convert_keys(asdict(mock_metadata), "snake_to_camel")
+        expected_result = convert_keys(asdict(mock_metadata.metadata), "snake_to_camel")
         self.assertIn("result", response_data)
         self.assertEqual(response_data["result"], expected_result)
 
