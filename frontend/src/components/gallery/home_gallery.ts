@@ -18,6 +18,7 @@
 import "../../pair-components/textarea";
 import "../../pair-components/icon";
 import "../../pair-components/icon_button";
+import "../lumi_image/lumi_image";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
@@ -52,7 +53,7 @@ import { PaperData } from "../../shared/types_local_storage";
 import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
 import { GalleryView } from "../../shared/types";
-import { ifDefined } from "lit/directives/if-defined";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 /** Gallery for home/landing page */
 @customElement("home-gallery")
@@ -320,6 +321,10 @@ export class HomeGallery extends MobxLitElement {
     `;
   }
 
+  private getImageUrl() {
+    return (path: string) => this.firebaseService.getDownloadUrl(path);
+  }
+
   private renderCollection(items: ArxivMetadata[]) {
     const renderItem = (metadata: ArxivMetadata) => {
       if (!metadata) {
@@ -347,6 +352,7 @@ export class HomeGallery extends MobxLitElement {
           .metadata=${metadata}
           .image=${ifDefined(image)}
           .status=${status}
+          .getImageUrl=${this.getImageUrl()}
           @click=${navigate}
         >
         </paper-card>
@@ -411,11 +417,17 @@ export class PaperCard extends MobxLitElement {
   @property({ type: Boolean }) disabled = false;
   @property({ type: Number }) summaryMaxCharacters = 250;
   @property({ type: String }) status = "";
+  @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
 
   private renderImage() {
-    if (this.image == null) {
+    if (this.image == null || this.getImageUrl == null) {
       return html`<div class="preview-image"></div>`;
     }
+    return html`<lumi-image
+      class="preview-image"
+      .storagePath=${this.image.imageStoragePath}
+      .getImageUrl=${this.getImageUrl}
+    ></lumi-image>`;
   }
 
   override render() {
