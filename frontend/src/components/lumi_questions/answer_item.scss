@@ -167,9 +167,4 @@ answer-item {
   @include common.flex-row-align-center;
   justify-content: center;
   padding: 20px 0;
-
-  pr-circular-progress {
-    --pr-color: var(--md-sys-color-primary);
-    opacity: 0.5;
-  }
 }
