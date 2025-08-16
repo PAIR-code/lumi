@@ -214,7 +214,9 @@ export class HomeGallery extends MobxLitElement {
         `;
       case GalleryView.LOCAL:
         return html`
-          ${this.renderCollectionMenu()} ${this.renderCollection(historyItems)}
+          ${this.renderCollectionMenu()}
+          ${this.renderLoadingMessages(historyItems)}
+          ${this.renderCollection(historyItems)}
         `;
       default:
         return nothing;
@@ -228,12 +230,19 @@ export class HomeGallery extends MobxLitElement {
       return nothing;
     }
 
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    ).map((item) => item.metadata);
+    const autoFocus = () => {
+      // Only auto-focus chat input if on desktop
+      return navigator.maxTouchPoints === 0;
+    };
+
 
     const close = () => {
       this.homeService.setShowUploadDialog(false);
+    };
+
+    const submit = () => {
+      this.loadDocument();
+      close();
     };
 
     return html`
@@ -245,10 +254,32 @@ export class HomeGallery extends MobxLitElement {
       >
         <div slot="title">Upload papers</div>
         <div class="dialog-content">
-          ${this.renderLinkInput()} ${this.renderLoadingMessages(historyItems)}
-        </div>
-        <div slot="actions-right">
-          <pr-button @click=${close}> Done </pr-button>
+          <div class="paper-input">
+            <pr-textarea
+              ?disabled=${this.isLoadingMetadata}
+              ?focused=${autoFocus}
+              size="medium"
+              .value=${this.paperInput}
+              .maxLength=${MAX_IMPORT_URL_LENGTH}
+              @change=${(e: CustomEvent) => {
+                this.paperInput = e.detail.value;
+              }}
+              @keydown=${(e: CustomEvent) => {
+                if (e.detail.key === "Enter") {
+                  submit();
+                }
+              }}
+              placeholder="Paste your arXiv paper link here"
+            ></pr-textarea>
+            <pr-icon-button
+              icon="arrow_forward"
+              variant="tonal"
+              @click=${submit}
+              .loading=${this.isLoadingMetadata}
+              ?disabled=${this.isLoadingMetadata || !this.paperInput}
+            >
+            </pr-icon-button>
+          </div>
         </div>
       </pr-dialog>
     `;
@@ -371,38 +402,7 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderLinkInput() {
-    const autoFocus = () => {
-      // Only auto-focus chat input if on desktop
-      return navigator.maxTouchPoints === 0;
-    };
-
     return html`
-      <div class="paper-input">
-        <pr-textarea
-          ?disabled=${this.isLoadingMetadata}
-          ?focused=${autoFocus}
-          size="medium"
-          .value=${this.paperInput}
-          .maxLength=${MAX_IMPORT_URL_LENGTH}
-          @change=${(e: CustomEvent) => {
-            this.paperInput = e.detail.value;
-          }}
-          @keydown=${(e: CustomEvent) => {
-            if (e.detail.key === "Enter") {
-              this.loadDocument();
-            }
-          }}
-          placeholder="Paste your arXiv paper link here"
-        ></pr-textarea>
-        <pr-icon-button
-          icon="arrow_forward"
-          variant="tonal"
-          @click=${this.loadDocument}
-          .loading=${this.isLoadingMetadata}
-          ?disabled=${this.isLoadingMetadata || !this.paperInput}
-        >
-        </pr-icon-button>
-      </div>
     `;
   }
 }
