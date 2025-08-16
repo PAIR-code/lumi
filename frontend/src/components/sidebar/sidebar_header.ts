@@ -28,6 +28,7 @@ import {
 } from "../../services/analytics.service";
 import {
   DialogService,
+  HistoryDialogProps,
   UserFeedbackDialogProps,
 } from "../../services/dialog.service";
 
@@ -48,6 +49,10 @@ export class SidebarHeader extends MobxLitElement {
     this.dialogService.show(new UserFeedbackDialogProps());
   }
 
+  private openHistoryDialog() {
+    this.dialogService.show(new HistoryDialogProps());
+  }
+
   private renderContent() {
     return html`<div class="default-content">
       <div class="left-container">
@@ -58,11 +63,25 @@ export class SidebarHeader extends MobxLitElement {
         ></pr-icon-button>
         <div class="title">Lumi</div>
       </div>
-      <pr-icon-button
-        icon="feedback"
-        variant="default"
-        @click=${this.handleFeedbackClick}
-      ></pr-icon-button>
+      <div class="right-container">
+        <pr-icon-button
+          title="Open model context"
+          icon="contextual_token"
+          variant="default"
+          @click=${() => {
+            this.analyticsService.trackAction(
+              AnalyticsAction.HEADER_OPEN_CONTEXT
+            );
+            this.openHistoryDialog();
+          }}
+        ></pr-icon-button>
+        <pr-icon-button
+          title="Send feedback"
+          icon="feedback"
+          variant="default"
+          @click=${this.handleFeedbackClick}
+        ></pr-icon-button>
+      </div>
     </div>`;
   }
 

@@ -34,7 +34,8 @@
   align-items: center;
 }
 
-.left-container {
+.left-container,
+.right-container {
   @include common.flex-row;
   align-items: center;
   gap: common.$spacing-small;
