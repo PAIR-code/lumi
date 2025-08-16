@@ -124,6 +124,7 @@ export class LumiReader extends LightMobxLitElement {
   @property({ type: String }) documentId = "";
   @state() loadingStatus = LoadingStatus.UNSET;
   @state() metadata?: ArxivMetadata;
+  @state() metadataNotFound? = false;
 
   private unsubscribeListener?: Unsubscribe;
 
@@ -187,15 +188,18 @@ export class LumiReader extends LightMobxLitElement {
       this.unsubscribeListener();
     }
 
-    const metadata = await getArxivMetadata(
-      this.firebaseService.functions,
-      this.documentId
-    );
+    let metadata: ArxivMetadata | null = null;
+    try {
+      metadata = await getArxivMetadata(
+        this.firebaseService.functions,
+        this.documentId
+      );
+    } catch (error) {
+      console.error("Warning: Document metadata or version not found.", error);
+    }
 
     if (!metadata || !metadata.version) {
-      this.snackbarService.show(
-        "Warning: Document metadata or version not found."
-      );
+      this.metadataNotFound = true;
       return;
     }
 
@@ -466,6 +470,20 @@ export class LumiReader extends LightMobxLitElement {
     </div>`;
   }
 
+  private renderNotFound() {
+    return html`<div class="error-container status-container">
+      <div class="error-inner-container status-inner-container">
+        <span class="not-found-header">404</span>
+        <span class="not-found-body">Page not found</span>
+        <div class="error-footer">
+          <pr-button variant="tonal" @click=${this.handleHomeClick}
+            >Back to Lumi home</pr-button
+          >
+        </div>
+      </div>
+    </div>`;
+  }
+
   private renderError(metadata?: ArxivMetadata) {
     return html`<div class="error-container status-container">
       <div class="error-inner-container status-inner-container">
@@ -519,6 +537,10 @@ export class LumiReader extends LightMobxLitElement {
   }
 
   override render() {
+    if (this.metadataNotFound) {
+      return this.renderWithStyles(this.renderNotFound());
+    }
+
     if (this.loadingStatus === LoadingStatus.UNSET) {
       return this.renderWithStyles(this.renderLoadingMetadata());
     }
