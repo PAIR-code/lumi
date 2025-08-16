@@ -102,6 +102,7 @@ export class Header extends MobxLitElement {
   private renderImportButton() {
     const openDialog = () => {
       this.homeService.setShowUploadDialog(true);
+      this.routerService.navigate(Pages.HOME);
     };
 
     return html`
