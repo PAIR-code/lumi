@@ -74,6 +74,20 @@ export class AnswerHighlightTooltipProps extends FloatingPanelContentProps {
   }
 }
 
+/** Defines a single item in the overflow menu. */
+export interface OverflowMenuItem {
+  icon?: string;
+  label: string;
+  onClick: () => void;
+}
+
+/** Props for the OverflowMenu component. */
+export class OverflowMenuProps extends FloatingPanelContentProps {
+  constructor(public items: OverflowMenuItem[]) {
+    super();
+  }
+}
+
 /** Additional floating panel content components should define their props here. */
 
 /**
