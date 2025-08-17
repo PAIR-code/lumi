@@ -30,7 +30,7 @@ import {
 import { HomeService } from "../../services/home.service";
 import { Pages, RouterService } from "../../services/router.service";
 
-import { APP_NAME } from "../../shared/constants";
+import { APP_NAME, LOGO_ICON_NAME } from "../../shared/constants";
 import { styles } from "./header.scss";
 import {
   AnalyticsAction,
@@ -90,7 +90,7 @@ export class Header extends MobxLitElement {
       <pr-tooltip text="Home" position="BOTTOM_START">
         <pr-icon-button
           color="neutral"
-          icon="home"
+          icon=${LOGO_ICON_NAME}
           variant="default"
           @click=${handleClick}
         >
@@ -106,11 +106,7 @@ export class Header extends MobxLitElement {
 
     return html`
       <pr-tooltip text="Upload papers" position="BOTTOM_END">
-        <pr-icon-button
-          icon="new_window"
-          variant="tonal"
-          @click=${openDialog}
-        >
+        <pr-icon-button icon="new_window" variant="tonal" @click=${openDialog}>
         </pr-icon-button>
       </pr-tooltip>
     `;
@@ -161,4 +157,3 @@ declare global {
     "page-header": Header;
   }
 }
-
