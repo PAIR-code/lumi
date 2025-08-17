@@ -49,6 +49,8 @@ export const HIGHLIGHT_METADATA_ANSWER_KEY = "answer";
 export const CITATION_CLASSNAME = "citation-marker";
 export const FOOTNOTE_CLASSNAME = "footnote-marker";
 
+export const LOGO_ICON_NAME = "book_ribbon";
+
 // Keep in sync with constants.py
 export const PERSONAL_SUMMARY_QUERY_NAME = "Summary";
 export const CONCEPT_CONTENT_LABEL_DEFINITION = "definition";
