@@ -24,7 +24,7 @@ import "../../../pair-components/icon";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { HighlightManager } from "../../../shared/highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
-import { LumiFont } from "../../../shared/constants";
+import { LumiFont } from "../../../shared/types";
 
 export interface ContentSummaryRendererProperties {
   content: LumiContent;

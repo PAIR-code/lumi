@@ -19,7 +19,7 @@ import { html, nothing, TemplateResult } from "lit";
 import { LumiFootnote } from "../../../shared/lumi_doc";
 
 import "../../lumi_span/lumi_span";
-import { LumiFont } from "../../../shared/constants";
+import { LumiFont } from "../../../shared/types";
 
 export interface FootnotesRendererProperties {
   footnotes: LumiFootnote[];

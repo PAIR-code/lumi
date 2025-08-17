@@ -35,8 +35,8 @@ import {
   HIGHLIGHT_METADATA_ANSWER_KEY,
   CITATION_CLASSNAME,
   FOOTNOTE_CLASSNAME,
-  LumiFont,
 } from "../../shared/constants";
+import { LumiFont } from "../../shared/types";
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;

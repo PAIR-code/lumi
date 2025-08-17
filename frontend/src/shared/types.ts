@@ -45,6 +45,12 @@ export enum FocusState {
 
 /** Different views for main gallery page (used in home-gallery component). */
 export enum GalleryView {
-  LOCAL = 'local', // show paper import, user's collection from local storage
-  CURRENT = 'current', // show papers for current collection
+  LOCAL = "local", // show paper import, user's collection from local storage
+  CURRENT = "current", // show papers for current collection
+}
+
+export enum LumiFont {
+  PAPER_TEXT = "paper-text",
+  SPAN_SUMMARY_TEXT = "span-summary-text",
+  DEFAULT = "default",
 }
