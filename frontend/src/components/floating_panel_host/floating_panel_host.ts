@@ -153,6 +153,9 @@ export class FloatingPanelHost extends MobxLitElement {
   }
 
   override render() {
+    const anchorCorner = this.floatingPanelService.anchorCorner;
+    const menuCorner = this.floatingPanelService.menuCorner;
+
     return html`
       <span class="menu-wrapper">
         <md-menu
@@ -161,8 +164,8 @@ export class FloatingPanelHost extends MobxLitElement {
           @closed=${this.handleMenuClosed}
           .stayOpenOnOutsideClick=${true}
           positioning="popover"
-          anchor-corner="start-start"
-          menu-corner="end-start"
+          anchor-corner=${anchorCorner}
+          menu-corner=${menuCorner}
         >
           ${this.renderContent()}
         </md-menu>
