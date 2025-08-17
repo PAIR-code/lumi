@@ -24,22 +24,20 @@ $vertical-negative-margin: common.$spacing-small;
 .query {
   @include typescale.label-large;
   width: 100%;
-  padding: 0 $lumi-content-offset + $horizontal-negative-margin;
 }
 
 .answer-highlight-tooltip {
   @include common.flex-column-align-center;
 
   max-width: 300px;
-  padding: common.$spacing-large 0;
-  padding-top: common.$spacing-xl;
+  padding-left: common.$spacing-xl;
+  padding-right: common.$spacing-xl;
+  padding-top: common.$spacing-large;
   padding-bottom: common.$spacing-medium;
 
   &.no-show-all-button {
     padding-bottom: common.$spacing-xl;
   }
-
-  margin: (-1 * $vertical-negative-margin) (-1 * $horizontal-negative-margin);
 }
 
 p {
