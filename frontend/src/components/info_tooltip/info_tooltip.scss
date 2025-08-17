@@ -15,28 +15,16 @@
  * limitations under the License.
  */
 @use "../../sass/common";
+@use "../../sass/typescale";
 
-.menu-wrapper {
-  /* This wrapper is needed for md-menu to position itself correctly
-     relative to its anchor element. */
-  position: relative;
-  --md-menu-container-elevation: 1;
-  
-  &.has-flat-container {
-    --md-menu-container-elevation: 0;
-  }
-}
-
-.panel {
-  background-color: var(--md-sys-color-surface);
-  border: 1px solid var(--md-sys-color-outline-variant);
+:host {
+  display: block;
+  background-color: var(--md-sys-color-on-surface-high);
+  color: var(--md-sys-color-surface);
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  margin: -8px 0;
+  padding: common.$spacing-small common.$spacing-medium;
+  max-width: 232px;
 
-  overflow: hidden;
-
-  &.has-flat-container {
-    border: unset;
-  }
+  @include typescale.body-small;
+  font-size: 12px;
 }

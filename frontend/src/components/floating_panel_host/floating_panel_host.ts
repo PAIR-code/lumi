@@ -29,6 +29,7 @@ import {
   ConceptTooltipProps,
   FloatingPanelService,
   FootnoteTooltipProps,
+  InfoTooltipProps,
   OverflowMenuProps,
   ReferenceTooltipProps,
   SmartHighlightMenuProps,
@@ -40,8 +41,10 @@ import { styles } from "./floating_panel_host.scss";
 import "../answer_highlight_tooltip/answer_highlight_tooltip";
 import "../concept_tooltip/concept_tooltip";
 import "../footnote_tooltip/footnote_tooltip";
+import "../info_tooltip/info_tooltip";
 import "../overflow_menu/overflow_menu";
 import "../reference_tooltip/reference_tooltip";
+import { classMap } from "lit/directives/class-map.js";
 
 /**
  * A host component that displays and positions a floating panel using md-menu.
@@ -110,41 +113,41 @@ export class FloatingPanelHost extends MobxLitElement {
     }
 
     if (contentProps instanceof SmartHighlightMenuProps) {
-      return html`<div class="panel">
+      return html`
         <smart-highlight-menu .props=${contentProps}></smart-highlight-menu>
-      </div>`;
+      `;
     }
 
     if (contentProps instanceof ReferenceTooltipProps) {
-      return html`<div class="panel">
+      return html`
         <reference-tooltip .props=${contentProps}></reference-tooltip>
-      </div>`;
+      `;
     }
 
     if (contentProps instanceof ConceptTooltipProps) {
-      return html`<div class="panel">
-        <concept-tooltip .props=${contentProps}></concept-tooltip>
-      </div>`;
+      return html` <concept-tooltip .props=${contentProps}></concept-tooltip> `;
     }
 
     if (contentProps instanceof FootnoteTooltipProps) {
-      return html`<div class="panel">
+      return html`
         <footnote-tooltip .props=${contentProps}></footnote-tooltip>
-      </div>`;
+      `;
     }
 
     if (contentProps instanceof AnswerHighlightTooltipProps) {
-      return html`<div class="panel">
+      return html`
         <answer-highlight-tooltip
           .props=${contentProps}
         ></answer-highlight-tooltip>
-      </div>`;
+      `;
     }
 
     if (contentProps instanceof OverflowMenuProps) {
-      return html`<div class="panel">
-        <overflow-menu .props=${contentProps}></overflow-menu>
-      </div>`;
+      return html` <overflow-menu .props=${contentProps}></overflow-menu> `;
+    }
+
+    if (contentProps instanceof InfoTooltipProps) {
+      return html` <info-tooltip .props=${contentProps}></info-tooltip> `;
     }
 
     // Note: Add other cases for different panel content here.
@@ -155,9 +158,19 @@ export class FloatingPanelHost extends MobxLitElement {
   override render() {
     const anchorCorner = this.floatingPanelService.anchorCorner;
     const menuCorner = this.floatingPanelService.menuCorner;
+    const hasFlatContainer = this.floatingPanelService.hasFlatContainer;
 
+    const menuWrapperClasses = classMap({
+      "menu-wrapper": true,
+      "has-flat-container": hasFlatContainer === true,
+    });
+
+    const panelClasses = classMap({
+      panel: true,
+      "has-flat-container": hasFlatContainer === true,
+    });
     return html`
-      <span class="menu-wrapper">
+      <span class=${menuWrapperClasses}>
         <md-menu
           ${ref(this.menuRef)}
           quick
@@ -167,7 +180,7 @@ export class FloatingPanelHost extends MobxLitElement {
           anchor-corner=${anchorCorner}
           menu-corner=${menuCorner}
         >
-          ${this.renderContent()}
+          <div class=${panelClasses}>${this.renderContent()}</div>
         </md-menu>
       </span>
     `;
