@@ -95,6 +95,7 @@ export class AnswerHighlightTooltip extends MobxLitElement {
         onSpanSummaryMouseEnter: () => {},
         onSpanSummaryMouseLeave: () => {},
         onAnswerHighlightClick: this.handleAnswerHighlightClick.bind(this),
+        dense: true,
       });
 
     const showButton = hasMoreContent && !this.showAll;
