@@ -40,7 +40,10 @@ import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
-import { FloatingPanelService } from "../../services/floating_panel_service";
+import {
+  AnswerHighlightTooltipProps,
+  FloatingPanelService,
+} from "../../services/floating_panel_service";
 import { DialogService } from "../../services/dialog.service";
 import { isViewportSmall } from "../../shared/responsive_utils";
 import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
@@ -211,6 +214,14 @@ export class LumiQuestions extends LightMobxLitElement {
     `;
   }
 
+  private readonly handleAnswerHighlightClick = (
+    answer: LumiAnswer,
+    target: HTMLElement
+  ) => {
+    const props = new AnswerHighlightTooltipProps(answer);
+    this.floatingPanelService.show(props, target);
+  };
+
   private renderHistory() {
     const docId = this.getDocId();
     if (!docId) return nothing;
@@ -249,6 +260,9 @@ export class LumiQuestions extends LightMobxLitElement {
               .highlightManager=${this.documentStateService.highlightManager}
               .answerHighlightManager=${this.historyService
                 .answerHighlightManager}
+              .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(
+                this
+              )}
               .collapseManager=${this.documentStateService.collapseManager}
             ></answer-item>
           `;

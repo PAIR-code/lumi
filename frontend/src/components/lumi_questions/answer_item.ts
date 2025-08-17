@@ -49,6 +49,11 @@ export class AnswerItem extends LightMobxLitElement {
   @property({ type: Object }) lumiDocManager?: LumiDocManager;
   @property({ type: Object }) highlightManager?: HighlightManager;
   @property({ type: Object }) answerHighlightManager?: AnswerHighlightManager;
+  @property({ type: Object }) onAnswerHighlightClick?: (
+    answer: LumiAnswer,
+    target: HTMLElement
+  ) => void;
+
   @property({ type: Object }) collapseManager?: CollapseManager;
   @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
   @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
@@ -216,6 +221,7 @@ export class AnswerItem extends LightMobxLitElement {
           focusedSpanId: null,
           highlightManager: this.highlightManager!,
           answerHighlightManager: this.answerHighlightManager!,
+          onAnswerHighlightClick: this.onAnswerHighlightClick?.bind(this),
           collapseManager: this.collapseManager!,
           onSpanSummaryMouseEnter: () => {},
           onSpanSummaryMouseLeave: () => {},
