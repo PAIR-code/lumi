@@ -30,6 +30,7 @@ const MENU_CORNER_DEFAULT: Corner = "end-start";
 export abstract class FloatingPanelContentProps {
   public anchorCorner?: Corner;
   public menuCorner?: Corner;
+  public hasFlatContainer?: boolean;
 }
 
 /** Props for the SmartHighlightMenu component. */
@@ -98,6 +99,16 @@ export class OverflowMenuProps extends FloatingPanelContentProps {
   }
 }
 
+/** Props for the InfoTooltip component. */
+export class InfoTooltipProps extends FloatingPanelContentProps {
+  constructor(public text: string) {
+    super();
+    this.anchorCorner = "end-start";
+    this.menuCorner = "start-start";
+    this.hasFlatContainer = true;
+  }
+}
+
 /** Additional floating panel content components should define their props here. */
 
 /**
@@ -109,6 +120,7 @@ export class FloatingPanelService extends Service {
   contentProps: FloatingPanelContentProps | null = null;
   anchorCorner: Corner = ANCHOR_CORNER_DEFAULT;
   menuCorner: Corner = MENU_CORNER_DEFAULT;
+  hasFlatContainer: boolean | null = null;
 
   // These shadow roots are used to determine the selection in getComposedRanges
   //  whenever the selection state changes.
@@ -145,6 +157,9 @@ export class FloatingPanelService extends Service {
     if (contentProps.menuCorner) {
       this.menuCorner = contentProps.menuCorner;
     }
+    if (contentProps.hasFlatContainer) {
+      this.hasFlatContainer = contentProps.hasFlatContainer;
+    }
     this.isVisible = true;
   }
 
@@ -154,5 +169,6 @@ export class FloatingPanelService extends Service {
     this.contentProps = null;
     this.anchorCorner = ANCHOR_CORNER_DEFAULT;
     this.menuCorner = MENU_CORNER_DEFAULT;
+    this.hasFlatContainer = null;
   }
 }
