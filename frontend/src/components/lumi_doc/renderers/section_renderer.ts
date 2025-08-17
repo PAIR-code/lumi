@@ -36,7 +36,7 @@ import { CollapseManager } from "../../../shared/collapse_manager";
 import { getAllContents } from "../../../shared/lumi_doc_utils";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
-import { LumiFont } from "../../../shared/constants";
+import { LumiFont } from "../../../shared/types";
 
 const EMPTY_PLACEHOLDER_TEXT = "section";
 
@@ -172,7 +172,8 @@ function renderChildLumiSpan(props: SectionRendererProperties, span: LumiSpan) {
 function renderSectionSummaryPanel(
   props: SectionRendererProperties
 ): TemplateResult | typeof nothing {
-  const { summaryMaps, section, getImageUrl, onFocusOnSpan, onImageClick } = props;
+  const { summaryMaps, section, getImageUrl, onFocusOnSpan, onImageClick } =
+    props;
   const summary = summaryMaps?.sectionSummariesMap.get(section.id);
 
   if (!summary) return nothing;

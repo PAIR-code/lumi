@@ -26,7 +26,7 @@ import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager
 
 import "../../lumi_span/lumi_span";
 import "../../../pair-components/icon_button";
-import { LumiFont } from "../../../shared/constants";
+import { LumiFont } from "../../../shared/types";
 import { LumiAnswer } from "../../../shared/api";
 
 export interface AbstractRendererProperties {

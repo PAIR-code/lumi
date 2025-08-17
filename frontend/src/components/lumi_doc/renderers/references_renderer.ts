@@ -22,7 +22,7 @@ import { LumiReference } from "../../../shared/lumi_doc";
 import "../../lumi_span/lumi_span";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { HighlightManager } from "../../../shared/highlight_manager";
-import { LumiFont } from "../../../shared/constants";
+import { LumiFont } from "../../../shared/types";
 import { LumiAnswer } from "../../../shared/api";
 
 export interface ReferencesRendererProperties {

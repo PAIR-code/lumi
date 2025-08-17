@@ -36,7 +36,7 @@ import { renderContentSummary } from "./content_summary_renderer";
 import { CollapseManager } from "../../../shared/collapse_manager";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
-import { LumiFont } from "../../../shared/constants";
+import { LumiFont } from "../../../shared/types";
 
 export interface ContentRendererProperties {
   parentComponent: LitElement;
