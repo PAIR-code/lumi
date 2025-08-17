@@ -22,8 +22,7 @@ import "../../pair-components/circular_progress";
 import "../../pair-components/button";
 import "../../pair-components/icon_button";
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, TemplateResult } from "lit";
+import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
 import { provide } from "@lit/context";
@@ -86,6 +85,7 @@ import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_el
 import { FirebaseError } from "firebase/app";
 import { RouterService } from "../../services/router.service";
 import { BannerService } from "../../services/banner.service";
+import { createRef, ref } from "lit/directives/ref.js";
 
 const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
   LoadingStatus.SUCCESS,
@@ -125,6 +125,8 @@ export class LumiReader extends LightMobxLitElement {
   @state() loadingStatus = LoadingStatus.UNSET;
   @state() metadata?: ArxivMetadata;
   @state() metadataNotFound? = false;
+
+  private mobileSmartHighlightContainerRef = createRef<HTMLElement>();
 
   private unsubscribeListener?: Unsubscribe;
 
@@ -404,13 +406,24 @@ export class LumiReader extends LightMobxLitElement {
 
   private readonly handleTextSelection = (selectionInfo: SelectionInfo) => {
     this.analyticsService.trackAction(AnalyticsAction.READER_TEXT_SELECTION);
+
     const props = new SmartHighlightMenuProps(
       selectionInfo.selectedText,
       selectionInfo.highlightSelection,
       this.handleDefine.bind(this),
       this.handleAsk.bind(this)
     );
-    this.floatingPanelService.show(props, selectionInfo.parentSpan);
+
+    if (isViewportSmall()) {
+      if (this.mobileSmartHighlightContainerRef.value) {
+        this.floatingPanelService.show(
+          props,
+          this.mobileSmartHighlightContainerRef.value
+        );
+      }
+    } else {
+      this.floatingPanelService.show(props, selectionInfo.parentSpan);
+    }
   };
 
   private readonly handleImageClick = (
@@ -418,6 +431,7 @@ export class LumiReader extends LightMobxLitElement {
     target: HTMLElement
   ) => {
     this.analyticsService.trackAction(AnalyticsAction.READER_IMAGE_CLICK);
+
     const props = new SmartHighlightMenuProps(
       "",
       [],
@@ -536,6 +550,21 @@ export class LumiReader extends LightMobxLitElement {
     `;
   }
 
+  private renderMobileSmartHighlightMenu() {
+    if (!isViewportSmall()) return nothing;
+    return html`
+      <div
+        ${ref(this.mobileSmartHighlightContainerRef)}
+        class="smart-highlight-menu-container"
+      ></div>
+    `;
+  }
+
+  private clearHighlightsAndMenus() {
+    this.floatingPanelService.hide();
+    this.documentStateService.highlightManager?.clearHighlights();
+  }
+
   override render() {
     if (this.metadataNotFound) {
       return this.renderWithStyles(this.renderNotFound());
@@ -574,8 +603,7 @@ export class LumiReader extends LightMobxLitElement {
       <div
         class="doc-wrapper"
         @mousedown=${() => {
-          this.floatingPanelService.hide();
-          this.documentStateService.highlightManager?.clearHighlights();
+          this.clearHighlightsAndMenus();
         }}
       >
         <lumi-doc
@@ -597,6 +625,7 @@ export class LumiReader extends LightMobxLitElement {
           .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
         ></lumi-doc>
       </div>
+      ${this.renderMobileSmartHighlightMenu()}
     `);
   }
 }
