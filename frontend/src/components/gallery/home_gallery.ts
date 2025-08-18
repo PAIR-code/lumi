@@ -420,8 +420,12 @@ export class PaperCard extends MobxLitElement {
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
 
   private renderImage() {
-    if (this.image == null || this.getImageUrl == null) {
-      return html`<div class="preview-image"></div>`;
+    if (
+      this.image == null ||
+      this.getImageUrl == null ||
+      !this.image.imageStoragePath
+    ) {
+      return html`<div class="preview-image preview-image-gradient"></div>`;
     }
     return html`<lumi-image
       class="preview-image"

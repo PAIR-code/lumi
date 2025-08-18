@@ -15,7 +15,7 @@
 
 
 from enum import StrEnum
-from typing import Optional
+from typing import Optional, Any
 from dataclasses import dataclass
 
 
@@ -51,6 +51,14 @@ class MetadataCollectionItem:
 
     metadata: "ArxivMetadata"
     featured_image: Optional["FeaturedImage"] = None
+
+
+@dataclass
+class ThrottleCollectionItem:
+    """Class for throttle collection item."""
+
+    timestamp: Any  # Firestore timestamp created with firestore_v1.SERVER_TIMESTAMP
+    succeeded: bool
 
 
 @dataclass

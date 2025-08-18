@@ -26,7 +26,7 @@ def list_docs(db, loading_status, output_file):
     Lists documents from the arxiv_papers collection based on filters.
     """
     try:
-        papers_ref = db.collection(functions_main._ARXIV_DOCS_COLLECTION)
+        papers_ref = db.collection(functions_main.ARXIV_DOCS_COLLECTION)
         query = papers_ref
 
         query = query.where("loadingStatus", "==", loading_status)

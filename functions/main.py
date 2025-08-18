@@ -40,10 +40,24 @@ from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 from google.api_core import exceptions
 
 from models.gemini import GeminiInvalidResponseException
+from shared.firebase_constants import (
+    ARXIV_DOCS_COLLECTION,
+    ARXIV_METADATA_COLLECTION,
+    VERSIONS_COLLECTION,
+    LOGS_QUERY_COLLECTION,
+    USER_FEEDBACK_COLLECTION,
+)
+
 
 # Local application imports
 from answers import answers
-from import_pipeline import fetch_utils, import_pipeline, summaries, personal_summary
+from import_pipeline import (
+    fetch_utils,
+    import_pipeline,
+    summaries,
+    personal_summary,
+    throttling,
+)
 import main_testing_utils
 from models import extract_concepts
 from shared.api import LumiAnswerRequest, QueryLog, LumiAnswer, UserFeedback
@@ -89,13 +103,6 @@ if os.environ.get("FUNCTION_RUN_MODE") == "testing":
     extract_concepts = MagicMock()
     extract_concepts.extract_concepts.return_value = []
 
-_ARXIV_DOCS_COLLECTION = "arxiv_docs"
-_ARXIV_METADATA_COLLECTION = "arxiv_metadata"
-_ARXIV_COLLECTIONS_COLLECTION = "arxiv_collections"
-_VERSIONS_COLLECTION = "versions"
-_LOGS_QUERY_COLLECTION = "query_logs"
-_USER_FEEDBACK_COLLECTION = "user_feedback"
-
 DOCUMENT_REQUESTED_FUNCTION_TIMEOUT = 540
 DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER = 10
 
@@ -136,7 +143,7 @@ def _copy_fields_to_main_doc(arxiv_id, version_doc, db) -> None:
     loading_status = version_doc.get("loadingStatus")
     updated_timestamp = version_doc.get("updatedTimestamp")
 
-    doc_ref = db.collection(_ARXIV_DOCS_COLLECTION).document(arxiv_id)
+    doc_ref = db.collection(ARXIV_DOCS_COLLECTION).document(arxiv_id)
     doc_ref.set(
         {"loadingStatus": loading_status, "updatedTimestamp": updated_timestamp},
         merge=True,
@@ -146,10 +153,7 @@ def _copy_fields_to_main_doc(arxiv_id, version_doc, db) -> None:
 @on_document_written(
     timeout_sec=DOCUMENT_REQUESTED_FUNCTION_TIMEOUT,
     memory=options.MemoryOption.GB_2,
-    document=_ARXIV_DOCS_COLLECTION
-    + "/{arxivId}/"
-    + _VERSIONS_COLLECTION
-    + "/{version}",
+    document=ARXIV_DOCS_COLLECTION + "/{arxivId}/" + VERSIONS_COLLECTION + "/{version}",
 )
 def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) -> None:
     """
@@ -169,9 +173,9 @@ def on_arxiv_versioned_document_written(event: Event[Change[DocumentSnapshot]]) 
     _copy_fields_to_main_doc(arxiv_id, after_data, db)
 
     versioned_doc_ref = (
-        db.collection(_ARXIV_DOCS_COLLECTION)
+        db.collection(ARXIV_DOCS_COLLECTION)
         .document(arxiv_id)
-        .collection(_VERSIONS_COLLECTION)
+        .collection(VERSIONS_COLLECTION)
         .document(version)
     )
 
@@ -284,7 +288,7 @@ def _save_lumi_metadata(arxiv_id: str, metadata_item: MetadataCollectionItem):
     collection.
     """
     db = firestore.client()
-    doc_ref = db.collection(_ARXIV_METADATA_COLLECTION).document(arxiv_id)
+    doc_ref = db.collection(ARXIV_METADATA_COLLECTION).document(arxiv_id)
     metadata_item_dict = convert_keys(asdict(metadata_item), "snake_to_camel")
     doc_ref.set(metadata_item_dict)
 
@@ -399,13 +403,15 @@ def start_arxiv_doc_import(arxiv_id: str, test_config: dict | None = None):
         )
         raise https_fn.HttpsError(https_fn.FunctionsErrorCode.INTERNAL, str(e))
 
-    # We need to request the latest paper version from the arXiv API.
     arxiv_metadata_list = fetch_utils.fetch_arxiv_metadata(arxiv_ids=[arxiv_id])
     if len(arxiv_metadata_list) != 1:
         raise https_fn.HttpsError(
             https_fn.FunctionsErrorCode.INTERNAL, "Arxiv returned invalid metadata"
         )
     metadata = arxiv_metadata_list[0]
+
+    # Before writing the doc that starts the import, check if we need to throttle.
+    throttling.check_throttle()
 
     _try_doc_write(metadata, test_config)
 
@@ -431,9 +437,9 @@ def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
     db = firestore.client()
     transaction = db.transaction()
     versioned_doc_ref = (
-        db.collection(_ARXIV_DOCS_COLLECTION)
+        db.collection(ARXIV_DOCS_COLLECTION)
         .document(metadata.paper_id)
-        .collection(_VERSIONS_COLLECTION)
+        .collection(VERSIONS_COLLECTION)
         .document(str(metadata.version))
     )
 
@@ -483,7 +489,7 @@ def get_arxiv_metadata(req: https_fn.CallableRequest) -> dict:
         )
 
     db = firestore.client()
-    doc_ref = db.collection(_ARXIV_METADATA_COLLECTION).document(arxiv_id)
+    doc_ref = db.collection(ARXIV_METADATA_COLLECTION).document(arxiv_id)
     doc = doc_ref.get()
 
     if not doc.exists:
@@ -520,7 +526,7 @@ def _log_query(doc: LumiDoc, lumi_answer: LumiAnswer):
         )
         log_data = asdict(query_log)
 
-        db.collection(_LOGS_QUERY_COLLECTION).add(log_data)
+        db.collection(LOGS_QUERY_COLLECTION).add(log_data)
         logger.info(
             f"Logged query for doc {doc.metadata.paper_id}v{doc.metadata.version}"
         )
@@ -674,7 +680,7 @@ def save_user_feedback(req: https_fn.CallableRequest) -> dict:
     )
 
     db = firestore.client()
-    db.collection(_USER_FEEDBACK_COLLECTION).add(asdict(feedback_data))
+    db.collection(USER_FEEDBACK_COLLECTION).add(asdict(feedback_data))
 
     result = SaveUserFeedbackResult(status="success")
     return convert_keys(asdict(result), "snake_to_camel")

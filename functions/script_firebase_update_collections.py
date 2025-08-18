@@ -18,6 +18,7 @@ from dataclasses import asdict
 from firebase_admin import firestore
 import main as functions_main
 from shared.json_utils import convert_keys
+from shared.firebase_constants import ARXIV_COLLECTIONS_COLLECTION
 
 
 # Example:
@@ -53,7 +54,7 @@ def update_metadata(db, overwrite_paper_ids):
 
     print(f"Found {len(collections_to_update)} collections to update.")
 
-    collection_ref = db.collection(functions_main._ARXIV_COLLECTIONS_COLLECTION)
+    collection_ref = db.collection(ARXIV_COLLECTIONS_COLLECTION)
 
     for collection_obj in collections_to_update:
         try:

@@ -19,6 +19,7 @@ import time
 
 from firebase_admin import firestore
 import main as functions_main
+from shared.firebase_constants import ARXIV_COLLECTIONS_COLLECTION
 
 
 def process_csv(csv_path, db, delay):
@@ -60,7 +61,7 @@ def process_csv(csv_path, db, delay):
 
                     # # 3b. Update Collections
                     collection_ref = db.collection(
-                        functions_main._ARXIV_COLLECTIONS_COLLECTION
+                        ARXIV_COLLECTIONS_COLLECTION
                     ).document(collection_name)
                     collection_ref.set(
                         {"paperIds": firestore.ArrayUnion([arxiv_id])}, merge=True
