@@ -57,11 +57,15 @@ export class AnswerItem extends LightMobxLitElement {
   @property({ type: Object }) collapseManager?: CollapseManager;
   @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
   @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
+
   @property()
   onReferenceClick: (highlightedSpans: HighlightSelection[]) => void = () => {};
   @property()
   onImageReferenceClick: (imageStoragePath: string) => void = () => {};
   @property() onDismiss?: (answerId: string) => void;
+  @property()
+  onInfoTooltipClick: (text: string, element: HTMLElement) => void = () => {};
+  @property() infoTooltipText: string = "";
 
   @consume({ context: scrollContext })
   private scrollContext?: ScrollState;
@@ -276,6 +280,26 @@ export class AnswerItem extends LightMobxLitElement {
     return "Explain text";
   }
 
+  private renderInfoIcon() {
+    if (!this.infoTooltipText) return nothing;
+
+    return html`
+      <pr-icon
+        class="c-lumi-info-icon"
+        icon="info"
+        variant="default"
+        color="neutral"
+        title="Click to view"
+        @click=${(e: Event) => {
+          if (e.currentTarget instanceof HTMLElement) {
+            this.onInfoTooltipClick(this.infoTooltipText, e.currentTarget);
+          }
+        }}
+        ?hidden=${this.isLoading}
+      ></pr-icon>
+    `;
+  }
+
   override render() {
     const classes = {
       "history-item": true,
@@ -306,9 +330,9 @@ export class AnswerItem extends LightMobxLitElement {
                 @click=${this.toggleAnswer}
                 ?disabled=${this.isLoading}
               ></pr-icon-button>
-              <span class="question-text" title=${this.answer.request.query}
-                >${this.getTitleText()}</span
-              >
+              <span class="question-text" title=${this.answer.request.query}>
+                ${this.getTitleText()} ${this.renderInfoIcon()}
+              </span>
             </div>
             ${this.renderCancelButton()}
           </div>

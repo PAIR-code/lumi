@@ -43,6 +43,7 @@ import {
 import {
   AnswerHighlightTooltipProps,
   FloatingPanelService,
+  InfoTooltipProps,
 } from "../../services/floating_panel_service";
 import { DialogService } from "../../services/dialog.service";
 import { isViewportSmall } from "../../shared/responsive_utils";
@@ -53,6 +54,7 @@ import { RouterService } from "../../services/router.service";
 import { SnackbarService } from "../../services/snackbar.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import { SIDEBAR_PERSONAL_SUMMARY_TOOLTIP_TEXT } from "../../shared/constants_helper_text";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
@@ -109,6 +111,7 @@ export class LumiQuestions extends LightMobxLitElement {
   private getAnswersToRender(docId: string): {
     answers: LumiAnswer[];
     canDismiss: boolean;
+    infoTooltipText?: string;
   } {
     const answers = this.historyService.getAnswers(docId);
     const tempAnswers = this.historyService.getTemporaryAnswers();
@@ -124,11 +127,21 @@ export class LumiQuestions extends LightMobxLitElement {
       : false;
 
     if (this.isHistoryShowAll)
-      return { answers: allAnswers, canDismiss: false };
+      return {
+        answers: allAnswers,
+        canDismiss: false,
+      };
     if (!isLatestAnswerDismissed && latestAnswer)
-      return { answers: [latestAnswer], canDismiss: true };
+      return {
+        answers: [latestAnswer],
+        canDismiss: true,
+      };
     if (personalSummary)
-      return { answers: [personalSummary], canDismiss: false };
+      return {
+        answers: [personalSummary],
+        canDismiss: false,
+        infoTooltipText: SIDEBAR_PERSONAL_SUMMARY_TOOLTIP_TEXT,
+      };
     return { answers: [], canDismiss: false };
   }
 
@@ -214,6 +227,16 @@ export class LumiQuestions extends LightMobxLitElement {
     `;
   }
 
+  private readonly handleInfoTooltipClick = (
+    text: string,
+    element: HTMLElement
+  ) => {
+    this.floatingPanelService.show(
+      new InfoTooltipProps((text = text)),
+      element
+    );
+  };
+
   private readonly handleAnswerHighlightClick = (
     answer: LumiAnswer,
     target: HTMLElement
@@ -226,8 +249,11 @@ export class LumiQuestions extends LightMobxLitElement {
     const docId = this.getDocId();
     if (!docId) return nothing;
 
-    const { answers: answersToRender, canDismiss } =
-      this.getAnswersToRender(docId);
+    const {
+      answers: answersToRender,
+      canDismiss,
+      infoTooltipText,
+    } = this.getAnswersToRender(docId);
 
     if (answersToRender.length === 0) {
       return nothing;
@@ -263,6 +289,8 @@ export class LumiQuestions extends LightMobxLitElement {
               .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(
                 this
               )}
+              .onInfoTooltipClick=${this.handleInfoTooltipClick.bind(this)}
+              .infoTooltipText=${ifDefined(infoTooltipText)}
               .collapseManager=${this.documentStateService.collapseManager}
             ></answer-item>
           `;
