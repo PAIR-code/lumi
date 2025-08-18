@@ -17,6 +17,8 @@
 
 @use "../../../sass/common";
 
+$summary-border-radius: common.$spacing-small;
+
 .content-summary-renderer-container {
   grid-column: 2;
 
@@ -65,7 +67,10 @@
     background: var(--md-sys-color-gray-container-lowest);
     height: 100%;
 
-    border-radius: common.$spacing-medium;
+    border-radius: $summary-border-radius;
+
+    border-right: $summary-border-radius solid
+      var(--md-sys-color-secondary-container);
 
     @include common.viewport-small {
       border-radius: common.$spacing-medium 0 0 common.$spacing-medium;
