@@ -47,6 +47,7 @@
   border-radius: common.$spacing-medium common.$spacing-medium 0 0;
   cursor: pointer;
   white-space: nowrap;
+  background: var(--md-sys-color-surface-variant);
   color: var(--md-sys-color-on-surface-higher);
   transform: translateY(1px);
 

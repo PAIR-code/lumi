@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import { core } from "../../core/core";
@@ -42,10 +41,7 @@ import {
   AnalyticsService,
 } from "../../services/analytics.service";
 import { FloatingPanelService } from "../../services/floating_panel_service";
-import {
-  DialogService,
-  HistoryDialogProps,
-} from "../../services/dialog.service";
+import { DialogService } from "../../services/dialog.service";
 import { isViewportSmall } from "../../shared/responsive_utils";
 import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
 import { getLumiResponseCallable } from "../../shared/callables";
@@ -145,10 +141,6 @@ export class LumiQuestions extends LightMobxLitElement {
     this.floatingPanelService.unregisterShadowRoot(shadowRoot);
   }
 
-  private openHistoryDialog() {
-    this.dialogService.show(new HistoryDialogProps());
-  }
-
   private async handleSearch() {
     const lumiDoc = this.documentStateService.lumiDocManager?.lumiDoc;
 
@@ -188,24 +180,10 @@ export class LumiQuestions extends LightMobxLitElement {
 
   private renderSearch() {
     const isLoading = this.historyService.isAnswerLoading;
-    const isNonSummaryAnswerLoading =
-      this.historyService.isNonSummaryAnswerLoading;
 
     const textareaSize = isViewportSmall() ? "medium" : "small";
     return html`
       <div class="input-container">
-        <pr-icon-button
-          title="Open model context"
-          icon="contextual_token"
-          ?disabled=${isLoading}
-          variant="default"
-          @click=${() => {
-            this.analyticsService.trackAction(
-              AnalyticsAction.HEADER_OPEN_CONTEXT
-            );
-            this.openHistoryDialog();
-          }}
-        ></pr-icon-button>
         <pr-textarea
           .value=${this.query}
           size=${textareaSize}

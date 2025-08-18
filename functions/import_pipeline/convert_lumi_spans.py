@@ -105,7 +105,10 @@ def parse_text_and_extract_inner_tags(raw_content: str) -> (str, List[InnerTag])
 
 
 def create_lumi_spans(
-    cleaned_text: str, all_inner_tags: List[InnerTag], skip_tokenize=False
+    cleaned_text: str,
+    all_inner_tags: List[InnerTag],
+    skip_tokenize=False,
+    strip_double_brackets=False,
 ) -> List[LumiSpan]:
     """
     Splits cleaned_text into sentences and creates LumiSpan objects.
@@ -131,7 +134,9 @@ def create_lumi_spans(
             lumi_spans.append(
                 LumiSpan(
                     id=get_unique_id(),
-                    text=postprocess_content_text(cleaned_text),
+                    text=postprocess_content_text(
+                        cleaned_text, strip_double_brackets=strip_double_brackets
+                    ),
                     inner_tags=all_inner_tags,
                 )
             )
@@ -161,7 +166,9 @@ def create_lumi_spans(
         lumi_spans.append(
             LumiSpan(
                 id=get_unique_id(),
-                text=postprocess_content_text(sentence_text),
+                text=postprocess_content_text(
+                    sentence_text, strip_double_brackets=strip_double_brackets
+                ),
                 inner_tags=tags_relative_to_sentence,
             )
         )

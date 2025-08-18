@@ -1562,6 +1562,62 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                     )
                 },
             ),
+            (
+                "strip_square_brackets",
+                "<p>This is text with [[some bracketed content]].</p>",
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="This is text with .",
+                                            inner_tags=[],
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+                True,  # strip_double_brackets
+            ),
+            (
+                "strip_square_brackets",
+                "<p>This is text with [[some bracketed content]].</p>",
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="This is text with [[some bracketed content]].",
+                                            inner_tags=[],
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+                False,  # strip_double_brackets
+            ),
         ]
     )
     @patch.object(convert_list_content, "get_unique_id", return_value="123")
@@ -1573,9 +1629,10 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
         html,
         expected_sections,
         placeholder_map,
-        mock_get_unique_id_convert_html_to_lumi,
-        mock_get_unique_id_convert_lumi_spans,
-        mock_get_unique_id_convert_list_content,
+        strip_double_brackets=False,
+        mock_get_unique_id_convert_html_to_lumi=None,
+        mock_get_unique_id_convert_lumi_spans=None,
+        mock_get_unique_id_convert_list_content=None,
     ):
         self.maxDiff = None
         del name  # unused
@@ -1585,7 +1642,9 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
 
         # Call convert_to_lumi_sections directly
         converted_sections = convert_html_to_lumi.convert_to_lumi_sections(
-            html, placeholder_map=placeholder_map
+            html,
+            placeholder_map=placeholder_map,
+            strip_double_brackets=strip_double_brackets,
         )
 
         # Assert that the document is as expected.

@@ -96,7 +96,7 @@ def markdown_to_html(markdown: str) -> str:
         return html
 
 
-def postprocess_content_text(text: str) -> str:
+def postprocess_content_text(text: str, strip_double_brackets=False) -> str:
     """
     Post-processes text right before it is finalized in a LumiSpan
 
@@ -110,4 +110,7 @@ def postprocess_content_text(text: str) -> str:
     text = text.replace("\\$", "$")
     # (2) Removing any remaining Lumi tags that were not correctly processed.
     text = re.sub(r"\[\[l-.*?\]\]", "", text)
+    # (3) If the flag is set, remove remaining double square brackets, e.g. [[content]]
+    if strip_double_brackets:
+        text = re.sub(r"\[\[.*?\]\]", "", text)
     return text

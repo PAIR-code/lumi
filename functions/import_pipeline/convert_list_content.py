@@ -35,7 +35,9 @@ UNORDERED_LIST_TAG = "ul"
 DEFAULT_LIST_TAGS = [ORDERED_LIST_TAG, UNORDERED_LIST_TAG]
 
 
-def get_list_content_from_tag(tag: bs4.Tag) -> Optional[LumiContent]:
+def get_list_content_from_tag(
+    tag: bs4.Tag, strip_double_brackets=False
+) -> Optional[LumiContent]:
     """
     Returns a LumiContent object for list tags (ul, ol).
     Note: This function does not currently handle images embedded within list items.
@@ -72,7 +74,11 @@ def get_list_content_from_tag(tag: bs4.Tag) -> Optional[LumiContent]:
             if cleaned_li_text.strip() or li_inner_tags:
                 # Create the new LumiSpans from the processed text (with tags removed etc)
                 # and parsed inner tags.
-                current_li_spans = create_lumi_spans(cleaned_li_text, li_inner_tags)
+                current_li_spans = create_lumi_spans(
+                    cleaned_li_text,
+                    li_inner_tags,
+                    strip_double_brackets=strip_double_brackets,
+                )
 
             list_items_processed.append(
                 ListItem(spans=current_li_spans, subListContent=subListContent)

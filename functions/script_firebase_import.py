@@ -67,7 +67,7 @@ def process_csv(csv_path, db, delay):
                     )
                     print(f"✅ Added {arxiv_id} to collection '{collection_name}'.")
 
-                    if delay > 0:
+                    if int(delay) > 0:
                         print(f"⏳ Waiting {delay} seconds before continuing")
                         time.sleep(delay)
 
@@ -96,6 +96,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--delay",
         default=10,
+        type=int,
         help="How many seconds to wait between paper imports",
     )
     args = parser.parse_args()

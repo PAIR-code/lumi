@@ -44,7 +44,7 @@ PLACEHOLDER_SUFFIX = "]]"
 
 
 def convert_to_lumi_sections(
-    html: str, placeholder_map: Dict[str, LumiContent]
+    html: str, placeholder_map: Dict[str, LumiContent], strip_double_brackets=False
 ) -> List[LumiSection]:
     """
     Converts an HTML string into a hierarchical list of LumiSection objects.
@@ -127,13 +127,18 @@ def convert_to_lumi_sections(
             current_section = section_stack[-1]
             if tag.name in DEFAULT_TEXT_TAGS:
                 new_contents: List[LumiContent] = _parse_html_block_for_lumi_contents(
-                    get_text(tag), tag.name, placeholder_map
+                    get_text(tag),
+                    tag.name,
+                    placeholder_map,
+                    strip_double_brackets=strip_double_brackets,
                 )
                 if new_contents:
                     current_section.contents.extend(new_contents)
             else:
                 # For now, we assume list content will not contain images or figures.
-                new_content = get_list_content_from_tag(tag)
+                new_content = get_list_content_from_tag(
+                    tag, strip_double_brackets=strip_double_brackets
+                )
                 if new_content:
                     current_section.contents.append(new_content)
 
@@ -150,6 +155,7 @@ def _parse_html_block_for_lumi_contents(
     text: str,
     original_tag_name: str,
     placeholder_map: Dict[str, LumiContent],
+    strip_double_brackets=False,
 ):
     """
     Parses a raw HTML string (e.g., from tag.decode_contents()) into a sequence of LumiContent objects,
@@ -172,7 +178,11 @@ def _parse_html_block_for_lumi_contents(
             pre_text = text[current_pos : match.start()]
             if pre_text.strip():
                 cleaned_text, inner_tags = parse_text_and_extract_inner_tags(pre_text)
-                spans = create_lumi_spans(cleaned_text, inner_tags)
+                spans = create_lumi_spans(
+                    cleaned_text,
+                    inner_tags,
+                    strip_double_brackets=strip_double_brackets,
+                )
                 if spans:
                     lumi_contents.append(
                         LumiContent(
@@ -195,7 +205,9 @@ def _parse_html_block_for_lumi_contents(
         post_text = text[current_pos:]
         if post_text.strip():
             cleaned_text, inner_tags = parse_text_and_extract_inner_tags(post_text)
-            spans = create_lumi_spans(cleaned_text, inner_tags)
+            spans = create_lumi_spans(
+                cleaned_text, inner_tags, strip_double_brackets=strip_double_brackets
+            )
             if spans:
                 lumi_contents.append(
                     LumiContent(
@@ -210,7 +222,7 @@ def _parse_html_block_for_lumi_contents(
 
 
 def convert_raw_output_to_spans(
-    output_text: str, skip_tokenize=False
+    output_text: str, skip_tokenize=False, strip_double_brackets=False
 ) -> List[LumiSpan]:
     html = markdown_to_html(output_text)
     soup = bs4.BeautifulSoup(html, "html.parser")
@@ -222,4 +234,9 @@ def convert_raw_output_to_spans(
     text = get_text(children[0])
 
     cleaned_text, inner_tags = parse_text_and_extract_inner_tags(text)
-    return create_lumi_spans(cleaned_text, inner_tags, skip_tokenize=skip_tokenize)
+    return create_lumi_spans(
+        cleaned_text,
+        inner_tags,
+        skip_tokenize=skip_tokenize,
+        strip_double_brackets=strip_double_brackets,
+    )

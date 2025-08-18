@@ -99,6 +99,16 @@ lumi-reader {
       .error-body {
         @include typescale.body-medium;
       }
+
+      .not-found-header {
+        @include typescale.display-medium;
+        font-weight: bold;
+      }
+
+      .not-found-body {
+        @include typescale.body-large;
+        color: var(--md-sys-color-on-surface-higher);
+      }
     }
   }
 }
