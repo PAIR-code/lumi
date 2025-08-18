@@ -60,7 +60,7 @@ def process_csv(csv_path, db, delay):
 
                     # # 3b. Update Collections
                     collection_ref = db.collection(
-                        functions_main._ARXIV_COLLECTIONS_COLLECTION
+                        functions_main.ARXIV_COLLECTIONS_COLLECTION
                     ).document(collection_name)
                     collection_ref.set(
                         {"paperIds": firestore.ArrayUnion([arxiv_id])}, merge=True

@@ -38,7 +38,7 @@ def update_paper_statuses(db, paper_ids_file, new_status, delay):
 
     print(f"Found {len(paper_ids)} paper IDs to update to status '{new_status}'.")
 
-    papers_ref = db.collection(functions_main._ARXIV_DOCS_COLLECTION)
+    papers_ref = db.collection(functions_main.ARXIV_DOCS_COLLECTION)
 
     for paper_id in paper_ids:
         try:

@@ -27,7 +27,7 @@ from functions_framework import create_app
 # Local application imports
 # This patch must be applied before importing 'main'
 with patch("firebase_admin.initialize_app"):
-    from main import _ARXIV_DOCS_COLLECTION, _VERSIONS_COLLECTION
+    from main import ARXIV_DOCS_COLLECTION, VERSIONS_COLLECTION
 from shared.lumi_doc import ArxivMetadata
 from shared.types import LoadingStatus
 
@@ -71,9 +71,9 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
     def tearDown(self):
         # Clean up any documents created in the test database
         docs = (
-            self.db.collection(_ARXIV_DOCS_COLLECTION)
+            self.db.collection(ARXIV_DOCS_COLLECTION)
             .document("1234.5678")
-            .collection(_VERSIONS_COLLECTION)
+            .collection(VERSIONS_COLLECTION)
             .stream()
         )
         for doc in docs:
@@ -121,9 +121,9 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
 
         # Assert the trigger and wait for the result
         doc_ref = (
-            self.db.collection(_ARXIV_DOCS_COLLECTION)
+            self.db.collection(ARXIV_DOCS_COLLECTION)
             .document("1234.5678")
-            .collection(_VERSIONS_COLLECTION)
+            .collection(VERSIONS_COLLECTION)
             .document("1")
         )
 
@@ -162,9 +162,9 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
 
         # Assert the trigger and wait for the result
         doc_ref = (
-            self.db.collection(_ARXIV_DOCS_COLLECTION)
+            self.db.collection(ARXIV_DOCS_COLLECTION)
             .document("1234.5678")
-            .collection(_VERSIONS_COLLECTION)
+            .collection(VERSIONS_COLLECTION)
             .document("1")
         )
 
@@ -196,9 +196,9 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
 
         # Assert the trigger and wait for the result
         doc_ref = (
-            self.db.collection(_ARXIV_DOCS_COLLECTION)
+            self.db.collection(ARXIV_DOCS_COLLECTION)
             .document("1234.5678")
-            .collection(_VERSIONS_COLLECTION)
+            .collection(VERSIONS_COLLECTION)
             .document("1")
         )
 
