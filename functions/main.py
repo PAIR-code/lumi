@@ -40,6 +40,14 @@ from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 from google.api_core import exceptions
 
 from models.gemini import GeminiInvalidResponseException
+from shared.firebase_constants import (
+    ARXIV_DOCS_COLLECTION,
+    ARXIV_METADATA_COLLECTION,
+    VERSIONS_COLLECTION,
+    LOGS_QUERY_COLLECTION,
+    USER_FEEDBACK_COLLECTION,
+)
+
 
 # Local application imports
 from answers import answers
@@ -88,13 +96,6 @@ if os.environ.get("FUNCTION_RUN_MODE") == "testing":
     )
     extract_concepts = MagicMock()
     extract_concepts.extract_concepts.return_value = []
-
-ARXIV_DOCS_COLLECTION = "arxiv_docs"
-ARXIV_METADATA_COLLECTION = "arxiv_metadata"
-ARXIV_COLLECTIONS_COLLECTION = "arxiv_collections"
-VERSIONS_COLLECTION = "versions"
-LOGS_QUERY_COLLECTION = "query_logs"
-USER_FEEDBACK_COLLECTION = "user_feedback"
 
 DOCUMENT_REQUESTED_FUNCTION_TIMEOUT = 540
 DOCUMENT_REQUESTED_FUNCTION_TIMEOUT_BUFFER = 10

@@ -27,7 +27,7 @@ from functions_framework import create_app
 # Local application imports
 # This patch must be applied before importing 'main'
 with patch("firebase_admin.initialize_app"):
-    from main import ARXIV_DOCS_COLLECTION, VERSIONS_COLLECTION
+    from shared.firebase_constants import ARXIV_DOCS_COLLECTION, VERSIONS_COLLECTION
 from shared.lumi_doc import ArxivMetadata
 from shared.types import LoadingStatus
 
