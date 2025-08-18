@@ -51,7 +51,13 @@ from shared.firebase_constants import (
 
 # Local application imports
 from answers import answers
-from import_pipeline import fetch_utils, import_pipeline, summaries, personal_summary
+from import_pipeline import (
+    fetch_utils,
+    import_pipeline,
+    summaries,
+    personal_summary,
+    throttling,
+)
 import main_testing_utils
 from models import extract_concepts
 from shared.api import LumiAnswerRequest, QueryLog, LumiAnswer, UserFeedback
@@ -397,13 +403,15 @@ def start_arxiv_doc_import(arxiv_id: str, test_config: dict | None = None):
         )
         raise https_fn.HttpsError(https_fn.FunctionsErrorCode.INTERNAL, str(e))
 
-    # We need to request the latest paper version from the arXiv API.
     arxiv_metadata_list = fetch_utils.fetch_arxiv_metadata(arxiv_ids=[arxiv_id])
     if len(arxiv_metadata_list) != 1:
         raise https_fn.HttpsError(
             https_fn.FunctionsErrorCode.INTERNAL, "Arxiv returned invalid metadata"
         )
     metadata = arxiv_metadata_list[0]
+
+    # Before writing the doc that starts the import, check if we need to throttle.
+    throttling.check_throttle()
 
     _try_doc_write(metadata, test_config)
 

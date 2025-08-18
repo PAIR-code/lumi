@@ -20,6 +20,7 @@ from unittest.mock import patch, ANY, MagicMock
 # Third-party library imports
 from functions_framework import create_app
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
+from firebase_functions import https_fn
 
 # Local application imports
 # This patch must be applied before importing 'main'
@@ -298,13 +299,19 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
     def setUp(self, initialize_app_mock):
         self.client = create_app("request_arxiv_doc_import", "main.py").test_client()
 
+    @patch("main.throttling.check_throttle")
     @patch("main._try_doc_write")
     @patch("main.fetch_utils.fetch_arxiv_metadata")
     @patch("main.fetch_utils.check_arxiv_license")
     def test_request_arxiv_doc_import_success(
-        self, mock_check_license, mock_fetch_metadata, mock_try_doc_write
+        self,
+        mock_check_license,
+        mock_fetch_metadata,
+        mock_try_doc_write,
+        mock_check_throttle,
     ):
         # Arrange
+        mock_check_throttle.return_value = None
         mock_check_license.return_value = None
         mock_metadata = main_testing_utils.create_mock_arxiv_metadata()
         mock_fetch_metadata.return_value = [mock_metadata]
@@ -315,6 +322,7 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
 
         # Assert
         self.assertEqual(response.status_code, 200)
+        mock_check_throttle.assert_called_once()
         mock_check_license.assert_called_once_with("1234.5678")
         mock_fetch_metadata.assert_called_once_with(arxiv_ids=["1234.5678"])
         mock_try_doc_write.assert_called_once_with(mock_metadata, None)
@@ -326,8 +334,39 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
         self.assertEqual(response_data["result"], expected_result)
 
     @patch("main.fetch_utils.check_arxiv_license")
-    def test_request_arxiv_doc_import_license_failure(self, mock_check_license):
+    @patch("main.fetch_utils.fetch_arxiv_metadata")
+    @patch("main.throttling.check_throttle")
+    def test_request_arxiv_doc_import_throttled(
+        self, mock_check_throttle, mock_fetch_arxiv_metadata, mock_check_arxiv_license
+    ):
         # Arrange
+        mock_check_throttle.side_effect = https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.RESOURCE_EXHAUSTED,
+            message="Too many requests",
+        )
+        mock_metadata = main_testing_utils.create_mock_arxiv_metadata()
+        mock_fetch_arxiv_metadata.return_value = [mock_metadata]
+        del mock_check_arxiv_license  # unused
+
+        payload = {"arxiv_id": "1234.5678"}
+
+        # Act
+        response = self.client.post("/", json={"data": payload})
+
+        # Assert
+        self.assertEqual(response.status_code, 429)
+        mock_check_throttle.assert_called_once()
+        response_data = response.get_json()
+        self.assertIn("error", response_data)
+        self.assertEqual(response_data["error"]["status"], "RESOURCE_EXHAUSTED")
+
+    @patch("main.throttling.check_throttle")
+    @patch("main.fetch_utils.check_arxiv_license")
+    def test_request_arxiv_doc_import_license_failure(
+        self, mock_check_license, mock_check_throttle
+    ):
+        # Arrange
+        mock_check_throttle.return_value = None
         error_message = "No valid license found."
         mock_check_license.side_effect = ValueError(error_message)
         payload = {"arxiv_id": "1234.5678"}
@@ -337,14 +376,17 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
 
         # Assert
         self.assertEqual(response.status_code, 200)
+        mock_check_throttle.assert_not_called()
         mock_check_license.assert_called_once_with("1234.5678")
         response_data = response.get_json()
         self.assertEqual(
             response_data["result"], {"error": error_message, "metadata": None}
         )
 
-    def test_request_arxiv_doc_import_incorrect_length(self):
+    @patch("main.throttling.check_throttle")
+    def test_request_arxiv_doc_import_incorrect_length(self, mock_check_throttle):
         # Arrange: arxiv_id too long
+        mock_check_throttle.return_value = None
         payload = {"arxiv_id": "1" * 100}
 
         # Act
@@ -352,6 +394,7 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
 
         # Assert
         self.assertEqual(response.status_code, 400)
+        mock_check_throttle.assert_not_called()
         response_data = response.get_json()
         self.assertIn("error", response_data)
         self.assertEqual(response_data["error"]["status"], "INVALID_ARGUMENT")
