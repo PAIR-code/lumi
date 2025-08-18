@@ -94,25 +94,33 @@ h1 {
   height: 100%;
   max-width: calc(common.$info-content-max-width / 2);
   padding: common.$spacing-large;
-  transition: all .25s ease-out;
+  transition: all 0.25s ease-out;
   width: 100%;
 
   &:focus,
   &:hover {
-    box-shadow: common.$spacing-small common.$spacing-small 1px 0 var(--md-sys-color-outline-variant);
+    box-shadow: common.$spacing-small common.$spacing-small 1px 0
+      var(--md-sys-color-outline-variant);
     cursor: pointer;
     transform: translate(-2px);
-    transition: all .25s ease-out;
+    transition: all 0.25s ease-out;
   }
 }
 
 .preview-image {
   aspect-ratio: 1 / 1;
-  background: linear-gradient(50deg, var(--md-sys-color-primary-container), var(--md-sys-color-surface));
   flex-shrink: 0;
   height: 200px;
   object-fit: cover;
   overflow: hidden;
+}
+
+.preview-image-gradient {
+  background: linear-gradient(
+    50deg,
+    var(--md-sys-color-gray-container),
+    var(--md-sys-color-surface)
+  );
 }
 
 .preview-content {
