@@ -25,6 +25,7 @@
 
 .tabs-header {
   @include common.flex-row;
+  background: var(--md-sys-color-surface-variant);
   height: max-content;
   position: sticky;
   top: 0;
