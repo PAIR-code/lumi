@@ -121,25 +121,8 @@ export class LumiSidebar extends LightMobxLitElement {
     const concepts =
       this.documentStateService.lumiDocManager?.lumiDoc.concepts || [];
 
-    const toggleAllIcon = this.areAnyConceptsCollapsed
-      ? "unfold_more"
-      : "unfold_less";
-
     return html`
       <div class="concepts-container" slot=${SIDEBAR_TABS.CONCEPTS}>
-        <div class="header concepts">
-          <div class="heading">${concepts.length + 1} concepts</div>
-          <pr-icon-button
-            variant="default"
-            .icon=${toggleAllIcon}
-            @click=${() => {
-              this.analyticsService.trackAction(
-                AnalyticsAction.SIDEBAR_TOGGLE_ALL_CONCEPTS
-              );
-              this.collapseManager?.toggleAllConcepts();
-            }}
-          ></pr-icon-button>
-        </div>
         <div class="concepts-list">
           ${concepts.map(
             (concept) =>
