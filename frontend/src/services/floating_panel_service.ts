@@ -21,8 +21,16 @@ import { HighlightSelection } from "../shared/selection_utils";
 import { LumiConcept, LumiFootnote, LumiReference } from "../shared/lumi_doc";
 import { ImageInfo, LumiAnswer } from "../shared/api";
 
+/** Defines the allowed values for menu and anchor corners. */
+export type Corner = "start-start" | "start-end" | "end-start" | "end-end";
+const ANCHOR_CORNER_DEFAULT: Corner = "start-start";
+const MENU_CORNER_DEFAULT: Corner = "end-start";
+
 /** Base class for all floating panel content props. */
-export abstract class FloatingPanelContentProps {}
+export abstract class FloatingPanelContentProps {
+  public anchorCorner?: Corner;
+  public menuCorner?: Corner;
+}
 
 /** Props for the SmartHighlightMenu component. */
 export class SmartHighlightMenuProps extends FloatingPanelContentProps {
@@ -74,6 +82,22 @@ export class AnswerHighlightTooltipProps extends FloatingPanelContentProps {
   }
 }
 
+/** Defines a single item in the overflow menu. */
+export interface OverflowMenuItem {
+  icon?: string;
+  label: string;
+  onClick: () => void;
+}
+
+/** Props for the OverflowMenu component. */
+export class OverflowMenuProps extends FloatingPanelContentProps {
+  constructor(public items: OverflowMenuItem[]) {
+    super();
+    this.anchorCorner = "start-end";
+    this.menuCorner = "end-end";
+  }
+}
+
 /** Additional floating panel content components should define their props here. */
 
 /**
@@ -83,6 +107,8 @@ export class FloatingPanelService extends Service {
   isVisible = false;
   targetElement: HTMLElement | null = null;
   contentProps: FloatingPanelContentProps | null = null;
+  anchorCorner: Corner = ANCHOR_CORNER_DEFAULT;
+  menuCorner: Corner = MENU_CORNER_DEFAULT;
 
   // These shadow roots are used to determine the selection in getComposedRanges
   //  whenever the selection state changes.
@@ -113,6 +139,12 @@ export class FloatingPanelService extends Service {
   show(contentProps: FloatingPanelContentProps, targetElement: HTMLElement) {
     this.contentProps = contentProps;
     this.targetElement = targetElement;
+    if (contentProps.anchorCorner) {
+      this.anchorCorner = contentProps.anchorCorner;
+    }
+    if (contentProps.menuCorner) {
+      this.menuCorner = contentProps.menuCorner;
+    }
     this.isVisible = true;
   }
 
@@ -120,5 +152,7 @@ export class FloatingPanelService extends Service {
     this.isVisible = false;
     this.targetElement = null;
     this.contentProps = null;
+    this.anchorCorner = ANCHOR_CORNER_DEFAULT;
+    this.menuCorner = MENU_CORNER_DEFAULT;
   }
 }

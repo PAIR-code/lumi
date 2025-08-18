@@ -29,6 +29,7 @@ import {
   ConceptTooltipProps,
   FloatingPanelService,
   FootnoteTooltipProps,
+  OverflowMenuProps,
   ReferenceTooltipProps,
   SmartHighlightMenuProps,
 } from "../../services/floating_panel_service";
@@ -36,10 +37,11 @@ import {
 import type { MdMenu } from "@material/web/menu/menu.js";
 import { styles } from "./floating_panel_host.scss";
 
-import "../reference_tooltip/reference_tooltip";
+import "../answer_highlight_tooltip/answer_highlight_tooltip";
 import "../concept_tooltip/concept_tooltip";
 import "../footnote_tooltip/footnote_tooltip";
-import "../answer_highlight_tooltip/answer_highlight_tooltip";
+import "../overflow_menu/overflow_menu";
+import "../reference_tooltip/reference_tooltip";
 
 /**
  * A host component that displays and positions a floating panel using md-menu.
@@ -139,12 +141,21 @@ export class FloatingPanelHost extends MobxLitElement {
       </div>`;
     }
 
+    if (contentProps instanceof OverflowMenuProps) {
+      return html`<div class="panel">
+        <overflow-menu .props=${contentProps}></overflow-menu>
+      </div>`;
+    }
+
     // Note: Add other cases for different panel content here.
 
     return nothing;
   }
 
   override render() {
+    const anchorCorner = this.floatingPanelService.anchorCorner;
+    const menuCorner = this.floatingPanelService.menuCorner;
+
     return html`
       <span class="menu-wrapper">
         <md-menu
@@ -153,8 +164,8 @@ export class FloatingPanelHost extends MobxLitElement {
           @closed=${this.handleMenuClosed}
           .stayOpenOnOutsideClick=${true}
           positioning="popover"
-          anchor-corner="start-start"
-          menu-corner="end-start"
+          anchor-corner=${anchorCorner}
+          menu-corner=${menuCorner}
         >
           ${this.renderContent()}
         </md-menu>

@@ -31,6 +31,11 @@ import {
   HistoryDialogProps,
   UserFeedbackDialogProps,
 } from "../../services/dialog.service";
+import {
+  FloatingPanelService,
+  OverflowMenuItem,
+  OverflowMenuProps,
+} from "../../services/floating_panel_service";
 
 /**
  * The header for the sidebar.
@@ -40,17 +45,37 @@ export class SidebarHeader extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
   private readonly analyticsService = core.getService(AnalyticsService);
   private readonly dialogService = core.getService(DialogService);
+  private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly routerService = core.getService(RouterService);
 
   private handleFeedbackClick() {
+    this.floatingPanelService.hide();
     this.analyticsService.trackAction(
       AnalyticsAction.SIDEBAR_HEADER_FEEDBACK_CLICK
     );
     this.dialogService.show(new UserFeedbackDialogProps());
   }
 
-  private openHistoryDialog() {
+  private onSeeHistoryClick() {
+    this.floatingPanelService.hide();
     this.dialogService.show(new HistoryDialogProps());
+  }
+
+  private handleOverflowClick(e: Event) {
+    const menuItems: OverflowMenuItem[] = [
+      {
+        icon: "contextual_token",
+        label: "View Lumi history",
+        onClick: this.onSeeHistoryClick.bind(this),
+      },
+      {
+        icon: "feedback",
+        label: "Send feedback",
+        onClick: this.handleFeedbackClick.bind(this),
+      },
+    ];
+    const props = new OverflowMenuProps(menuItems);
+    this.floatingPanelService.show(props, e.currentTarget as HTMLElement);
   }
 
   private renderContent() {
@@ -65,21 +90,10 @@ export class SidebarHeader extends MobxLitElement {
       </div>
       <div class="right-container">
         <pr-icon-button
-          title="Open model context"
-          icon="contextual_token"
+          title="More options"
+          icon="more_vert"
           variant="default"
-          @click=${() => {
-            this.analyticsService.trackAction(
-              AnalyticsAction.HEADER_OPEN_CONTEXT
-            );
-            this.openHistoryDialog();
-          }}
-        ></pr-icon-button>
-        <pr-icon-button
-          title="Send feedback"
-          icon="feedback"
-          variant="default"
-          @click=${this.handleFeedbackClick}
+          @click=${this.handleOverflowClick}
         ></pr-icon-button>
       </div>
     </div>`;
