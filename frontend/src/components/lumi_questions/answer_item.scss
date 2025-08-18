@@ -97,6 +97,8 @@ answer-item {
   }
 
   .question-text {
+    @include common.flex-row-align-center;
+    gap: common.$spacing-medium;
     @include common.overflow-ellipsis;
     @include typescale.title-medium;
   }
