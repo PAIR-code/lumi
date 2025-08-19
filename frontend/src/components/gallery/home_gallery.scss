@@ -149,29 +149,29 @@ h1 {
   @include common.flex-row;
   @include typescale.label-medium;
   align-items: center;
-  background: var(--md-sys-color-secondary-container-low);
-  border: 2px solid var(--md-sys-color-secondary-container);
+  border: 2px solid var(--md-sys-color-outline-variant);
   border-radius: common.$spacing-medium;
-  color: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-outline);
+  font-size: 90%;
   gap: common.$spacing-small;
   min-width: 60px;
-  padding: common.$spacing-medium common.$spacing-large;
+  padding: common.$spacing-small common.$spacing-medium;
 
   &:focus,
   &:hover {
-    background: var(--md-sys-color-secondary-container);
+    border-color: var(--md-sys-color-outline);
     cursor: pointer;
   }
 
   &.active,
   &.active:focus,
   &.active:hover {
-    background: var(--md-sys-color-primary);
-    border-color: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
+    background: var(--md-sys-color-secondary-container-low);
+    border-color: var(--md-sys-color-secondary);
+    color: var(--md-sys-color-secondary);
 
     pr-icon {
-      --pr-icon-color: var(--md-sys-color-on-primary);
+      --pr-icon-color: var(--md-sys-color-secondary);
     }
   }
 
