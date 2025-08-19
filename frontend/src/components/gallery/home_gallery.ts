@@ -400,11 +400,6 @@ export class HomeGallery extends MobxLitElement {
       </div>
     `;
   }
-
-  private renderLinkInput() {
-    return html`
-    `;
-  }
 }
 
 /** Paper preview card */
