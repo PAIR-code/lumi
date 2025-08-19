@@ -394,9 +394,9 @@ export class HomeGallery extends MobxLitElement {
     };
 
     return html`
+      ${items.length === 0 ? renderEmpty() : nothing}
       <div class="preview-gallery">
         ${items.map((item) => renderItem(item))}
-        ${items.length === 0 ? renderEmpty() : nothing}
       </div>
     `;
   }
