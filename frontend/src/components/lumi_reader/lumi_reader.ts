@@ -281,7 +281,8 @@ export class LumiReader extends LightMobxLitElement {
       const summaryAnswer = await getPersonalSummaryCallable(
         this.firebaseService.functions,
         currentDoc,
-        pastPapers
+        pastPapers,
+        this.settingsService.getAPIKey()
       );
 
       this.historyService.addPersonalSummary(this.documentId, summaryAnswer);

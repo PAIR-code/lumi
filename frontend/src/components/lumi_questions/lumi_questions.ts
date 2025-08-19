@@ -178,7 +178,6 @@ export class LumiQuestions extends LightMobxLitElement {
     const queryToClear = this.query;
 
     try {
-      console.log(this.settingsService.getAPIKey());
       const response = await getLumiResponseCallable(
         this.firebaseService.functions,
         lumiDoc,

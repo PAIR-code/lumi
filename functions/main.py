@@ -611,6 +611,7 @@ def get_personal_summary(req: https_fn.CallableRequest) -> dict:
     """
     doc_dict = req.data.get("doc")
     past_papers_dict = req.data.get("past_papers")
+    api_key = req.data.get("apiKey")
 
     if not doc_dict or past_papers_dict is None:
         raise https_fn.HttpsError(
@@ -633,7 +634,7 @@ def get_personal_summary(req: https_fn.CallableRequest) -> dict:
     ]
 
     try:
-        summary = personal_summary.get_personal_summary(doc, past_papers)
+        summary = personal_summary.get_personal_summary(doc, past_papers, api_key)
     except exceptions.TooManyRequests as e:
         raise https_fn.HttpsError(
             https_fn.FunctionsErrorCode.RESOURCE_EXHAUSTED,

@@ -99,15 +99,16 @@ export const getArxivMetadata = async (
 export const getPersonalSummaryCallable = async (
   functions: Functions,
   doc: LumiDoc,
-  pastPapers: PaperData[]
+  pastPapers: PaperData[],
+  apiKey: string | null
 ): Promise<LumiAnswer> => {
   const result = await httpsCallable<
-    { doc: LumiDoc; past_papers: PaperData[] },
+    { doc: LumiDoc; past_papers: PaperData[]; apiKey: string | null },
     LumiAnswer
   >(
     functions,
     "get_personal_summary"
-  )({ doc, past_papers: pastPapers });
+  )({ doc, past_papers: pastPapers, apiKey });
 
   return result.data;
 };

@@ -23,7 +23,7 @@ from shared.utils import get_unique_id
 from shared.constants import PERSONAL_SUMMARY_QUERY_NAME
 
 
-def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData]) -> LumiAnswer:
+def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData], api_key:str|None) -> LumiAnswer:
     """
     Generates a personalized summary for a document.
 
@@ -35,7 +35,7 @@ def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData]) -> LumiAnsw
         LumiAnswer: The generated personalized summary, packaged as a LumiAnswer.
     """
     prompt = prompts.make_personal_summary_prompt(doc, past_papers)
-    markdown_response = gemini.call_predict(prompt)
+    markdown_response = gemini.call_predict(prompt, api_key=api_key)
     html_response = markdown_utils.markdown_to_html(markdown_response)
 
     # Parse the markdown response to create LumiContent objects.
