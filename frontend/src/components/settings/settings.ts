@@ -60,6 +60,7 @@ export class Settings extends MobxLitElement {
             <pr-textinput
               .onChange=${(e: InputEvent) => {
                 this.apiKey = (e.target as HTMLInputElement).value;
+                this.settingsService.setAPIKey(this.apiKey);
               }}
               .onKeydown=${(e: KeyboardEvent) => {
                 if (e.key === "Enter") {
@@ -68,15 +69,6 @@ export class Settings extends MobxLitElement {
               }}
               placeholder="API key"
             ></pr-textinput>
-            <pr-button
-              color="secondary"
-              variant="outlined"
-              @click=${() => {
-                this.settingsService.setAPIKey(this.apiKey);
-              }}
-            >
-              Enter
-            </pr-button>
           </div>
         </div>
         <div class="section">
