@@ -60,7 +60,6 @@ export class Settings extends MobxLitElement {
             <pr-textinput
               .onChange=${(e: InputEvent) => {
                 this.apiKey = (e.target as HTMLInputElement).value;
-                console.log(this.apiKey);
               }}
               .onKeydown=${(e: KeyboardEvent) => {
                 if (e.key === "Enter") {
@@ -74,7 +73,6 @@ export class Settings extends MobxLitElement {
               variant="outlined"
               @click=${() => {
                 this.settingsService.setAPIKey(this.apiKey);
-                console.log("done");
               }}
             >
               Enter

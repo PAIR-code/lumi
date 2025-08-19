@@ -580,7 +580,7 @@ def get_lumi_response(req: https_fn.CallableRequest) -> dict:
         )
 
     try:
-        lumi_answer = answers.generate_lumi_answer(doc, lumi_request)
+        lumi_answer = answers.generate_lumi_answer(doc, lumi_request, api_key)
     except exceptions.TooManyRequests as e:
         raise https_fn.HttpsError(
             https_fn.FunctionsErrorCode.RESOURCE_EXHAUSTED,

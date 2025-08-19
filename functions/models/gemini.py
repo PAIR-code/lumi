@@ -21,6 +21,7 @@ from models import prompts
 from shared.lumi_doc import LumiConcept
 from shared.import_tags import L_REFERENCES_START, L_REFERENCES_END
 from typing import List, Type, TypeVar
+from firebase_functions import logger
 
 client = genai.Client(api_key=api_config.USER_API_KEY)
 
@@ -31,9 +32,14 @@ class GeminiInvalidResponseException(Exception):
     pass
 
 
-def call_predict(query="The opposite of happy is", model="gemini-2.5-flash", apiKey="") -> str:
-    if apiKey:
-        client = genai.Client(api_key=apiKey)
+def call_predict(query="The opposite of happy is", model="gemini-2.5-flash", api_key="") -> str:
+    if not api_key:
+        api_key = api_config.USER_API_KEY
+    else:
+        logger.info("Ran with user API key")
+
+
+    client = genai.Client(api_key=api_key)
 
     response = client.models.generate_content(
         model=model,
@@ -46,9 +52,16 @@ def call_predict(query="The opposite of happy is", model="gemini-2.5-flash", api
 
 
 def call_predict_with_image(
-    prompt: str, image_bytes: bytes, model="gemini-2.5-flash"
+    prompt: str, image_bytes: bytes, model="gemini-2.5-flash", api_key=""
 ) -> str:
     """Calls Gemini with a prompt and an image."""
+    if not api_key:
+        api_key = api_config.USER_API_KEY
+    else:
+        logger.info("Ran with user API key")
+    
+    client = genai.Client(api_key=api_key)
+    
     truncated_query = (prompt[:200] + "...") if len(prompt) > 200 else prompt
     print(f"  > Calling Gemini with image, prompt: '{truncated_query}' \nimage: {image_bytes[:50]}")
     response = client.models.generate_content(
@@ -68,9 +81,15 @@ def call_predict_with_image(
 def call_predict_with_schema(
     query: str,
     response_schema: Type[T],
-    model="gemini-2.5-flash",
+    model="gemini-2.5-flash", api_key=""
 ) -> T | List[T] | None:
     """Calls Gemini with a response schema for structured output."""
+    if not api_key:
+        api_key = api_config.USER_API_KEY
+    else:
+        logger.info("Ran with user API key")
+
+    client = genai.Client(api_key=api_key)
     start_time = time.time()
     truncated_query = (query[:200] + "...") if len(query) > 200 else query
     print(f"  > Calling Gemini with schema, prompt: '{truncated_query}'")

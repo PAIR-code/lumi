@@ -58,7 +58,6 @@ export class SettingsService extends Service {
 
   setAPIKey(apiKey: string) {
     this.apiKey = apiKey;
-    console.log("set", this.apiKey);
   }
 
   getAPIKey(): string | null {
