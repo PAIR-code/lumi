@@ -17,6 +17,7 @@
 
 import "../../pair-components/button";
 import "./tos_content";
+import "../../pair-components/textinput";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html } from "lit";
@@ -38,6 +39,8 @@ export class Settings extends MobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly settingsService = core.getService(SettingsService);
 
+  private apiKey: string = "";
+
   override render() {
     return html`
       <div class="settings">
@@ -50,6 +53,33 @@ export class Settings extends MobxLitElement {
           >
             Clear reading history
           </pr-button>
+        </div>
+        <div class="section">
+          <div class="field">
+            Model API Key:
+            <pr-textinput
+              .onChange=${(e: InputEvent) => {
+                this.apiKey = (e.target as HTMLInputElement).value;
+                console.log(this.apiKey);
+              }}
+              .onKeydown=${(e: KeyboardEvent) => {
+                if (e.key === "Enter") {
+                  this.settingsService.setAPIKey(this.apiKey);
+                }
+              }}
+              placeholder="API key"
+            ></pr-textinput>
+            <pr-button
+              color="secondary"
+              variant="outlined"
+              @click=${() => {
+                this.settingsService.setAPIKey(this.apiKey);
+                console.log("done");
+              }}
+            >
+              Enter
+            </pr-button>
+          </div>
         </div>
         <div class="section">
           <tos-content></tos-content>

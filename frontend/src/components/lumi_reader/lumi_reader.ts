@@ -86,6 +86,7 @@ import { FirebaseError } from "firebase/app";
 import { RouterService } from "../../services/router.service";
 import { BannerService } from "../../services/banner.service";
 import { createRef, ref } from "lit/directives/ref.js";
+import { SettingsService } from "../../services/settings.service";
 
 const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
   LoadingStatus.SUCCESS,
@@ -117,6 +118,7 @@ export class LumiReader extends LightMobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly routerService = core.getService(RouterService);
   private readonly snackbarService = core.getService(SnackbarService);
+  private readonly settingsService = core.getService(SettingsService);
 
   @provide({ context: scrollContext })
   private scrollState = new ScrollState();
@@ -334,7 +336,8 @@ export class LumiReader extends LightMobxLitElement {
       const response = await getLumiResponseCallable(
         this.firebaseService.functions,
         this.documentStateService.lumiDocManager.lumiDoc,
-        request
+        request,
+        this.settingsService.getAPIKey()
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
@@ -376,7 +379,8 @@ export class LumiReader extends LightMobxLitElement {
       const response = await getLumiResponseCallable(
         this.firebaseService.functions,
         currentDoc,
-        request
+        request,
+        this.settingsService.getAPIKey()
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {

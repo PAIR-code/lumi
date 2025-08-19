@@ -549,6 +549,7 @@ def get_lumi_response(req: https_fn.CallableRequest) -> dict:
     """
     doc_dict = req.data.get("doc")
     request_dict = req.data.get("request")
+    api_key = req.data.get("apiKey")
 
     if not doc_dict or not request_dict:
         raise https_fn.HttpsError(

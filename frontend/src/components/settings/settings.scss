@@ -47,6 +47,13 @@ a {
   }
 }
 
+.field {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+}
+
 .action-buttons {
   @include common.flex-row;
   flex-wrap: wrap;

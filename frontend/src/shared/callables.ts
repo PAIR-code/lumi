@@ -57,15 +57,16 @@ export const requestArxivDocImportCallable = async (
 export const getLumiResponseCallable = async (
   functions: Functions,
   doc: LumiDoc,
-  request: LumiAnswerRequest
+  request: LumiAnswerRequest,
+  apiKey: string | null
 ): Promise<LumiAnswer> => {
   const result = await httpsCallable<
-    { doc: LumiDoc; request: LumiAnswerRequest },
+    { doc: LumiDoc; request: LumiAnswerRequest; apiKey: string | null },
     LumiAnswer
   >(
     functions,
     "get_lumi_response"
-  )({ doc, request });
+  )({ doc, request, apiKey });
 
   return result.data;
 };

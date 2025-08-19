@@ -31,7 +31,10 @@ class GeminiInvalidResponseException(Exception):
     pass
 
 
-def call_predict(query="The opposite of happy is", model="gemini-2.5-flash") -> str:
+def call_predict(query="The opposite of happy is", model="gemini-2.5-flash", apiKey="") -> str:
+    if apiKey:
+        client = genai.Client(api_key=apiKey)
+
     response = client.models.generate_content(
         model=model,
         contents=query,
