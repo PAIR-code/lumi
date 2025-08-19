@@ -102,12 +102,14 @@ export class Header extends MobxLitElement {
   private renderImportButton() {
     const openDialog = () => {
       this.homeService.setShowUploadDialog(true);
+      this.routerService.navigate(Pages.HOME);
     };
 
     return html`
-      <pr-tooltip text="Upload papers" position="BOTTOM_END">
-        <pr-icon-button icon="new_window" variant="tonal" @click=${openDialog}>
-        </pr-icon-button>
+      <pr-tooltip text="" position="BOTTOM_END">
+        <pr-button variant="filled" @click=${openDialog}>
+          Add papers
+        </pr-button>
       </pr-tooltip>
     `;
   }
