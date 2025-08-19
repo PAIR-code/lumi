@@ -62,11 +62,6 @@ export class Settings extends MobxLitElement {
                 this.apiKey = (e.target as HTMLInputElement).value;
                 this.settingsService.setAPIKey(this.apiKey);
               }}
-              .onKeydown=${(e: KeyboardEvent) => {
-                if (e.key === "Enter") {
-                  this.settingsService.setAPIKey(this.apiKey);
-                }
-              }}
               placeholder="API key"
             ></pr-textinput>
           </div>

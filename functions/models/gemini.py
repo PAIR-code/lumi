@@ -35,7 +35,11 @@ class GeminiInvalidResponseException(Exception):
     pass
 
 
-def call_predict(query="The opposite of happy is", model="gemini-2.5-flash", api_key="") -> str:
+def call_predict(
+    query="The opposite of happy is",
+    model="gemini-2.5-flash",
+    api_key:str|None=None
+) -> str:
     if not api_key:
         api_key = api_config.DEFAULT_API_KEY
     else:
@@ -55,7 +59,10 @@ def call_predict(query="The opposite of happy is", model="gemini-2.5-flash", api
 
 
 def call_predict_with_image(
-    prompt: str, image_bytes: bytes, model="gemini-2.5-flash", api_key=""
+    prompt: str,
+    image_bytes: bytes,
+    model="gemini-2.5-flash",
+    api_key:str|None=None
 ) -> str:
     """Calls Gemini with a prompt and an image."""
     if not api_key:
@@ -84,7 +91,8 @@ def call_predict_with_image(
 def call_predict_with_schema(
     query: str,
     response_schema: Type[T],
-    model="gemini-2.5-flash", api_key=""
+    model="gemini-2.5-flash",
+    api_key:str|None=None
 ) -> T | List[T] | None:
     """Calls Gemini with a response schema for structured output."""
     if not api_key:
