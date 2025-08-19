@@ -252,7 +252,7 @@ export class HomeGallery extends MobxLitElement {
         showCloseButton
         enableEscape
       >
-        <div slot="title">Upload papers</div>
+        <div slot="title">Import paper</div>
         <div class="dialog-content">
           <div class="paper-input">
             <pr-textarea

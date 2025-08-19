@@ -108,7 +108,7 @@ export class Header extends MobxLitElement {
     return html`
       <pr-tooltip text="" position="BOTTOM_END">
         <pr-button variant="filled" @click=${openDialog}>
-          Add papers
+          Import paper
         </pr-button>
       </pr-tooltip>
     `;
