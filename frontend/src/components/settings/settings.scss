@@ -48,10 +48,8 @@ a {
 }
 
 .field {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: center;
+  @include common.flex-row-align-center;
+  gap: common.$spacing-medium;
 }
 
 .action-buttons {

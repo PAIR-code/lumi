@@ -14,4 +14,4 @@
 # ==============================================================================
 
 # TODO(developer): Add GEMINI API key.
-USER_API_KEY = ""
+DEFAULT_API_KEY = ""

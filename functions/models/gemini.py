@@ -22,8 +22,11 @@ from shared.lumi_doc import LumiConcept
 from shared.import_tags import L_REFERENCES_START, L_REFERENCES_END
 from typing import List, Type, TypeVar
 from firebase_functions import logger
+from firebase_functions import logger
 
 client = genai.Client(api_key=api_config.USER_API_KEY)
+
+API_KEY_LOGGING_MESSAGE = "Ran with user-specified API key"
 
 T = TypeVar("T")
 
@@ -34,9 +37,9 @@ class GeminiInvalidResponseException(Exception):
 
 def call_predict(query="The opposite of happy is", model="gemini-2.5-flash", api_key="") -> str:
     if not api_key:
-        api_key = api_config.USER_API_KEY
+        api_key = api_config.DEFAULT_API_KEY
     else:
-        logger.info("Ran with user API key")
+        logger.info(API_KEY_LOGGING_MESSAGE)
 
 
     client = genai.Client(api_key=api_key)
@@ -56,9 +59,9 @@ def call_predict_with_image(
 ) -> str:
     """Calls Gemini with a prompt and an image."""
     if not api_key:
-        api_key = api_config.USER_API_KEY
+        api_key = api_config.DEFAULT_API_KEY
     else:
-        logger.info("Ran with user API key")
+        logger.info(API_KEY_LOGGING_MESSAGE)
     
     client = genai.Client(api_key=api_key)
     
@@ -85,9 +88,9 @@ def call_predict_with_schema(
 ) -> T | List[T] | None:
     """Calls Gemini with a response schema for structured output."""
     if not api_key:
-        api_key = api_config.USER_API_KEY
+        api_key = api_config.DEFAULT_API_KEY
     else:
-        logger.info("Ran with user API key")
+        logger.info(API_KEY_LOGGING_MESSAGE)
 
     client = genai.Client(api_key=api_key)
     start_time = time.time()
