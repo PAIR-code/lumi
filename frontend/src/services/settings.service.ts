@@ -38,6 +38,7 @@ export class SettingsService extends Service {
   }
 
   @observable colorMode: ColorMode = ColorMode.DEFAULT;
+  @observable apiKey: string | null = null;
 
   @action setColorMode(colorMode: ColorMode) {
     this.colorMode = colorMode;
@@ -53,5 +54,13 @@ export class SettingsService extends Service {
       false
     );
     return tosConfirmed;
+  }
+
+  setAPIKey(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  getAPIKey(): string | null {
+    return this.apiKey;
   }
 }

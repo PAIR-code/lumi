@@ -55,6 +55,7 @@ import { SnackbarService } from "../../services/snackbar.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { SIDEBAR_PERSONAL_SUMMARY_TOOLTIP_TEXT } from "../../shared/constants_helper_text";
+import { SettingsService } from "../../services/settings.service";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
@@ -69,6 +70,7 @@ export class LumiQuestions extends LightMobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly routerService = core.getService(RouterService);
   private readonly snackbarService = core.getService(SnackbarService);
+  private readonly settingsService = core.getService(SettingsService);
 
   @property({ type: Boolean }) isHistoryShowAll = false;
   @property({ type: Object }) setHistoryVisible?: (isVisible: boolean) => void;
@@ -179,7 +181,8 @@ export class LumiQuestions extends LightMobxLitElement {
       const response = await getLumiResponseCallable(
         this.firebaseService.functions,
         lumiDoc,
-        request
+        request,
+        this.settingsService.getAPIKey()
       );
       this.historyService.addAnswer(docId, response);
       this.query = "";

@@ -29,6 +29,7 @@ from shared.utils import get_unique_id
 def generate_lumi_answer(
     doc: LumiDoc,
     request: LumiAnswerRequest,
+    api_key: str|None
 ) -> LumiAnswer:
     """
     Generates a LumiAnswer by calling the Gemini API.
@@ -82,10 +83,10 @@ def generate_lumi_answer(
     if image_info:
         image_bytes = image_utils.download_image_from_gcs(image_info.image_storage_path)
         markdown_response = gemini.call_predict_with_image(
-            prompt=prompt, image_bytes=image_bytes
+            prompt=prompt, image_bytes=image_bytes, api_key=api_key
         )
     else:
-        markdown_response = gemini.call_predict(prompt)
+        markdown_response = gemini.call_predict(prompt, api_key=api_key)
 
     html_response = markdown_utils.markdown_to_html(markdown_response)
 
