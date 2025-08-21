@@ -25,8 +25,11 @@ import { customElement } from "lit/decorators.js";
 
 import { core } from "../../core/core";
 import { HistoryService } from "../../services/history.service";
+import { Pages, RouterService } from "../../services/router.service";
 import { SettingsService } from "../../services/settings.service";
 
+import { ArxivMetadata } from "../../shared/lumi_doc";
+import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { ColorMode } from "../../shared/types";
 
 import { styles } from "./settings.scss";
@@ -37,19 +40,50 @@ export class Settings extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly historyService = core.getService(HistoryService);
+  private readonly routerService = core.getService(RouterService);
   private readonly settingsService = core.getService(SettingsService);
 
   override render() {
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    ).map((item) => item.metadata);
+
+    const navigateToPaper = (metadata: ArxivMetadata) => {
+      this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
+        document_id: metadata.paperId,
+      });
+    };
+
     return html`
       <div class="settings">
         <div class="section">
+          <h2>My Collection (reading history)</h2>
+          ${historyItems.map((item) =>
+            html`
+              <div class="history-item" @click=${() => navigateToPaper(item)}>
+                <div class="left">
+                  <div class="title">${item.title}</div>
+                  <i>${item.paperId}</i>
+                </div>
+                <div class="right">
+                  <pr-icon-button
+                    disabled
+                    color="neutral"
+                    icon="delete"
+                    variant="default"
+                  >
+                  </pr-icon-button>
+                </div>
+              </div>
+            `
+          )}
           <pr-button
             @click=${() => this.historyService.clearAllHistory()}
             ?disabled=${this.historyService.getPaperHistory().length === 0}
             color="secondary"
-            variant="outlined"
+            variant="default"
           >
-            Clear reading history
+            Clear entire reading history
           </pr-button>
         </div>
         <div class="section">
