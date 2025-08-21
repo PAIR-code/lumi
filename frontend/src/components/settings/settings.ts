@@ -66,6 +66,7 @@ export class Settings extends MobxLitElement {
           </div>
         </div>
         <div class="section">
+          <h2>About Lumi</h2>
           <tos-content></tos-content>
         </div>
       </div>
