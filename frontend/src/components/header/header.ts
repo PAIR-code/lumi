@@ -19,7 +19,7 @@ import "../../pair-components/button";
 import "../../pair-components/icon_button";
 import "../../pair-components/tooltip";
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
+import { CSSResultGroup, html, nothing } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import { core } from "../../core/core";
@@ -75,6 +75,11 @@ export class Header extends MobxLitElement {
   }
 
   private renderActions() {
+    const activePage = this.routerService.activePage;
+    if (activePage === Pages.SETTINGS) {
+      return nothing;
+    }
+
     return html`
       ${this.renderFeedbackButton()} ${this.renderSettingsButton()}
       ${this.renderImportButton()}
@@ -86,11 +91,13 @@ export class Header extends MobxLitElement {
       this.routerService.navigate(Pages.HOME);
     };
 
+    const activePage = this.routerService.activePage;
+
     return html`
       <pr-tooltip text="Home" position="BOTTOM_START">
         <pr-icon-button
           color="neutral"
-          icon=${LOGO_ICON_NAME}
+          icon=${activePage === Pages.SETTINGS ? 'arrow_back' : LOGO_ICON_NAME}
           variant="default"
           @click=${handleClick}
         >
