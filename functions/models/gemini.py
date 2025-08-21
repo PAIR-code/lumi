@@ -24,7 +24,7 @@ from typing import List, Type, TypeVar
 from firebase_functions import logger
 from firebase_functions import logger
 
-client = genai.Client(api_key=api_config.USER_API_KEY)
+client = genai.Client(api_key=api_config.DEFAULT_API_KEY)
 
 API_KEY_LOGGING_MESSAGE = "Ran with user-specified API key"
 
