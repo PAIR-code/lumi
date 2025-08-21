@@ -53,8 +53,11 @@ export class Settings extends MobxLitElement {
           </pr-button>
         </div>
         <div class="section">
+          <h2>Model API key</h2>
+          <div>
+            <i>Optional: Use your own Gemini API key for Lumi queries.</i>
+          </div>
           <div class="field">
-            Model API Key:
             <pr-textinput
               .value=${this.settingsService.apiKey.value}
               .onChange=${(e: InputEvent) => {
