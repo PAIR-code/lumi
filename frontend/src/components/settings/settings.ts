@@ -59,7 +59,7 @@ export class Settings extends MobxLitElement {
       <div class="settings">
         <div class="section">
           <h2>Reading History (${historyItems.length})</h2>
-          ${!hasItems ? html`<i>No history yet</i>` : nothing}
+          ${!hasItems ? html`<i>No papers yet</i>` : nothing}
           ${historyItems.map((item) =>
             html`
               <div class="history-item" @click=${() => navigateToPaper(item)}>
@@ -80,10 +80,17 @@ export class Settings extends MobxLitElement {
             `
           )}
           <pr-button
-            @click=${() => this.historyService.clearAllHistory()}
+            @click=${() => {
+              const isConfirmed = window.confirm(
+                `Are you sure you want to clear history? This will remove all items from "My Collection."`
+              );
+              if (isConfirmed) {
+                this.historyService.clearAllHistory();
+              }
+            }}
             ?disabled=${!hasItems}
-            color="secondary"
-            variant="default"
+            color="error"
+            variant="tonal"
           >
             Clear entire reading history
           </pr-button>

@@ -59,6 +59,7 @@ export class HistoryService extends Service {
       addLoadingPaper: action,
       deletePaper: action,
       clearAllHistory: action,
+      getPaperHistory: observable,
     });
   }
 
