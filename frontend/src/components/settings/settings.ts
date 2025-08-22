@@ -20,7 +20,7 @@ import "./tos_content";
 import "../../pair-components/textinput";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
+import { CSSResultGroup, html, nothing } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import { core } from "../../core/core";
@@ -47,6 +47,7 @@ export class Settings extends MobxLitElement {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
     ).map((item) => item.metadata);
+  const hasItems = historyItems.length > 0;
 
     const navigateToPaper = (metadata: ArxivMetadata) => {
       this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
@@ -57,7 +58,8 @@ export class Settings extends MobxLitElement {
     return html`
       <div class="settings">
         <div class="section">
-          <h2>Reading History</h2>
+          <h2>Reading History (${historyItems.length})</h2>
+          ${!hasItems ? html`<i>No history yet</i>` : nothing}
           ${historyItems.map((item) =>
             html`
               <div class="history-item" @click=${() => navigateToPaper(item)}>
@@ -79,7 +81,7 @@ export class Settings extends MobxLitElement {
           )}
           <pr-button
             @click=${() => this.historyService.clearAllHistory()}
-            ?disabled=${this.historyService.getPaperHistory().length === 0}
+            ?disabled=${!hasItems}
             color="secondary"
             variant="default"
           >
