@@ -16,7 +16,7 @@
 import uuid
 from typing import List
 import re
-from models.gemini import client, call_predict_with_schema
+from models.gemini import call_predict_with_schema
 from models.prompts import make_concept_extraction_prompt
 from dataclasses import dataclass
 from pydantic import BaseModel
