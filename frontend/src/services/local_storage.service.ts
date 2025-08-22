@@ -16,6 +16,7 @@
  */
 
 import { Service } from "./service";
+import { computed, makeObservable, observable } from "mobx";
 
 /**
  * A service for interacting with the browser's local storage.
@@ -87,5 +88,59 @@ export class LocalStorageService extends Service {
       }
     }
     return keys;
+  }
+
+  makeLocalStorageHelper<T>(key: string, initialValue: T) {
+    return new LocalStorageHelper(this, key, initialValue);
+  }
+}
+
+/** Helper class for getting/setting local storage values more simply. */
+export class LocalStorageHelper<T> {
+  constructor(
+    private readonly localStorageService: LocalStorageService,
+    readonly key: string,
+    defaultValue: T,
+    validateFn?: (value: T) => boolean
+  ) {
+    makeObservable(this);
+    let initialValue = this.localStorageService.getData<T | undefined>(
+      key,
+      undefined
+    );
+
+    // If the LocalStorageHelper is passed a validate function and the initial
+    // value loaded from localStorage is invalid, then reset the value to
+    // undefined and clear the value from localStorage
+    if (validateFn && initialValue !== undefined && !validateFn(initialValue)) {
+      initialValue = undefined;
+      window.localStorage.removeItem(key);
+    }
+
+    if (initialValue !== undefined) {
+      this.isLocalStorageSet = true;
+      this.internalValue = initialValue;
+    } else {
+      this.internalValue = defaultValue;
+    }
+  }
+
+  // Sets the default value without writing to local storage.
+  setDefaultValue(value: T) {
+    this.internalValue = value;
+  }
+
+  isLocalStorageSet = false;
+  @observable private internalValue: T | undefined = undefined;
+
+  set value(value: T) {
+    this.internalValue = value;
+    this.localStorageService.setData(this.key, value);
+    this.isLocalStorageSet = true;
+  }
+
+  @computed
+  get value(): T {
+    return this.internalValue!;
   }
 }

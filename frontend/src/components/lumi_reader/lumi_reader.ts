@@ -272,7 +272,7 @@ export class LumiReader extends LightMobxLitElement {
         this.firebaseService.functions,
         currentDoc,
         pastPapers,
-        this.settingsService.getAPIKey()
+        this.settingsService.apiKey.value
       );
 
       this.historyService.addPersonalSummary(this.documentId, summaryAnswer);
@@ -328,7 +328,7 @@ export class LumiReader extends LightMobxLitElement {
         this.firebaseService.functions,
         this.documentStateService.lumiDocManager.lumiDoc,
         request,
-        this.settingsService.getAPIKey()
+        this.settingsService.apiKey.value
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
@@ -371,7 +371,7 @@ export class LumiReader extends LightMobxLitElement {
         this.firebaseService.functions,
         currentDoc,
         request,
-        this.settingsService.getAPIKey()
+        this.settingsService.apiKey.value
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
