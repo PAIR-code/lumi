@@ -332,9 +332,14 @@ export class LumiReader extends LightMobxLitElement {
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
-      console.error("Error getting Lumi response:", e);
       let message = "Error: Could not get response from Lumi.";
-      if ((e as FirebaseError).code === "functions/resource-exhausted") {
+
+      if (
+        (e as FirebaseError).code === "functions/unavailable" &&
+        this.settingsService.apiKey.value !== ""
+      ) {
+        message = "Error: Your API key may be incorrect";
+      } else if ((e as FirebaseError).code === "functions/resource-exhausted") {
         message =
           "Model quota exceeded. Add your own API key in Home > Settings";
       }
