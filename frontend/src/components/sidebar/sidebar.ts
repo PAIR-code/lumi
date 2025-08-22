@@ -62,16 +62,6 @@ export class LumiSidebar extends LightMobxLitElement {
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
 
-  @computed get areAnyConceptsCollapsed() {
-    if (!this.collapseManager) return true;
-    return (
-      this.documentStateService.lumiDocManager?.lumiDoc.concepts.some(
-        (concept) =>
-          this.collapseManager!.conceptCollapsedState.get(concept.name) ?? true
-      ) ?? true
-    );
-  }
-
   constructor() {
     super();
     makeObservable(this);
@@ -123,18 +113,6 @@ export class LumiSidebar extends LightMobxLitElement {
                 .highlightManager=${this.documentStateService.highlightManager}
                 .answerHighlightManager=${this.historyService
                   .answerHighlightManager}
-                .isCollapsed=${this.collapseManager!.conceptCollapsedState.get(
-                  concept.name
-                ) ?? true}
-                .setIsCollapsed=${(isCollapsed: boolean) => {
-                  this.analyticsService.trackAction(
-                    AnalyticsAction.SIDEBAR_TOGGLE_CONCEPT
-                  );
-                  this.collapseManager?.setConceptCollapsed(
-                    concept.name,
-                    isCollapsed
-                  );
-                }}
                 .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(
                   this
                 )}
