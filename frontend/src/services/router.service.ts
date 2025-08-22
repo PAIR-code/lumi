@@ -32,6 +32,8 @@ interface ServiceProvider {
   homeService: HomeService;
 }
 
+const DEFAULT_COLLECTION_ID = "pair_team";
+
 /**
  * Handles app routing and page navigation
  */
@@ -109,12 +111,20 @@ export class RouterService extends Service {
       );
     }
 
-    // If gallery page, load collections
     const currentPage = this.getPage(this.activeRoute);
     if (
-      currentPage === Pages.HOME ||
-      currentPage === Pages.COLLECTION
+      currentPage === Pages.HOME &&
+      !this.sp.historyService.getPaperHistory().length &&
+      !this.hasNavigated
     ) {
+      this.navigate(Pages.COLLECTION, {
+        collection_id: DEFAULT_COLLECTION_ID,
+      });
+      return;
+    }
+
+    // If gallery page, load collections
+    if (currentPage === Pages.HOME || currentPage === Pages.COLLECTION) {
       const currentCollectionId = this.activeRoute.params["collection_id"];
       this.sp.homeService.loadCollections(currentCollectionId);
     }
