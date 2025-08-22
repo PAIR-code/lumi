@@ -57,7 +57,7 @@ export class Settings extends MobxLitElement {
     return html`
       <div class="settings">
         <div class="section">
-          <h2>My Collection (reading history)</h2>
+          <h2>Reading History</h2>
           ${historyItems.map((item) =>
             html`
               <div class="history-item" @click=${() => navigateToPaper(item)}>
@@ -87,7 +87,7 @@ export class Settings extends MobxLitElement {
           </pr-button>
         </div>
         <div class="section">
-          <h2>Model API key</h2>
+          <h2>Model API Key</h2>
           <div>
             <i>Optional: Use your own Gemini API key for Lumi queries.</i>
           </div>
