@@ -21,28 +21,19 @@
  * sections and content) is delegated to stateless functions in the `renderers/`
  * directory.
  *
- * This approach was chosen to solve a specific problem with `window.getSelection()`
+ * This approach was initially chosen to solve a specific problem with `window.getSelection()`
  * not working across Shadow DOM boundaries. By keeping all the text content
  * in the Light DOM of `lumi-doc` and using stateless render functions instead
  * of nested custom elements with their own Shadow DOMs, we ensure that text
- * selection behaves as expected.
- *
- * The one exception is `lumi-span`, which remains a custom element. However, it
- * has been modified to accept its rendered content via a `<slot>`. This means
- * the text content is *projected* into `lumi-span`'s Shadow DOM but still
- * *owned* by `lumi-doc`'s Light DOM, preserving selectability.
+ * selection behaves as expected. In a more recent refactor, we've transitioned many
+ * components to use LightMobxLitElement, which overrides createRenderRoot to render lit
+ * components in Light DOM.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
+import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import {
-  getSelectionInfo,
-  HighlightSelection,
-  SelectionInfo,
-} from "../../shared/selection_utils";
+import { HighlightSelection } from "../../shared/selection_utils";
 
-import { renderSection } from "./renderers/section_renderer";
 import { renderAbstract } from "./renderers/abstract_renderer";
 import { renderReferences } from "./renderers/references_renderer";
 import { renderFootnotes } from "./renderers/footnotes_renderer";
@@ -93,8 +84,6 @@ export class LumiDocViz extends LightMobxLitElement {
     target: HTMLElement
   ) => void = () => {};
   @property() onScroll: () => void = () => {};
-  @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
-  @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
 
   @state() hoveredSpanId: string | null = null;
 
@@ -104,20 +93,6 @@ export class LumiDocViz extends LightMobxLitElement {
 
   constructor() {
     super();
-  }
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-    if (this.shadowRoot) {
-      this.registerShadowRoot(this.shadowRoot);
-    }
-  }
-
-  override disconnectedCallback(): void {
-    if (this.shadowRoot) {
-      this.unregisterShadowRoot(this.shadowRoot);
-    }
-    super.disconnectedCallback();
   }
 
   private onSpanSummaryMouseEnter(spanIds: string[]) {

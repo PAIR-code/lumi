@@ -44,31 +44,12 @@ export class LumiConceptViz extends LightMobxLitElement {
     target: HTMLElement
   ) => void = () => {};
 
-  @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
-  @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
-
   @property({ type: Boolean }) isCollapsed = true;
   @property()
   setIsCollapsed: (isCollapsed: boolean) => void = () => {};
 
   private toggleCollapse() {
     this.setIsCollapsed(!this.isCollapsed);
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    if (this.shadowRoot) {
-      this.registerShadowRoot(this.shadowRoot);
-    }
-  }
-
-  override disconnectedCallback() {
-    if (this.shadowRoot) {
-      this.unregisterShadowRoot(this.shadowRoot);
-    }
-
-    super.disconnectedCallback();
   }
 
   override render() {

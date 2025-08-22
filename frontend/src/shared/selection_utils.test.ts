@@ -104,10 +104,7 @@ describe("getSelectionInfo", () => {
     selection.removeAllRanges();
     selection.addRange(range);
 
-    const selectionInfo = getSelectionInfo(
-      window.getSelection()!,
-      [el.shadowRoot!]
-    );
+    const selectionInfo = getSelectionInfo(window.getSelection()!);
 
     expect(selectionInfo).to.not.be.null;
     expect(selectionInfo!.selectedText).to.equal("is some");
@@ -149,7 +146,7 @@ describe("getSelectionInfo", () => {
     selection.removeAllRanges();
     selection.addRange(range);
 
-    const selectionInfo = getSelectionInfo(selection, [el.shadowRoot!]);
+    const selectionInfo = getSelectionInfo(selection);
 
     expect(selectionInfo).to.not.be.null;
     expect(selectionInfo!.selectedText).to.equal("text");
@@ -165,7 +162,7 @@ describe("getSelectionInfo", () => {
     const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`);
     const selection = window.getSelection()!;
     selection.removeAllRanges(); // Ensure it's empty
-    const selectionInfo = getSelectionInfo(selection, [el.shadowRoot!]);
+    const selectionInfo = getSelectionInfo(selection);
     expect(selectionInfo).to.be.null;
   });
 
@@ -177,7 +174,7 @@ describe("getSelectionInfo", () => {
     // @ts-ignore - Mocking getComposedRanges for this specific test case
     selection.getComposedRanges = () => [];
 
-    const selectionInfo = getSelectionInfo(selection, [el.shadowRoot!]);
+    const selectionInfo = getSelectionInfo(selection);
     expect(selectionInfo).to.be.null;
   });
 
@@ -222,7 +219,7 @@ describe("getSelectionInfo", () => {
     // @ts-ignore - Mocking getComposedRanges for this specific test case
     selection.getComposedRanges = () => [range];
 
-    const selectionInfo = getSelectionInfo(selection, [el.shadowRoot!]);
+    const selectionInfo = getSelectionInfo(selection);
 
     expect(selectionInfo).to.not.be.null;
     expect(selectionInfo!.selectedText).to.equal("part. Second part. Third");

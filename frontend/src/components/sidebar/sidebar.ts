@@ -36,7 +36,6 @@ import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
-import { DialogService } from "../../services/dialog.service";
 import { SIDEBAR_TABS, SIDEBAR_TABS_MOBILE } from "../../shared/constants";
 import {
   AnswerHighlightTooltipProps,
@@ -76,13 +75,6 @@ export class LumiSidebar extends LightMobxLitElement {
   constructor() {
     super();
     makeObservable(this);
-  }
-  private registerShadowRoot(shadowRoot: ShadowRoot) {
-    this.floatingPanelService.registerShadowRoot(shadowRoot);
-  }
-
-  private unregisterShadowRoot(shadowRoot: ShadowRoot) {
-    this.floatingPanelService.unregisterShadowRoot(shadowRoot);
   }
 
   private renderHeader() {
@@ -131,8 +123,6 @@ export class LumiSidebar extends LightMobxLitElement {
                 .highlightManager=${this.documentStateService.highlightManager}
                 .answerHighlightManager=${this.historyService
                   .answerHighlightManager}
-                .registerShadowRoot=${this.registerShadowRoot.bind(this)}
-                .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
                 .isCollapsed=${this.collapseManager!.conceptCollapsedState.get(
                   concept.name
                 ) ?? true}
