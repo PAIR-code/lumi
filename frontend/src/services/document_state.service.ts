@@ -16,11 +16,7 @@
  */
 
 import { Service } from "./service";
-import {
-  Highlight,
-  HighlightColor,
-  LumiDoc,
-} from "../shared/lumi_doc";
+import { Highlight, HighlightColor, LumiDoc } from "../shared/lumi_doc";
 import { ScrollState } from "../contexts/scroll_context";
 import { HighlightManager } from "../shared/highlight_manager";
 import { CollapseManager } from "../shared/collapse_manager";
@@ -99,9 +95,7 @@ export class DocumentStateService extends Service {
     const spanId = highlightedSpans[0].spanId;
     const isSpanFromLumiDoc = !!this.lumiDocManager?.getSpanById(spanId);
 
-    if (isSpanFromLumiDoc) {
-      this.collapseManager.expandToSpan(spanId);
-    } else {
+    if (!isSpanFromLumiDoc) {
       // For now, assumes that the span is in the history if not in the document.
       // TODO(ellenj): Once we can also ask questions from Lumi Concepts, we will need
       // handle that case here.

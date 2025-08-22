@@ -39,8 +39,6 @@ export type CollapseState = "collapsed" | "expanded" | "indeterminate";
  * Manages the collapse/expand state of sections in a document.
  */
 export class CollapseManager {
-  // Document section collapse state
-  sectionCollapseState = new Map<string, boolean>();
   mobileSummaryCollapseState = new Map<string, boolean>();
   isAbstractCollapsed = INITIAL_SECTION_COLLAPSE_STATE;
   areReferencesCollapsed = INITIAL_REFERENCES_COLLAPSE_STATE;
@@ -67,7 +65,6 @@ export class CollapseManager {
 
   constructor(private readonly lumiDocManager: LumiDocManager) {
     makeObservable(this, {
-      sectionCollapseState: observable.shallow,
       mobileSummaryCollapseState: observable.shallow,
       isAbstractCollapsed: observable,
       areReferencesCollapsed: observable,
@@ -78,9 +75,6 @@ export class CollapseManager {
       setAbstractCollapsed: action,
       setReferencesCollapsed: action,
       setFootnotesCollapsed: action,
-      toggleSection: action,
-      setAllSectionsCollapsed: action,
-      expandToSpan: action,
       getMobileSummaryCollapseState: action,
       toggleMobileSummaryCollapse: action,
       setSidebarTabSelection: action,
@@ -93,9 +87,6 @@ export class CollapseManager {
   }
 
   initialize() {
-    // Initialize all sections to be expanded.
-    this.setAllSectionsCollapsed(INITIAL_SECTION_COLLAPSE_STATE);
-
     const summaryCollapseState = isViewportSmall()
       ? INITIAL_MOBILE_SUMMARY_COLLAPSE_STATE
       : INITIAL_DESKTOP_SUMMARY_COLLAPSE_STATE;
@@ -116,14 +107,6 @@ export class CollapseManager {
 
   setFootnotesCollapsed(isCollapsed: boolean) {
     this.areFootnotesCollapsed = isCollapsed;
-  }
-
-  toggleSection(sectionId: string, isCollapsed: boolean) {
-    this.sectionCollapseState.set(sectionId, isCollapsed);
-  }
-
-  getCollapseState(id: string) {
-    return this.sectionCollapseState.get(id) ?? false;
   }
 
   getMobileSummaryCollapseState(contentId: string) {
@@ -151,54 +134,6 @@ export class CollapseManager {
     this.lumiDocManager.lumiDoc.sections.forEach((section) => {
       setAllCollapsedInSection(section);
     });
-  }
-
-  getOverallCollapseState(): CollapseState {
-    const allStates = [
-      this.isAbstractCollapsed,
-      ...this.sectionCollapseState.values(),
-    ];
-
-    const allCollapsed = allStates.every((isCollapsed) => isCollapsed);
-    if (allCollapsed) {
-      return "collapsed";
-    }
-
-    const allExpanded = allStates.every((isCollapsed) => !isCollapsed);
-    if (allExpanded) {
-      return "expanded";
-    }
-
-    return "indeterminate";
-  }
-
-  setAllSectionsCollapsed(isCollapsed: boolean) {
-    this.isAbstractCollapsed = isCollapsed;
-
-    this.lumiDocManager.lumiDoc.sections.forEach((section) => {
-      this.sectionCollapseState.set(section.id, isCollapsed);
-      if (section.subSections) {
-        section.subSections.forEach((subSection) => {
-          this.sectionCollapseState.set(subSection.id, isCollapsed);
-        });
-      }
-    });
-  }
-
-  expandToSpan(spanId: string) {
-    let section = this.lumiDocManager.getSectionForSpan(spanId);
-    while (section) {
-      this.sectionCollapseState.set(section.id, false);
-      section = this.lumiDocManager.getParentSection(section.id);
-    }
-  }
-
-  expandToSection(sectionId: string) {
-    let section = this.lumiDocManager.getParentSection(sectionId);
-    while (section) {
-      this.sectionCollapseState.set(section.id, false);
-      section = this.lumiDocManager.getParentSection(section.id);
-    }
   }
 
   // Sidebar methods

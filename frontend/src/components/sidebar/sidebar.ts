@@ -159,13 +159,8 @@ export class LumiSidebar extends LightMobxLitElement {
             this.analyticsService.trackAction(
               AnalyticsAction.SIDEBAR_TOC_SECTION_CLICK
             );
-            this.documentStateService.collapseManager.expandToSection(
-              sectionId
-            );
 
-            setTimeout(() => {
-              this.scrollContext?.scrollToSection(sectionId);
-            }, 0);
+            this.scrollContext?.scrollToSection(sectionId);
           }}
         ></table-of-contents>
       </div>

@@ -154,9 +154,6 @@ export class LumiDocViz extends LightMobxLitElement {
             footnotes: this.lumiDoc.footnotes,
           })}
           ${this.lumiDoc.sections.map((section) => {
-            const isCollapsed = this.collapseManager?.getCollapseState(
-              section.id
-            );
             return html`<lumi-section
               .section=${section}
               .sectionProperties=${{
@@ -166,10 +163,6 @@ export class LumiDocViz extends LightMobxLitElement {
                 footnotes: this.lumiDoc.footnotes,
                 summaryMaps: this.lumiDocManager.summaryMaps,
                 hoverFocusedSpanId: this.hoveredSpanId,
-                isCollapsed: isCollapsed,
-                onCollapseChange: (isCollapsed: boolean) => {
-                  this.collapseManager!.toggleSection(section.id, isCollapsed);
-                },
                 getImageUrl: this.getImageUrl,
                 onSpanSummaryMouseEnter:
                   this.onSpanSummaryMouseEnter.bind(this),
