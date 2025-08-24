@@ -29,7 +29,11 @@ import { classMap } from "lit/directives/class-map.js";
 import { core } from "../../core/core";
 import { HomeService } from "../../services/home.service";
 import { HistoryService } from "../../services/history.service";
-import { Pages, RouterService } from "../../services/router.service";
+import {
+  ARXIV_DOCS_ROUTE_NAME,
+  Pages,
+  RouterService,
+} from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
 
@@ -361,10 +365,11 @@ export class HomeGallery extends MobxLitElement {
         return nothing;
       }
 
-      const navigate = () => {
-        this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
-          document_id: metadata.paperId,
-        });
+      const openPaper = () => {
+        const baseUrl = document.location.origin;
+        window.open(
+          `${baseUrl}/#/${ARXIV_DOCS_ROUTE_NAME}/${metadata.paperId}`
+        );
       };
 
       const status = this.unsubscribeListeners.has(metadata.paperId)
@@ -377,7 +382,7 @@ export class HomeGallery extends MobxLitElement {
           .image=${ifDefined(image)}
           .status=${status}
           .getImageUrl=${this.getImageUrl()}
-          @click=${navigate}
+          @click=${openPaper}
         >
         </paper-card>
       `;

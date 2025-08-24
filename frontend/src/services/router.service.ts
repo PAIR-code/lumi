@@ -32,6 +32,7 @@ interface ServiceProvider {
   homeService: HomeService;
 }
 
+export const ARXIV_DOCS_ROUTE_NAME = "arxiv";
 const DEFAULT_COLLECTION_ID = "pair_team";
 
 /**
@@ -65,7 +66,7 @@ export class RouterService extends Service {
     },
     {
       name: Pages.ARXIV_DOCUMENT,
-      path: "/arxiv/:document_id",
+      path: `/${ARXIV_DOCS_ROUTE_NAME}/:document_id`,
     },
   ];
 
