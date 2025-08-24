@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { css, CSSResultGroup, html, PropertyValues } from "lit";
+import { CSSResultGroup, html, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { consume } from "@lit/context";
@@ -24,8 +23,6 @@ import { consume } from "@lit/context";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { FocusState } from "../../shared/types";
 import { LumiSection } from "../../shared/lumi_doc";
-
-import { classMap } from "lit/directives/class-map.js";
 
 import { styles } from "./lumi_section.scss";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
