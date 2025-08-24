@@ -18,7 +18,7 @@
 @use "../../sass/typescale";
 
 $mobile-sidebar-collapsed-height: 98px;
-$smart-highlight-menu-width: 120px;
+$smart-highlight-menu-width: 185px;
 
 lumi-reader {
   @include common.full-percentage;
@@ -117,6 +117,5 @@ lumi-reader {
     position: absolute;
     left: calc(50% - $smart-highlight-menu-width / 2);
     bottom: common.$spacing-xl;
-
   }
 }
