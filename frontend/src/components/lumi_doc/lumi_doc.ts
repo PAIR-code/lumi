@@ -34,10 +34,9 @@ import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HighlightSelection } from "../../shared/selection_utils";
 
-import { renderReferences } from "./renderers/references_renderer";
-import { renderFootnotes } from "./renderers/footnotes_renderer";
-
 import "./lumi_abstract";
+import "./lumi_references";
+import "./lumi_footnotes";
 import "./lumi_section";
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
@@ -182,23 +181,25 @@ export class LumiDocViz extends LightMobxLitElement {
             >
             </lumi-section>`;
           })}
-          ${renderReferences({
-            references: this.lumiDoc.references,
-            isCollapsed: this.collapseManager.areReferencesCollapsed,
-            onCollapseChange: (isCollapsed: boolean) => {
+          <lumi-references
+            .references=${this.lumiDoc.references}
+            .isCollapsed=${this.collapseManager.areReferencesCollapsed}
+            .onCollapseChange=${(isCollapsed: boolean) => {
               this.collapseManager.setReferencesCollapsed(isCollapsed);
-            },
-            highlightManager: this.highlightManager,
-            answerHighlightManager: this.answerHighlightManager,
-            onAnswerHighlightClick: this.onAnswerHighlightClick,
-          })}
-          ${renderFootnotes({
-            footnotes: this.lumiDoc.footnotes || [],
-            isCollapsed: this.collapseManager.areFootnotesCollapsed,
-            onCollapseChange: (isCollapsed: boolean) => {
+            }}
+            .highlightManager=${this.highlightManager}
+            .answerHighlightManager=${this.answerHighlightManager}
+            .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+          >
+          </lumi-references>
+          <lumi-footnotes
+            .footnotes=${this.lumiDoc.footnotes || []}
+            .isCollapsed=${this.collapseManager.areFootnotesCollapsed}
+            .onCollapseChange=${(isCollapsed: boolean) => {
               this.collapseManager.setFootnotesCollapsed(isCollapsed);
-            },
-          })}
+            }}
+          >
+          </lumi-footnotes>
         </div>
       </div>
     `;
