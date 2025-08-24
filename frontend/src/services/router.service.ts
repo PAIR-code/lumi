@@ -98,6 +98,9 @@ export class RouterService extends Service {
     const prevDocId = this.activeRoute.params["document_id"];
     const nextDocId = routeChange.route.params["document_id"];
 
+    const newTitle = nextDocId ? `Lumi - ${nextDocId}` : "Lumi";
+    document.title = newTitle;
+
     if (prevDocId !== nextDocId) {
       this.sp.historyService.clearTemporaryAnswers();
       this.sp.documentStateService.clearDocument();
