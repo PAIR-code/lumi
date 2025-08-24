@@ -441,11 +441,16 @@ export class PaperCard extends MobxLitElement {
         ? this.metadata.summary
         : `${this.metadata.summary.slice(0, this.summaryMaxCharacters)}...`;
 
+    const authors = this.metadata.authors.join(", ");
     return html`
       <div class=${classMap(classes)}>
         ${this.renderImage()}
         <div class="preview-content">
           <div class="preview-title">${this.metadata.title}</div>
+          <div class="preview-metadata">
+            <div class="preview-authors" .title=${authors}>${authors}</div>
+            <div class="preview-id">(${this.metadata.paperId})</div>
+          </div>
           ${this.renderStatusChip()}
           <div class="preview-description">${summary}</div>
         </div>
