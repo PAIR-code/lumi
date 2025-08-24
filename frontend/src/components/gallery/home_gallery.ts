@@ -235,7 +235,6 @@ export class HomeGallery extends MobxLitElement {
       return navigator.maxTouchPoints === 0;
     };
 
-
     const close = () => {
       this.homeService.setShowUploadDialog(false);
     };
@@ -366,12 +365,6 @@ export class HomeGallery extends MobxLitElement {
         this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
           document_id: metadata.paperId,
         });
-      };
-
-      // TODO(vivcodes): Add callback or slot to paper-card for deletion
-      const deletePaper = (e: Event) => {
-        e.stopPropagation();
-        this.historyService.deletePaper(metadata.paperId);
       };
 
       const status = this.unsubscribeListeners.has(metadata.paperId)
