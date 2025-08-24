@@ -36,6 +36,10 @@ img {
 }
 
 .highlighted img {
+  outline: common.$spacing-small solid var(--md-sys-color-highlight-blue-high);
+}
+
+.enable-hover:not(.highlighted):hover img {
   outline: common.$spacing-small solid var(--md-sys-color-highlight-blue);
 }
 

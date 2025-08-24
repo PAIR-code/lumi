@@ -83,7 +83,7 @@ export class LumiImageContent extends MobxLitElement {
     for (const image of imageContents) {
       if (image.storagePath) {
         if (!this.imageRefs.has(image.storagePath)) {
-          this.imageRefs.set(image.storagePath, createRef<HTMLElement>())
+          this.imageRefs.set(image.storagePath, createRef<HTMLElement>());
         }
         const imageRef = this.imageRefs.get(image.storagePath)!;
         this.scrollContext?.registerImage(image.storagePath, imageRef);
@@ -143,6 +143,7 @@ export class LumiImageContent extends MobxLitElement {
         .altText=${imageContent.altText}
         .getImageUrl=${this.getImageUrl}
         .onImageClick=${handleImageClick}
+        .enableHover=${true}
         .highlighted=${isHighlighted}
         title="Click to ask question"
       ></lumi-image>
