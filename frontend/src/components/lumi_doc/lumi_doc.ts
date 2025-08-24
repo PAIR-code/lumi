@@ -34,10 +34,10 @@ import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HighlightSelection } from "../../shared/selection_utils";
 
-import { renderAbstract } from "./renderers/abstract_renderer";
 import { renderReferences } from "./renderers/references_renderer";
 import { renderFootnotes } from "./renderers/footnotes_renderer";
 
+import "./lumi_abstract";
 import "./lumi_section";
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
@@ -140,19 +140,20 @@ export class LumiDocViz extends LightMobxLitElement {
               ${this.lumiDoc.metadata?.authors.join(", ")}
             </div>
           </div>
-          ${renderAbstract({
-            abstract: this.lumiDoc.abstract,
-            isCollapsed: this.collapseManager.isAbstractCollapsed,
-            onCollapseChange: (isCollapsed: boolean) => {
+          <lumi-abstract
+            .abstract=${this.lumiDoc.abstract}
+            .isCollapsed=${this.collapseManager.isAbstractCollapsed}
+            .onCollapseChange=${(isCollapsed: boolean) => {
               this.collapseManager.setAbstractCollapsed(isCollapsed);
-            },
-            onFootnoteClick: this.onFootnoteClick.bind(this),
-            onConceptClick: this.onConceptClick.bind(this),
-            excerptSpanId: this.lumiDoc.summaries?.abstractExcerptSpanId,
-            highlightManager: this.highlightManager,
-            answerHighlightManager: this.answerHighlightManager,
-            footnotes: this.lumiDoc.footnotes,
-          })}
+            }}
+            .onFootnoteClick=${this.onFootnoteClick.bind(this)}
+            .onConceptClick=${this.onConceptClick.bind(this)}
+            .excerptSpanId=${this.lumiDoc.summaries?.abstractExcerptSpanId}
+            .highlightManager=${this.highlightManager}
+            .answerHighlightManager=${this.answerHighlightManager}
+            .footnotes=${this.lumiDoc.footnotes}
+          >
+          </lumi-abstract>
           ${this.lumiDoc.sections.map((section) => {
             return html`<lumi-section
               .section=${section}
