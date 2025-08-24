@@ -19,6 +19,7 @@
 .smart-highlight-menu {
   @include common.flex-row-align-center;
   gap: common.$spacing-small;
+  padding: common.$spacing-xs;
 }
 
 pr-button {
