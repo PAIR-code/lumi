@@ -59,7 +59,6 @@ import { ImageInfo, LumiAnswer, LumiAnswerRequest } from "../../shared/api";
 import { styles } from "./lumi_reader.scss";
 import { styles as sectionRendererStyles } from "../lumi_doc/renderers/section_renderer.scss";
 import { styles as contentRendererStyles } from "../lumi_doc/renderers/content_renderer.scss";
-import { styles as contentSummaryRendererStyles } from "../lumi_doc/renderers/content_summary_renderer.scss";
 import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
 import {
@@ -537,7 +536,6 @@ export class LumiReader extends LightMobxLitElement {
         ${styles}
         ${sectionRendererStyles}
         ${contentRendererStyles}
-        ${contentSummaryRendererStyles}
         ${spanRendererStyles}
       </style>
       ${content}

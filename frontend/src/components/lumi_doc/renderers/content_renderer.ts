@@ -31,8 +31,8 @@ import "../../lumi_span/lumi_span";
 
 import "../../lumi_content/lumi_image_content";
 import "../../lumi_content/lumi_html_figure_content";
+import "../content_summary";
 import { HighlightManager } from "../../../shared/highlight_manager";
-import { renderContentSummary } from "./content_summary_renderer";
 import { CollapseManager } from "../../../shared/collapse_manager";
 import { AnswerHighlightManager } from "../../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../../shared/api";
@@ -247,14 +247,23 @@ export function renderContent(props: ContentRendererProperties) {
         >
           ${renderMainContent(props)}
         </div>
-        ${renderContentSummary({
-          ...props,
-          isCollapsed,
-          onCollapseChange: () => {
+        <lumi-content-summary
+          .content=${props.content}
+          .summary=${props.summary}
+          .spanSummaries=${props.spanSummaries}
+          .focusedSpanId=${props.focusedSpanId}
+          .isCollapsed=${isCollapsed}
+          .onCollapseChange=${() => {
             props.collapseManager.toggleMobileSummaryCollapse(props.content.id);
             props.parentComponent.requestUpdate();
-          },
-        })}
+          }}
+          .onSpanSummaryMouseEnter=${props.onSpanSummaryMouseEnter}
+          .onSpanSummaryMouseLeave=${props.onSpanSummaryMouseLeave}
+          .highlightManager=${props.highlightManager}
+          .answerHighlightManager=${props.answerHighlightManager}
+          .onAnswerHighlightClick=${props.onAnswerHighlightClick}
+        >
+        </lumi-content-summary>
       </div>
     </div>
   `;

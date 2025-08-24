@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-@use "../../../sass/common";
+@use "../../sass/common";
+
+lumi-content-summary {
+  grid-column: 2;
+}
 
 .content-summary-renderer-container {
   grid-column: 2;
 
   @include common.flex-column;
+  height: 100%;
 
   justify-content: flex-start;
   flex-shrink: 0;
