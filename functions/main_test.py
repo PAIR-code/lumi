@@ -68,7 +68,7 @@ class TestMainGetPersonalSummary(unittest.TestCase):
         past_papers_dict = [
             convert_keys(asdict(p), "snake_to_camel") for p in mock_past_papers
         ]
-        payload = {"doc": doc_dict, "past_papers": past_papers_dict}
+        payload = {"doc": doc_dict, "past_papers": past_papers_dict, "apiKey": ""}
 
         # Act: Send a POST request with the test client.
         response = self.personal_summary_client.post("/", json={"data": payload})
@@ -83,7 +83,7 @@ class TestMainGetPersonalSummary(unittest.TestCase):
         # Assert: Check that the business logic was called with the correct, deserialized objects.
         # We use ANY for the doc because dacite creates a new instance.
         mock_summary_module.get_personal_summary.assert_called_once_with(
-            ANY, mock_past_papers
+            ANY, mock_past_papers, ""
         )
 
         # Assert: Check the successful response body.
@@ -125,7 +125,7 @@ class TestMainGetLumiResponse(unittest.TestCase):
         # Arrange: Convert dataclasses to camelCase JSON for the payload.
         doc_dict = convert_keys(asdict(mock_doc_obj), "snake_to_camel")
         request_dict = convert_keys(asdict(mock_request_obj), "snake_to_camel")
-        payload = {"doc": doc_dict, "request": request_dict}
+        payload = {"doc": doc_dict, "request": request_dict, "apiKey": ""}
 
         # Act: Send a POST request to the test client.
         response = self.lumi_response_client.post("/", json={"data": payload})
@@ -140,7 +140,7 @@ class TestMainGetLumiResponse(unittest.TestCase):
         # Assert: Check that the business logic was called with the correct, deserialized objects.
         # Using ANY for the doc object as it's deserialized into a new instance.
         mock_answers_module.generate_lumi_answer.assert_called_once_with(
-            ANY, mock_request_obj
+            ANY, mock_request_obj, ""
         )
 
         # Assert: Check the response body.
