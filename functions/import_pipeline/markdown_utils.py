@@ -14,11 +14,26 @@
 # ==============================================================================
 
 import re
-from typing import Tuple
+from typing import List, Tuple
+from dataclasses import dataclass
 from mistletoe import Document, HtmlRenderer
 from shared import import_tags
 from shared.lumi_doc import InnerTagName
 from shared.utils import get_unique_id
+
+
+@dataclass
+class KatexSubstitution:
+    pattern: re.Pattern
+    replacement: str
+
+
+# A list of unsupported KaTeX functions and their replacements.
+KATEX_SUBSTITUTIONS: List[KatexSubstitution] = [
+    KatexSubstitution(pattern=re.compile(re.escape(r"\normalfont")), replacement=r"\\text"),
+    KatexSubstitution(pattern=re.compile(re.escape(r"\mbox")), replacement=r"\\text"),
+    KatexSubstitution(pattern=re.compile(r"\\label\{[^}]*\}"), replacement=""),
+]
 
 
 def parse_lumi_import(model_output_string: str) -> dict:
@@ -81,6 +96,13 @@ def parse_lumi_import(model_output_string: str) -> dict:
     return parsed_data
 
 
+def _apply_katex_substitutions(text: str) -> str:
+    """Applies KaTeX substitutions to a string."""
+    for substitution in KATEX_SUBSTITUTIONS:
+        text = substitution.pattern.sub(substitution.replacement, text)
+    return text
+
+
 def _protect_math_expressions(markdown: str) -> Tuple[str, dict]:
     """
     Replaces LaTeX math expressions with placeholders and returns a map to restore them.
@@ -124,7 +146,8 @@ def markdown_to_html(markdown: str) -> str:
     """
     if not markdown:
         return ""
-
+    
+    markdown = _apply_katex_substitutions(markdown)
     markdown = markdown.replace("\\$", "\\\\$")
     protected_markdown, math_placeholders = _protect_math_expressions(markdown)
     with HtmlRenderer() as renderer:
