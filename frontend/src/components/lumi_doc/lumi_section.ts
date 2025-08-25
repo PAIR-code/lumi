@@ -46,12 +46,12 @@ import { CollapseManager } from "../../shared/collapse_manager";
 import { getAllContents } from "../../shared/lumi_doc_utils";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../shared/api";
-import { renderContent } from "./renderers/content_renderer";
 
 import { styles } from "./lumi_section.scss";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 
 import "../lumi_span/lumi_span";
+import "../lumi_content/lumi_content";
 
 const EMPTY_PLACEHOLDER_TEXT = "section";
 
@@ -193,27 +193,26 @@ export class LumiSectionViz extends LightMobxLitElement {
           }
         });
 
-        return renderContent({
-          parentComponent: this,
-          content,
-          references: this.references,
-          footnotes: this.footnotes,
-          getImageUrl: this.getImageUrl,
-          summary:
-            this.summaryMaps?.contentSummariesMap.get(content.id) ?? null,
-          spanSummaries,
-          focusedSpanId: this.hoverFocusedSpanId,
-          onSpanSummaryMouseEnter: this.onSpanSummaryMouseEnter,
-          onSpanSummaryMouseLeave: this.onSpanSummaryMouseLeave,
-          highlightManager: this.highlightManager,
-          answerHighlightManager: this.answerHighlightManager,
-          collapseManager: this.collapseManager,
-          onAnswerHighlightClick: this.onAnswerHighlightClick,
-          onPaperReferenceClick: this.onPaperReferenceClick,
-          onFootnoteClick: this.onFootnoteClick,
-          onImageClick: this.onImageClick,
-          font: LumiFont.PAPER_TEXT,
-        });
+        return html`<lumi-content
+          .content=${content}
+          .references=${this.references}
+          .footnotes=${this.footnotes}
+          .getImageUrl=${this.getImageUrl}
+          .summary=${this.summaryMaps?.contentSummariesMap.get(content.id) ??
+          null}
+          .spanSummaries=${spanSummaries}
+          .focusedSpanId=${this.hoverFocusedSpanId}
+          .onSpanSummaryMouseEnter=${this.onSpanSummaryMouseEnter}
+          .onSpanSummaryMouseLeave=${this.onSpanSummaryMouseLeave}
+          .highlightManager=${this.highlightManager}
+          .answerHighlightManager=${this.answerHighlightManager}
+          .collapseManager=${this.collapseManager}
+          .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+          .onPaperReferenceClick=${this.onPaperReferenceClick}
+          .onFootnoteClick=${this.onFootnoteClick}
+          .onImageClick=${this.onImageClick}
+          .font=${LumiFont.PAPER_TEXT}
+        ></lumi-content>`;
       })}
       ${this.renderSubsections()}
     </div>`;
