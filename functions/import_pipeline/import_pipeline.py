@@ -113,8 +113,9 @@ def import_arxiv_latex_and_pdf(
             )
 
         if debug:
-            print("🍭 Debug mode - wrote markdown to: markdown_output.md")
-            with open(f"debug/markdown_output_{arxiv_id}v{version}.md", "w+") as file:
+            model_output_path = f"debug/markdown_output_{arxiv_id}v{version}.md"
+            print(f"🍭 Debug mode - wrote markdown to: {model_output_path}")
+            with open(model_output_path, "w+") as file:
                 file.write(model_output)
 
         lumi_doc = convert_model_output_to_lumi_doc(
