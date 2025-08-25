@@ -49,7 +49,7 @@ if __name__ == "__main__":
         help="If true, will log intermediate outputs for debug (e.g. markdown).",
     )
     parser.add_argument(
-        "--existing_model_output_file",
+        "--existing_output",
         help="If passed, will use this output instead of calling the model.",
     )
     parser.add_argument(
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         concepts,
         metadata[0],
         args.debug,
-        args.existing_model_output_file,
+        args.existing_output,
         run_locally=True,
     )
 
