@@ -205,19 +205,37 @@ Hello, world again!"""
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )
 
-        with self.subTest("underscores remain as underscores"):
-            self.maxDiff = None
+        with self.subTest("preserves inline math with underscores"):
             markdown_input = "This is $\mathcal{a}_{b}$"
             expected_html = "<p>This is $\mathcal{a}_{b}$</p>\n"
             self.assertEqual(
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )
 
-        with self.subTest("slashes preceding dollar signs aren't escaped"):
-            self.maxDiff = None
+        with self.subTest("preserves block display math"):
+            markdown_input = "This is a formula:\n\n$$E = mc^2$$\n\nMore text."
+            expected_html = "<p>This is a formula:</p>\n<p>$$E = mc^2$$</p>\n<p>More text.</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("handles mixed inline and display math"):
+            markdown_input = "Inline $a_{b}$ and display $$E=mc^2$$ math."
+            expected_html = "<p>Inline $a_{b}$ and display $$E=mc^2$$ math.</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("ignores escaped dollar signs"):
             markdown_input = r"This is not an equation: \$40"
-            expected_html = r"""<p>This is not an equation: \$40</p>
-"""
+            expected_html = "<p>This is not an equation: \$40</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("handles markdown within math"):
+            markdown_input = "This is a test with an asterisk $a *b*$ inside."
+            expected_html = "<p>This is a test with an asterisk $a *b*$ inside.</p>\n"
             self.assertEqual(
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )

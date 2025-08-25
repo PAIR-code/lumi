@@ -210,6 +210,11 @@ FIGURE_PATTERN = re.compile(
     re.VERBOSE | re.DOTALL,
 )
 
+MATH_DISPLAY_PATTERN = re.compile(
+    r"(?<!\\)\$(?<!\\)\$(?P<content>.*?)(?<!\\)\$(?<!\\)\$", re.DOTALL
+)
+
+MATH_PATTERN = re.compile(r"(?<!\\)\$(?P<content>.*?)(?<!\\)\$", re.DOTALL)
 
 TAG_DEFINITIONS = [
     {
@@ -271,14 +276,12 @@ TAG_DEFINITIONS = [
     },
     {
         "name": InnerTagName.MATH_DISPLAY,
-        "pattern": re.compile(
-            r"(?<!\\)\$(?<!\\)\$(?P<content>.*?)(?<!\\)\$(?<!\\)\$", re.DOTALL
-        ),
+        "pattern": MATH_DISPLAY_PATTERN,
         "metadata_extractor": lambda m: {},
     },
     {
         "name": InnerTagName.MATH,
-        "pattern": re.compile(r"(?<!\\)\$(?P<content>.*?)(?<!\\)\$", re.DOTALL),
+        "pattern": MATH_PATTERN,
         "metadata_extractor": lambda m: {},
     },
 ]

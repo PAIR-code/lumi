@@ -14,8 +14,11 @@
 # ==============================================================================
 
 import re
+from typing import Tuple
 from mistletoe import Document, HtmlRenderer
 from shared import import_tags
+from shared.lumi_doc import InnerTagName
+from shared.utils import get_unique_id
 
 
 def parse_lumi_import(model_output_string: str) -> dict:
@@ -78,9 +81,40 @@ def parse_lumi_import(model_output_string: str) -> dict:
     return parsed_data
 
 
+def _protect_math_expressions(markdown: str) -> Tuple[str, dict]:
+    """
+    Replaces LaTeX math expressions with placeholders and returns a map to restore them.
+
+    Args:
+        markdown: The input markdown string.
+
+    Returns:
+        A tuple containing:
+        - The markdown string with math expressions replaced by placeholders.
+        - A dictionary mapping placeholders to their original math expressions.
+    """
+    math_placeholders = {}
+
+    def replace_display(match):
+        key = f"L_MATH_DISPLAY_{get_unique_id()}"
+        math_placeholders[key] = match.group(0)
+        return key
+
+    def replace_inline(match):
+        key = f"L_MATH_INLINE_{get_unique_id()}"
+        math_placeholders[key] = match.group(0)
+        return key
+
+    # Process display math first to avoid capturing parts of it as inline math
+    markdown = import_tags.MATH_DISPLAY_PATTERN.sub(replace_display, markdown)
+    markdown = import_tags.MATH_PATTERN.sub(replace_inline, markdown)
+
+    return markdown, math_placeholders
+
+
 def markdown_to_html(markdown: str) -> str:
     """
-    Converts markdown text to an html string.
+    Converts markdown text to an html string, protecting LaTeX math expressions.
 
     Args:
         markdown (str): The markdown to convert.
@@ -88,12 +122,20 @@ def markdown_to_html(markdown: str) -> str:
     Returns:
         str: The converted html string.
     """
-    markdown = markdown.replace("_", "\\_")
+    if not markdown:
+        return ""
+
     markdown = markdown.replace("\\$", "\\\\$")
+    protected_markdown, math_placeholders = _protect_math_expressions(markdown)
     with HtmlRenderer() as renderer:
-        doc = Document(markdown)
+        doc = Document(protected_markdown)
         html = renderer.render(doc)
-        return html
+
+    # Restore the original math expressions
+    for placeholder, original_math in math_placeholders.items():
+        html = html.replace(placeholder, original_math)
+
+    return html
 
 
 def postprocess_content_text(text: str, strip_double_brackets=False) -> str:
