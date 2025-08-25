@@ -28,7 +28,6 @@ import { DocumentStateService } from "../../services/document_state.service";
 import { HistoryService } from "../../services/history.service";
 import { LumiAnswer } from "../../shared/api";
 
-import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 import { LumiContent } from "../../shared/lumi_doc";
 import { classMap } from "lit/directives/class-map.js";
 
@@ -39,7 +38,7 @@ import "../lumi_content/lumi_content";
  */
 @customElement("answer-highlight-tooltip")
 export class AnswerHighlightTooltip extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles, spanRendererStyles];
+  static override styles: CSSResultGroup = [styles];
 
   @property({ type: Object }) props!: AnswerHighlightTooltipProps;
   @state() private showAll = false;

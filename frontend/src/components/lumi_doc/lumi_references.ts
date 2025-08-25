@@ -51,13 +51,10 @@ export class LumiReferences extends LightMobxLitElement {
       id=${reference.id}
       class=${lumiSpanClasses}
       .span=${reference.span}
-      .spanProperties=${{
-        span: reference.span,
-        highlightManager: this.highlightManager,
-        answerHighlightManager: this.answerHighlightManager,
-        onAnswerHighlightClick: this.onAnswerHighlightClick,
-        font: LumiFont.PAPER_TEXT,
-      }}
+      .highlightManager=${this.highlightManager}
+      .answerHighlightManager=${this.answerHighlightManager}
+      .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+      .font=${LumiFont.PAPER_TEXT}
     ></lumi-span>`;
   }
 

@@ -74,10 +74,7 @@ export class LumiHtmlFigureContent extends MobxLitElement {
     // Assumes a lumi-span component exists to render the caption.
     return html`
       <figcaption>
-        <lumi-span
-          .span=${this.content.caption}
-          .spanProperties=${{ span: this.content.caption }}
-        ></lumi-span>
+        <lumi-span .span=${this.content.caption}></lumi-span>
       </figcaption>
     `;
   }

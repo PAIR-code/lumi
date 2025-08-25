@@ -123,12 +123,9 @@ export class AnswerItem extends LightMobxLitElement {
                 <span class="number">${i + 1}.</span>
                 <lumi-span
                   .span=${copiedSpan}
-                  .spanProperties=${{
-                    span: copiedSpan,
-                    references: this.lumiDocManager?.lumiDoc.references,
-                    highlightManager: this.highlightManager,
-                    answerHighlightManager: this.answerHighlightManager,
-                  }}
+                  .references=${this.lumiDocManager?.lumiDoc.references}
+                  .highlightManager=${this.highlightManager}
+                  .answerHighlightManager=${this.answerHighlightManager}
                 ></lumi-span>
               </div>
             `;

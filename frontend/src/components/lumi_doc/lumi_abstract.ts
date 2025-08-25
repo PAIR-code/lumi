@@ -91,17 +91,14 @@ export class LumiAbstractViz extends LightMobxLitElement {
 
                 return html`<lumi-span
                   .span=${span}
-                  .spanProperties=${{
-                    span,
-                    additionalHighlights: highlights,
-                    answerHighlightManager: this.answerHighlightManager,
-                    onAnswerHighlightClick: this.onAnswerHighlightClick,
-                    highlightManager: this.highlightManager,
-                    onConceptClick: this.onConceptClick,
-                    footnotes: this.footnotes,
-                    onFootnoteClick: this.onFootnoteClick,
-                    font: LumiFont.PAPER_TEXT,
-                  }}
+                  .additionalHighlights=${highlights}
+                  .answerHighlightManager=${this.answerHighlightManager}
+                  .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+                  .highlightManager=${this.highlightManager}
+                  .onConceptClick=${this.onConceptClick}
+                  .footnotes=${this.footnotes}
+                  .onFootnoteClick=${this.onFootnoteClick}
+                  .font=${LumiFont.PAPER_TEXT}
                 ></lumi-span>`;
               })}
             </div>`;

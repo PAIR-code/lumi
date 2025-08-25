@@ -4,7 +4,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+_ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,36 +17,43 @@
 
 import { fn } from "@storybook/test";
 import type { Args, Meta, StoryObj } from "@storybook/web-components";
-import { CSSResultGroup, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { FocusState } from "../shared/types";
 import { InnerTagName, LumiSpan } from "../shared/lumi_doc";
-import { renderLumiSpan } from "../components/lumi_span/lumi_span_renderer";
-import { styles as spanRendererStyles } from "../components/lumi_span/lumi_span_renderer.scss";
 
 import "../components/lumi_span/lumi_span";
 
 // Use a mock parent to import the span renderer styles.
 @customElement("mock-span-parent")
 class MockSpanParent extends LitElement {
-  static override styles: CSSResultGroup = [spanRendererStyles];
-  @property() span!: LumiSpan;
   @property() args!: Args;
 
   override render() {
+    const span: LumiSpan = {
+      id: "span_id",
+      text: this.args.text,
+      innerTags: this.args.innerTags,
+    };
+
     return html`<lumi-span
-      .span=${this.span}
+      .span=${span}
       .onReferenceClick=${this.args.onReferenceClick}
-      .label=${this.args.label}
       .focusState=${this.args.focusState}
       .classMap=${this.args.classMap}
-      >${renderLumiSpan({
-        span: this.span,
-        onReferenceClicked: this.args.onReferenceClick,
-        additionalHighlights: this.args.highlights,
-      })}</lumi-span
-    >`;
+      .references=${[
+        {
+          id: "reference_1_id",
+          span: {
+            id: "span_1",
+            text: "text",
+            innerTags: [],
+          },
+        },
+      ]}
+      .additionalHighlights=${this.args.highlights}
+    ></lumi-span>`;
   }
 }
 
@@ -55,15 +62,7 @@ const meta = {
   title: "Components/LumiSpan",
   tags: ["autodocs"],
   render: (args) => {
-    const span: LumiSpan = {
-      id: "span_id",
-      text: args.text,
-      innerTags: args.innerTags,
-    };
-    return html`<mock-span-parent
-      .args=${args}
-      .span=${span}
-    ></mock-span-parent>`;
+    return html`<mock-span-parent .args=${args}></mock-span-parent>`;
   },
   args: { onReferenceClick: fn() },
   argTypes: {
@@ -71,7 +70,6 @@ const meta = {
     innerTags: {},
     highlights: {},
     classMap: { control: "object" },
-    label: { control: "text" },
     focusState: { control: "radio", options: Object.values(FocusState) },
   },
 } satisfies Meta;
@@ -83,7 +81,6 @@ type Story = StoryObj;
 export const Default: Story = {
   args: {
     text: "test span",
-    label: "label",
     innerTags: [],
     focusState: FocusState.DEFAULT,
   },
@@ -92,7 +89,6 @@ export const Default: Story = {
 export const Focused: Story = {
   args: {
     text: "This span is focused.",
-    label: "focused",
     innerTags: [],
     focusState: FocusState.FOCUSED,
   },
@@ -101,7 +97,6 @@ export const Focused: Story = {
 export const Unfocused: Story = {
   args: {
     text: "This span is unfocused.",
-    label: "unfocused",
     innerTags: [],
     focusState: FocusState.UNFOCUSED,
   },
@@ -110,7 +105,6 @@ export const Unfocused: Story = {
 export const StyledWithClass: Story = {
   args: {
     text: "This span is styled with a class. (Can be seen in inspector)",
-    label: "styled",
     innerTags: [],
     classMap: { "styled-with-class": true },
   },
@@ -131,7 +125,6 @@ export const Latex: Story = {
         metadata: {},
       },
     ],
-    label: "label",
   },
 };
 
@@ -141,11 +134,10 @@ export const LatexSqrt: Story = {
     innerTags: [
       {
         tagName: InnerTagName.MATH,
-        position: { startIndex: 16, endIndex: 23 },
+        position: { startIndex: 16, endIndex: 24 },
         metadata: {},
       },
     ],
-    label: "label",
   },
 };
 
@@ -169,23 +161,16 @@ export const BoldAndItalic: Story = {
 
 export const Reference: Story = {
   args: {
-    text: "This is a sentence. [1, 12]",
+    text: "This is a sentence. ",
     onReferenceClick: (referenceId: string) => {
       console.log(referenceId);
     },
     innerTags: [
       {
         tagName: InnerTagName.REFERENCE,
-        position: { startIndex: 21, endIndex: 22 },
+        position: { startIndex: 20, endIndex: 20 },
         metadata: {
           id: "reference_1_id",
-        },
-      },
-      {
-        tagName: InnerTagName.REFERENCE,
-        position: { startIndex: 24, endIndex: 26 },
-        metadata: {
-          id: "reference_2_id",
         },
       },
     ],
@@ -198,7 +183,7 @@ export const Link: Story = {
     innerTags: [
       {
         tagName: InnerTagName.A,
-        position: { startIndex: 10, endIndex: 13 },
+        position: { startIndex: 10, endIndex: 14 },
         metadata: {
           href: "https://www.google.com",
         },

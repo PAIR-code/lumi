@@ -37,7 +37,7 @@ export class LumiFootnotes extends LightMobxLitElement {
       <span class="footnote-index">${index + 1}.</span>
       <lumi-span
         .span=${footnote.span}
-        .spanProperties=${{ span: footnote.span, font: LumiFont.PAPER_TEXT }}
+        .font=${LumiFont.PAPER_TEXT}
       ></lumi-span>
     </div>`;
   }

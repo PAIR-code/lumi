@@ -117,13 +117,10 @@ export class LumiContentSummary extends LightMobxLitElement {
             .classMap=${{ "span-summary-text": true }}
             .span=${summary.summary}
             .focusState=${focusState}
-            .spanProperties=${{
-              span: summary.summary,
-              highlightManager: this.highlightManager,
-              answerHighlightManager: this.answerHighlightManager,
-              onAnswerHighlightClick: this.onAnswerHighlightClick,
-              font: LumiFont.SPAN_SUMMARY_TEXT,
-            }}
+            .highlightManager=${this.highlightManager}
+            .answerHighlightManager=${this.answerHighlightManager}
+            .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+            .font=${LumiFont.SPAN_SUMMARY_TEXT}
           ></lumi-span>
         </div>`;
       })}
@@ -145,12 +142,9 @@ export class LumiContentSummary extends LightMobxLitElement {
                   "summary-span": true,
                 }}
                 .span=${this.summary.summary}
-                .spanProperties=${{
-                  span: this.summary.summary,
-                  highlightManager: this.highlightManager,
-                  answerHighlightManager: this.answerHighlightManager,
-                  onAnswerHighlightClick: this.onAnswerHighlightClick,
-                }}
+                .highlightManager=${this.highlightManager}
+                .answerHighlightManager=${this.answerHighlightManager}
+                .onAnswerHighlightClick=${this.onAnswerHighlightClick}
               ></lumi-span>`
             : nothing}
         </div>

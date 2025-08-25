@@ -93,26 +93,21 @@ export class LumiContentViz extends LightMobxLitElement {
 
   private renderSpans(spans: LumiSpan[], monospace = false): TemplateResult[] {
     return spans.map((span) => {
-      const spanProperties = {
-        span,
-        monospace,
-        references: this.references,
-        footnotes: this.footnotes,
-        referencedSpans: this.referencedSpans,
-        highlightManager: this.highlightManager,
-        answerHighlightManager: this.answerHighlightManager,
-        onSpanReferenceClicked: this.onSpanReferenceClicked,
-        onPaperReferenceClick: this.onPaperReferenceClick,
-        onFootnoteClick: this.onFootnoteClick,
-        onAnswerHighlightClick: this.onAnswerHighlightClick,
-        font: this.font,
-      };
-
       const { focusState } = this.getFocusState(this.focusedSpanId, [span.id]);
       return html`<lumi-span
         .span=${span}
         .focusState=${focusState}
-        .spanProperties=${spanProperties}
+        .monospace=${monospace}
+        .references=${this.references}
+        .footnotes=${this.footnotes}
+        .referencedSpans=${this.referencedSpans}
+        .highlightManager=${this.highlightManager}
+        .answerHighlightManager=${this.answerHighlightManager}
+        .onSpanReferenceClicked=${this.onSpanReferenceClicked}
+        .onPaperReferenceClick=${this.onPaperReferenceClick}
+        .onFootnoteClick=${this.onFootnoteClick}
+        .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+        .font=${this.font}
       ></lumi-span>`;
     });
   }

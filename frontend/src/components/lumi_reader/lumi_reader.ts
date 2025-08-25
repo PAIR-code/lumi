@@ -57,7 +57,6 @@ import {
 import { ImageInfo, LumiAnswer, LumiAnswerRequest } from "../../shared/api";
 
 import { styles } from "./lumi_reader.scss";
-import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
 import {
   getSelectionInfo,
@@ -532,7 +531,6 @@ export class LumiReader extends LightMobxLitElement {
     return html`
       <style>
         ${styles}
-        ${spanRendererStyles}
       </style>
       ${content}
     `;

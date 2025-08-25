@@ -79,11 +79,7 @@ export class TableOfContents extends MobxLitElement {
     if (!span) return nothing;
 
     return html`
-      <lumi-span
-        class="item-summary"
-        .span=${span}
-        .spanProperties=${{ span }}
-      ></lumi-span>
+      <lumi-span class="item-summary" .span=${span}></lumi-span>
     `;
   }
 
