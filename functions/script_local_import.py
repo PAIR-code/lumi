@@ -74,7 +74,7 @@ if __name__ == "__main__":
     print(f"  > extract_concepts took: {time.time() - last_time:.2f}s")
     last_time = time.time()
 
-    lumi_doc = import_pipeline.import_arxiv_latex_and_pdf(
+    lumi_doc, _ = import_pipeline.import_arxiv_latex_and_pdf(
         arxiv_id,
         version,
         concepts,
