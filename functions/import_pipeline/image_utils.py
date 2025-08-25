@@ -15,7 +15,7 @@
 
 
 import os
-import io
+import re
 import shutil
 import warnings
 import tempfile
@@ -56,6 +56,41 @@ def download_image_from_gcs(storage_path: str) -> bytes:
         warnings.warn(f"Could not download image from GCS at {storage_path}: {e}")
         raise
 
+def check_target_in_path(full_path: str, target: str) -> bool:
+    """
+    Checks if the target path is at the end of the full path.
+
+    The match is successful if the target is preceded by a '/' or is at the
+    beginning of the string. This prevents partial matches on filenames.
+    For example, `a/b/my_fig.png` will not match `fig.png`.
+
+    If the target has no file extension, it will match a path that has an
+    extension. For example, a target of `b/c` will match `/a/b/c.png`.
+
+    Args:
+        full_path (str): The full path to the file.
+        target (str): The target path suffix to check for.
+
+    Returns:
+        bool: True if the target path is found at the end of the full path.
+    """
+    # Normalize paths to handle different OS separators
+    full_path = full_path.replace('\\', '/')
+    target = target.replace('\\', '/')
+
+    escaped_target = re.escape(target)
+
+    # If the target doesn't have a file extension, allow the full_path to have one.
+    if '.' not in os.path.basename(target):
+        # Regex: 
+        # - (^|/): Matches either the start of the string or a literal '/'
+        # - {escaped_target}: The path we're looking for
+        # - (\.[^/.]+)?$: Optionally matches a file extension at the end of the string.
+        pattern = f"(^|/){escaped_target}(\\.[^/.]+)?$"
+    else:
+        pattern = f"(^|/){escaped_target}$"
+
+    return re.search(pattern, full_path) is not None
 
 def extract_images_from_latex_source(source_dir: str, image_contents: List[ImageContent], run_locally: bool = False) -> List[ImageMetadata]:
     """
@@ -94,9 +129,7 @@ def extract_images_from_latex_source(source_dir: str, image_contents: List[Image
             for root, _, files in os.walk(source_dir):
                 for file in files:
                     full_path = os.path.join(root, file)
-                    # Check if the full path ends with the specified latex_path
-                    # This correctly handles cases like `images/fig1.png`
-                    if full_path.endswith(latex_path):
+                    if check_target_in_path(full_path=full_path, target=latex_path):
                         found_paths.append(full_path)
             
             if len(found_paths) == 0:
