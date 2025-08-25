@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "@material/web/dialog/dialog";
+import "../../../pair-components/dialog";
 import "../../../pair-components/button";
 import "../../history_view/history_view";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { MdDialog } from "@material/web/dialog/dialog";
 import { CSSResultGroup, html } from "lit";
 import { customElement, query } from "lit/decorators.js";
 
@@ -40,8 +39,6 @@ export class HistoryDialog extends MobxLitElement {
 
   private readonly dialogService = core.getService(DialogService);
 
-  @query("md-dialog") private readonly dialog!: MdDialog;
-
   private handleClose() {
     this.dialogService.hide();
   }
@@ -52,19 +49,22 @@ export class HistoryDialog extends MobxLitElement {
 
   override render() {
     return html`
-      <md-dialog @close=${this.handleClose} .open=${this.shouldShowDialog()}>
-        <div slot="headline">History</div>
-        <div slot="content">
+      <pr-dialog
+        .onClose=${this.handleClose}
+        .showDialog=${this.shouldShowDialog()}
+      >
+        <div slot="title">History</div>
+        <div>
           <p class="dialog-explanation">
             This is the list of papers and queries included as context for the
             model:
           </p>
           <history-view></history-view>
         </div>
-        <div slot="actions">
-          <pr-button @click=${() => this.dialog.close()}> Close </pr-button>
+        <div slot="actions-right">
+          <pr-button @click=${() => this.handleClose()}> Close </pr-button>
         </div>
-      </md-dialog>
+      </pr-dialog>
     `;
   }
 }
