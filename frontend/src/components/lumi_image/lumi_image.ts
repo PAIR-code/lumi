@@ -47,8 +47,10 @@ export class LumiImage extends MobxLitElement {
     makeObservable(this);
   }
 
-  override firstUpdated(changedProperties: Map<string, unknown>) {
-    this.fetchImageUrl();
+  override updated(changedProperties: Map<string, unknown>) {
+    if (changedProperties.has("storagePath")) {
+      this.fetchImageUrl();
+    }
   }
 
   private async fetchImageUrl() {
