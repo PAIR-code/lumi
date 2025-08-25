@@ -156,28 +156,26 @@ export class LumiDocViz extends LightMobxLitElement {
           ${this.lumiDoc.sections.map((section) => {
             return html`<lumi-section
               .section=${section}
-              .sectionProperties=${{
-                parentComponent: this,
-                section,
-                references: this.lumiDoc.references,
-                footnotes: this.lumiDoc.footnotes,
-                summaryMaps: this.lumiDocManager.summaryMaps,
-                hoverFocusedSpanId: this.hoveredSpanId,
-                getImageUrl: this.getImageUrl,
-                onSpanSummaryMouseEnter:
-                  this.onSpanSummaryMouseEnter.bind(this),
-                onSpanSummaryMouseLeave:
-                  this.onSpanSummaryMouseLeave.bind(this),
-                highlightManager: this.highlightManager,
-                answerHighlightManager: this.answerHighlightManager,
-                collapseManager: this.collapseManager,
-                onFocusOnSpan: this.onFocusOnSpan,
-                onPaperReferenceClick: this.onPaperReferenceClick,
-                onFootnoteClick: this.onFootnoteClick,
-                onImageClick: this.onImageClick,
-                onAnswerHighlightClick: this.onAnswerHighlightClick,
-                isSubsection: false,
-              }}
+              .references=${this.lumiDoc.references}
+              .footnotes=${this.lumiDoc.footnotes}
+              .summaryMaps=${this.lumiDocManager.summaryMaps}
+              .hoverFocusedSpanId=${this.hoveredSpanId}
+              .getImageUrl=${this.getImageUrl}
+              .onSpanSummaryMouseEnter=${this.onSpanSummaryMouseEnter.bind(
+                this
+              )}
+              .onSpanSummaryMouseLeave=${this.onSpanSummaryMouseLeave.bind(
+                this
+              )}
+              .highlightManager=${this.highlightManager}
+              .answerHighlightManager=${this.answerHighlightManager}
+              .collapseManager=${this.collapseManager}
+              .onFocusOnSpan=${this.onFocusOnSpan}
+              .onPaperReferenceClick=${this.onPaperReferenceClick}
+              .onFootnoteClick=${this.onFootnoteClick}
+              .onImageClick=${this.onImageClick}
+              .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+              .isSubsection=${false}
             >
             </lumi-section>`;
           })}

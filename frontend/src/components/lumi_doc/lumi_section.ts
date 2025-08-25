@@ -15,31 +15,48 @@
  * limitations under the License.
  */
 
-import { CSSResultGroup, html, PropertyValues } from "lit";
+import {
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { consume } from "@lit/context";
+import { classMap } from "lit/directives/class-map.js";
 
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
-import { FocusState } from "../../shared/types";
-import { LumiSection } from "../../shared/lumi_doc";
+import { LumiFont, FocusState } from "../../shared/types";
+import {
+  ListContent,
+  LumiContent,
+  LumiFootnote,
+  LumiReference,
+  LumiSection,
+  LumiSpan,
+  LumiSummary,
+} from "../../shared/lumi_doc";
+import { LumiSummaryMaps } from "../../shared/lumi_summary_maps";
+import { HighlightManager } from "../../shared/highlight_manager";
+import { HighlightSelection } from "../../shared/selection_utils";
+import { CollapseManager } from "../../shared/collapse_manager";
+import { getAllContents } from "../../shared/lumi_doc_utils";
+import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
+import { LumiAnswer } from "../../shared/api";
+import { renderContent } from "./renderers/content_renderer";
 
 import { styles } from "./lumi_section.scss";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import {
-  renderSection,
-  SectionRendererProperties,
-} from "./renderers/section_renderer";
+
+import "../lumi_span/lumi_span";
+
+const EMPTY_PLACEHOLDER_TEXT = "section";
 
 /**
  * Displays a lumi section
- *
- * This component is a simple wrapper that applies some styles and provides a
- * <slot> for its content. The actual rendering of the section's text and inner
- * tags is handled by the `renderLumiSection` function in `lumi_section_renderer.ts`.
- * This is done to keep the rendered text in the Light DOM of the parent
- * component (`lumi-doc`), which is necessary for `window.getSelection()` to
- * work correctly across component boundaries.
  */
 @customElement("lumi-section")
 export class LumiSectionViz extends LightMobxLitElement {
@@ -51,7 +68,38 @@ export class LumiSectionViz extends LightMobxLitElement {
   private sectionRef: Ref<HTMLElement> = createRef();
 
   @property({ type: Object }) section!: LumiSection;
-  @property({ type: Object }) sectionProperties!: SectionRendererProperties;
+  @property({ type: Array }) references: LumiReference[] = [];
+  @property({ type: Array }) footnotes?: LumiFootnote[];
+  @property({ type: Object }) summaryMaps: LumiSummaryMaps | null = null;
+  @property({ type: String }) hoverFocusedSpanId: string | null = null;
+  @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
+  @property({ type: Object }) onSpanSummaryMouseEnter: (
+    spanIds: string[]
+  ) => void = () => {};
+  @property({ type: Object }) onSpanSummaryMouseLeave: () => void = () => {};
+  @property({ type: Object }) highlightManager!: HighlightManager;
+  @property({ type: Object }) answerHighlightManager!: AnswerHighlightManager;
+  @property({ type: Object }) collapseManager!: CollapseManager;
+  @property({ type: Object }) onFocusOnSpan: (
+    highlightedSpans: HighlightSelection[]
+  ) => void = () => {};
+  @property({ type: Object }) onPaperReferenceClick: (
+    reference: LumiReference,
+    target: HTMLElement
+  ) => void = () => {};
+  @property({ type: Object }) onFootnoteClick: (
+    footnote: LumiFootnote,
+    target: HTMLElement
+  ) => void = () => {};
+  @property({ type: Object }) onImageClick?: (
+    info: { storagePath: string; caption?: string },
+    target: HTMLElement
+  ) => void;
+  @property({ type: Object }) onAnswerHighlightClick?: (
+    answer: LumiAnswer,
+    target: HTMLElement
+  ) => void;
+  @property({ type: Boolean }) isSubsection = false;
 
   override firstUpdated(_changedProperties: PropertyValues): void {
     this.id = this.section.id;
@@ -74,7 +122,143 @@ export class LumiSectionViz extends LightMobxLitElement {
     super.disconnectedCallback();
   }
 
+  private renderHeading(): TemplateResult | typeof nothing {
+    const { section } = this;
+    if (!section.heading) {
+      return nothing;
+    }
+
+    const headingLevel = section.heading.headingLevel;
+    let headingText = section.heading.text;
+
+    const isEmpty = headingText.length === 0;
+
+    const classesObject: { [key: string]: boolean } = {
+      "heading-text": true,
+      "empty-heading-placeholder": isEmpty,
+    };
+
+    if (isEmpty) {
+      headingText = EMPTY_PLACEHOLDER_TEXT;
+    }
+
+    const onClickStopPropagation = (e: MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+    };
+
+    const headingContent = html`<span class=${classMap(classesObject)}
+      >${headingText}</span
+    >`;
+
+    if (headingLevel === 1) {
+      return html`<h1 @click=${onClickStopPropagation}>${headingContent}</h1>`;
+    } else if (headingLevel === 2) {
+      return html`<h2 @click=${onClickStopPropagation}>${headingContent}</h2>`;
+    } else if (headingLevel === 3) {
+      return html`<h3 @click=${onClickStopPropagation}>${headingContent}</h3>`;
+    } else if (headingLevel === 4) {
+      return html`<h4 @click=${onClickStopPropagation}>${headingContent}</h4>`;
+    } else if (headingLevel === 5) {
+      return html`<h5 @click=${onClickStopPropagation}>${headingContent}</h5>`;
+    } else if (headingLevel === 6) {
+      return html`<h6 @click=${onClickStopPropagation}>${headingContent}</h6>`;
+    }
+
+    return nothing;
+  }
+
+  private getSpansFromListContent(content: ListContent) {
+    let spans: LumiSpan[] = [];
+    content.listItems.forEach((item) => {
+      spans.push(...item.spans);
+    });
+    return spans;
+  }
+
+  private renderContents(): TemplateResult | typeof nothing {
+    return html`<div class="content-viz">
+      ${this.section.contents.map((content) => {
+        const spans = content.textContent
+          ? content.textContent.spans
+          : content.listContent
+          ? this.getSpansFromListContent(content.listContent!)
+          : [];
+
+        const spanSummaries = new Map<string, LumiSummary>();
+        spans.forEach((span: LumiSpan) => {
+          const summary = this.summaryMaps?.spanSummariesMap.get(span.id);
+          if (summary) {
+            spanSummaries.set(span.id, summary);
+          }
+        });
+
+        return renderContent({
+          parentComponent: this,
+          content,
+          references: this.references,
+          footnotes: this.footnotes,
+          getImageUrl: this.getImageUrl,
+          summary:
+            this.summaryMaps?.contentSummariesMap.get(content.id) ?? null,
+          spanSummaries,
+          focusedSpanId: this.hoverFocusedSpanId,
+          onSpanSummaryMouseEnter: this.onSpanSummaryMouseEnter,
+          onSpanSummaryMouseLeave: this.onSpanSummaryMouseLeave,
+          highlightManager: this.highlightManager,
+          answerHighlightManager: this.answerHighlightManager,
+          collapseManager: this.collapseManager,
+          onAnswerHighlightClick: this.onAnswerHighlightClick,
+          onPaperReferenceClick: this.onPaperReferenceClick,
+          onFootnoteClick: this.onFootnoteClick,
+          onImageClick: this.onImageClick,
+          font: LumiFont.PAPER_TEXT,
+        });
+      })}
+      ${this.renderSubsections()}
+    </div>`;
+  }
+
+  private renderSubsections(): TemplateResult | typeof nothing {
+    const { section } = this;
+    if (!section.subSections) return nothing;
+
+    return html`${section.subSections.map(
+      (subSection) =>
+        html`<lumi-section
+          class="subsection"
+          .section=${subSection}
+          .references=${this.references}
+          .footnotes=${this.footnotes}
+          .summaryMaps=${this.summaryMaps}
+          .hoverFocusedSpanId=${this.hoverFocusedSpanId}
+          .getImageUrl=${this.getImageUrl}
+          .onSpanSummaryMouseEnter=${this.onSpanSummaryMouseEnter}
+          .onSpanSummaryMouseLeave=${this.onSpanSummaryMouseLeave}
+          .highlightManager=${this.highlightManager}
+          .answerHighlightManager=${this.answerHighlightManager}
+          .collapseManager=${this.collapseManager}
+          .onFocusOnSpan=${this.onFocusOnSpan}
+          .onPaperReferenceClick=${this.onPaperReferenceClick}
+          .onFootnoteClick=${this.onFootnoteClick}
+          .onImageClick=${this.onImageClick}
+          .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+          .isSubsection=${true}
+        >
+        </lumi-section>`
+    )}`;
+  }
+
   override render() {
+    if (!this.section.contents.length && !this.section.heading?.text) {
+      return nothing;
+    }
+
+    const sectionContainerClasses = {
+      ["section-container"]: true,
+      ["is-subsection"]: this.isSubsection,
+    };
+
     return html`
       <style>
         ${styles}
@@ -84,7 +268,14 @@ export class LumiSectionViz extends LightMobxLitElement {
         id=${this.section.id}
         class="section-ref-container"
       >
-        ${renderSection(this.sectionProperties)}
+        <div class="section-renderer-container">
+          <div class=${classMap(sectionContainerClasses)}>
+            <div class="heading-grid-container">
+              <div class="heading-row">${this.renderHeading()}</div>
+            </div>
+            ${this.renderContents()}
+          </div>
+        </div>
       </div>
     `;
   }
