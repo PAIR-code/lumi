@@ -32,3 +32,8 @@
 
   min-width: 200px;
 }
+
+.actions {
+  @include common.flex-row;
+  gap: common.$spacing-medium;
+}

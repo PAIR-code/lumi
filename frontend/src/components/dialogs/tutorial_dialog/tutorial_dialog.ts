@@ -20,7 +20,7 @@ import "../../../pair-components/button";
 import "../../lumi_image/lumi_image";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
+import { CSSResultGroup, html, nothing } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import { core } from "../../../core/core";
@@ -34,6 +34,7 @@ import {
   TUTORIAL_QUESTION_IMAGE_PATH,
 } from "../../../shared/constants";
 import { FirebaseService } from "../../../services/firebase.service";
+import { SettingsService } from "../../../services/settings.service";
 
 /**
  * The tutorial dialog component.
@@ -44,6 +45,7 @@ export class TutorialDialog extends MobxLitElement {
 
   private readonly dialogService = core.getService(DialogService);
   private readonly firebaseService = core.getService(FirebaseService);
+  private readonly settingsService = core.getService(SettingsService);
 
   private handleClose() {
     if (this.dialogService) {
@@ -59,10 +61,33 @@ export class TutorialDialog extends MobxLitElement {
     return this.firebaseService.getDownloadUrl(path);
   }
 
+  private renderHideForeverButton() {
+    if (!this.dialogService.dialogProps) return nothing;
+
+    // Only show this if it wasn't opened by the user
+    if (
+      (this.dialogService.dialogProps as TutorialDialogProps).isUserTriggered
+    ) {
+      return nothing;
+    }
+
+    return html`<pr-button
+      variant="default"
+      @click=${() => {
+        this.settingsService.isTutorialConfirmed.value = true;
+        this.handleClose();
+      }}
+    >
+      Don't show again
+    </pr-button>`;
+  }
+
   override render() {
     return html`
       <pr-dialog
-        .onClose=${this.handleClose}
+        .onClose=${() => {
+          this.handleClose;
+        }}
         .showDialog=${this.shouldShowDialog()}
       >
         <div slot="title">Asking Lumi Questions...</div>
@@ -83,8 +108,15 @@ export class TutorialDialog extends MobxLitElement {
             ></lumi-image>
           </div>
         </div>
-        <div slot="actions-right">
-          <pr-button @click=${() => this.handleClose()}> Got it! </pr-button>
+        <div slot="actions-right" class="actions">
+          ${this.renderHideForeverButton()}
+          <pr-button
+            @click=${() => {
+              this.handleClose();
+            }}
+          >
+            Got it!
+          </pr-button>
         </div>
       </pr-dialog>
     `;

@@ -70,7 +70,9 @@ export class SidebarHeader extends MobxLitElement {
     this.analyticsService.trackAction(
       AnalyticsAction.SIDEBAR_HEADER_TUTORIAL_CLICK
     );
-    this.dialogService.show(new TutorialDialogProps());
+    this.dialogService.show(
+      new TutorialDialogProps(/* isUserTriggered */ true)
+    );
   }
 
   private handleOverflowClick(e: Event) {
