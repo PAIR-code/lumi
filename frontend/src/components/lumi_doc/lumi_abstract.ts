@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { html, nothing } from "lit";
+import { html, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { Highlight, LumiAbstract, LumiFootnote } from "../../shared/lumi_doc";
 import { HighlightManager } from "../../shared/highlight_manager";
@@ -27,6 +27,7 @@ import { styles } from "./lumi_abstract.scss";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
+import { makeObservable, observable, ObservableMap } from "mobx";
 
 @customElement("lumi-abstract")
 export class LumiAbstractViz extends LightMobxLitElement {
@@ -50,6 +51,49 @@ export class LumiAbstractViz extends LightMobxLitElement {
     target: HTMLElement
   ) => void;
   @property({ type: Array }) footnotes?: LumiFootnote[];
+
+  @observable.shallow private highlightsMap = new ObservableMap<
+    string,
+    Highlight[]
+  >();
+
+  constructor() {
+    super();
+    makeObservable(this);
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this.updateHighlightsMap();
+  }
+
+  protected override updated(_changedProperties: PropertyValues): void {
+    if (!_changedProperties.get("abstract")) {
+      return;
+    }
+    this.updateHighlightsMap();
+  }
+
+  private updateHighlightsMap() {
+    this.highlightsMap.clear();
+
+    this.abstract.contents.map((content) => {
+      content.textContent?.spans.map((span) => {
+        const newHighlights: Highlight[] = [];
+        // Add a special highlight for the excerpt span when not collapsed
+        if (!this.isCollapsed && span.id === this.excerptSpanId) {
+          newHighlights.push({
+            color: "blue",
+            spanId: span.id,
+            position: {
+              startIndex: 0,
+              endIndex: span.text.length - 1,
+            },
+          });
+        }
+        this.highlightsMap.set(span.id, newHighlights);
+      });
+    });
+  }
 
   override render() {
     return html`
@@ -76,22 +120,9 @@ export class LumiAbstractViz extends LightMobxLitElement {
                 if (this.isCollapsed && span.id !== this.excerptSpanId)
                   return nothing;
 
-                const highlights: Highlight[] = [];
-                // Add a special highlight for the excerpt span when not collapsed
-                if (!this.isCollapsed && span.id === this.excerptSpanId) {
-                  highlights.push({
-                    color: "blue",
-                    spanId: span.id,
-                    position: {
-                      startIndex: 0,
-                      endIndex: span.text.length - 1,
-                    },
-                  });
-                }
-
                 return html`<lumi-span
                   .span=${span}
-                  .additionalHighlights=${highlights}
+                  .additionalHighlights=${this.highlightsMap.get(span.id)}
                   .answerHighlightManager=${this.answerHighlightManager}
                   .onAnswerHighlightClick=${this.onAnswerHighlightClick}
                   .highlightManager=${this.highlightManager}
