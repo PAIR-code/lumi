@@ -78,7 +78,7 @@ export class HomeService extends Service {
       (collection) => collection.collectionId === currentCollectionId
     );
     // Load papers for current collection
-    this.loadMetadata(this.currentCollection?.paperIds ?? []);
+    this.loadMetadata(this.currentCollection?.paperIds.reverse() ?? []);
   }
 
   get currentCollectionId() {
