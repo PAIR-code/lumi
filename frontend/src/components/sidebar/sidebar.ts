@@ -36,7 +36,6 @@ import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
-import { DialogService } from "../../services/dialog.service";
 import { SIDEBAR_TABS, SIDEBAR_TABS_MOBILE } from "../../shared/constants";
 import {
   AnswerHighlightTooltipProps,
@@ -63,26 +62,9 @@ export class LumiSidebar extends LightMobxLitElement {
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
 
-  @computed get areAnyConceptsCollapsed() {
-    if (!this.collapseManager) return true;
-    return (
-      this.documentStateService.lumiDocManager?.lumiDoc.concepts.some(
-        (concept) =>
-          this.collapseManager!.conceptCollapsedState.get(concept.name) ?? true
-      ) ?? true
-    );
-  }
-
   constructor() {
     super();
     makeObservable(this);
-  }
-  private registerShadowRoot(shadowRoot: ShadowRoot) {
-    this.floatingPanelService.registerShadowRoot(shadowRoot);
-  }
-
-  private unregisterShadowRoot(shadowRoot: ShadowRoot) {
-    this.floatingPanelService.unregisterShadowRoot(shadowRoot);
   }
 
   private renderHeader() {
@@ -131,20 +113,6 @@ export class LumiSidebar extends LightMobxLitElement {
                 .highlightManager=${this.documentStateService.highlightManager}
                 .answerHighlightManager=${this.historyService
                   .answerHighlightManager}
-                .registerShadowRoot=${this.registerShadowRoot.bind(this)}
-                .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
-                .isCollapsed=${this.collapseManager!.conceptCollapsedState.get(
-                  concept.name
-                ) ?? true}
-                .setIsCollapsed=${(isCollapsed: boolean) => {
-                  this.analyticsService.trackAction(
-                    AnalyticsAction.SIDEBAR_TOGGLE_CONCEPT
-                  );
-                  this.collapseManager?.setConceptCollapsed(
-                    concept.name,
-                    isCollapsed
-                  );
-                }}
                 .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(
                   this
                 )}
@@ -169,13 +137,8 @@ export class LumiSidebar extends LightMobxLitElement {
             this.analyticsService.trackAction(
               AnalyticsAction.SIDEBAR_TOC_SECTION_CLICK
             );
-            this.documentStateService.collapseManager.expandToSection(
-              sectionId
-            );
 
-            setTimeout(() => {
-              this.scrollContext?.scrollToSection(sectionId);
-            }, 0);
+            this.scrollContext?.scrollToSection(sectionId);
           }}
         ></table-of-contents>
       </div>

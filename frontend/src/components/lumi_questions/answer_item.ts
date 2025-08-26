@@ -55,8 +55,6 @@ export class AnswerItem extends LightMobxLitElement {
   ) => void;
 
   @property({ type: Object }) collapseManager?: CollapseManager;
-  @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
-  @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
 
   @property()
   onReferenceClick: (highlightedSpans: HighlightSelection[]) => void = () => {};
@@ -73,20 +71,6 @@ export class AnswerItem extends LightMobxLitElement {
   @state() private areReferencesShown = false;
   @state() private isAnswerCollapsed = false;
   @state() private referencedSpans: LumiSpan[] = [];
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-    if (this.shadowRoot) {
-      this.registerShadowRoot(this.shadowRoot);
-    }
-  }
-
-  override disconnectedCallback(): void {
-    if (this.shadowRoot) {
-      this.unregisterShadowRoot(this.shadowRoot);
-    }
-    super.disconnectedCallback();
-  }
 
   private toggleReferences() {
     this.areReferencesShown = !this.areReferencesShown;

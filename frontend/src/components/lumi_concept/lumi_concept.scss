@@ -22,7 +22,7 @@
   @include common.flex-column;
   border-top: 1px solid var(--md-sys-color-outline-variant);
   gap: common.$spacing-medium;
-  padding: common.$spacing-medium;
+  padding: common.$spacing-xl common.$spacing-xl common.$spacing-medium;
   flex-shrink: 0;
 
   .lumi-concept-header {

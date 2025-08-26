@@ -85,10 +85,7 @@ function getOffsetInLumiSpan(textNode: Node): number {
  * @param shadowRoot The `shadowRoot` of the component where selection occurs.
  * @returns A `SelectionInfo` object if a valid selection is found, otherwise `null`.
  */
-export function getSelectionInfo(
-  selection: Selection,
-  shadowRoots: ShadowRoot[]
-): SelectionInfo | null {
+export function getSelectionInfo(selection: Selection): SelectionInfo | null {
   const selectedText = selection.toString().trim();
   if (selectedText.length === 0) {
     return null;

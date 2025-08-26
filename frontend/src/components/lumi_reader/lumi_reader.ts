@@ -144,10 +144,7 @@ export class LumiReader extends LightMobxLitElement {
 
       if (!selection) return;
 
-      const selectionInfo = getSelectionInfo(
-        selection,
-        this.floatingPanelService.selectionShadowRoots
-      );
+      const selectionInfo = getSelectionInfo(selection);
 
       if (selectionInfo) {
         this.handleTextSelection(selectionInfo);
@@ -177,14 +174,6 @@ export class LumiReader extends LightMobxLitElement {
     }
 
     this.loadingStatus = status;
-  }
-
-  private registerShadowRoot(shadowRoot: ShadowRoot) {
-    this.floatingPanelService.registerShadowRoot(shadowRoot);
-  }
-
-  private unregisterShadowRoot(shadowRoot: ShadowRoot) {
-    this.floatingPanelService.unregisterShadowRoot(shadowRoot);
   }
 
   private async loadDocument() {
@@ -623,8 +612,6 @@ export class LumiReader extends LightMobxLitElement {
           .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
             this.documentStateService.focusOnSpan(highlights, "gray");
           }}
-          .registerShadowRoot=${this.registerShadowRoot.bind(this)}
-          .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
           .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
           .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
           .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}

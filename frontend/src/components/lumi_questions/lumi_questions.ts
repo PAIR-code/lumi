@@ -151,14 +151,6 @@ export class LumiQuestions extends LightMobxLitElement {
     return this.documentStateService.lumiDocManager?.lumiDoc.metadata?.paperId;
   }
 
-  private registerShadowRoot(shadowRoot: ShadowRoot) {
-    this.floatingPanelService.registerShadowRoot(shadowRoot);
-  }
-
-  private unregisterShadowRoot(shadowRoot: ShadowRoot) {
-    this.floatingPanelService.unregisterShadowRoot(shadowRoot);
-  }
-
   private async handleSearch() {
     const lumiDoc = this.documentStateService.lumiDocManager?.lumiDoc;
 
@@ -278,8 +270,6 @@ export class LumiQuestions extends LightMobxLitElement {
 
           return html`
             <answer-item
-              .registerShadowRoot=${this.registerShadowRoot.bind(this)}
-              .unregisterShadowRoot=${this.unregisterShadowRoot.bind(this)}
               .onReferenceClick=${this.onReferenceClick.bind(this)}
               .onImageReferenceClick=${this.onImageReferenceClick.bind(this)}
               .onDismiss=${ifDefined(onDismiss)}

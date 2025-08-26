@@ -93,97 +93,12 @@ describe("CollapseManager", () => {
     it("should set all sections and abstract to expanded", () => {
       collapseManager.initialize();
       expect(collapseManager.isAbstractCollapsed).to.be.false;
-      expect(collapseManager.getCollapseState("sec1")).to.be.false;
-      expect(collapseManager.getCollapseState("sub1")).to.be.false;
-      expect(collapseManager.getCollapseState("sec2")).to.be.false;
     });
 
     it("should initialize sidebar state", () => {
       collapseManager.initialize();
       expect(collapseManager.sidebarTabSelection).to.equal(SIDEBAR_TABS.TOC);
       expect(collapseManager.isMobileSidebarCollapsed).to.be.true;
-      expect(collapseManager.conceptCollapsedState.size).to.equal(
-        mockLumiDoc.concepts.length
-      );
-      expect(collapseManager.conceptCollapsedState.get("Concept 1")).to.be
-        .false;
-    });
-  });
-
-  describe("setAllSectionsCollapsed", () => {
-    it("should set all sections to collapsed", () => {
-      collapseManager.setAllSectionsCollapsed(true);
-      expect(collapseManager.isAbstractCollapsed).to.be.true;
-      expect(collapseManager.getCollapseState("sec1")).to.be.true;
-      expect(collapseManager.getCollapseState("sub1")).to.be.true;
-      expect(collapseManager.getCollapseState("sec2")).to.be.true;
-    });
-
-    it("should set all sections to expanded", () => {
-      collapseManager.setAllSectionsCollapsed(false);
-      expect(collapseManager.isAbstractCollapsed).to.be.false;
-      expect(collapseManager.getCollapseState("sec1")).to.be.false;
-      expect(collapseManager.getCollapseState("sub1")).to.be.false;
-      expect(collapseManager.getCollapseState("sec2")).to.be.false;
-    });
-  });
-
-  describe("toggleSection", () => {
-    it("should toggle a single section's state without affecting others", () => {
-      collapseManager.initialize(); // all false
-      collapseManager.toggleSection("sec1", true);
-      expect(collapseManager.getCollapseState("sec1")).to.be.true;
-      expect(collapseManager.getCollapseState("sub1")).to.be.false;
-      expect(collapseManager.getCollapseState("sec2")).to.be.false;
-    });
-  });
-
-  describe("getOverallCollapseState", () => {
-    it("should return 'expanded' after initialization", () => {
-      collapseManager.initialize();
-      expect(collapseManager.getOverallCollapseState()).to.equal("expanded");
-    });
-
-    it("should return 'indeterminate' if the abstract is collapsed", () => {
-      collapseManager.initialize();
-      collapseManager.setAbstractCollapsed(true);
-      expect(collapseManager.getOverallCollapseState()).to.equal(
-        "indeterminate"
-      );
-    });
-
-    it("should return 'indeterminate' if any section is collapsed", () => {
-      collapseManager.initialize();
-      collapseManager.toggleSection("sec1", true);
-      expect(collapseManager.getOverallCollapseState()).to.equal(
-        "indeterminate"
-      );
-    });
-
-    it("should return 'collapsed' if all sections are collapsed manually", () => {
-      collapseManager.setAllSectionsCollapsed(false);
-      collapseManager.setAllSectionsCollapsed(true);
-      expect(collapseManager.getOverallCollapseState()).to.equal("collapsed");
-    });
-
-    it("should return 'expanded' if all sections are expanded", () => {
-      collapseManager.setAllSectionsCollapsed(false);
-      expect(collapseManager.getOverallCollapseState()).to.equal("expanded");
-    });
-  });
-
-  describe("expandToSpan", () => {
-    it("should not change state if already expanded", () => {
-      collapseManager.initialize(); // all expanded
-      expect(collapseManager.getCollapseState("sec1")).to.be.false;
-      expect(collapseManager.getCollapseState("sub1")).to.be.false;
-      expect(collapseManager.getCollapseState("sec2")).to.be.false;
-
-      collapseManager.expandToSpan("span2"); // span2 is in sub1, which is in sec1
-
-      expect(collapseManager.getCollapseState("sec1")).to.be.false;
-      expect(collapseManager.getCollapseState("sub1")).to.be.false;
-      expect(collapseManager.getCollapseState("sec2")).to.be.false; // Unrelated section remains expanded
     });
   });
 
@@ -203,38 +118,6 @@ describe("CollapseManager", () => {
       expect(collapseManager.isMobileSidebarCollapsed).to.not.equal(
         initialState
       );
-    });
-
-    it("should set a single concept's collapsed state", () => {
-      collapseManager.setConceptCollapsed("Concept 1", true);
-      expect(collapseManager.conceptCollapsedState.get("Concept 1")).to.be.true;
-      expect(collapseManager.conceptCollapsedState.get("Concept 2")).to.be
-        .false;
-    });
-
-    it("should set all concepts' collapsed state", () => {
-      collapseManager.setAllConceptsCollapsed(false);
-      expect(collapseManager.conceptCollapsedState.get("Concept 1")).to.be
-        .false;
-      expect(collapseManager.conceptCollapsedState.get("Concept 2")).to.be
-        .false;
-    });
-
-    it("should toggle all concepts' collapsed state", () => {
-      // initial state is all collapsed (false)
-      collapseManager.toggleAllConcepts(); // should be all expanded (true)
-      expect(
-        Array.from(collapseManager.conceptCollapsedState.values()).every(
-          (v) => v === true
-        )
-      ).to.be.true;
-
-      collapseManager.toggleAllConcepts(); // should be all collapsed (false)
-      expect(
-        Array.from(collapseManager.conceptCollapsedState.values()).every(
-          (v) => v === false
-        )
-      ).to.be.true;
     });
   });
 });

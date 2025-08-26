@@ -122,10 +122,6 @@ export class FloatingPanelService extends Service {
   menuCorner: Corner = MENU_CORNER_DEFAULT;
   hasFlatContainer: boolean | null = null;
 
-  // These shadow roots are used to determine the selection in getComposedRanges
-  //  whenever the selection state changes.
-  selectionShadowRoots: ShadowRoot[] = [];
-
   constructor(provider: {}) {
     super();
     makeObservable(this, {
@@ -135,17 +131,6 @@ export class FloatingPanelService extends Service {
       show: action,
       hide: action,
     });
-  }
-
-  registerShadowRoot(shadowRoot: ShadowRoot) {
-    this.selectionShadowRoots.push(shadowRoot);
-  }
-
-  unregisterShadowRoot(shadowRoot: ShadowRoot) {
-    const index = this.selectionShadowRoots.indexOf(shadowRoot);
-    if (index > 0) {
-      this.selectionShadowRoots.splice(index, 1);
-    }
   }
 
   show(contentProps: FloatingPanelContentProps, targetElement: HTMLElement) {

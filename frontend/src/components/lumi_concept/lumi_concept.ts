@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-import { CSSResultGroup, html, nothing } from "lit";
+import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { LumiConcept } from "../../shared/lumi_doc";
 
 import "../lumi_span/lumi_span";
-import "../../pair-components/icon_button";
 import "./lumi_concept_contents";
 
 import { styles } from "./lumi_concept.scss";
@@ -44,46 +43,16 @@ export class LumiConceptViz extends LightMobxLitElement {
     target: HTMLElement
   ) => void = () => {};
 
-  @property() registerShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
-  @property() unregisterShadowRoot: (shadowRoot: ShadowRoot) => void = () => {};
-
-  @property({ type: Boolean }) isCollapsed = true;
-  @property()
-  setIsCollapsed: (isCollapsed: boolean) => void = () => {};
-
-  private toggleCollapse() {
-    this.setIsCollapsed(!this.isCollapsed);
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    if (this.shadowRoot) {
-      this.registerShadowRoot(this.shadowRoot);
-    }
-  }
-
-  override disconnectedCallback() {
-    if (this.shadowRoot) {
-      this.unregisterShadowRoot(this.shadowRoot);
-    }
-
-    super.disconnectedCallback();
-  }
-
   override render() {
-    const icon = this.isCollapsed ? "chevron_right" : "expand_more";
-
     return html`
       <style>
         ${styles}
       </style>
       <div class="lumi-concept-host">
-        <div class="lumi-concept-header" @click=${this.toggleCollapse}>
-          <pr-icon-button variant="default" .icon=${icon}></pr-icon-button>
+        <div class="lumi-concept-header">
           <h2 class="lumi-concept-heading">${this.concept.name}</h2>
         </div>
-        ${this.isCollapsed ? nothing : this.renderContents()}
+        ${this.renderContents()}
       </div>
     `;
   }

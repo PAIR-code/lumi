@@ -47,8 +47,6 @@ export interface SectionRendererProperties {
   footnotes?: LumiFootnote[];
   summaryMaps: LumiSummaryMaps | null;
   hoverFocusedSpanId: string | null;
-  isCollapsed: boolean;
-  onCollapseChange: (isCollapsed: boolean) => void;
   getImageUrl?: (path: string) => Promise<string>;
   onSpanSummaryMouseEnter: (spanIds: string[]) => void;
   onSpanSummaryMouseLeave: () => void;
@@ -72,7 +70,7 @@ export interface SectionRendererProperties {
 function renderHeading(
   props: SectionRendererProperties
 ): TemplateResult | typeof nothing {
-  const { section, isCollapsed } = props;
+  const { section } = props;
   if (!section.heading) {
     return nothing;
   }
@@ -85,7 +83,6 @@ function renderHeading(
   const classesObject: { [key: string]: boolean } = {
     "heading-text": true,
     "empty-heading-placeholder": isEmpty,
-    ["collapsed"]: isCollapsed,
   };
 
   if (isEmpty) {
@@ -252,15 +249,14 @@ function renderContents(
 ): TemplateResult | typeof nothing {
   const {
     section,
-    isCollapsed,
     getImageUrl,
     summaryMaps,
     hoverFocusedSpanId,
     onSpanSummaryMouseEnter,
     onSpanSummaryMouseLeave,
     highlightManager,
-    answerHighlightManager,
     collapseManager,
+    answerHighlightManager,
     references,
     footnotes,
     onAnswerHighlightClick,
@@ -268,9 +264,6 @@ function renderContents(
     onFootnoteClick,
     onImageClick,
   } = props;
-  if (isCollapsed) {
-    return nothing;
-  }
 
   return html`<div class="content-viz">
     ${section.contents.map((content) => {
@@ -325,49 +318,10 @@ function renderSubsections(
         ${renderSection({
           ...props,
           section: subSection,
-          isCollapsed: props.collapseManager.getCollapseState(subSection.id),
-          onCollapseChange: (isCollapsed: boolean) => {
-            props.collapseManager.toggleSection(subSection.id, isCollapsed);
-          },
           isSubsection: true,
         })}
       </lumi-section>`
   )}`;
-}
-
-function renderHideButton(
-  isCollapsed: boolean,
-  onCollapseChange: (isCollapsed: boolean) => void
-): TemplateResult {
-  const handleCollapseClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onCollapseChange(!isCollapsed);
-  };
-
-  const icon = isCollapsed ? "chevron_right" : "keyboard_arrow_down";
-  const title = isCollapsed ? "Show section content" : "Hide section content";
-
-  return html`
-    <pr-icon-button
-      class="hide-button"
-      variant="default"
-      icon=${icon}
-      @click=${handleCollapseClick}
-      title=${title}
-    ></pr-icon-button>
-  `;
-}
-
-// TODO(ellenj): Consider re-adding section summaries to the gutter, otherwise remove this.
-function renderSectionSummary(props: SectionRendererProperties) {
-  if (props.isCollapsed) {
-    return nothing;
-  }
-  const summary = props.summaryMaps?.sectionSummariesMap.get(props.section.id);
-  return html`<span class="left-section-summary"">${
-    summary ? renderChildLumiSpan(props, summary.summary) : ""
-  }</span>`;
 }
 
 export function renderSection(
