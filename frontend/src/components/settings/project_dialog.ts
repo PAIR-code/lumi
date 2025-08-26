@@ -33,32 +33,21 @@ export class TosDialog extends MobxLitElement {
 
   private readonly settingsService = core.getService(SettingsService);
 
-  @state() acceptedTOS = false;
-
-  override updated() {
-    this.acceptedTOS = this.settingsService.getTOSConfirmed();
-  }
-
   override render() {
     return html`
-      <pr-dialog .showDialog=${!this.acceptedTOS} .onClose=${this.closeDialog}>
+      <pr-dialog .showDialog=${!this.settingsService.isTosConfirmed.value}>
         ${this.renderTOS()}
       </pr-dialog>
     `;
   }
 
-  closeDialog() {
-    this.acceptedTOS = true;
-    this.settingsService?.setTOSConfirmed(true);
-  }
-
   renderTOS() {
-    if (this.acceptedTOS) {
+    if (this.settingsService.isTosConfirmed.value) {
       return nothing;
     }
 
     const handleClick = () => {
-      this.closeDialog();
+      this.settingsService.isTosConfirmed.value = true;
     };
 
     return html`

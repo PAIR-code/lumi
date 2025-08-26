@@ -72,12 +72,17 @@ export class LumiConceptContents extends LightMobxLitElement {
           innerTags: [],
         };
 
+        const spanClassMap = {
+          "concept-expand-text": index === 1,
+        };
+
         return html`
           <div class=${contentItemClasses}>
             <div class="content-value">
               <lumi-span
                 .span=${tempSpan}
                 .noScrollContext=${true}
+                .classMap=${spanClassMap}
                 .spanProperties=${{
                   span: tempSpan,
                   highlightManager: this.highlightManager,

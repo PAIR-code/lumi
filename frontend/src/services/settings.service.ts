@@ -20,13 +20,17 @@ import { Service } from "./service";
 
 import { ColorMode } from "../shared/types";
 
-import { LocalStorageService } from "./local_storage.service";
+import {
+  LocalStorageHelper,
+  LocalStorageService,
+} from "./local_storage.service";
 
 interface ServiceProvider {
   localStorageService: LocalStorageService;
 }
 
-const tosConfirmedKey = "tosConfirmed";
+const TOS_CONFIRMED_LOCAL_STORAGE_KEY = "tosConfirmed";
+const API_KEY_LOCAL_STORAGE_KEY = "userApiKey";
 
 /**
  * Settings service.
@@ -35,32 +39,23 @@ export class SettingsService extends Service {
   constructor(private readonly sp: ServiceProvider) {
     super();
     makeObservable(this);
+
+    this.isTosConfirmed = this.sp.localStorageService.makeLocalStorageHelper(
+      TOS_CONFIRMED_LOCAL_STORAGE_KEY,
+      false
+    );
+    this.apiKey = this.sp.localStorageService.makeLocalStorageHelper(
+      API_KEY_LOCAL_STORAGE_KEY,
+      ""
+    );
   }
 
   @observable colorMode: ColorMode = ColorMode.DEFAULT;
-  @observable apiKey: string | null = null;
+
+  readonly isTosConfirmed: LocalStorageHelper<boolean>;
+  readonly apiKey: LocalStorageHelper<string>;
 
   @action setColorMode(colorMode: ColorMode) {
     this.colorMode = colorMode;
-  }
-
-  setTOSConfirmed(onboarded: boolean) {
-    this.sp.localStorageService.setData(tosConfirmedKey, onboarded);
-  }
-
-  getTOSConfirmed(): boolean {
-    const tosConfirmed = this.sp.localStorageService.getData(
-      tosConfirmedKey,
-      false
-    );
-    return tosConfirmed;
-  }
-
-  setAPIKey(apiKey: string) {
-    this.apiKey = apiKey;
-  }
-
-  getAPIKey(): string | null {
-    return this.apiKey;
   }
 }

@@ -36,6 +36,10 @@ img {
 }
 
 .highlighted img {
+  outline: common.$spacing-small solid var(--md-sys-color-highlight-blue-high);
+}
+
+.enable-hover:not(.highlighted):hover img {
   outline: common.$spacing-small solid var(--md-sys-color-highlight-blue);
 }
 
@@ -50,11 +54,12 @@ img {
 .image-error-placeholder {
   @include common.flex-row-align-center;
   justify-content: center;
+  padding: common.$spacing-medium;
 
   @include typescale.body-small;
   font-style: italic;
 
-  background: var(--md-sys-color-error-container-high);
+  background: var(--md-sys-color-gray-container-low);
   color: var(--md-sys-color-on-surface-higher);
 }
 

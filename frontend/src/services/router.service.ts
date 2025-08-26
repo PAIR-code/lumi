@@ -32,6 +32,9 @@ interface ServiceProvider {
   homeService: HomeService;
 }
 
+export const ARXIV_DOCS_ROUTE_NAME = "arxiv";
+const DEFAULT_COLLECTION_ID = "pair_team";
+
 /**
  * Handles app routing and page navigation
  */
@@ -63,7 +66,7 @@ export class RouterService extends Service {
     },
     {
       name: Pages.ARXIV_DOCUMENT,
-      path: "/arxiv/:document_id",
+      path: `/${ARXIV_DOCS_ROUTE_NAME}/:document_id`,
     },
   ];
 
@@ -96,6 +99,9 @@ export class RouterService extends Service {
     const prevDocId = this.activeRoute.params["document_id"];
     const nextDocId = routeChange.route.params["document_id"];
 
+    const newTitle = nextDocId ? `Lumi - ${nextDocId}` : "Lumi";
+    document.title = newTitle;
+
     if (prevDocId !== nextDocId) {
       this.sp.historyService.clearTemporaryAnswers();
       this.sp.documentStateService.clearDocument();
@@ -109,12 +115,20 @@ export class RouterService extends Service {
       );
     }
 
-    // If gallery page, load collections
     const currentPage = this.getPage(this.activeRoute);
     if (
-      currentPage === Pages.HOME ||
-      currentPage === Pages.COLLECTION
+      currentPage === Pages.HOME &&
+      !this.sp.historyService.getPaperHistory().length &&
+      !this.hasNavigated
     ) {
+      this.navigate(Pages.COLLECTION, {
+        collection_id: DEFAULT_COLLECTION_ID,
+      });
+      return;
+    }
+
+    // If gallery page, load collections
+    if (currentPage === Pages.HOME || currentPage === Pages.COLLECTION) {
       const currentCollectionId = this.activeRoute.params["collection_id"];
       this.sp.homeService.loadCollections(currentCollectionId);
     }

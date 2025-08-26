@@ -68,6 +68,7 @@
   @include common.flex-column;
   gap: common.$spacing-small;
   padding: 0 common.$sidebar-padding common.$sidebar-padding;
+  margin-top: common.$spacing-medium;
 
   background: var(--md-sys-color-surface-variant);
   z-index: 1; // To be above the lumi answer item responses container
@@ -113,7 +114,8 @@
 .concepts-container {
   background: var(--md-sys-color-surface);
   border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: common.$spacing-medium 0 common.$spacing-medium common.$spacing-medium;
+  border-radius: common.$spacing-medium 0 common.$spacing-medium
+    common.$spacing-medium;
 
   @include common.viewport-small {
     border-color: transparent;

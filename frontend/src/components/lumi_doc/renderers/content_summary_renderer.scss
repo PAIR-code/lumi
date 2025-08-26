@@ -43,8 +43,7 @@
   .summaries-container {
     @include common.flex-column;
     gap: common.$spacing-medium;
-    padding: common.$spacing-large common.$spacing-large common.$spacing-large
-      common.$spacing-small;
+    padding: common.$spacing-large;
 
     @include common.viewport-small {
       padding: common.$spacing-medium;

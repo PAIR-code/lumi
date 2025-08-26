@@ -132,8 +132,6 @@ export class LumiSidebar extends LightMobxLitElement {
           .lumiSummariesMap=${this.documentStateService.lumiDocManager
             ?.summaryMaps}
           .onSectionClicked=${(sectionId: string) => {
-            if (!this.documentStateService.collapseManager) return;
-
             this.analyticsService.trackAction(
               AnalyticsAction.SIDEBAR_TOC_SECTION_CLICK
             );

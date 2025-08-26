@@ -39,8 +39,6 @@ export class Settings extends MobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly settingsService = core.getService(SettingsService);
 
-  private apiKey: string = "";
-
   override render() {
     return html`
       <div class="settings">
@@ -58,9 +56,10 @@ export class Settings extends MobxLitElement {
           <div class="field">
             Model API Key:
             <pr-textinput
+              .value=${this.settingsService.apiKey.value}
               .onChange=${(e: InputEvent) => {
-                this.apiKey = (e.target as HTMLInputElement).value;
-                this.settingsService.setAPIKey(this.apiKey);
+                const value = (e.target as HTMLInputElement).value;
+                this.settingsService.apiKey.value = value;
               }}
               placeholder="API key"
             ></pr-textinput>

@@ -314,12 +314,15 @@ function renderSubsections(
 
   return html`${section.subSections.map(
     (subSection) =>
-      html`<lumi-section class="subsection" .section=${subSection}>
-        ${renderSection({
+      html`<lumi-section
+        class="subsection"
+        .section=${subSection}
+        .sectionProperties=${{
           ...props,
           section: subSection,
           isSubsection: true,
-        })}
+        }}
+      >
       </lumi-section>`
   )}`;
 }

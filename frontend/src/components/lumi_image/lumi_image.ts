@@ -36,6 +36,7 @@ export class LumiImage extends MobxLitElement {
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
   @property({ type: Object }) onImageClick?: (e: MouseEvent) => void;
   @property({ type: Boolean }) highlighted = false;
+  @property({ type: Boolean }) enableHover = false;
 
   @observable private imageUrl: string | null = null;
   @state() private isLoading = true;
@@ -90,6 +91,7 @@ export class LumiImage extends MobxLitElement {
     const containerClasses = classMap({
       "image-container": true,
       highlighted: this.highlighted,
+      "enable-hover": this.enableHover,
     });
 
     return html`

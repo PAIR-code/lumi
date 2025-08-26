@@ -83,12 +83,17 @@ export class SmartHighlightMenu extends MobxLitElement {
   }
 
   private renderDefaultView() {
+    const explainButtonName = this.props.imageInfo
+      ? "Explain image"
+      : "Explain text";
     return html`
       <pr-button @click=${this.handleDefineClick} variant="default"
-        >Explain</pr-button
+        >${explainButtonName}</pr-button
       >
       <div class="divider"></div>
-      <pr-button variant="default" @click=${this.handleAskClick}>Ask</pr-button>
+      <pr-button variant="default" @click=${this.handleAskClick}
+        >Ask Lumi...</pr-button
+      >
     `;
   }
 

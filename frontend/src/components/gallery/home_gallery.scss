@@ -107,6 +107,17 @@ h1 {
   }
 }
 
+.preview-metadata {
+  @include common.flex-row;
+  @include typescale.label-small;
+  margin: common.$spacing-small 0;
+  color: var(--md-sys-color-on-surface-higher);
+
+  .preview-authors {
+    @include common.overflow-ellipsis;
+  }
+}
+
 .preview-image {
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
@@ -154,7 +165,8 @@ h1 {
   color: var(--md-sys-color-outline);
   font-size: 90%;
   gap: common.$spacing-small;
-  min-width: 60px;
+  justify-content: center;
+  min-width: 50px;
   padding: common.$spacing-small common.$spacing-medium;
 
   &:focus,
