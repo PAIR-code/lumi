@@ -1,8 +1,14 @@
 # Lumi
 
-Lumi is a web app with AI-powered features to help you quickly read and understand arXiv papers.
+Lumi is a web app with AI-powered features to help you quickly read and understand arXiv papers. Features include:
 
-Note: Lumi is under active development! Features are not yet final.
+- ✏️ **AI-augmented annotations** - summaries at multiple granularities
+- 🔖 **Smart highlights** - highlight text + ask questions
+- 🖼️ **Explain figures** - ask Lumi about images in the paper
+
+Read more about Lumi in our blog post (coming soon!), and give Lumi a try at [lumi.withgoogle.com](https://lumi.withgoogle.com).
+
+![Screenshot of Lumi](assets/smart_ask_zoomed.png)
 
 ## Running Locally
 
@@ -81,3 +87,9 @@ team. If you have suggestions or feedback, feel free to
 [submit an issue](https://github.com/pair-code/lumi/issues).
 
 Copyright 2025 DeepMind Technologies Limited.
+
+## Acknowledgments
+
+Lumi was designed and built by Ellen Jiang, Vivian Tsai, and Nada Hussein.
+
+Special thanks to Andy Coenen, James Wexler, Tianchang He, Mahima Pushkarna, Michael Xieyang Liu, Alejandra Molina, Aaron Donsbach, Michael Terry, and Lucas Dixon for making this experiment possible!
