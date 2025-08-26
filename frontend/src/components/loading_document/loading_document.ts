@@ -57,7 +57,11 @@ export class LoadingDocument extends LitElement {
                   @click=${() => {
                     const paperId = this.metadata?.paperId;
                     if (paperId) {
-                      window.open("https://arxiv.org/abs/" + paperId);
+                      window.open(
+                        "https://arxiv.org/abs/" + paperId,
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
                     }
                   }}
                   title="Open in arXiv"

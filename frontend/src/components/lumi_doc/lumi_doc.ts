@@ -141,7 +141,11 @@ export class LumiDocViz extends LightMobxLitElement {
   private handleLinkClicked() {
     const paperId = this.lumiDocManager.lumiDoc.metadata?.paperId;
     if (paperId) {
-      window.open("https://arxiv.org/abs/" + paperId);
+      window.open(
+        "https://arxiv.org/abs/" + paperId,
+        "_blank",
+        "noopener,noreferrer"
+      );
     }
   }
 
