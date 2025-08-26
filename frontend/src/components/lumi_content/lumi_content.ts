@@ -40,6 +40,7 @@ import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../shared/api";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { styles } from "./lumi_content.scss";
+import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
 
 /**
  * A custom event dispatched when a lumi-content element is first rendered.
@@ -150,8 +151,11 @@ export class LumiContentViz extends LightMobxLitElement {
         .references=${this.references}
         .footnotes=${this.footnotes}
         .referencedSpans=${this.referencedSpans}
-        .highlightManager=${this.highlightManager}
-        .answerHighlightManager=${this.answerHighlightManager}
+        .highlights=${getSpanHighlightsFromManagers(
+          span.id,
+          this.highlightManager,
+          this.answerHighlightManager
+        )}
         .onSpanReferenceClicked=${this.onSpanReferenceClicked}
         .onPaperReferenceClick=${this.onPaperReferenceClick}
         .onFootnoteClick=${this.onFootnoteClick}

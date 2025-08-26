@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
+import { HighlightManager } from "../../shared/highlight_manager";
 import { InnerTag } from "../../shared/lumi_doc";
 
 /**
@@ -57,4 +59,21 @@ export function flattenTags(
   }
 
   return flattened;
+}
+
+export function getSpanHighlightsFromManagers(
+  spanId: string,
+  highlightManager?: HighlightManager,
+  answerHighlightManager?: AnswerHighlightManager
+) {
+  const highlights = [];
+  if (highlightManager) {
+    highlights.push(...highlightManager.getSpanHighlights(spanId));
+  }
+
+  if (answerHighlightManager) {
+    highlights.push(...answerHighlightManager.getSpanHighlights(spanId));
+  }
+
+  return highlights;
 }

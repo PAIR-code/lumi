@@ -29,6 +29,7 @@ import { styles } from "./content_summary.scss";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon";
+import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
 
 @customElement("lumi-content-summary")
 export class LumiContentSummary extends LightMobxLitElement {
@@ -117,8 +118,11 @@ export class LumiContentSummary extends LightMobxLitElement {
             .classMap=${{ "span-summary-text": true }}
             .span=${summary.summary}
             .focusState=${focusState}
-            .highlightManager=${this.highlightManager}
-            .answerHighlightManager=${this.answerHighlightManager}
+            .highlights=${getSpanHighlightsFromManagers(
+              summary.summary.id,
+              this.highlightManager,
+              this.answerHighlightManager
+            )}
             .onAnswerHighlightClick=${this.onAnswerHighlightClick}
             .font=${LumiFont.SPAN_SUMMARY_TEXT}
           ></lumi-span>
@@ -142,8 +146,11 @@ export class LumiContentSummary extends LightMobxLitElement {
                   "summary-span": true,
                 }}
                 .span=${this.summary.summary}
-                .highlightManager=${this.highlightManager}
-                .answerHighlightManager=${this.answerHighlightManager}
+                .highlights=${getSpanHighlightsFromManagers(
+                  this.summary.summary.id,
+                  this.highlightManager,
+                  this.answerHighlightManager
+                )}
                 .onAnswerHighlightClick=${this.onAnswerHighlightClick}
               ></lumi-span>`
             : nothing}

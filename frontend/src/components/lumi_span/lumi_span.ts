@@ -16,7 +16,7 @@
  */
 
 import { html, PropertyValues, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { consume } from "@lit/context";
 import { classMap } from "lit/directives/class-map.js";
@@ -45,6 +45,7 @@ import { flattenTags } from "./lumi_span_utils";
 import { styles } from "./lumi_span.scss";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { styleMap } from "lit/directives/style-map.js";
+import { areArraysEqual } from "../../shared/utils";
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;
@@ -82,9 +83,7 @@ export class LumiSpanViz extends LightMobxLitElement {
   @property({ type: Boolean }) isVirtual = false;
 
   // Renderer properties
-  @property({ type: Array }) additionalHighlights?: Highlight[];
-  @property({ type: Object }) highlightManager?: HighlightManager;
-  @property({ type: Object }) answerHighlightManager?: AnswerHighlightManager;
+  @property({ type: Array }) highlights?: Highlight[];
   @property({ type: Array }) references?: LumiReference[];
   @property({ type: Array }) footnotes?: LumiFootnote[];
   @property({ type: Array }) referencedSpans?: LumiSpan[];
@@ -112,6 +111,8 @@ export class LumiSpanViz extends LightMobxLitElement {
   ) => void;
   @property({ type: String }) font?: LumiFont;
 
+  @state() private renderedContent: TemplateResult | null = null;
+
   override firstUpdated(_changedProperties: PropertyValues): void {
     this.id = this.span.id;
   }
@@ -126,6 +127,28 @@ export class LumiSpanViz extends LightMobxLitElement {
         this.scrollContext?.registerSpan(this.span.id, this.spanRef);
       }
     });
+  }
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+
+    const hasHighlightChanges =
+      changedProperties.has("highlights") &&
+      this.highlights &&
+      !areArraysEqual(
+        changedProperties.get("highlights") ?? [],
+        this.highlights
+      );
+
+    if (
+      changedProperties.has("span") ||
+      hasHighlightChanges ||
+      changedProperties.has("references") ||
+      changedProperties.has("footnotes") ||
+      changedProperties.has("referencedSpans")
+    ) {
+      this.calculateRenderedContent();
+    }
   }
 
   override disconnectedCallback() {
@@ -383,42 +406,15 @@ export class LumiSpanViz extends LightMobxLitElement {
     return insertions;
   }
 
-  private getHighlightsFromManagers(
-    spanId: string,
-    highlightManager?: HighlightManager,
-    answerHighlightManager?: AnswerHighlightManager
-  ) {
-    const highlights = [];
-    if (highlightManager) {
-      highlights.push(...highlightManager.getSpanHighlights(spanId));
+  private calculateRenderedContent() {
+    const { span, highlights = [], monospace = false } = this;
+
+    if (!span) {
+      this.renderedContent = html``;
+      return;
     }
 
-    if (answerHighlightManager) {
-      highlights.push(...answerHighlightManager.getSpanHighlights(spanId));
-    }
-
-    return highlights;
-  }
-
-  private renderLumiSpan() {
-    const {
-      span,
-      highlightManager,
-      answerHighlightManager,
-      additionalHighlights = [],
-      monospace = false,
-    } = this;
-
-    if (!span) return html``;
-
-    const highlights = [
-      ...additionalHighlights,
-      ...this.getHighlightsFromManagers(
-        span.id,
-        highlightManager,
-        answerHighlightManager
-      ),
-    ];
+    const allHighlights = [...highlights];
     const spanText = span.text;
     const hasHighlight = highlights.length > 0;
 
@@ -435,9 +431,10 @@ export class LumiSpanViz extends LightMobxLitElement {
     // If there are no inner tags or highlights, and no insertions,
     // we can just return the plain text.
     if (!hasHighlight && !allInnerTags.length && insertions.size === 0) {
-      return html`<span class=${classMap(spanClasses)}>
+      this.renderedContent = html`<span class=${classMap(spanClasses)}>
         ${this.renderNonformattedCharacters(span.text)}
       </span>`;
+      return;
     }
 
     // Create an array of objects, one for each character in the span's text.
@@ -465,7 +462,7 @@ export class LumiSpanViz extends LightMobxLitElement {
 
     // Do the same for highlights, marking the affected characters with the
     // highlight color.
-    highlights.forEach((highlight) => {
+    allHighlights.forEach((highlight) => {
       const position = highlight.position;
       // Defaults to the entire span if position is null.
       const startIndex = position ? position.startIndex : 0;
@@ -549,9 +546,13 @@ export class LumiSpanViz extends LightMobxLitElement {
       partsTemplateResults.push(...insertions.get(spanText.length)!);
     }
 
-    return html`<span class=${classMap(spanClasses)}
+    this.renderedContent = html`<span class=${classMap(spanClasses)}
       >${partsTemplateResults}</span
     >`;
+  }
+
+  private renderLumiSpan() {
+    return this.renderedContent;
   }
 
   override render() {

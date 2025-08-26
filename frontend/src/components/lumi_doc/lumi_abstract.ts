@@ -28,6 +28,7 @@ import { styles } from "./lumi_abstract.scss";
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
 import { makeObservable, observable, ObservableMap } from "mobx";
+import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
 
 @customElement("lumi-abstract")
 export class LumiAbstractViz extends LightMobxLitElement {
@@ -120,12 +121,18 @@ export class LumiAbstractViz extends LightMobxLitElement {
                 if (this.isCollapsed && span.id !== this.excerptSpanId)
                   return nothing;
 
+                const highlights = [
+                  ...(this.highlightsMap.get(span.id) ?? []),
+                  ...getSpanHighlightsFromManagers(
+                    span.id,
+                    this.highlightManager,
+                    this.answerHighlightManager
+                  ),
+                ];
                 return html`<lumi-span
                   .span=${span}
-                  .additionalHighlights=${this.highlightsMap.get(span.id)}
-                  .answerHighlightManager=${this.answerHighlightManager}
+                  .highlights=${highlights}
                   .onAnswerHighlightClick=${this.onAnswerHighlightClick}
-                  .highlightManager=${this.highlightManager}
                   .onConceptClick=${this.onConceptClick}
                   .footnotes=${this.footnotes}
                   .onFootnoteClick=${this.onFootnoteClick}

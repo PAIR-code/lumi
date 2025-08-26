@@ -92,3 +92,15 @@ export function debounce<T extends Function>(fn: T, ms = 300): T {
     }, ms);
   } as unknown as T;
 }
+
+export function areArraysEqual<T>(arrayA: T[], arrayB: T[]): boolean {
+  if (arrayA.length !== arrayB.length) {
+    return false;
+  }
+  for (let i = 0; i < arrayA.length; i++) {
+    if (arrayA[i] !== arrayB[i]) {
+      return false;
+    }
+  }
+  return true;
+}

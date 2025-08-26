@@ -32,6 +32,7 @@ import { HighlightManager } from "../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { ImageInfo } from "../../shared/api";
+import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
 
 function isFigureContent(
   content: ImageContent | FigureContent
@@ -101,8 +102,11 @@ export class LumiImageContent extends MobxLitElement {
       <figcaption>
         <lumi-span
           .span=${caption}
-          .highlightManager=${this.highlightManager}
-          .answerHighlightManager=${this.answerHighlightManager}
+          .highlights=${getSpanHighlightsFromManagers(
+            caption.id,
+            this.highlightManager,
+            this.answerHighlightManager
+          )}
         ></lumi-span>
       </figcaption>
     `;

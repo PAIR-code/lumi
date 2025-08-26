@@ -103,14 +103,8 @@ describe("lumi-span", () => {
       },
     ];
 
-    const highlightManager = new HighlightManager();
-    highlightManager.addHighlights(highlights);
-
     const el = await fixture<LumiSpanViz>(
-      html`<lumi-span
-        .span=${span}
-        .highlightManager=${highlightManager}
-      ></lumi-span>`
+      html`<lumi-span .span=${span} .highlights=${highlights}></lumi-span>`
     );
     const highlightedEls = el.querySelectorAll("span.yellow");
     expect(highlightedEls.length).to.equal(11); // 'highlighted'.length

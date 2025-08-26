@@ -27,6 +27,7 @@ import { LumiAnswer } from "../../shared/api";
 import "../../pair-components/icon";
 import "../lumi_span/lumi_span";
 import { classMap } from "lit/directives/class-map.js";
+import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
 
 /**
  * A component to render the contents of a LumiConcept.
@@ -83,8 +84,11 @@ export class LumiConceptContents extends LightMobxLitElement {
                 .span=${tempSpan}
                 .noScrollContext=${true}
                 .classMap=${spanClassMap}
-                .highlightManager=${this.highlightManager}
-                .answerHighlightManager=${this.answerHighlightManager}
+                .highlights=${getSpanHighlightsFromManagers(
+                  tempSpan.id,
+                  this.highlightManager,
+                  this.answerHighlightManager
+                )}
                 .onAnswerHighlightClick=${this.onAnswerHighlightClick}
               ></lumi-span>
             </div>

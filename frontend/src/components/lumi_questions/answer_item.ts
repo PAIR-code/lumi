@@ -38,6 +38,7 @@ import { HighlightManager } from "../../shared/highlight_manager";
 import { CollapseManager } from "../../shared/collapse_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
 
 /**
  * An answer item in the Lumi questions history.
@@ -124,8 +125,11 @@ export class AnswerItem extends LightMobxLitElement {
                 <lumi-span
                   .span=${copiedSpan}
                   .references=${this.lumiDocManager?.lumiDoc.references}
-                  .highlightManager=${this.highlightManager}
-                  .answerHighlightManager=${this.answerHighlightManager}
+                  .highlights=${getSpanHighlightsFromManagers(
+                    copiedSpan.id,
+                    this.highlightManager,
+                    this.answerHighlightManager
+                  )}
                 ></lumi-span>
               </div>
             `;

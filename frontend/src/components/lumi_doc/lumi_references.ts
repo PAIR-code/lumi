@@ -28,6 +28,7 @@ import { styles } from "./lumi_references.scss";
 
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
+import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
 
 @customElement("lumi-references")
 export class LumiReferences extends LightMobxLitElement {
@@ -51,8 +52,11 @@ export class LumiReferences extends LightMobxLitElement {
       id=${reference.id}
       class=${lumiSpanClasses}
       .span=${reference.span}
-      .highlightManager=${this.highlightManager}
-      .answerHighlightManager=${this.answerHighlightManager}
+      .highlights=${getSpanHighlightsFromManagers(
+        reference.span.id,
+        this.highlightManager,
+        this.answerHighlightManager
+      )}
       .onAnswerHighlightClick=${this.onAnswerHighlightClick}
       .font=${LumiFont.PAPER_TEXT}
     ></lumi-span>`;
@@ -71,7 +75,9 @@ export class LumiReferences extends LightMobxLitElement {
               @click=${() => {
                 this.onCollapseChange(!this.isCollapsed);
               }}
-              .icon=${this.isCollapsed ? "chevron_right" : "keyboard_arrow_down"}
+              .icon=${this.isCollapsed
+                ? "chevron_right"
+                : "keyboard_arrow_down"}
             ></pr-icon-button>
             References
           </h2>
