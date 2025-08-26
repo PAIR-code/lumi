@@ -44,6 +44,7 @@ import { flattenTags } from "./lumi_span_utils";
 
 import { styles } from "./lumi_span.scss";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import { styleMap } from "lit/directives/style-map.js";
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;
@@ -78,6 +79,7 @@ export class LumiSpanViz extends LightMobxLitElement {
   @property({ type: String }) focusState = FocusState.DEFAULT;
   @property({ type: Object }) classMap: { [key: string]: boolean } = {};
   @property({ type: Boolean }) noScrollContext = false;
+  @property({ type: Boolean }) isVirtual = false;
 
   // Renderer properties
   @property({ type: Array }) additionalHighlights?: Highlight[];
@@ -136,6 +138,7 @@ export class LumiSpanViz extends LightMobxLitElement {
   private getSpanClassesObject() {
     const classesObject: { [key: string]: boolean } = {
       "outer-span": true,
+      "span-fade-in": true,
       monospace: this.monospace,
       focused: this.focusState === FocusState.FOCUSED,
       unfocused: this.focusState === FocusState.UNFOCUSED,
@@ -552,6 +555,16 @@ export class LumiSpanViz extends LightMobxLitElement {
   }
 
   override render() {
+    if (this.isVirtual) {
+      return html`<span
+        ${ref(this.spanRef)}
+        id=${this.span.id}
+        style=${styleMap({ visibility: "hidden" })}
+      >
+        ${this.span.text}
+      </span>`;
+    }
+
     return html`
       <style>
         ${styles}
