@@ -28,6 +28,9 @@ export class HistoryDialogProps extends DialogProps {}
 /** Props for the UserFeedbackDialog component. */
 export class UserFeedbackDialogProps extends DialogProps {}
 
+/** Props for the TutorialDialog component. */
+export class TutorialDialogProps extends DialogProps {}
+
 /**
  * A global service to manage dialogs.
  *

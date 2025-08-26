@@ -40,6 +40,8 @@ export enum AnalyticsAction {
   SIDEBAR_TAB_CHANGE = "sidebar_tab_change",
   SIDEBAR_TOC_SECTION_CLICK = "sidebar_toc_section_click",
   SIDEBAR_HEADER_FEEDBACK_CLICK = "sidebar_header_feedback_click",
+  SIDEBAR_HEADER_HISTORY_CLICK = "sidebar_header_history_click",
+  SIDEBAR_HEADER_TUTORIAL_CLICK = "sidebar_header_tutorial_click",
 
   // lumi_questions
   QUESTIONS_DISMISS_ANSWER = "questions_dismiss_answer",
