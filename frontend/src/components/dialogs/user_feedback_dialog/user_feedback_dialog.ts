@@ -14,13 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import "@material/web/dialog/dialog";
+import "../../../pair-components/dialog";
 import "../../../pair-components/button";
 import "../../../pair-components/textarea";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { MdDialog } from "@material/web/dialog/dialog";
 import { CSSResultGroup, html } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
 
@@ -49,13 +47,14 @@ export class UserFeedbackDialog extends MobxLitElement {
   private readonly routerService = core.getService(RouterService);
   private readonly snackbarService = core.getService(SnackbarService);
 
-  @query("md-dialog") private readonly dialog!: MdDialog;
   @query("pr-textarea") private textarea?: TextArea;
   @state() private feedbackText = "";
   @state() private isLoading = false;
 
   private handleClose() {
-    this.dialogService.hide();
+    if (this.dialogService) {
+      this.dialogService.hide();
+    }
   }
 
   private async handleSend() {
@@ -69,7 +68,7 @@ export class UserFeedbackDialog extends MobxLitElement {
         arxivId,
       });
       this.snackbarService.show("Feedback sent. Thank you!");
-      this.dialog.close();
+      this.handleClose();
       this.feedbackText = "";
     } catch (e) {
       console.error("Error sending feedback:", e);
@@ -93,17 +92,18 @@ export class UserFeedbackDialog extends MobxLitElement {
     const textareaSize = isViewportSmall() ? "medium" : "small";
 
     return html`
-      <md-dialog
-        @close=${this.handleClose}
-        .open=${this.shouldShowDialog()}
-        @opened=${() => this.handleOpen()}
+      <pr-dialog
+        .showDialog=${this.shouldShowDialog()}
+        .onClose=${this.handleClose}
+        .onOpen=${() => this.handleOpen()}
       >
-        <div slot="headline">User Feedback</div>
-        <div slot="content" class="content">
+        <div slot="title">User Feedback</div>
+        <div class="dialog-content">
           <p class="dialog-explanation">
             Have feedback or encountered an issue? We'd love to hear from you.
           </p>
           <pr-textarea
+            ?focused=${true}
             .value=${this.feedbackText}
             variant="outlined"
             size=${textareaSize}
@@ -114,11 +114,11 @@ export class UserFeedbackDialog extends MobxLitElement {
           >
           </pr-textarea>
         </div>
-        <div slot="actions">
+        <div slot="actions-right" class="actions">
           <pr-button
             @click=${() => {
               this.feedbackText = "";
-              this.dialog.close();
+              this.handleClose();
             }}
             variant="default"
             ?disabled=${this.isLoading}
@@ -132,7 +132,7 @@ export class UserFeedbackDialog extends MobxLitElement {
             Send
           </pr-button>
         </div>
-      </md-dialog>
+      </pr-dialog>
     `;
   }
 }

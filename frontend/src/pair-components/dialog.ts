@@ -60,10 +60,12 @@ export class Dialog extends MobxLitElement {
 
   override render() {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!this.enableEscape) {
-        e.preventDefault();
-      } else if (e.key === "Escape") {
-        this.closeDialog();
+      if (e.key === "Escape") {
+        if (this.enableEscape) {
+          this.closeDialog();
+        } else {
+          e.preventDefault();
+        }
       }
     };
 
@@ -84,7 +86,12 @@ export class Dialog extends MobxLitElement {
 
   private renderCloseButton() {
     return html`
-      <pr-icon-button color="neutral" icon="close" variant="default" @click=${this.closeDialog}>
+      <pr-icon-button
+        color="neutral"
+        icon="close"
+        variant="default"
+        @click=${this.closeDialog}
+      >
       </pr-icon-button>
     `;
   }

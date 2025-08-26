@@ -51,6 +51,10 @@ export const FOOTNOTE_CLASSNAME = "footnote-marker";
 
 export const LOGO_ICON_NAME = "book_ribbon";
 
+export const TUTORIAL_QUESTION_IMAGE_PATH = "assets/questions_tutorial.png";
+export const TUTORIAL_IMAGE_QUESTION_IMAGE_PATH =
+  "assets/questions_image_tutorial.png";
+
 // Keep in sync with constants.py
 export const PERSONAL_SUMMARY_QUERY_NAME = "Summary";
 export const CONCEPT_CONTENT_LABEL_DEFINITION = "definition";

@@ -24,7 +24,8 @@ import { customElement, property, state } from "lit/decorators.js";
 import { core } from "../../core/core";
 import { SettingsService } from "../../services/settings.service";
 
-import { styles } from "./project_dialog.scss";
+import { styles } from "./tos_dialog.scss";
+import { DialogService, TOSDialogProps } from "../../services/dialog.service";
 
 /** Terms of service dialog. */
 @customElement("tos-dialog")
@@ -35,18 +36,29 @@ export class TosDialog extends MobxLitElement {
 
   override render() {
     return html`
-      <pr-dialog .showDialog=${!this.settingsService.isTosConfirmed.value}>
+      <pr-dialog .showDialog=${this.shouldShowDialog()}>
         ${this.renderTOS()}
       </pr-dialog>
     `;
   }
 
-  renderTOS() {
-    if (this.settingsService.isTosConfirmed.value) {
-      return nothing;
-    }
+  private readonly dialogService = core.getService(DialogService);
 
+  private handleClose() {
+    if (this.dialogService) {
+      if (this.dialogService.dialogProps) {
+        (this.dialogService.dialogProps as TOSDialogProps).onClose();
+      }
+    }
+  }
+
+  private shouldShowDialog() {
+    return this.dialogService.dialogProps instanceof TOSDialogProps;
+  }
+
+  renderTOS() {
     const handleClick = () => {
+      this.handleClose();
       this.settingsService.isTosConfirmed.value = true;
     };
 

@@ -17,7 +17,7 @@
 @use "../../../sass/common";
 @use "../../../sass/typescale";
 
-.content {
+.dialog-content {
   @include common.flex-column;
   gap: common.$spacing-small;
 }
@@ -28,4 +28,9 @@
   @include common.viewport-small {
     @include typescale.body-medium;
   }
+}
+
+.actions {
+  @include common.flex-row;
+  gap: common.$spacing-medium;
 }

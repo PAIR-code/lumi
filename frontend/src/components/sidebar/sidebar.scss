@@ -51,7 +51,6 @@
 }
 
 .lumi-questions-container {
-  padding: common.$sidebar-padding;
   max-height: 60%;
 }
 
@@ -68,7 +67,6 @@
   @include common.flex-column;
   gap: common.$spacing-small;
   padding: 0 common.$sidebar-padding common.$sidebar-padding;
-  margin-top: common.$spacing-medium;
 
   background: var(--md-sys-color-surface-variant);
   z-index: 1; // To be above the lumi answer item responses container
@@ -81,6 +79,11 @@
 
   &.is-mobile-sidebar-collapsed {
     overflow: hidden;
+  }
+
+  margin-top: common.$spacing-medium;
+  @include common.viewport-small {
+    margin-top: 0;
   }
 }
 

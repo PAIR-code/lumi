@@ -29,6 +29,7 @@ import {
 import {
   DialogService,
   HistoryDialogProps,
+  TutorialDialogProps,
   UserFeedbackDialogProps,
 } from "../../services/dialog.service";
 import {
@@ -58,7 +59,20 @@ export class SidebarHeader extends MobxLitElement {
 
   private onSeeHistoryClick() {
     this.floatingPanelService.hide();
+    this.analyticsService.trackAction(
+      AnalyticsAction.SIDEBAR_HEADER_HISTORY_CLICK
+    );
     this.dialogService.show(new HistoryDialogProps());
+  }
+
+  private handleTutorialClick() {
+    this.floatingPanelService.hide();
+    this.analyticsService.trackAction(
+      AnalyticsAction.SIDEBAR_HEADER_TUTORIAL_CLICK
+    );
+    this.dialogService.show(
+      new TutorialDialogProps(/* isUserTriggered */ true)
+    );
   }
 
   private handleOverflowClick(e: Event) {
@@ -72,6 +86,11 @@ export class SidebarHeader extends MobxLitElement {
         icon: "feedback",
         label: "Send feedback",
         onClick: this.handleFeedbackClick.bind(this),
+      },
+      {
+        icon: "help",
+        label: "Tutorial",
+        onClick: this.handleTutorialClick.bind(this),
       },
     ];
     const props = new OverflowMenuProps(menuItems);

@@ -30,12 +30,19 @@ $button-height: 32px;
     @include common.flex-column;
     gap: common.$spacing-large;
 
+    padding-left: common.$sidebar-padding;
+    padding-right: common.$sidebar-padding;
+
     &:not(.is-history-show-all) {
       height: calc(100% - $button-height - $lumi-questions-gap);
 
       &:not(.show-see-all-button) {
         height: calc(100%);
       }
+    }
+
+    &.is-history-show-all {
+      padding-bottom: common.$sidebar-padding;
     }
   }
 
@@ -45,6 +52,7 @@ $button-height: 32px;
 
   .history-controls {
     @include common.flex-row-align-center;
+    padding: 0 common.$sidebar-padding common.$sidebar-padding;
   }
 
   .back-button-container {
@@ -52,6 +60,8 @@ $button-height: 32px;
 
     @include common.flex-row-align-center;
     gap: common.$spacing-medium;
+    padding: common.$sidebar-padding;
+
     position: sticky;
     top: 0;
     z-index: 2; // Above answer sticky headings.
@@ -65,13 +75,16 @@ $button-height: 32px;
     @include common.flex-row-align-center;
     padding: common.$spacing-medium common.$sidebar-padding;
 
+    margin: common.$sidebar-padding common.$sidebar-padding 0
+      common.$sidebar-padding;
+
     background: var(--md-sys-color-surface);
     border-radius: common.$border-radius-small;
     border: common.$border;
 
     max-width: common.$info-content-max-width;
     gap: common.$spacing-medium;
-    width: 100%;
+    width: calc(100% - 2 * common.$sidebar-padding);
 
     flex-shrink: 0;
 

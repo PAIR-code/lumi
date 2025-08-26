@@ -22,11 +22,29 @@ import { Service } from "./service";
 /** Base class for all dialog content props. */
 export abstract class DialogProps {}
 
+/** Props for the TOSDialog component. */
+export class TOSDialogProps extends DialogProps {
+  // The onClose callback must be called for this dialog since
+  // it may open another dialog on close.
+  // The dialog calls this callback to close itself and does
+  // not call dialogService.hide() itself.
+  constructor(readonly onClose: () => void) {
+    super();
+  }
+}
+
 /** Props for the HistoryDialog component. */
 export class HistoryDialogProps extends DialogProps {}
 
 /** Props for the UserFeedbackDialog component. */
 export class UserFeedbackDialogProps extends DialogProps {}
+
+/** Props for the TutorialDialog component. */
+export class TutorialDialogProps extends DialogProps {
+  constructor(readonly isUserTriggered = false) {
+    super();
+  }
+}
 
 /**
  * A global service to manage dialogs.

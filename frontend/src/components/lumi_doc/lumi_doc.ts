@@ -15,21 +15,6 @@
  * limitations under the License.
  */
 
-/**
- * This component follows a "renderer" pattern. The main `lumi-doc` component
- * remains a LitElement, but its rendering logic for complex sub-parts (like
- * sections and content) is delegated to stateless functions in the `renderers/`
- * directory.
- *
- * This approach was initially chosen to solve a specific problem with `window.getSelection()`
- * not working across Shadow DOM boundaries. By keeping all the text content
- * in the Light DOM of `lumi-doc` and using stateless render functions instead
- * of nested custom elements with their own Shadow DOMs, we ensure that text
- * selection behaves as expected. In a more recent refactor, we've transitioned many
- * components to use LightMobxLitElement, which overrides createRenderRoot to render lit
- * components in Light DOM.
- */
-
 import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HighlightSelection } from "../../shared/selection_utils";

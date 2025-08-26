@@ -80,6 +80,11 @@ import { RouterService } from "../../services/router.service";
 import { BannerService } from "../../services/banner.service";
 import { createRef, ref } from "lit/directives/ref.js";
 import { SettingsService } from "../../services/settings.service";
+import {
+  DialogService,
+  TOSDialogProps,
+  TutorialDialogProps,
+} from "../../services/dialog.service";
 
 const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
   LoadingStatus.SUCCESS,
@@ -96,6 +101,8 @@ const LOADING_STATES_RENDER_ERROR: string[] = [
   LoadingStatus.TIMEOUT,
 ];
 
+const TUTORIAL_DIALOG_DELAY = 800;
+
 /**
  * The component responsible for fetching a single document and passing it
  * to the lumi-doc component.
@@ -106,6 +113,7 @@ export class LumiReader extends LightMobxLitElement {
 
   private readonly analyticsService = core.getService(AnalyticsService);
   private readonly bannerService = core.getService(BannerService);
+  private readonly dialogService = core.getService(DialogService);
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly firebaseService = core.getService(FirebaseService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
@@ -144,6 +152,19 @@ export class LumiReader extends LightMobxLitElement {
         this.handleTextSelection(selectionInfo);
       }
     };
+  }
+
+  protected override firstUpdated(): void {
+    if (!this.settingsService.isTosConfirmed.value) {
+      const onClose = () => {
+        this.dialogService.show(new TutorialDialogProps());
+      };
+      this.dialogService.show(new TOSDialogProps(onClose));
+    } else if (!this.settingsService.isTutorialConfirmed.value) {
+      window.setTimeout(() => {
+        this.dialogService.show(new TutorialDialogProps());
+      }, TUTORIAL_DIALOG_DELAY);
+    }
   }
 
   override disconnectedCallback() {

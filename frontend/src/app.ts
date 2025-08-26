@@ -20,7 +20,6 @@ import "./components/gallery/home_gallery";
 import "./components/header/header";
 import "./components/settings/settings";
 import "./components/lumi_reader/lumi_reader";
-import "./components/settings/project_dialog";
 import "./components/floating_panel_host/floating_panel_host";
 import "./components/smart_highlight_menu/smart_highlight_menu";
 import "./components/dialogs/dialogs";
@@ -50,10 +49,10 @@ import { GalleryView } from "./shared/types";
 export class App extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
+  private readonly bannerService = core.getService(BannerService);
   private readonly routerService = core.getService(RouterService);
   private readonly settingsService = core.getService(SettingsService);
   private readonly snackbarService = core.getService(SnackbarService);
-  private readonly bannerService = core.getService(BannerService);
 
   private readonly toastRef: Ref<any> = createRef<any>();
 
@@ -123,7 +122,7 @@ export class App extends LightMobxLitElement {
 
   override render() {
     const mainStyles = styleMap({
-      "height": this.bannerService.isBannerOpen
+      height: this.bannerService.isBannerOpen
         ? `calc(100% - ${BANNER_HEIGHT}px)`
         : "100%",
     });
@@ -136,7 +135,6 @@ export class App extends LightMobxLitElement {
         ${this.renderBanner()}
         <main style=${mainStyles}>
           <div class="content-wrapper">${this.renderPageContent()}</div>
-          <tos-dialog></tos-dialog>
           <floating-panel-host></floating-panel-host>
           <lumi-dialogs></lumi-dialogs>
           <lit-toast ${ref(this.toastRef)}></lit-toast>

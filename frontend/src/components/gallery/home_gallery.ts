@@ -21,7 +21,7 @@ import "../../pair-components/icon_button";
 import "../lumi_image/lumi_image";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
+import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
 import { classMap } from "lit/directives/class-map.js";
@@ -58,17 +58,21 @@ import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
 import { GalleryView } from "../../shared/types";
 import { ifDefined } from "lit/directives/if-defined.js";
+import { DialogService, TOSDialogProps } from "../../services/dialog.service";
+import { SettingsService } from "../../services/settings.service";
 
 /** Gallery for home/landing page */
 @customElement("home-gallery")
 export class HomeGallery extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
+  private readonly dialogService = core.getService(DialogService);
   private readonly homeService = core.getService(HomeService);
   private readonly routerService = core.getService(RouterService);
   private readonly firebaseService = core.getService(FirebaseService);
   private readonly historyService = core.getService(HistoryService);
   private readonly snackbarService = core.getService(SnackbarService);
+  private readonly settingsService = core.getService(SettingsService);
 
   @property() galleryView: GalleryView = GalleryView.LOCAL;
 
@@ -106,6 +110,16 @@ export class HomeGallery extends MobxLitElement {
     super.disconnectedCallback();
     this.unsubscribeListeners.forEach((unsubscribe) => unsubscribe());
     this.unsubscribeListeners.clear();
+  }
+
+  protected override firstUpdated(_changedProperties: PropertyValues): void {
+    if (!this.settingsService.isTosConfirmed.value) {
+      this.dialogService.show(
+        new TOSDialogProps(() => {
+          this.dialogService.hide();
+        })
+      );
+    }
   }
 
   private async requestDocument(id: string) {

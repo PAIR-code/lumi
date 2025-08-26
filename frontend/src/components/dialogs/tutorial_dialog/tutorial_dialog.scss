@@ -14,7 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "../../../sass/common";
 
-:host {
-  --pr-dialog-background: var(--md-sys-color-surface-container);
+.dialog-explanation {
+  margin-bottom: 24px;
+}
+
+.images {
+  @include common.flex-row;
+  gap: common.$spacing-medium;
+}
+
+.tutorial-image {
+  overflow: hidden;
+  border-radius: common.$border-radius-medium;
+  border: common.$border;
+
+  min-width: 200px;
+}
+
+.actions {
+  @include common.flex-row;
+  gap: common.$spacing-medium;
 }
