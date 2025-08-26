@@ -212,6 +212,7 @@ export class LumiSectionViz extends LightMobxLitElement {
           .onFootnoteClick=${this.onFootnoteClick}
           .onImageClick=${this.onImageClick}
           .font=${LumiFont.PAPER_TEXT}
+          .virtualize=${true}
         ></lumi-content>`;
       })}
       ${this.renderSubsections()}

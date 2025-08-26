@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-import { html, LitElement, nothing, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { html, nothing, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
+import { styleMap } from "lit/directives/style-map.js";
 import {
   ListContent,
   LumiContent,
@@ -39,6 +40,23 @@ import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { LumiAnswer } from "../../shared/api";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { styles } from "./lumi_content.scss";
+import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
+
+/**
+ * A custom event dispatched when a lumi-content element is first rendered.
+ */
+export class LumiContentRenderedEvent extends Event {
+  static readonly eventName = "lumi-content-rendered";
+  readonly element: LumiContentViz;
+
+  constructor(element: LumiContentViz) {
+    super(LumiContentRenderedEvent.eventName, {
+      bubbles: true,
+      composed: true,
+    });
+    this.element = element;
+  }
+}
 
 @customElement("lumi-content")
 export class LumiContentViz extends LightMobxLitElement {
@@ -79,6 +97,36 @@ export class LumiContentViz extends LightMobxLitElement {
   @property({ type: Object }) font?: LumiFont;
   @property({ type: Boolean }) dense?: boolean = false;
 
+  @property({ type: Boolean }) virtualize: boolean = false;
+
+  @state() private isVisible = false;
+  @state() private height: number | null = null;
+
+  override firstUpdated() {
+    if (this.virtualize) {
+      this.dispatchEvent(new LumiContentRenderedEvent(this));
+    }
+  }
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    // After the first full render, if height is not set, measure and set it.
+    if (this.height === null && this.virtualize) {
+      this.updateComplete.then(() => {
+        if (this.height === null) {
+          const height = this.getBoundingClientRect().height;
+          if (height > 0) {
+            this.height = height;
+          }
+        }
+      });
+    }
+  }
+
+  setVisible(visible: boolean) {
+    this.isVisible = visible;
+  }
+
   private getFocusState(focusedSpanId: string | null, spanIds: string[]) {
     const isFocused = !!focusedSpanId && spanIds.includes(focusedSpanId);
     const hasFocus = !!focusedSpanId;
@@ -92,6 +140,8 @@ export class LumiContentViz extends LightMobxLitElement {
   }
 
   private renderSpans(spans: LumiSpan[], monospace = false): TemplateResult[] {
+    const isVirtual =
+      !this.isVisible && this.height !== null && this.virtualize;
     return spans.map((span) => {
       const { focusState } = this.getFocusState(this.focusedSpanId, [span.id]);
       return html`<lumi-span
@@ -101,13 +151,17 @@ export class LumiContentViz extends LightMobxLitElement {
         .references=${this.references}
         .footnotes=${this.footnotes}
         .referencedSpans=${this.referencedSpans}
-        .highlightManager=${this.highlightManager}
-        .answerHighlightManager=${this.answerHighlightManager}
+        .highlights=${getSpanHighlightsFromManagers(
+          span.id,
+          this.highlightManager,
+          this.answerHighlightManager
+        )}
         .onSpanReferenceClicked=${this.onSpanReferenceClicked}
         .onPaperReferenceClick=${this.onPaperReferenceClick}
         .onFootnoteClick=${this.onFootnoteClick}
         .onAnswerHighlightClick=${this.onAnswerHighlightClick}
         .font=${this.font}
+        .isVirtual=${isVirtual}
       ></lumi-span>`;
     });
   }
@@ -238,12 +292,19 @@ export class LumiContentViz extends LightMobxLitElement {
       ["dense"]: this.dense ?? false,
     });
 
+    const wrapperStyles = {
+      minHeight: this.height ? `${this.height}px` : "auto",
+    };
+
     return html`
       <style>
         ${styles}
       </style>
       <div class=${outerContainerclasses}>
-        <div class=${classMap(contentRendererContainerClassesObject)}>
+        <div
+          class=${classMap(contentRendererContainerClassesObject)}
+          style=${styleMap(wrapperStyles)}
+        >
           <div
             class=${classMap(mainContentClassesObject)}
             @click=${onContentClick}

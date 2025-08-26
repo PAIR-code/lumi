@@ -382,7 +382,9 @@ export class HomeGallery extends MobxLitElement {
       const openPaper = () => {
         const baseUrl = document.location.origin;
         window.open(
-          `${baseUrl}/#/${ARXIV_DOCS_ROUTE_NAME}/${metadata.paperId}`
+          `${baseUrl}/#/${ARXIV_DOCS_ROUTE_NAME}/${metadata.paperId}`,
+          "_blank",
+          "noopener,noreferrer"
         );
       };
 

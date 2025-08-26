@@ -36,6 +36,11 @@ import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { LumiFootnote, LumiReference } from "../../shared/lumi_doc";
 import { LumiAnswer } from "../../shared/api";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import {
+  LumiContentRenderedEvent,
+  LumiContentViz,
+} from "../lumi_content/lumi_content";
+import { createRef, ref, Ref } from "lit/directives/ref.js";
 
 /**
  * Displays a Lumi Document.
@@ -71,12 +76,55 @@ export class LumiDocViz extends LightMobxLitElement {
 
   @state() hoveredSpanId: string | null = null;
 
+  private intersectionObserver?: IntersectionObserver;
+  private scrollRef: Ref<HTMLElement> = createRef<HTMLElement>();
+
   get lumiDoc() {
     return this.lumiDocManager.lumiDoc;
   }
 
-  constructor() {
-    super();
+
+  private handleLumiContentRendered(event: LumiContentRenderedEvent) {
+    this.intersectionObserver?.observe(event.element);
+  }
+
+  override firstUpdated() {
+    const scrollableElement = this.scrollRef.value;
+    if (!scrollableElement) {
+      console.error(
+        "Lumi-doc scrollable element not found for IntersectionObserver"
+      );
+      return;
+    }
+
+    this.intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const lumiContent = entry.target as LumiContentViz;
+          const visible = entry.isIntersecting;
+          lumiContent.setVisible(visible);
+        });
+      },
+      { root: scrollableElement }
+    );
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    this.addEventListener(
+      LumiContentRenderedEvent.eventName,
+      this.handleLumiContentRendered as EventListener
+    );
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.intersectionObserver?.disconnect();
+    this.removeEventListener(
+      LumiContentRenderedEvent.eventName,
+      this.handleLumiContentRendered as EventListener
+    );
   }
 
   private onSpanSummaryMouseEnter(spanIds: string[]) {
@@ -93,7 +141,11 @@ export class LumiDocViz extends LightMobxLitElement {
   private handleLinkClicked() {
     const paperId = this.lumiDocManager.lumiDoc.metadata?.paperId;
     if (paperId) {
-      window.open("https://arxiv.org/abs/" + paperId);
+      window.open(
+        "https://arxiv.org/abs/" + paperId,
+        "_blank",
+        "noopener,noreferrer"
+      );
     }
   }
 
@@ -107,7 +159,11 @@ export class LumiDocViz extends LightMobxLitElement {
       <style>
         ${styles}
       </style>
-      <div class="lumi-doc" @scroll=${this.onScroll.bind(this)}>
+      <div
+        class="lumi-doc"
+        ${ref(this.scrollRef)}
+        @scroll=${this.onScroll.bind(this)}
+      >
         <div class="lumi-doc-content">
           <div class="title-section">
             <h1 class="main-column title">

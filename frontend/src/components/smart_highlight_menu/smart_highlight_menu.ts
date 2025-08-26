@@ -36,7 +36,11 @@ import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
-import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
+import {
+  INPUT_DEBOUNCE_MS,
+  MAX_QUERY_INPUT_LENGTH,
+} from "../../shared/constants";
+import { debounce } from "../../shared/utils";
 
 /**
  * The menu that appears on text selection.
@@ -97,12 +101,17 @@ export class SmartHighlightMenu extends MobxLitElement {
     `;
   }
 
+  private debouncedUpdate = debounce((value: string) => {
+    this.queryText = value;
+  }, INPUT_DEBOUNCE_MS);
+
   private renderAskView() {
     return html`
       <pr-textinput
         .value=${this.queryText}
-        .onChange=${(e: InputEvent) =>
-          (this.queryText = (e.target as HTMLInputElement).value)}
+        .onChange=${(e: InputEvent) => {
+          this.debouncedUpdate((e.target as HTMLInputElement).value);
+        }}
         .onKeydown=${(e: KeyboardEvent) => {
           if (e.key === "Enter") this.handleSendClick();
         }}

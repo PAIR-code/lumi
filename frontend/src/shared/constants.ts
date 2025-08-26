@@ -55,6 +55,8 @@ export const TUTORIAL_QUESTION_IMAGE_PATH = "assets/questions_tutorial.png";
 export const TUTORIAL_IMAGE_QUESTION_IMAGE_PATH =
   "assets/questions_image_tutorial.png";
 
+export const INPUT_DEBOUNCE_MS = 100;
+
 // Keep in sync with constants.py
 export const PERSONAL_SUMMARY_QUERY_NAME = "Summary";
 export const CONCEPT_CONTENT_LABEL_DEFINITION = "definition";

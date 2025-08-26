@@ -47,7 +47,10 @@ import {
 } from "../../services/floating_panel_service";
 import { DialogService } from "../../services/dialog.service";
 import { isViewportSmall } from "../../shared/responsive_utils";
-import { MAX_QUERY_INPUT_LENGTH } from "../../shared/constants";
+import {
+  INPUT_DEBOUNCE_MS,
+  MAX_QUERY_INPUT_LENGTH,
+} from "../../shared/constants";
 import { getLumiResponseCallable } from "../../shared/callables";
 import { createTemporaryAnswer } from "../../shared/answer_utils";
 import { RouterService } from "../../services/router.service";
@@ -56,6 +59,7 @@ import { FirebaseService } from "../../services/firebase.service";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { SIDEBAR_PERSONAL_SUMMARY_TOOLTIP_TEXT } from "../../shared/constants_helper_text";
 import { SettingsService } from "../../services/settings.service";
+import { debounce } from "../../shared/utils";
 
 /**
  * A component for asking questions to Lumi and viewing the history.
@@ -189,6 +193,10 @@ export class LumiQuestions extends LightMobxLitElement {
     }
   }
 
+  private debouncedUpdate = debounce((value: string) => {
+    this.query = value;
+  }, INPUT_DEBOUNCE_MS);
+
   private renderSearch() {
     const isLoading = this.historyService.isAnswerLoading;
 
@@ -200,7 +208,7 @@ export class LumiQuestions extends LightMobxLitElement {
           size=${textareaSize}
           .maxLength=${MAX_QUERY_INPUT_LENGTH}
           @change=${(e: CustomEvent) => {
-            this.query = e.detail.value;
+            this.debouncedUpdate(e.detail.value);
           }}
           @keydown=${(e: CustomEvent) => {
             if (e.detail.key === "Enter") {
