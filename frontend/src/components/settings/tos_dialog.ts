@@ -24,7 +24,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { core } from "../../core/core";
 import { SettingsService } from "../../services/settings.service";
 
-import { styles } from "./project_dialog.scss";
+import { styles } from "./tos_dialog.scss";
 
 /** Terms of service dialog. */
 @customElement("tos-dialog")

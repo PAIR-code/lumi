@@ -20,7 +20,7 @@ import "./components/gallery/home_gallery";
 import "./components/header/header";
 import "./components/settings/settings";
 import "./components/lumi_reader/lumi_reader";
-import "./components/settings/project_dialog";
+import "./components/settings/tos_dialog";
 import "./components/floating_panel_host/floating_panel_host";
 import "./components/smart_highlight_menu/smart_highlight_menu";
 import "./components/dialogs/dialogs";
@@ -123,7 +123,7 @@ export class App extends LightMobxLitElement {
 
   override render() {
     const mainStyles = styleMap({
-      "height": this.bannerService.isBannerOpen
+      height: this.bannerService.isBannerOpen
         ? `calc(100% - ${BANNER_HEIGHT}px)`
         : "100%",
     });
