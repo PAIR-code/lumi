@@ -83,12 +83,9 @@ export class LumiConceptContents extends LightMobxLitElement {
                 .span=${tempSpan}
                 .noScrollContext=${true}
                 .classMap=${spanClassMap}
-                .spanProperties=${{
-                  span: tempSpan,
-                  highlightManager: this.highlightManager,
-                  answerHighlightManager: this.answerHighlightManager,
-                  onAnswerHighlightClick: this.onAnswerHighlightClick,
-                }}
+                .highlightManager=${this.highlightManager}
+                .answerHighlightManager=${this.answerHighlightManager}
+                .onAnswerHighlightClick=${this.onAnswerHighlightClick}
               ></lumi-span>
             </div>
           </div>

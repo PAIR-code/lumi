@@ -23,27 +23,22 @@ import {
   FloatingPanelService,
 } from "../../services/floating_panel_service";
 import { styles } from "./answer_highlight_tooltip.scss";
-import { renderContent } from "../lumi_doc/renderers/content_renderer";
 import { core } from "../../core/core";
 import { DocumentStateService } from "../../services/document_state.service";
 import { HistoryService } from "../../services/history.service";
 import { LumiAnswer } from "../../shared/api";
 
-import { styles as contentRendererStyles } from "../lumi_doc/renderers/content_renderer.scss";
-import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 import { LumiContent } from "../../shared/lumi_doc";
 import { classMap } from "lit/directives/class-map.js";
+
+import "../lumi_content/lumi_content";
 
 /**
  * A tooltip that displays the content of a LumiAnswer.
  */
 @customElement("answer-highlight-tooltip")
 export class AnswerHighlightTooltip extends MobxLitElement {
-  static override styles: CSSResultGroup = [
-    styles,
-    contentRendererStyles,
-    spanRendererStyles,
-  ];
+  static override styles: CSSResultGroup = [styles];
 
   @property({ type: Object }) props!: AnswerHighlightTooltipProps;
   @state() private showAll = false;
@@ -81,22 +76,21 @@ export class AnswerHighlightTooltip extends MobxLitElement {
     const hasMoreContent = allContent.length > 1;
 
     const renderItem = (content: LumiContent) =>
-      renderContent({
-        parentComponent: this,
-        content,
-        references:
-          this.documentStateService.lumiDocManager?.lumiDoc.references,
-        summary: null,
-        spanSummaries: new Map(),
-        focusedSpanId: null,
-        highlightManager: this.documentStateService.highlightManager!,
-        answerHighlightManager: this.historyService.answerHighlightManager!,
-        collapseManager: this.documentStateService.collapseManager!,
-        onSpanSummaryMouseEnter: () => {},
-        onSpanSummaryMouseLeave: () => {},
-        onAnswerHighlightClick: this.handleAnswerHighlightClick.bind(this),
-        dense: true,
-      });
+      html`<lumi-content
+        .content=${content}
+        .references=${this.documentStateService.lumiDocManager?.lumiDoc
+          .references}
+        .summary=${null}
+        .spanSummaries=${new Map()}
+        .focusedSpanId=${null}
+        .highlightManager=${this.documentStateService.highlightManager!}
+        .answerHighlightManager=${this.historyService.answerHighlightManager!}
+        .collapseManager=${this.documentStateService.collapseManager!}
+        .onSpanSummaryMouseEnter=${() => {}}
+        .onSpanSummaryMouseLeave=${() => {}}
+        .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
+        .dense=${true}
+      ></lumi-content>`;
 
     const showButton = hasMoreContent && !this.showAll;
 

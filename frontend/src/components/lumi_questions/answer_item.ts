@@ -29,7 +29,7 @@ import "../../pair-components/icon";
 import "../../pair-components/icon_button";
 import "../../pair-components/circular_progress";
 import "../lumi_span/lumi_span";
-import { renderContent } from "../lumi_doc/renderers/content_renderer";
+import "../lumi_content/lumi_content";
 
 import { styles } from "./answer_item.scss";
 
@@ -123,12 +123,9 @@ export class AnswerItem extends LightMobxLitElement {
                 <span class="number">${i + 1}.</span>
                 <lumi-span
                   .span=${copiedSpan}
-                  .spanProperties=${{
-                    span: copiedSpan,
-                    references: this.lumiDocManager?.lumiDoc.references,
-                    highlightManager: this.highlightManager,
-                    answerHighlightManager: this.answerHighlightManager,
-                  }}
+                  .references=${this.lumiDocManager?.lumiDoc.references}
+                  .highlightManager=${this.highlightManager}
+                  .answerHighlightManager=${this.answerHighlightManager}
                 ></lumi-span>
               </div>
             `;
@@ -199,23 +196,24 @@ export class AnswerItem extends LightMobxLitElement {
 
     return html`<div class="answer">
       ${this.answer.responseContent.map((content: LumiContent) => {
-        return renderContent({
-          parentComponent: this,
-          content,
-          references: this.lumiDocManager?.lumiDoc.references,
-          referencedSpans: this.referencedSpans,
-          summary: null,
-          spanSummaries: new Map(),
-          focusedSpanId: null,
-          highlightManager: this.highlightManager!,
-          answerHighlightManager: this.answerHighlightManager!,
-          onAnswerHighlightClick: this.onAnswerHighlightClick?.bind(this),
-          collapseManager: this.collapseManager!,
-          onSpanSummaryMouseEnter: () => {},
-          onSpanSummaryMouseLeave: () => {},
-          onSpanReferenceClicked: this.onAnswerSpanReferenceClicked.bind(this),
-          dense: true,
-        });
+        return html`<lumi-content
+          .content=${content}
+          .references=${this.lumiDocManager?.lumiDoc.references}
+          .referencedSpans=${this.referencedSpans}
+          .summary=${null}
+          .spanSummaries=${new Map()}
+          .focusedSpanId=${null}
+          .highlightManager=${this.highlightManager!}
+          .answerHighlightManager=${this.answerHighlightManager!}
+          .onAnswerHighlightClick=${this.onAnswerHighlightClick?.bind(this)}
+          .collapseManager=${this.collapseManager!}
+          .onSpanSummaryMouseEnter=${() => {}}
+          .onSpanSummaryMouseLeave=${() => {}}
+          .onSpanReferenceClicked=${this.onAnswerSpanReferenceClicked.bind(
+            this
+          )}
+          .dense=${true}
+        ></lumi-content>`;
       })}
     </div>`;
   }

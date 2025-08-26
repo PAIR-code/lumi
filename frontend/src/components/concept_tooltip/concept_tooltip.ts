@@ -20,7 +20,6 @@ import { CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ConceptTooltipProps } from "../../services/floating_panel_service";
 import { styles } from "./concept_tooltip.scss";
-import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
 import "../lumi_concept/lumi_concept_contents";
 
@@ -29,7 +28,7 @@ import "../lumi_concept/lumi_concept_contents";
  */
 @customElement("concept-tooltip")
 export class ConceptTooltip extends MobxLitElement {
-  static override styles: CSSResultGroup = [styles, spanRendererStyles];
+  static override styles: CSSResultGroup = [styles];
 
   @property({ type: Object }) props!: ConceptTooltipProps;
 

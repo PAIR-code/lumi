@@ -23,14 +23,13 @@ import { ReferenceTooltipProps } from "../../services/floating_panel_service";
 import "../lumi_span/lumi_span";
 
 import { styles } from "./reference_tooltip.scss";
-import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
 
 /**
  * A component that renders a reference in a tooltip.
  */
 @customElement("reference-tooltip")
 export class ReferenceTooltip extends MobxLitElement {
-  static override styles = [styles, spanRendererStyles];
+  static override styles = [styles];
 
   @property({ type: Object }) props!: ReferenceTooltipProps;
 
@@ -42,12 +41,7 @@ export class ReferenceTooltip extends MobxLitElement {
     const referenceContent = this.props.reference.span;
 
     return html`<div class="reference-tooltip-component">
-      <lumi-span
-        .span=${referenceContent}
-        .spanProperties=${{
-          span: referenceContent,
-        }}
-      ></lumi-span>
+      <lumi-span .span=${referenceContent}></lumi-span>
     </div>`;
   }
 }

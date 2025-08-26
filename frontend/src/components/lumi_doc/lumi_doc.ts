@@ -34,10 +34,9 @@ import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HighlightSelection } from "../../shared/selection_utils";
 
-import { renderAbstract } from "./renderers/abstract_renderer";
-import { renderReferences } from "./renderers/references_renderer";
-import { renderFootnotes } from "./renderers/footnotes_renderer";
-
+import "./lumi_abstract";
+import "./lumi_references";
+import "./lumi_footnotes";
 import "./lumi_section";
 import "../lumi_span/lumi_span";
 import "../../pair-components/icon_button";
@@ -140,64 +139,65 @@ export class LumiDocViz extends LightMobxLitElement {
               ${this.lumiDoc.metadata?.authors.join(", ")}
             </div>
           </div>
-          ${renderAbstract({
-            abstract: this.lumiDoc.abstract,
-            isCollapsed: this.collapseManager.isAbstractCollapsed,
-            onCollapseChange: (isCollapsed: boolean) => {
+          <lumi-abstract
+            .abstract=${this.lumiDoc.abstract}
+            .isCollapsed=${this.collapseManager.isAbstractCollapsed}
+            .onCollapseChange=${(isCollapsed: boolean) => {
               this.collapseManager.setAbstractCollapsed(isCollapsed);
-            },
-            onFootnoteClick: this.onFootnoteClick.bind(this),
-            onConceptClick: this.onConceptClick.bind(this),
-            excerptSpanId: this.lumiDoc.summaries?.abstractExcerptSpanId,
-            highlightManager: this.highlightManager,
-            answerHighlightManager: this.answerHighlightManager,
-            footnotes: this.lumiDoc.footnotes,
-          })}
+            }}
+            .onFootnoteClick=${this.onFootnoteClick.bind(this)}
+            .onConceptClick=${this.onConceptClick.bind(this)}
+            .excerptSpanId=${this.lumiDoc.summaries?.abstractExcerptSpanId}
+            .highlightManager=${this.highlightManager}
+            .answerHighlightManager=${this.answerHighlightManager}
+            .footnotes=${this.lumiDoc.footnotes}
+          >
+          </lumi-abstract>
           ${this.lumiDoc.sections.map((section) => {
             return html`<lumi-section
               .section=${section}
-              .sectionProperties=${{
-                parentComponent: this,
-                section,
-                references: this.lumiDoc.references,
-                footnotes: this.lumiDoc.footnotes,
-                summaryMaps: this.lumiDocManager.summaryMaps,
-                hoverFocusedSpanId: this.hoveredSpanId,
-                getImageUrl: this.getImageUrl,
-                onSpanSummaryMouseEnter:
-                  this.onSpanSummaryMouseEnter.bind(this),
-                onSpanSummaryMouseLeave:
-                  this.onSpanSummaryMouseLeave.bind(this),
-                highlightManager: this.highlightManager,
-                answerHighlightManager: this.answerHighlightManager,
-                collapseManager: this.collapseManager,
-                onFocusOnSpan: this.onFocusOnSpan,
-                onPaperReferenceClick: this.onPaperReferenceClick,
-                onFootnoteClick: this.onFootnoteClick,
-                onImageClick: this.onImageClick,
-                onAnswerHighlightClick: this.onAnswerHighlightClick,
-                isSubsection: false,
-              }}
+              .references=${this.lumiDoc.references}
+              .footnotes=${this.lumiDoc.footnotes}
+              .summaryMaps=${this.lumiDocManager.summaryMaps}
+              .hoverFocusedSpanId=${this.hoveredSpanId}
+              .getImageUrl=${this.getImageUrl}
+              .onSpanSummaryMouseEnter=${this.onSpanSummaryMouseEnter.bind(
+                this
+              )}
+              .onSpanSummaryMouseLeave=${this.onSpanSummaryMouseLeave.bind(
+                this
+              )}
+              .highlightManager=${this.highlightManager}
+              .answerHighlightManager=${this.answerHighlightManager}
+              .collapseManager=${this.collapseManager}
+              .onFocusOnSpan=${this.onFocusOnSpan}
+              .onPaperReferenceClick=${this.onPaperReferenceClick}
+              .onFootnoteClick=${this.onFootnoteClick}
+              .onImageClick=${this.onImageClick}
+              .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+              .isSubsection=${false}
             >
             </lumi-section>`;
           })}
-          ${renderReferences({
-            references: this.lumiDoc.references,
-            isCollapsed: this.collapseManager.areReferencesCollapsed,
-            onCollapseChange: (isCollapsed: boolean) => {
+          <lumi-references
+            .references=${this.lumiDoc.references}
+            .isCollapsed=${this.collapseManager.areReferencesCollapsed}
+            .onCollapseChange=${(isCollapsed: boolean) => {
               this.collapseManager.setReferencesCollapsed(isCollapsed);
-            },
-            highlightManager: this.highlightManager,
-            answerHighlightManager: this.answerHighlightManager,
-            onAnswerHighlightClick: this.onAnswerHighlightClick,
-          })}
-          ${renderFootnotes({
-            footnotes: this.lumiDoc.footnotes || [],
-            isCollapsed: this.collapseManager.areFootnotesCollapsed,
-            onCollapseChange: (isCollapsed: boolean) => {
+            }}
+            .highlightManager=${this.highlightManager}
+            .answerHighlightManager=${this.answerHighlightManager}
+            .onAnswerHighlightClick=${this.onAnswerHighlightClick}
+          >
+          </lumi-references>
+          <lumi-footnotes
+            .footnotes=${this.lumiDoc.footnotes || []}
+            .isCollapsed=${this.collapseManager.areFootnotesCollapsed}
+            .onCollapseChange=${(isCollapsed: boolean) => {
               this.collapseManager.setFootnotesCollapsed(isCollapsed);
-            },
-          })}
+            }}
+          >
+          </lumi-footnotes>
         </div>
       </div>
     `;

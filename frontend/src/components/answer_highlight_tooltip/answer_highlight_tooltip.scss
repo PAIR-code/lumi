@@ -27,7 +27,7 @@ $vertical-negative-margin: common.$spacing-small;
 }
 
 .answer-highlight-tooltip {
-  @include common.flex-column-align-center;
+  @include common.flex-column;
 
   max-width: 300px;
   padding-left: common.$spacing-xl;

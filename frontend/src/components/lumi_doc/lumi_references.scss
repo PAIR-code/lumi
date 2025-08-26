@@ -14,41 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+@use "../../sass/common";
+@use "../../sass/typescale";
 
-@use "../../../sass/common";
-@use "../../../sass/typescale";
-
-.abstract-renderer-container {
+.references-renderer-container {
   @include common.lumi-doc-grid;
-}
 
-.abstract {
-  grid-column: common.$content-grid-col;
+  .references {
+    grid-column: common.$content-grid-col;
+    padding-bottom: common.$spacing-xl;
 
-  display: flex;
-  flex-direction: column;
-  gap: common.$spacing-medium;
-  position: relative;
+    @include common.flex-column;
+    gap: common.$spacing-xl;
 
-  padding: 22px;
-  border: 1px solid var(--md-sys-color-outline-variant);
-
-  border-radius: common.$border-radius-medium;
-
-  .abstract-header {
-    @include common.flex-row-align-center;
-    @include typescale.headline-large;
     @include common.lumi-paper-text-font;
-    gap: common.$spacing-small;
-    margin: 0;
 
-    @include common.viewport-small {
-      font-size: common.$mobile-header-font-size;
+    .references-header {
+      @include common.flex-row-align-center;
+      @include typescale.headline-large;
+      @include common.lumi-paper-text-font;
+      margin: 0;
+
+      @include common.viewport-small {
+        font-size: common.$mobile-header-font-size;
+      }
     }
   }
-}
-
-.abstract-content {
-  display: inline;
-  @include common.lumi-paper-text;
 }

@@ -14,3 +14,131 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+.section-renderer-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .collapse-summaries {
+    @include common.flex-column;
+    gap: common.$spacing-medium;
+    padding: common.$spacing-medium common.$spacing-xl;
+    background: var(--md-sys-color-gray-container-lowest);
+    border-radius: common.$spacing-medium;
+
+    margin-top: common.$spacing-small;
+  }
+
+  .left-section-summary {
+    padding: common.$spacing-medium common.$spacing-xl;
+    background: var(--md-sys-color-gray-container-lowest);
+    border-radius: common.$spacing-medium;
+
+    text-align: left;
+    font-style: italic;
+    color: var(--md-sys-color-on-surface-higher);
+
+    margin-right: 24px;
+  }
+
+  .paragraph-summaries {
+    li:not(:last-child) {
+      margin-bottom: common.$spacing-small;
+    }
+  }
+
+  .paragraph-summary-item {
+    @include common.flex-row-align-center;
+    justify-content: space-between;
+
+    pr-icon-button {
+      visibility: hidden;
+      margin-left: common.$spacing-small;
+    }
+
+    &:hover {
+      pr-icon-button {
+        visibility: visible;
+      }
+    }
+  }
+
+  .heading-grid-container {
+    @include common.lumi-doc-grid;
+
+    .heading-row {
+      @include common.flex-row-align-center;
+      gap: common.$spacing-medium;
+      grid-column: common.$content-grid-col;
+    }
+  }
+
+  .section-summary {
+    @include typescale.body-medium;
+    padding: 0 common.$document-content-horizontal-padding;
+    font-style: italic;
+
+    color: var(--md-sys-color-on-surface-higher);
+  }
+
+  .heading-text {
+    @include common.flex-row-align-center;
+    padding: 0 common.$document-content-horizontal-padding;
+    margin: 0 0 0 common.$spacing-medium;
+
+    &.has-focus {
+      opacity: 0.3;
+    }
+  }
+
+  .empty-heading-placeholder {
+    &:not(.collapsed) {
+      display: none;
+    }
+
+    color: var(--md-sys-color-on-surface-highest);
+    font-style: italic;
+  }
+}
+
+.section-container {
+  grid-gap: common.$spacing-medium;
+
+  .hide-button-container {
+    @include common.flex-row-align-center;
+    justify-content: flex-end;
+
+    position: relative;
+    left: 20px;
+  }
+
+  .figures {
+    max-width: 100%;
+    overflow: auto;
+  }
+
+  .content-viz {
+    display: flex;
+    flex-direction: column;
+    gap: common.$main-content-gap;
+  }
+
+  &.is-subsection {
+    @include common.flex-column;
+  }
+
+  .heading-text {
+    grid-column: common.$content-grid-col;
+
+    @include typescale.headline-large;
+    @include common.lumi-paper-text-font;
+
+    @include common.viewport-small {
+      font-size: common.$mobile-header-font-size;
+    }
+  }
+}

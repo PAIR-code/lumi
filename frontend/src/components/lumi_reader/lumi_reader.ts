@@ -57,13 +57,6 @@ import {
 import { ImageInfo, LumiAnswer, LumiAnswerRequest } from "../../shared/api";
 
 import { styles } from "./lumi_reader.scss";
-import { styles as sectionRendererStyles } from "../lumi_doc/renderers/section_renderer.scss";
-import { styles as contentRendererStyles } from "../lumi_doc/renderers/content_renderer.scss";
-import { styles as contentSummaryRendererStyles } from "../lumi_doc/renderers/content_summary_renderer.scss";
-import { styles as spanRendererStyles } from "../lumi_span/lumi_span_renderer.scss";
-import { styles as abstractRendererStyles } from "../lumi_doc/renderers/abstract_renderer.scss";
-import { styles as referencesRendererStyles } from "../lumi_doc/renderers/references_renderer.scss";
-import { styles as footnotesRendererStyles } from "../lumi_doc/renderers/footnotes_renderer.scss";
 
 import {
   getSelectionInfo,
@@ -538,13 +531,6 @@ export class LumiReader extends LightMobxLitElement {
     return html`
       <style>
         ${styles}
-        ${abstractRendererStyles}
-        ${sectionRendererStyles}
-        ${contentRendererStyles}
-        ${contentSummaryRendererStyles}
-        ${spanRendererStyles}
-        ${referencesRendererStyles}
-        ${footnotesRendererStyles}
       </style>
       ${content}
     `;

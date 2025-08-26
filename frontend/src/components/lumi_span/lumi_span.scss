@@ -17,6 +17,7 @@
 
 @use "../../sass/colors";
 @use "../../sass/typescale";
+@use "../../sass/common";
 
 lumi-span {
   display: inline;
@@ -58,4 +59,151 @@ span.collapsed {
 
 .outer-span.concept-expand-text {
   font-style: italic;
+}
+
+.lumi-span-renderer-element {
+  .footnote-marker {
+    cursor: pointer;
+    color: var(--md-sys-color-primary);
+  }
+
+  .character {
+    // Fonts
+    &.paper-text {
+      @include common.lumi-paper-text;
+    }
+
+    &.span-summary-text {
+      @include typescale.label-small;
+      font-size: 12px;
+    }
+
+    // Enum classes for lumi_doc.ts/InnerTagName
+    &.b,
+    &.strong {
+      font-weight: bold;
+    }
+
+    &.i,
+    &.em {
+      font-style: italic;
+    }
+
+    &.u {
+      text-decoration: underline;
+    }
+
+    &.ref {
+      color: var(--md-sys-color-on-surface-higher);
+      cursor: pointer;
+    }
+
+    &.spanref {
+      color: var(--md-sys-color-primary);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    &.concept {
+      color: var(--md-sys-color-primary);
+      cursor: pointer;
+    }
+
+    &.a {
+      // TODO(ellenj): Figure out better highlight colors for links vs. concepts vs. references.
+      color: var(--md-sys-color-primary);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .monospace {
+      font-family: "Roboto Mono", monospace;
+    }
+
+    &.code {
+      font-family: "Roboto Mono", monospace;
+      font-size: 14px;
+      padding: common.$spacing-xs 0;
+
+      background-color: var(--md-sys-color-gray-container);
+    }
+
+    // Color classes (kept in sync with shared/lumi_doc.ts > HighlightColors type.
+    &.cyan {
+      background-color: var(--md-sys-color-highlight-cyan);
+    }
+
+    &.green {
+      background-color: var(--md-sys-color-highlight-green);
+    }
+
+    &.yellow {
+      background-color: var(--md-sys-color-highlight-yellow);
+    }
+
+    &.orange {
+      background-color: var(--md-sys-color-highlight-orange);
+    }
+
+    &.pink {
+      background-color: var(--md-sys-color-highlight-pink);
+    }
+
+    &.purple {
+      background-color: var(--md-sys-color-highlight-purple);
+    }
+
+    &.blue {
+      background-color: var(--md-sys-color-highlight-blue);
+    }
+
+    &.gray {
+      background-color: var(--md-sys-color-highlight-light-gray);
+    }
+  }
+
+  // Katex outputs both katex-mathml and katex-html tags.
+  // We only show the katex-mathml and hide katex-html.
+  .katex-html {
+    display: none;
+  }
+
+  .citation-marker {
+    display: inline-flex;
+    gap: common.$spacing-small;
+    padding: 0 common.$spacing-xs;
+  }
+
+  .inline-citation {
+    background: var(--md-sys-color-gray-container);
+    color: var(--md-sys-color-on-gray-container-soft);
+
+    @include typescale.body-small;
+    padding: 0 common.$spacing-small;
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    &.span-inline-citation {
+      background: var(--md-sys-color-surface-container);
+      color: var(--md-sys-color-on-surface-high);
+    }
+  }
+
+  .equation {
+    padding: 0 common.$spacing-xs;
+
+    &.display {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: common.$spacing-xl 0;
+
+      overflow-y: auto;
+    }
+  }
+
+  .clickable {
+    cursor: pointer;
+  }
 }

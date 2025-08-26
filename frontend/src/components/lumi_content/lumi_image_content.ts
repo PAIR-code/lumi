@@ -101,11 +101,8 @@ export class LumiImageContent extends MobxLitElement {
       <figcaption>
         <lumi-span
           .span=${caption}
-          .spanProperties=${{
-            span: caption,
-            highlightManager: this.highlightManager,
-            answerHighlightManager: this.answerHighlightManager,
-          }}
+          .highlightManager=${this.highlightManager}
+          .answerHighlightManager=${this.answerHighlightManager}
         ></lumi-span>
       </figcaption>
     `;
