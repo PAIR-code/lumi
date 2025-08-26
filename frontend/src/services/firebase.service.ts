@@ -17,13 +17,7 @@
 
 import { FirebaseApp, initializeApp } from "firebase/app";
 import {
-  Auth,
-  GoogleAuthProvider,
-  connectAuthEmulator,
-  getAuth,
-} from "firebase/auth";
-import {
-  Firestore,
+  type Firestore,
   Unsubscribe,
   connectFirestoreEmulator,
   getFirestore,
@@ -60,7 +54,6 @@ export class FirebaseService extends Service {
 
     this.app = initializeApp(FIREBASE_CONFIG);
     this.firestore = getFirestore(this.app);
-    this.auth = getAuth(this.app);
     this.functions = getFunctions(this.app);
     this.storage = getStorage(this.app);
 
@@ -68,16 +61,11 @@ export class FirebaseService extends Service {
     if (process.env.NODE_ENV === "development") {
       this.registerEmulators();
     }
-
-    // Set up auth provider and scope
-    this.provider = new GoogleAuthProvider();
   }
 
   app: FirebaseApp;
   firestore: Firestore;
-  auth: Auth;
   functions: Functions;
-  provider: GoogleAuthProvider;
   storage: FirebaseStorage;
   unsubscribe: Unsubscribe[] = [];
 
@@ -91,10 +79,6 @@ export class FirebaseService extends Service {
       this.storage,
       "localhost",
       FIREBASE_LOCAL_HOST_PORT_STORAGE
-    );
-    connectAuthEmulator(
-      this.auth,
-      `http://localhost:${FIREBASE_LOCAL_HOST_PORT_AUTH}`
     );
     connectFunctionsEmulator(
       this.functions,

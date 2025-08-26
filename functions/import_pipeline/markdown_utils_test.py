@@ -205,19 +205,66 @@ Hello, world again!"""
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )
 
-        with self.subTest("underscores remain as underscores"):
-            self.maxDiff = None
+        with self.subTest("preserves inline math with underscores"):
             markdown_input = "This is $\mathcal{a}_{b}$"
             expected_html = "<p>This is $\mathcal{a}_{b}$</p>\n"
             self.assertEqual(
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )
 
-        with self.subTest("slashes preceding dollar signs aren't escaped"):
-            self.maxDiff = None
+        with self.subTest("preserves block display math"):
+            markdown_input = "This is a formula:\n\n$$E = mc^2$$\n\nMore text."
+            expected_html = "<p>This is a formula:</p>\n<p>$$E = mc^2$$</p>\n<p>More text.</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("handles mixed inline and display math"):
+            markdown_input = "Inline $a_{b}$ and display $$E=mc^2$$ math."
+            expected_html = "<p>Inline $a_{b}$ and display $$E=mc^2$$ math.</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("ignores escaped dollar signs"):
             markdown_input = r"This is not an equation: \$40"
-            expected_html = r"""<p>This is not an equation: \$40</p>
-"""
+            expected_html = "<p>This is not an equation: \$40</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("handles markdown within math"):
+            markdown_input = "This is a test with an asterisk $a *b*$ inside."
+            expected_html = "<p>This is a test with an asterisk $a *b*$ inside.</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+    def test_katex_substitutions(self):
+        with self.subTest("replaces simple functions"):
+            markdown_input = r"Some text in \normalfont{normal font} and a \mbox{box}."
+            expected_html = "<p>Some text in \\text{normal font} and a \\text{box}.</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("removes label function with argument"):
+            markdown_input = r"An equation \label{eq:1} with a label."
+            expected_html = "<p>An equation  with a label.</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("handles multiple substitutions in one string"):
+            markdown_input = r"Equation \label{eq:main} uses \normalfont."
+            expected_html = "<p>Equation  uses \\text.</p>\n"
+            self.assertEqual(
+                markdown_utils.markdown_to_html(markdown_input), expected_html
+            )
+
+        with self.subTest("does not affect text without unsupported functions"):
+            markdown_input = "This is a regular string with no substitutions."
+            expected_html = "<p>This is a regular string with no substitutions.</p>\n"
             self.assertEqual(
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )

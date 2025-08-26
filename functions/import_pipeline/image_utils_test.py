@@ -61,6 +61,40 @@ class ImageUtilsTest(unittest.TestCase):
         mock_blob.download_as_bytes.assert_called_once_with()
         self.assertEqual(result_bytes, expected_bytes)
 
+    def test_check_target_in_path(self):
+        """Tests the check_target_in_path function with various scenarios."""
+        # Exact match
+        self.assertTrue(image_utils.check_target_in_path("/a/b/c.png", "a/b/c.png"))
+        # Match at the end of a path
+        self.assertTrue(image_utils.check_target_in_path("/a/b/c.png", "b/c.png"))
+        # Match at the start of a path
+        self.assertTrue(image_utils.check_target_in_path("a/b/c.png", "a/b/c.png"))
+        # Case-sensitivity
+        self.assertFalse(image_utils.check_target_in_path("/A/B/C.PNG", "a/b/c.png"))
+        # Windows paths
+        self.assertTrue(image_utils.check_target_in_path("C:\\Users\\Test\\file.jpg", "Test/file.jpg"))
+
+        # Non-match due to partial path component
+        self.assertFalse(image_utils.check_target_in_path("/a/b/my_c.png", "c.png"))
+        self.assertFalse(image_utils.check_target_in_path("/a/b/c.pngg", "c.png"))
+        # Non-match with different extensions
+        self.assertFalse(image_utils.check_target_in_path("/a/b/c.jpg", "c.png"))
+        # Non-match because it's not at the end
+        self.assertFalse(image_utils.check_target_in_path("/a/b/c.png/d", "c.png"))
+
+        # Match target without extension
+        self.assertTrue(image_utils.check_target_in_path("/a/b/c.png", "c"))
+        # Match target without extension at end of path
+        self.assertTrue(image_utils.check_target_in_path("/a/b/c.png", "b/c"))
+        # Non-match target without extension
+        self.assertFalse(image_utils.check_target_in_path("/a/b/c.png", "d"))
+        # Non-match partial component for extensionless
+        self.assertFalse(image_utils.check_target_in_path("/a/b/my_c.png", "c"))
+        # Match when both full_path and target are extensionless
+        self.assertTrue(image_utils.check_target_in_path("/a/b/c", "b/c"))
+        # Non-match when target has extension but full_path does not 
+        self.assertFalse(image_utils.check_target_in_path("/a/b/c", "c.png"))
+
     @patch('import_pipeline.image_utils.storage')
     def test_extract_images_from_latex_source_cloud(self, mock_storage):
         """Tests that images are uploaded to cloud storage when run_locally=False."""
