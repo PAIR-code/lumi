@@ -46,7 +46,9 @@ export class TutorialDialog extends MobxLitElement {
   private readonly firebaseService = core.getService(FirebaseService);
 
   private handleClose() {
-    this.dialogService.hide();
+    if (this.dialogService) {
+      this.dialogService.hide();
+    }
   }
 
   private shouldShowDialog() {

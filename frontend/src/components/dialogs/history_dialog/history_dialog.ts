@@ -40,7 +40,9 @@ export class HistoryDialog extends MobxLitElement {
   private readonly dialogService = core.getService(DialogService);
 
   private handleClose() {
-    this.dialogService.hide();
+    if (this.dialogService) {
+      this.dialogService.hide();
+    }
   }
 
   private shouldShowDialog() {
