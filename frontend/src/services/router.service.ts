@@ -210,3 +210,9 @@ export const NAV_ITEMS: NavItem[] = [
     isPrimaryPage: false,
   },
 ];
+
+/** Utils function to get arXiv document URL. */
+export function getLumiPaperUrl(paperId: string) {
+  const loc = window.location;
+  return `${loc.protocol}//${loc.host}/#/${ARXIV_DOCS_ROUTE_NAME}/${paperId}`;
+}

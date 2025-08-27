@@ -25,7 +25,7 @@ import { customElement } from "lit/decorators.js";
 
 import { core } from "../../core/core";
 import { HistoryService } from "../../services/history.service";
-import { Pages, RouterService } from "../../services/router.service";
+import { getLumiPaperUrl } from "../../services/router.service";
 import { SettingsService } from "../../services/settings.service";
 
 import { ArxivMetadata } from "../../shared/lumi_doc";
@@ -40,20 +40,18 @@ export class Settings extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly historyService = core.getService(HistoryService);
-  private readonly routerService = core.getService(RouterService);
   private readonly settingsService = core.getService(SettingsService);
 
   renderHistoryItem(item: ArxivMetadata) {
-    const navigateToPaper = () => {
-      this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
-        document_id: item.paperId,
-      });
-    };
-
     return html`
-      <div class="history-item" @click=${navigateToPaper}>
+      <div class="history-item">
         <div class="left">
-          <div class="title">${item.title}</div>
+          <a href=${getLumiPaperUrl(item.paperId)}
+            rel="noopener noreferrer"
+            class="title">
+            ${item.title}
+          </a>
+          <div>${item.authors.join(', ')}</div>
           <i>${item.paperId}</i>
         </div>
         <div class="right">

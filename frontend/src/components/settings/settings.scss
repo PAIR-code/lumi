@@ -66,12 +66,6 @@ a {
   justify-content: space-between;
   padding: common.$spacing-medium;
 
-  &:focus,
-  &:hover {
-    border-color: var(--md-sys-color-outline);
-    cursor: pointer;
-  }
-
   .left {
     @include common.flex-column;
   }
@@ -82,5 +76,6 @@ a {
 
   .title {
     @include typescale.title-small;
+    margin-bottom: common.$spacing-small;
   }
 }
