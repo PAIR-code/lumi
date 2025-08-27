@@ -69,10 +69,19 @@ export class Settings extends MobxLitElement {
                 </div>
                 <div class="right">
                   <pr-icon-button
-                    disabled
                     color="neutral"
                     icon="delete"
                     variant="default"
+                    @click=${(e: Event) => {
+                      e.stopPropagation();
+                      const isConfirmed = window.confirm(
+                        `Are you sure you want to remove this paper from your reading history? This will also remove it from "My Collection."`
+                      );
+                      if (isConfirmed) {
+                        this.historyService.deletePaper(item.paperId);
+                        this.requestUpdate();
+                      }
+                    }}
                   >
                   </pr-icon-button>
                 </div>
