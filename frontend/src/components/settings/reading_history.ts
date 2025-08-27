@@ -92,6 +92,7 @@ export class ReadingHistory extends MobxLitElement {
           );
           if (isConfirmed) {
             this.historyService.clearAllHistory();
+            this.requestUpdate();
           }
         }}
         ?disabled=${!hasItems}
