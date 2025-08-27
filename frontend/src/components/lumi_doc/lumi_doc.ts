@@ -73,8 +73,9 @@ export class LumiDocViz extends LightMobxLitElement {
     target: HTMLElement
   ) => void = () => {};
   @property() onScroll: () => void = () => {};
-
-  @state() hoveredSpanId: string | null = null;
+  @property() onSpanSummaryMouseEnter: () => void = () => {};
+  @property() onSpanSummaryMouseLeave: () => void = () => {};
+  @property() hoveredSpanId: string | null = null;
 
   private intersectionObserver?: IntersectionObserver;
   private scrollRef: Ref<HTMLElement> = createRef<HTMLElement>();
@@ -82,7 +83,6 @@ export class LumiDocViz extends LightMobxLitElement {
   get lumiDoc() {
     return this.lumiDocManager.lumiDoc;
   }
-
 
   private handleLumiContentRendered(event: LumiContentRenderedEvent) {
     this.intersectionObserver?.observe(event.element);
@@ -125,17 +125,6 @@ export class LumiDocViz extends LightMobxLitElement {
       LumiContentRenderedEvent.eventName,
       this.handleLumiContentRendered as EventListener
     );
-  }
-
-  private onSpanSummaryMouseEnter(spanIds: string[]) {
-    if (spanIds.length === 0) {
-      return;
-    }
-    this.hoveredSpanId = spanIds[0];
-  }
-
-  private onSpanSummaryMouseLeave() {
-    this.hoveredSpanId = null;
   }
 
   private handleLinkClicked() {
