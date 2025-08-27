@@ -75,16 +75,8 @@ export class ReadingHistory extends MobxLitElement {
     `;
   }
 
-  override render() {
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    ).map((item) => item.metadata);
-  const hasItems = historyItems.length > 0;
-
+  renderClearButton() {
     return html`
-      <h2>Reading History (${historyItems.length})</h2>
-      ${!hasItems ? html`<i>No papers yet</i>` : nothing}
-      ${historyItems.map((item) => this.renderHistoryItem(item))}
       <pr-button
         @click=${() => {
           const isConfirmed = window.confirm(
@@ -95,12 +87,25 @@ export class ReadingHistory extends MobxLitElement {
             this.requestUpdate();
           }
         }}
-        ?disabled=${!hasItems}
         color="error"
         variant="tonal"
       >
         Clear entire reading history
       </pr-button>
+    `;
+  }
+
+  override render() {
+    const historyItems = sortPaperDataByTimestamp(
+      this.historyService.getPaperHistory()
+    ).map((item) => item.metadata);
+  const hasItems = historyItems.length > 0;
+
+    return html`
+      <h2>Reading History (${historyItems.length})</h2>
+      ${!hasItems ? html`<i>No papers yet</i>` : nothing}
+      ${historyItems.map((item) => this.renderHistoryItem(item))}
+      ${hasItems ? this.renderClearButton() : nothing}
     `;
   }
 }
