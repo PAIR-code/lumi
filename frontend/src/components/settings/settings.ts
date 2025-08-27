@@ -45,7 +45,7 @@ export class Settings extends MobxLitElement {
     return html`
       <div class="settings">
         <div class="section">
-          <reading-history></reading-history>
+          <reading-history showTitle></reading-history>
         </div>
         <div class="section">
           <h2>Model API Key</h2>

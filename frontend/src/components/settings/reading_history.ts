@@ -21,7 +21,7 @@ import "../../pair-components/textinput";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 
 import { core } from "../../core/core";
 import { HistoryService } from "../../services/history.service";
@@ -40,6 +40,8 @@ export class ReadingHistory extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly historyService = core.getService(HistoryService);
+
+  @property({type: Boolean}) showTitle = false;
 
   renderHistoryItem(item: ArxivMetadata) {
     return html`
@@ -102,7 +104,8 @@ export class ReadingHistory extends MobxLitElement {
   const hasItems = historyItems.length > 0;
 
     return html`
-      <h2>Reading History (${historyItems.length})</h2>
+      ${this.showTitle ?
+        html`<h2>Reading History (${historyItems.length})</h2>` : nothing}
       ${!hasItems ? html`<i>No papers yet</i>` : nothing}
       ${historyItems.map((item) => this.renderHistoryItem(item))}
       ${hasItems ? this.renderClearButton() : nothing}
