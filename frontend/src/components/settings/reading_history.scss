@@ -20,7 +20,7 @@
 
 :host {
   @include common.flex-column;
-  @include common.full-percentage;
+  gap: common.$spacing-large;
 }
 
 h2 {
@@ -28,32 +28,33 @@ h2 {
   margin: 0;
 }
 
-p {
-  margin: 0;
+.history-item {
+  @include common.flex-row;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: common.$spacing-medium;
+  gap: common.$spacing-medium;
+  justify-content: space-between;
+  padding: common.$spacing-medium;
+
+  .left {
+    @include common.flex-column;
+  }
+
+  .right {
+    flex-shrink: 0;
+  }
+
+  .title {
+    @include typescale.title-small;
+    margin-bottom: common.$spacing-small;
+  }
 }
 
 a {
   color: var(--md-sys-color-primary);
-}
 
-.section {
-  @include common.flex-column;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  gap: common.$spacing-large;
-  padding: common.$main-content-padding 0;
-
-  &:last-of-type {
-    border-bottom: none;
+  &:focus,
+  &:hover {
+    color: var(--md-sys-color-secondary);
   }
-}
-
-.field {
-  @include common.flex-row-align-center;
-  gap: common.$spacing-medium;
-}
-
-.action-buttons {
-  @include common.flex-row;
-  flex-wrap: wrap;
-  gap: common.$spacing-xl;
 }

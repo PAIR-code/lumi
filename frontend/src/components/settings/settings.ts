@@ -16,15 +16,15 @@
  */
 
 import "../../pair-components/button";
-import "./tos_content";
 import "../../pair-components/textinput";
+import "./reading_history";
+import "./tos_content";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import { core } from "../../core/core";
-import { HistoryService } from "../../services/history.service";
 import { getLumiPaperUrl } from "../../services/router.service";
 import { SettingsService } from "../../services/settings.service";
 
@@ -39,70 +39,13 @@ import { styles } from "./settings.scss";
 export class Settings extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  private readonly historyService = core.getService(HistoryService);
   private readonly settingsService = core.getService(SettingsService);
 
-  renderHistoryItem(item: ArxivMetadata) {
-    return html`
-      <div class="history-item">
-        <div class="left">
-          <a href=${getLumiPaperUrl(item.paperId)}
-            rel="noopener noreferrer"
-            class="title">
-            ${item.title}
-          </a>
-          <div>${item.authors.join(', ')}</div>
-          <i>${item.paperId}</i>
-        </div>
-        <div class="right">
-          <pr-icon-button
-            color="neutral"
-            icon="delete"
-            variant="default"
-            @click=${(e: Event) => {
-              e.stopPropagation();
-              const isConfirmed = window.confirm(
-                `Are you sure you want to remove this paper from your reading history? This will also remove it from "My Collection."`
-              );
-              if (isConfirmed) {
-                this.historyService.deletePaper(item.paperId);
-                this.requestUpdate();
-              }
-            }}
-          >
-          </pr-icon-button>
-        </div>
-      </div>
-    `;
-  }
-
   override render() {
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    ).map((item) => item.metadata);
-  const hasItems = historyItems.length > 0;
-
     return html`
       <div class="settings">
         <div class="section">
-          <h2>Reading History (${historyItems.length})</h2>
-          ${!hasItems ? html`<i>No papers yet</i>` : nothing}
-          ${historyItems.map((item) => this.renderHistoryItem(item))}
-          <pr-button
-            @click=${() => {
-              const isConfirmed = window.confirm(
-                `Are you sure you want to clear history? This will remove all items from "My Collection."`
-              );
-              if (isConfirmed) {
-                this.historyService.clearAllHistory();
-              }
-            }}
-            ?disabled=${!hasItems}
-            color="error"
-            variant="tonal"
-          >
-            Clear entire reading history
-          </pr-button>
+          <reading-history></reading-history>
         </div>
         <div class="section">
           <h2>Model API Key</h2>
