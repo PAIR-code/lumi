@@ -92,4 +92,4 @@ Copyright 2025 DeepMind Technologies Limited.
 
 Lumi was designed and built by Ellen Jiang, Vivian Tsai, and Nada Hussein.
 
-Special thanks to Andy Coenen, James Wexler, Tianchang He, Mahima Pushkarna, Michael Xieyang Liu, Alejandra Molina, Aaron Donsbach, Michael Terry, and Lucas Dixon for making this experiment possible!
+Special thanks to Andy Coenen, James Wexler, Tianchang He, Mahima Pushkarna, Michael Xieyang Liu, Alejandra Molina, Aaron Donsbach, Martin Wattenberg, Fernanda Viégas, Michael Terry, and Lucas Dixon for making this experiment possible!
