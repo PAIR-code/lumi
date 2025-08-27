@@ -32,11 +32,14 @@ img {
   height: 100%;
   object-fit: contain;
   border-radius: common.$border-radius-small;
-  cursor: pointer;
 }
 
 .highlighted img {
   outline: common.$spacing-small solid var(--md-sys-color-highlight-blue-high);
+}
+
+.enable-hover {
+  cursor: pointer;
 }
 
 .enable-hover:not(.highlighted):hover img {
