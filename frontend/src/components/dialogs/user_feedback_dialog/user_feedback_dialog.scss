@@ -19,7 +19,7 @@
 
 .dialog-content {
   @include common.flex-column;
-  gap: common.$spacing-small;
+  gap: common.$spacing-large;
 }
 
 .dialog-explanation {
@@ -33,4 +33,8 @@
 .actions {
   @include common.flex-row;
   gap: common.$spacing-medium;
+}
+
+p {
+  margin: 0;
 }
