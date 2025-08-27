@@ -33,6 +33,7 @@ import {
   ARXIV_DOCS_ROUTE_NAME,
   Pages,
   RouterService,
+  getLumiPaperUrl
 } from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
@@ -379,28 +380,23 @@ export class HomeGallery extends MobxLitElement {
         return nothing;
       }
 
-      const openPaper = () => {
-        const baseUrl = document.location.origin;
-        window.open(
-          `${baseUrl}/#/${ARXIV_DOCS_ROUTE_NAME}/${metadata.paperId}`,
-          "_blank",
-          "noopener,noreferrer"
-        );
-      };
-
       const status = this.unsubscribeListeners.has(metadata.paperId)
         ? "loading"
         : "";
       const image = this.homeService.paperToFeaturedImageMap[metadata.paperId];
       return html`
-        <paper-card
-          .metadata=${metadata}
-          .image=${ifDefined(image)}
-          .status=${status}
-          .getImageUrl=${this.getImageUrl()}
-          @click=${openPaper}
+        <a href=${getLumiPaperUrl(metadata.paperId)}
+          class="paper-card-link"
+          rel="noopener noreferrer"
         >
-        </paper-card>
+          <paper-card
+            .metadata=${metadata}
+            .image=${ifDefined(image)}
+            .status=${status}
+            .getImageUrl=${this.getImageUrl()}
+          >
+          </paper-card>
+        </a>
       `;
     };
     const renderEmpty = () => {
