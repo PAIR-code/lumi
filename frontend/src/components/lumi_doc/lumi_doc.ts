@@ -33,6 +33,7 @@ import { CollapseManager } from "../../shared/collapse_manager";
 import { HighlightManager } from "../../shared/highlight_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 
+import { getArxivPaperUrl } from "../../services/router.service";
 import { LumiFootnote, LumiReference } from "../../shared/lumi_doc";
 import { LumiAnswer } from "../../shared/api";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
@@ -138,17 +139,6 @@ export class LumiDocViz extends LightMobxLitElement {
     this.hoveredSpanId = null;
   }
 
-  private handleLinkClicked() {
-    const paperId = this.lumiDocManager.lumiDoc.metadata?.paperId;
-    if (paperId) {
-      window.open(
-        "https://arxiv.org/abs/" + paperId,
-        "_blank",
-        "noopener,noreferrer"
-      );
-    }
-  }
-
   override render() {
     const publishedTimestamp =
       this.lumiDocManager.lumiDoc.metadata?.publishedTimestamp;
@@ -168,12 +158,18 @@ export class LumiDocViz extends LightMobxLitElement {
           <div class="title-section">
             <h1 class="main-column title">
               ${this.lumiDoc.metadata?.title}
-              <pr-icon-button
-                icon="open_in_new"
-                title="Open in arXiv"
-                variant="default"
-                @click=${this.handleLinkClicked}
-              ></pr-icon-button>
+              <a href=${getArxivPaperUrl(this.lumiDoc.metadata?.paperId ?? '')}
+                class="arxiv-link"
+                rel="noopener noreferrer"
+              >
+                <pr-icon-button
+                  class="open-button"
+                  variant="default"
+                  icon="open_in_new"
+                  title="Open in arXiv"
+                >
+                </pr-icon-button>
+              </a>
             </h1>
             <div class="main-column date">Published: ${date}</div>
             <div class="main-column authors">

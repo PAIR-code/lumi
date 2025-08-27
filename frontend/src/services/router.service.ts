@@ -211,8 +211,13 @@ export const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-/** Utils function to get arXiv document URL. */
+/** Utils function to get Lumi document URL. */
 export function getLumiPaperUrl(paperId: string) {
   const loc = window.location;
   return `${loc.protocol}//${loc.host}/#/${ARXIV_DOCS_ROUTE_NAME}/${paperId}`;
+}
+
+/** Utils function to get arXiv document URL. */
+export function getArxivPaperUrl(paperId: string) {
+  return `https://arxiv.org/abs/${paperId}`;
 }
