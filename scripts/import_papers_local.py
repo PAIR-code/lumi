@@ -23,12 +23,7 @@ import os
 # Define the list of papers to import.
 # The key is the arXiv ID, and the value is the version.
 PAPERS_TO_IMPORT = {
-    "2410.18808": "1",
-    "2406.10252": "1",
-    "2405.17767": "3",
-    "2309.12864": "1",
-    "2506.09018": "1",
-    "2406.09403": "3",
+    # "xxxx.xxxxx": "1",
 }
 
 
