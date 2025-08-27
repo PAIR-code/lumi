@@ -43,51 +43,53 @@ export class Settings extends MobxLitElement {
   private readonly routerService = core.getService(RouterService);
   private readonly settingsService = core.getService(SettingsService);
 
+  renderHistoryItem(item: ArxivMetadata) {
+    const navigateToPaper = () => {
+      this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
+        document_id: item.paperId,
+      });
+    };
+
+    return html`
+      <div class="history-item" @click=${navigateToPaper}>
+        <div class="left">
+          <div class="title">${item.title}</div>
+          <i>${item.paperId}</i>
+        </div>
+        <div class="right">
+          <pr-icon-button
+            color="neutral"
+            icon="delete"
+            variant="default"
+            @click=${(e: Event) => {
+              e.stopPropagation();
+              const isConfirmed = window.confirm(
+                `Are you sure you want to remove this paper from your reading history? This will also remove it from "My Collection."`
+              );
+              if (isConfirmed) {
+                this.historyService.deletePaper(item.paperId);
+                this.requestUpdate();
+              }
+            }}
+          >
+          </pr-icon-button>
+        </div>
+      </div>
+    `;
+  }
+
   override render() {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
     ).map((item) => item.metadata);
   const hasItems = historyItems.length > 0;
 
-    const navigateToPaper = (metadata: ArxivMetadata) => {
-      this.routerService.navigate(Pages.ARXIV_DOCUMENT, {
-        document_id: metadata.paperId,
-      });
-    };
-
     return html`
       <div class="settings">
         <div class="section">
           <h2>Reading History (${historyItems.length})</h2>
           ${!hasItems ? html`<i>No papers yet</i>` : nothing}
-          ${historyItems.map((item) =>
-            html`
-              <div class="history-item" @click=${() => navigateToPaper(item)}>
-                <div class="left">
-                  <div class="title">${item.title}</div>
-                  <i>${item.paperId}</i>
-                </div>
-                <div class="right">
-                  <pr-icon-button
-                    color="neutral"
-                    icon="delete"
-                    variant="default"
-                    @click=${(e: Event) => {
-                      e.stopPropagation();
-                      const isConfirmed = window.confirm(
-                        `Are you sure you want to remove this paper from your reading history? This will also remove it from "My Collection."`
-                      );
-                      if (isConfirmed) {
-                        this.historyService.deletePaper(item.paperId);
-                        this.requestUpdate();
-                      }
-                    }}
-                  >
-                  </pr-icon-button>
-                </div>
-              </div>
-            `
-          )}
+          ${historyItems.map((item) => this.renderHistoryItem(item))}
           <pr-button
             @click=${() => {
               const isConfirmed = window.confirm(
