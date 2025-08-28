@@ -196,6 +196,9 @@ export class HomeGallery extends MobxLitElement {
           // to 'complete' and unsubscribe.
           if (data.loadingStatus === LoadingStatus.SUCCESS) {
             this.historyService.addPaper(paperId, metadata);
+            // Also update paper image (now that it's available in metadata)
+            this.homeService.loadMetadata([paperId], true);
+
             this.unsubscribeListeners.get(paperId)?.();
             this.unsubscribeListeners.delete(paperId);
             this.snackbarService.show("Document loaded.");
