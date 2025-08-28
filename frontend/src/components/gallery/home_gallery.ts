@@ -223,9 +223,8 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderContent() {
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    ).map((item) => item.metadata);
+    const historyItems = this.historyService.getPaperHistory()
+      .map((item) => item.metadata);
 
     switch (this.galleryView) {
       case GalleryView.CURRENT:
