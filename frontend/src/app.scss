@@ -37,7 +37,6 @@ main,
 
 .app-wrapper {
   @include colors.global;
-  @include colors.orchid-ref;
   @include typescale.app-small;
 
   align-items: center;
