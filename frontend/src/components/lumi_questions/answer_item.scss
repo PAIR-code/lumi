@@ -102,8 +102,12 @@ answer-item {
     @include common.overflow-ellipsis;
     @include typescale.title-medium;
 
+    transition: opacity 0.25s ease;
+    -moz-transition: opacity 0.25s ease;
+    -webkit-transition: opacity 0.25s ease;
+
     &.is-collapsed {
-      color: var(--md-sys-color-on-surface-higher);
+      opacity: 0.5;
       font-style: italic;
       padding-right: common.$spacing-medium;
 
