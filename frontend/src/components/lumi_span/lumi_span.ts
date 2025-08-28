@@ -80,6 +80,7 @@ export class LumiSpanViz extends LightMobxLitElement {
   @property({ type: String }) focusState = FocusState.DEFAULT;
   @property({ type: Object }) classMap: { [key: string]: boolean } = {};
   @property({ type: Boolean }) noScrollContext = false;
+  @property({ type: Boolean }) showFocusUnderline = false;
   @property({ type: Boolean }) isVirtual = false;
 
   // Renderer properties
@@ -165,6 +166,7 @@ export class LumiSpanViz extends LightMobxLitElement {
       monospace: this.monospace,
       focused: this.focusState === FocusState.FOCUSED,
       unfocused: this.focusState === FocusState.UNFOCUSED,
+      "show-focus-underline": this.showFocusUnderline,
       ...this.classMap,
     };
     return classesObject;
