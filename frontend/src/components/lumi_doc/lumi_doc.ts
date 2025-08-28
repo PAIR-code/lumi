@@ -128,17 +128,6 @@ export class LumiDocViz extends LightMobxLitElement {
     );
   }
 
-  private onSpanSummaryMouseEnter(spanIds: string[]) {
-    if (spanIds.length === 0) {
-      return;
-    }
-    this.hoveredSpanId = spanIds[0];
-  }
-
-  private onSpanSummaryMouseLeave() {
-    this.hoveredSpanId = null;
-  }
-
   override render() {
     const publishedTimestamp =
       this.lumiDocManager.lumiDoc.metadata?.publishedTimestamp;
