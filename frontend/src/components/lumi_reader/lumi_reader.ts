@@ -72,7 +72,7 @@ import {
 import { isViewportSmall } from "../../shared/responsive_utils";
 import {
   PERSONAL_SUMMARY_QUERY_NAME,
-  SIDEBAR_TABS_MOBILE,
+  SIDEBAR_TABS,
 } from "../../shared/constants";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { FirebaseError } from "firebase/app";
@@ -312,9 +312,9 @@ export class LumiReader extends LightMobxLitElement {
           collapseManager.toggleMobileSidebarCollapsed();
         }
         if (
-          collapseManager.sidebarTabSelection !== SIDEBAR_TABS_MOBILE.ANSWERS
+          collapseManager.sidebarTabSelection !== SIDEBAR_TABS.ANSWERS
         ) {
-          collapseManager.setSidebarTabSelection(SIDEBAR_TABS_MOBILE.ANSWERS);
+          collapseManager.setSidebarTabSelection(SIDEBAR_TABS.ANSWERS);
         }
       }
     }

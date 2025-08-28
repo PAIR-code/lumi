@@ -30,9 +30,6 @@ $button-height: 32px;
     @include common.flex-column;
     gap: common.$spacing-large;
 
-    padding-left: common.$sidebar-padding;
-    padding-right: common.$sidebar-padding;
-
     &:not(.is-history-show-all) {
       height: calc(100% - $button-height - $lumi-questions-gap);
 
@@ -52,7 +49,6 @@ $button-height: 32px;
 
   .history-controls {
     @include common.flex-row-align-center;
-    padding: 0 common.$sidebar-padding common.$sidebar-padding;
   }
 
   .back-button-container {
@@ -75,16 +71,13 @@ $button-height: 32px;
     @include common.flex-row-align-center;
     padding: common.$spacing-medium common.$sidebar-padding;
 
-    margin: common.$sidebar-padding common.$sidebar-padding 0
-      common.$sidebar-padding;
-
     background: var(--md-sys-color-surface);
     border-radius: common.$border-radius-small;
     border: common.$border;
 
     max-width: common.$info-content-max-width;
     gap: common.$spacing-medium;
-    width: calc(100% - 2 * common.$sidebar-padding);
+    width: 100%;
 
     flex-shrink: 0;
 

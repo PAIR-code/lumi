@@ -31,18 +31,12 @@ export const MAX_QUERY_INPUT_LENGTH = 1000;
 
 /** Sidebar tabs. */
 export const SIDEBAR_TABS = {
-  TOC: "Table of Contents",
+  ANSWERS: "Ask",
+  TOC: "Contents",
   CONCEPTS: "Concepts",
 };
 
-export const SIDEBAR_TABS_MOBILE = {
-  ANSWERS: "Ask Lumi",
-  TOC: "Table of Contents",
-  CONCEPTS: "Concepts",
-};
-
-export const INITIAL_SIDEBAR_TAB_DESKTOP = SIDEBAR_TABS.TOC;
-export const INITIAL_SIDEBAR_TAB_MOBILE = SIDEBAR_TABS_MOBILE.ANSWERS;
+export const INITIAL_SIDEBAR_TAB = SIDEBAR_TABS.ANSWERS;
 
 export const HIGHLIGHT_METADATA_ANSWER_KEY = "answer";
 

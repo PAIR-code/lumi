@@ -35,7 +35,7 @@ import {
   AnalyticsAction,
   AnalyticsService,
 } from "../../services/analytics.service";
-import { SIDEBAR_TABS, SIDEBAR_TABS_MOBILE } from "../../shared/constants";
+import { SIDEBAR_TABS } from "../../shared/constants";
 import {
   AnswerHighlightTooltipProps,
   FloatingPanelService,
@@ -78,7 +78,7 @@ export class LumiSidebar extends LightMobxLitElement {
     };
 
     return html`
-      <div class=${classMap(classes)} slot=${SIDEBAR_TABS_MOBILE.ANSWERS}>
+      <div class=${classMap(classes)} slot=${SIDEBAR_TABS.ANSWERS}>
         <lumi-questions
           .isHistoryShowAll=${this.documentStateService.isHistoryShowAll}
           .setHistoryVisible=${(isVisible: boolean) =>
@@ -151,7 +151,7 @@ export class LumiSidebar extends LightMobxLitElement {
 
     return html`
       <div class="contents-desktop">
-        ${this.renderHeader()} ${this.renderQuestions()}
+        ${this.renderHeader()}
         <div class="tabs-container">
           <tab-component
             .tabs=${Object.values(SIDEBAR_TABS)}
@@ -161,9 +161,12 @@ export class LumiSidebar extends LightMobxLitElement {
                 AnalyticsAction.SIDEBAR_TAB_CHANGE
               );
               this.collapseManager?.setSidebarTabSelection(e.detail.tab);
+              if (this.collapseManager?.isMobileSidebarCollapsed) {
+                this.collapseManager?.toggleMobileSidebarCollapsed();
+              }
             }}
           >
-            ${this.renderConcepts()} ${this.renderToc()}
+            ${this.renderTabContents()}
           </tab-component>
         </div>
       </div>
@@ -187,9 +190,7 @@ export class LumiSidebar extends LightMobxLitElement {
     `;
   }
 
-  private renderMobileTabContents() {
-    if (this.collapseManager?.isMobileSidebarCollapsed) return nothing;
-
+  private renderTabContents() {
     return html`
       ${this.renderQuestions()} ${this.renderConcepts()} ${this.renderToc()}
     `;
@@ -212,7 +213,7 @@ export class LumiSidebar extends LightMobxLitElement {
         ${this.renderHeader()}
         <div class=${tabsContainerClasses}>
           <tab-component
-            .tabs=${Object.values(SIDEBAR_TABS_MOBILE)}
+            .tabs=${Object.values(SIDEBAR_TABS)}
             .selectedTab=${this.collapseManager?.sidebarTabSelection}
             @tab-selected=${(e: CustomEvent) => {
               this.analyticsService.trackAction(
@@ -224,7 +225,7 @@ export class LumiSidebar extends LightMobxLitElement {
               }
             }}
           >
-            ${this.renderMobileTabContents()}
+            ${this.renderTabContents()}
           </tab-component>
         </div>
         ${this.renderMobileCollapseButton()}

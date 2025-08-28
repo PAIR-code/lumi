@@ -21,57 +21,45 @@
 :host {
   width: 100%;
   @include common.flex-column;
+  gap: common.$spacing-medium;
 }
 
 .tabs-header {
   @include common.flex-row;
   background: var(--md-sys-color-surface-variant);
+  gap: common.$spacing-small;
   height: max-content;
+  overflow-x: auto;
   position: sticky;
   top: 0;
-  z-index: 2; // Above sticky headers in tab content
-
-  @include common.viewport-small {
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  }
+  z-index: 1;
 }
 
 .tab-button {
   @include typescale.label-medium;
-  font-size: 12px;
-  font-weight: 400;
 
   flex: 1;
-  padding: common.$spacing-small common.$spacing-large;
-  background: none;
-  border: 1px solid transparent;
-  border-radius: common.$spacing-medium common.$spacing-medium 0 0;
-  cursor: pointer;
-  white-space: nowrap;
-  background: var(--md-sys-color-surface-variant);
-  color: var(--md-sys-color-on-surface-higher);
-  transform: translateY(1px);
+  padding: common.$spacing-small common.$spacing-medium;
 
-  &.selected {
-    color: var(--md-sys-color-primary);
-    background: var(--md-sys-color-surface);
-    border-color: var(--md-sys-color-outline-variant);
-    border-bottom-color: var(--md-sys-color-surface);
-    font-weight: 500;
+  border: 2px solid var(--md-sys-color-outline-variant);
+  border-radius: common.$spacing-medium;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  font-size: 90%;
+  white-space: nowrap;
+
+  &:focus,
+  &:hover {
+    border-color: var(--md-sys-color-outline);
+    cursor: pointer;
   }
 
-  @include common.viewport-small {
-    border-right-color: var(--md-sys-color-outline-variant);
-    border-radius: 0;
-    border-top: none;
-    transform: none;
-
-    &.selected {
-      background: var(--md-sys-color-secondary-container);
-      border-top-color: var(--md-sys-color-secondary-container);
-      border-left-color: var(--md-sys-color-secondary-container);
-      border-bottom-color: var(--md-sys-color-secondary-container);
-    }
+  &.selected,
+  &.selected:focus,
+  &.selected:hover {
+    background: var(--md-sys-color-primary-container-low);
+    border-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-primary);
   }
 }
 

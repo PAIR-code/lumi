@@ -33,7 +33,6 @@
   }
 
   .mobile-collapse-button {
-    background: var(--md-sys-color-secondary-container-high);
     border-top: common.$border;
     cursor: pointer;
   }
@@ -70,10 +69,6 @@
 
   background: var(--md-sys-color-surface-variant);
   z-index: 1; // To be above the lumi answer item responses container
-
-  &.mobile {
-    padding: 0;
-  }
 
   overflow-y: auto;
 
@@ -114,20 +109,9 @@
   margin: 0;
 }
 
-.concepts-container {
-  background: var(--md-sys-color-surface);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: common.$spacing-medium 0 common.$spacing-medium
-    common.$spacing-medium;
-
-  @include common.viewport-small {
-    border-color: transparent;
-    border-radius: 0;
-  }
-}
-
 .concepts-list {
   @include common.flex-column;
+  gap: common.$spacing-large;
 }
 
 .dialog-explanation {
