@@ -19,7 +19,7 @@
 import json
 from typing import Any, Dict, List, Sequence
 
-from shared.lumi_doc import LumiSpan, Label, LumiDoc
+from shared.lumi_doc import LumiSpan, Label, LumiDoc, LumiContent
 from shared.string_utils import extract_json_from_decorator
 
 
@@ -79,20 +79,47 @@ def _extract_spans_from_list(list_content) -> List[LumiSpan]:
     return spans
 
 
+def _extract_spans_from_content(content: LumiContent) -> List[LumiSpan]:
+    """Extracts spans from a single LumiContent object."""
+    spans: List[LumiSpan] = []
+    if content.text_content:
+        spans.extend(content.text_content.spans)
+    elif content.list_content:
+        spans.extend(_extract_spans_from_list(content.list_content))
+
+    # Extract from captions
+    if content.image_content and content.image_content.caption:
+        spans.append(content.image_content.caption)
+    if content.figure_content and content.figure_content.caption:
+        spans.append(content.figure_content.caption)
+    if content.html_figure_content and content.html_figure_content.caption:
+        spans.append(content.html_figure_content.caption)
+    return spans
+
+
 def get_all_spans_from_doc(document: LumiDoc) -> List[LumiSpan]:
     """Extracts all LumiSpan objects from a LumiDoc by iterating through its contents."""
-    all_spans = []
+    all_spans: List[LumiSpan] = []
 
     def _extract_spans_from_sections(sections):
         for section in sections:
             for content in section.contents:
-                if content.text_content:
-                    all_spans.extend(content.text_content.spans)
-                elif content.list_content:
-                    all_spans.extend(_extract_spans_from_list(content.list_content))
+                all_spans.extend(_extract_spans_from_content(content))
             if section.sub_sections:
                 _extract_spans_from_sections(section.sub_sections)
 
+    if document.abstract:
+        for content in document.abstract.contents:
+            all_spans.extend(_extract_spans_from_content(content))
+
     _extract_spans_from_sections(document.sections)
+
+    if document.references:
+        for reference in document.references:
+            all_spans.append(reference.span)
+
+    if document.footnotes:
+        for footnote in document.footnotes:
+            all_spans.append(footnote.span)
 
     return all_spans
