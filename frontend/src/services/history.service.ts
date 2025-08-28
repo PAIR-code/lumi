@@ -21,6 +21,7 @@ import { LumiAnswer } from "../shared/api";
 import { PaperData } from "../shared/types_local_storage";
 import { LocalStorageService } from "./local_storage.service";
 import { ArxivMetadata } from "../shared/lumi_doc";
+import { sortPaperDataByTimestamp } from "../shared/lumi_paper_utils";
 import { PERSONAL_SUMMARY_QUERY_NAME } from "../shared/constants";
 import { AnswerHighlightManager } from "../shared/answer_highlight_manager";
 
@@ -117,7 +118,7 @@ export class HistoryService extends Service {
    * Retrieves all paper data from local storage.
    * @returns An array of PaperData objects.
    */
-  getPaperHistory(): PaperData[] {
+  getPaperHistory(sortByTimestamp = true): PaperData[] {
     const paperKeys = this.sp.localStorageService.listKeys(PAPER_KEY_PREFIX);
     const papers: PaperData[] = [];
     for (const key of paperKeys) {
@@ -128,6 +129,9 @@ export class HistoryService extends Service {
       if (paperData) {
         papers.push(paperData);
       }
+    }
+    if (sortByTimestamp) {
+      return sortPaperDataByTimestamp(papers);
     }
     return papers;
   }

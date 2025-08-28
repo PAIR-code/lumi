@@ -55,7 +55,6 @@ import { extractArxivId } from "../../shared/string_utils";
 import { styles } from "./home_gallery.scss";
 import { makeObservable, observable, ObservableMap, toJS } from "mobx";
 import { PaperData } from "../../shared/types_local_storage";
-import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
 import { GalleryView } from "../../shared/types";
 import { ifDefined } from "lit/directives/if-defined.js";
