@@ -61,12 +61,9 @@
 
   overflow-y: auto;
 
-  margin-top: common.$spacing-medium;
   @include common.viewport-small {
-    margin-top: 0;
-
     &.is-mobile-sidebar-collapsed {
-      overflow: hidden;
+      display: none;
     }
   }
 }
@@ -105,4 +102,43 @@
 
 .dialog-explanation {
   @include typescale.body-medium;
+}
+
+.tabs-header {
+  @include common.flex-row;
+  background: var(--md-sys-color-surface-variant);
+  gap: common.$spacing-small;
+  height: max-content;
+  overflow-x: auto;
+}
+
+.tab-button {
+  @include typescale.label-medium;
+
+  flex: 1;
+  padding: common.$spacing-small common.$spacing-medium;
+
+  background: var(--md-sys-color-surface-variant);
+  border: 2px solid var(--md-sys-color-outline-variant);
+  border-radius: common.$spacing-medium;
+  color: var(--md-sys-color-outline);
+  cursor: pointer;
+  font-size: 90%;
+  max-width: max-content;
+  white-space: nowrap;
+
+  &:focus,
+  &:hover {
+    border-color: var(--md-sys-color-outline);
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+  }
+
+  &.selected,
+  &.selected:focus,
+  &.selected:hover {
+    background: var(--md-sys-color-primary-container-low);
+    border-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-primary);
+  }
 }

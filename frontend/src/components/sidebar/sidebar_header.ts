@@ -16,13 +16,14 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
+import { CSSResultGroup, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styles } from "./sidebar_header.scss";
 import { core } from "../../core/core";
 import { RouterService, Pages } from "../../services/router.service";
 import { APP_NAME, LOGO_ICON_NAME } from "../../shared/constants";
 import "../../pair-components/icon_button";
+import "../../pair-components/tooltip";
 import {
   AnalyticsAction,
   AnalyticsService,
@@ -49,6 +50,8 @@ export class SidebarHeader extends MobxLitElement {
   private readonly dialogService = core.getService(DialogService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly routerService = core.getService(RouterService);
+
+  @property({type: Boolean}) includeAppName = false;
 
   private handleFeedbackClick() {
     this.floatingPanelService.hide();
@@ -101,13 +104,16 @@ export class SidebarHeader extends MobxLitElement {
   private renderContent() {
     return html`<div class="default-content">
       <div class="left-container">
-        <pr-icon-button
-          variant="default"
-          icon=${LOGO_ICON_NAME}
-          @click=${this.navigateHome}
-        ></pr-icon-button>
-        <div class="title">${APP_NAME}</div>
+        <pr-tooltip text="Lumi home" position="RIGHT">
+          <pr-icon-button
+            variant="default"
+            icon=${LOGO_ICON_NAME}
+            @click=${this.navigateHome}
+          ></pr-icon-button>
+        </pr-tooltip>
+        ${this.includeAppName ? html`<div class="title">${APP_NAME}</div>` : nothing}
       </div>
+      <slot></slot>
       <div class="right-container">
         <pr-icon-button
           title="More options"

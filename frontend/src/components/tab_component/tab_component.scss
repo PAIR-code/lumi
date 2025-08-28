@@ -24,45 +24,6 @@
   gap: common.$spacing-medium;
 }
 
-.tabs-header {
-  @include common.flex-row;
-  background: var(--md-sys-color-surface-variant);
-  gap: common.$spacing-small;
-  height: max-content;
-  overflow-x: auto;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.tab-button {
-  @include typescale.label-medium;
-
-  flex: 1;
-  padding: common.$spacing-small common.$spacing-medium;
-
-  border: 2px solid var(--md-sys-color-outline-variant);
-  border-radius: common.$spacing-medium;
-  color: var(--md-sys-color-on-surface);
-  cursor: pointer;
-  font-size: 90%;
-  white-space: nowrap;
-
-  &:focus,
-  &:hover {
-    border-color: var(--md-sys-color-outline);
-    cursor: pointer;
-  }
-
-  &.selected,
-  &.selected:focus,
-  &.selected:hover {
-    background: var(--md-sys-color-primary-container-low);
-    border-color: var(--md-sys-color-primary);
-    color: var(--md-sys-color-primary);
-  }
-}
-
 .tab-content .tab-pane {
   display: none;
 }

@@ -67,8 +67,33 @@ export class LumiSidebar extends LightMobxLitElement {
   }
 
   private renderHeader() {
-    return html`<sidebar-header></sidebar-header>
-      <div class="divider"></div>`;
+    const handleTabClick = (tab: string) => {
+      this.analyticsService.trackAction(
+        AnalyticsAction.SIDEBAR_TAB_CHANGE
+      );
+      this.collapseManager?.setSidebarTabSelection(tab);
+      if (this.collapseManager?.isMobileSidebarCollapsed) {
+        this.collapseManager?.toggleMobileSidebarCollapsed();
+      }
+    };
+    const selectedTab = this.collapseManager?.sidebarTabSelection;
+
+    return html`
+      <sidebar-header>
+        <div class="tabs-header">
+          ${Object.values(SIDEBAR_TABS).map(
+            (tab) => html`
+              <button
+                class="tab-button ${selectedTab === tab ? "selected" : ""}"
+                @click=${() => handleTabClick(tab)}
+              >
+                ${tab}
+              </button>
+            `
+          )}
+        </div>
+      </sidebar-header>
+    `;
   }
 
   private renderQuestions() {
@@ -164,15 +189,6 @@ export class LumiSidebar extends LightMobxLitElement {
           <tab-component
             .tabs=${Object.values(SIDEBAR_TABS)}
             .selectedTab=${this.collapseManager?.sidebarTabSelection}
-            @tab-selected=${(e: CustomEvent) => {
-              this.analyticsService.trackAction(
-                AnalyticsAction.SIDEBAR_TAB_CHANGE
-              );
-              this.collapseManager?.setSidebarTabSelection(e.detail.tab);
-              if (this.collapseManager?.isMobileSidebarCollapsed) {
-                this.collapseManager?.toggleMobileSidebarCollapsed();
-              }
-            }}
           >
             ${this.renderQuestions()}
             ${this.renderConcepts()}
