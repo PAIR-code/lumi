@@ -21,6 +21,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styles } from "./sidebar_header.scss";
 import { core } from "../../core/core";
 import { RouterService, Pages } from "../../services/router.service";
+import { APP_NAME, LOGO_ICON_NAME } from "../../shared/constants";
 import "../../pair-components/icon_button";
 import {
   AnalyticsAction,
@@ -102,10 +103,10 @@ export class SidebarHeader extends MobxLitElement {
       <div class="left-container">
         <pr-icon-button
           variant="default"
-          icon="home"
+          icon=${LOGO_ICON_NAME}
           @click=${this.navigateHome}
         ></pr-icon-button>
-        <div class="title">Lumi</div>
+        <div class="title">${APP_NAME}</div>
       </div>
       <div class="right-container">
         <pr-icon-button
