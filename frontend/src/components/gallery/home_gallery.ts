@@ -33,6 +33,7 @@ import {
   ARXIV_DOCS_ROUTE_NAME,
   Pages,
   RouterService,
+  getLumiPaperUrl
 } from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
@@ -54,7 +55,6 @@ import { extractArxivId } from "../../shared/string_utils";
 import { styles } from "./home_gallery.scss";
 import { makeObservable, observable, ObservableMap, toJS } from "mobx";
 import { PaperData } from "../../shared/types_local_storage";
-import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
 import { GalleryView } from "../../shared/types";
 import { ifDefined } from "lit/directives/if-defined.js";
@@ -195,6 +195,9 @@ export class HomeGallery extends MobxLitElement {
           // to 'complete' and unsubscribe.
           if (data.loadingStatus === LoadingStatus.SUCCESS) {
             this.historyService.addPaper(paperId, metadata);
+            // Also update paper image (now that it's available in metadata)
+            this.homeService.loadMetadata([paperId], true);
+
             this.unsubscribeListeners.get(paperId)?.();
             this.unsubscribeListeners.delete(paperId);
             this.snackbarService.show("Document loaded.");
@@ -220,21 +223,17 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderContent() {
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    ).map((item) => item.metadata);
-
+    const currentPapers = this.homeService.currentMetadata ?? [];
     switch (this.galleryView) {
       case GalleryView.CURRENT:
-        const currentPapers = this.homeService.currentMetadata ?? [];
         return html`
           ${this.renderCollectionMenu()} ${this.renderCollection(currentPapers)}
         `;
       case GalleryView.LOCAL:
         return html`
           ${this.renderCollectionMenu()}
-          ${this.renderLoadingMessages(historyItems)}
-          ${this.renderCollection(historyItems)}
+          ${this.renderLoadingMessages(currentPapers)}
+          ${this.renderCollection(currentPapers)}
         `;
       default:
         return nothing;
@@ -303,19 +302,26 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderLoadingMessages(metadata: ArxivMetadata[]) {
-    return html`
-      <div class="loading-section">
-        ${metadata.map((item) => {
-          if (this.unsubscribeListeners.get(item.paperId)) {
-            return html`
-              <div class="loading-message">
-                Loading <i>${item.title} (${item.paperId})</i>
-              </div>
-            `;
-          }
-        })}
-      </div>
-    `;
+    const loadingItems = metadata.filter((item) =>
+      item && this.unsubscribeListeners.get(item.paperId)
+    );
+
+    if (loadingItems.length > 0) {
+      return html`
+        <div class="loading-section">
+          ${loadingItems.map(item => html`
+            <div class="loading-message">
+              Loading <i>${item.title} (${item.paperId})</i>
+            </div>
+          `)}
+        </div>
+      `;
+    } else if (this.isLoadingMetadata) {
+      return html`
+        <i class="loading-message">Loading paper...</i>
+      `;
+    }
+    return nothing;
   }
 
   private renderCollectionMenu() {
@@ -379,28 +385,23 @@ export class HomeGallery extends MobxLitElement {
         return nothing;
       }
 
-      const openPaper = () => {
-        const baseUrl = document.location.origin;
-        window.open(
-          `${baseUrl}/#/${ARXIV_DOCS_ROUTE_NAME}/${metadata.paperId}`,
-          "_blank",
-          "noopener,noreferrer"
-        );
-      };
-
       const status = this.unsubscribeListeners.has(metadata.paperId)
         ? "loading"
         : "";
       const image = this.homeService.paperToFeaturedImageMap[metadata.paperId];
       return html`
-        <paper-card
-          .metadata=${metadata}
-          .image=${ifDefined(image)}
-          .status=${status}
-          .getImageUrl=${this.getImageUrl()}
-          @click=${openPaper}
+        <a href=${getLumiPaperUrl(metadata.paperId)}
+          class="paper-card-link"
+          rel="noopener noreferrer"
         >
-        </paper-card>
+          <paper-card
+            .metadata=${metadata}
+            .image=${ifDefined(image)}
+            .status=${status}
+            .getImageUrl=${this.getImageUrl()}
+          >
+          </paper-card>
+        </a>
       `;
     };
     const renderEmpty = () => {

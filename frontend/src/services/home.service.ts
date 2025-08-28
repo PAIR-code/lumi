@@ -33,10 +33,12 @@ import {
 } from "../shared/lumi_doc";
 
 import { FirebaseService } from "./firebase.service";
+import { HistoryService } from "./history.service";
 import { Service } from "./service";
 
 interface ServiceProvider {
   firebaseService: FirebaseService;
+  historyService: HistoryService;
 }
 
 export class HomeService extends Service {
@@ -77,20 +79,35 @@ export class HomeService extends Service {
     this.currentCollection = this.collections.find(
       (collection) => collection.collectionId === currentCollectionId
     );
-    // Load papers for current collection
-    this.loadMetadata(this.currentCollection?.paperIds.reverse() ?? []);
+
+    if (!this.currentCollection) {
+      // If no ID, load papers for local storage collection
+      this.loadMetadata(
+        this.sp.historyService.getPaperHistory().map(paper => paper.metadata.paperId)
+      );
+    } else {
+      // Else, load papers for current collection
+      this.loadMetadata(this.currentCollection.paperIds.reverse() ?? []);
+    }
   }
 
   get currentCollectionId() {
     return this.currentCollection?.collectionId;
   }
 
+  /** Returns metadata from current collection, else local storage papers. */
   get currentMetadata() {
-    return (
-      this.currentCollection?.paperIds.map(
-        (id) => this.paperToMetadataMap[id]
-      ) ?? undefined
-    );
+    if (this.currentCollection) {
+      return (
+        this.currentCollection.paperIds.map(
+          (id) => this.paperToMetadataMap[id]
+        )
+      );
+    } else {
+      return this.sp.historyService.getPaperHistory().map(
+        paper => this.paperToMetadataMap[paper.metadata.paperId ?? '']
+      );
+    }
   }
 
   /**

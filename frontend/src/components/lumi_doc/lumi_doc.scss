@@ -98,3 +98,7 @@ h5 {
 h6 {
   @include typescale.title-small;
 }
+
+.arxiv-link {
+  text-decoration: none;
+}

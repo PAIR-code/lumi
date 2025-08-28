@@ -76,7 +76,7 @@ import {
 } from "../../shared/constants";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { FirebaseError } from "firebase/app";
-import { RouterService } from "../../services/router.service";
+import { RouterService, getArxivPaperUrl } from "../../services/router.service";
 import { BannerService } from "../../services/banner.service";
 import { createRef, ref } from "lit/directives/ref.js";
 import { SettingsService } from "../../services/settings.service";
@@ -518,23 +518,18 @@ export class LumiReader extends LightMobxLitElement {
         <span class="error-header">Something went wrong...</span>
         <span class="error-body"
           >Could not import: "${metadata?.title}"
-          <pr-icon-button
-            class="open-button"
-            variant="default"
-            icon="open_in_new"
-            @click=${() => {
-              const paperId = this.metadata?.paperId;
-              if (paperId) {
-                window.open(
-                  "https://arxiv.org/abs/" + paperId,
-                  "_blank",
-                  "noopener,noreferrer"
-                );
-              }
-            }}
-            title="Open in arXiv"
+          <a href=${getArxivPaperUrl(this.metadata?.paperId ?? '')}
+            class="arxiv-link"
+            rel="noopener noreferrer"
           >
-          </pr-icon-button>
+            <pr-icon-button
+              class="open-button"
+              variant="default"
+              icon="open_in_new"
+              title="Open paper in arXiv"
+            >
+            </pr-icon-button>
+          </a>
         </span>
         <div class="error-footer">
           <pr-button variant="tonal" @click=${this.handleHomeClick}

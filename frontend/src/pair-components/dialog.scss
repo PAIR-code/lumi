@@ -30,7 +30,6 @@ dialog {
   flex-direction: column;
   gap: common.$spacing-xl;
   max-height: calc(100% - common.$spacing-xxl * 2);
-  max-width: 100%;
   outline: none;
   overflow: auto;
   padding: common.$spacing-xxl;
