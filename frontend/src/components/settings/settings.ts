@@ -16,17 +16,20 @@
  */
 
 import "../../pair-components/button";
-import "./tos_content";
 import "../../pair-components/textinput";
+import "./reading_history";
+import "./tos_content";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
+import { CSSResultGroup, html, nothing } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import { core } from "../../core/core";
-import { HistoryService } from "../../services/history.service";
+import { getLumiPaperUrl } from "../../services/router.service";
 import { SettingsService } from "../../services/settings.service";
 
+import { ArxivMetadata } from "../../shared/lumi_doc";
+import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
 import { ColorMode } from "../../shared/types";
 
 import { styles } from "./settings.scss";
@@ -36,36 +39,36 @@ import { styles } from "./settings.scss";
 export class Settings extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  private readonly historyService = core.getService(HistoryService);
   private readonly settingsService = core.getService(SettingsService);
 
   override render() {
     return html`
       <div class="settings">
         <div class="section">
-          <pr-button
-            @click=${() => this.historyService.clearAllHistory()}
-            ?disabled=${this.historyService.getPaperHistory().length === 0}
-            color="secondary"
-            variant="outlined"
-          >
-            Clear reading history
-          </pr-button>
+          <reading-history showTitle></reading-history>
         </div>
         <div class="section">
+          <h2>Model API Key</h2>
+          <div>
+            Optional: Use your own
+            <a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank" rel="noopener noreferrer">Gemini API key</a>
+            for "Ask Lumi"
+            queries inside a paper. Your API key will never be used to
+            import papers.
+          </div>
           <div class="field">
-            Model API Key:
             <pr-textinput
               .value=${this.settingsService.apiKey.value}
               .onChange=${(e: InputEvent) => {
                 const value = (e.target as HTMLInputElement).value;
                 this.settingsService.apiKey.value = value;
               }}
-              placeholder="API key"
+              placeholder="Paste Gemini API key here"
             ></pr-textinput>
           </div>
         </div>
         <div class="section">
+          <h2>About Lumi</h2>
           <tos-content></tos-content>
         </div>
       </div>

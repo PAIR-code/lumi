@@ -17,7 +17,7 @@
 
 import "../../../pair-components/dialog";
 import "../../../pair-components/button";
-import "../../history_view/history_view";
+import "../../settings/reading_history";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html } from "lit";
@@ -54,17 +54,15 @@ export class HistoryDialog extends MobxLitElement {
       <pr-dialog
         .onClose=${this.handleClose}
         .showDialog=${this.shouldShowDialog()}
+        showCloseButton
       >
-        <div slot="title">History</div>
+        <div slot="title">Reading History</div>
         <div>
           <p class="dialog-explanation">
-            This is the list of papers and queries included as context for the
-            model:
+            The following papers are included as context for the
+            model when generating personalized paper-level summaries:
           </p>
-          <history-view></history-view>
-        </div>
-        <div slot="actions-right">
-          <pr-button @click=${() => this.handleClose()}> Close </pr-button>
+          <reading-history></reading-history>
         </div>
       </pr-dialog>
     `;

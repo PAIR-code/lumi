@@ -17,6 +17,7 @@
 
 import { LitElement, html, CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { getArxivPaperUrl } from "../../services/router.service";
 import { ArxivMetadata } from "../../shared/lumi_doc";
 import { styles } from "./loading_document.scss";
 
@@ -50,23 +51,18 @@ export class LoadingDocument extends LitElement {
             <h1 class="title">
               <span
                 >${this.metadata.title}
-                <pr-icon-button
-                  class="open-button"
-                  variant="default"
-                  icon="open_in_new"
-                  @click=${() => {
-                    const paperId = this.metadata?.paperId;
-                    if (paperId) {
-                      window.open(
-                        "https://arxiv.org/abs/" + paperId,
-                        "_blank",
-                        "noopener,noreferrer"
-                      );
-                    }
-                  }}
-                  title="Open in arXiv"
+                <a href=${getArxivPaperUrl(this.metadata.paperId)}
+                  class="arxiv-link"
+                  rel="noopener noreferrer"
                 >
-                </pr-icon-button>
+                  <pr-icon-button
+                    class="open-button"
+                    variant="default"
+                    icon="open_in_new"
+                    title="Open in arXiv"
+                  >
+                  </pr-icon-button>
+                </a>
               </span>
             </h1>
             <div class="authors">${this.metadata.authors.join(", ")}</div>

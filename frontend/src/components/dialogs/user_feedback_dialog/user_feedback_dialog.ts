@@ -16,7 +16,7 @@
  */
 import "../../../pair-components/dialog";
 import "../../../pair-components/button";
-import "../../../pair-components/textarea";
+import "@material/web/textfield/outlined-text-field.js";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html } from "lit";
@@ -34,8 +34,6 @@ import { saveUserFeedbackCallable } from "../../../shared/callables";
 import { styles } from "./user_feedback_dialog.scss";
 import { TextArea } from "../../../pair-components/textarea";
 import { isViewportSmall } from "../../../shared/responsive_utils";
-import { debounce } from "../../../shared/utils";
-import { INPUT_DEBOUNCE_MS } from "../../../shared/constants";
 
 /**
  * The user feedback dialog component.
@@ -90,13 +88,7 @@ export class UserFeedbackDialog extends MobxLitElement {
     return this.dialogService.dialogProps instanceof UserFeedbackDialogProps;
   }
 
-  private debouncedUpdate = debounce((value: string) => {
-    this.feedbackText = value;
-  }, INPUT_DEBOUNCE_MS);
-
   override render() {
-    const textareaSize = isViewportSmall() ? "medium" : "small";
-
     return html`
       <pr-dialog
         .showDialog=${this.shouldShowDialog()}
@@ -106,19 +98,21 @@ export class UserFeedbackDialog extends MobxLitElement {
         <div slot="title">User Feedback</div>
         <div class="dialog-content">
           <p class="dialog-explanation">
-            Have feedback or encountered an issue? We'd love to hear from you.
+            If you're experiencing an issue and/or have suggestions,
+            we'd love to hear from you!
           </p>
-          <pr-textarea
+          <md-outlined-text-field
             ?focused=${true}
+            type="textarea"
+            rows="5"
             .value=${this.feedbackText}
-            variant="outlined"
-            size=${textareaSize}
-            @change=${(e: CustomEvent) => {
-              this.debouncedUpdate(e.detail.value);
+            ?disabled=${this.isLoading}
+            @input=${(e: InputEvent) => {
+              this.feedbackText = (e.target as HTMLTextAreaElement).value;
             }}
-            placeholder="Leave your feedback..."
+            placeholder="Add feedback here"
           >
-          </pr-textarea>
+          </md-outlined-text-field>
         </div>
         <div slot="actions-right" class="actions">
           <pr-button

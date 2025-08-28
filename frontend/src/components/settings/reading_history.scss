@@ -14,53 +14,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 @use "../../sass/common";
 @use "../../sass/typescale";
 
 :host {
-  display: block;
-  max-height: 400px;
-  overflow-y: auto;
+  @include common.flex-column;
+  gap: common.$spacing-large;
 }
 
-ul.papers {
-  @include common.flex-column;
-  gap: common.$spacing-medium;
-
-  list-style-type: none;
-  padding: 0;
+h2 {
+  @include typescale.title-medium;
   margin: 0;
 }
 
-.paper {
-  @include common.flex-column;
+.history-item {
+  @include common.flex-row;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: common.$spacing-medium;
   gap: common.$spacing-medium;
+  justify-content: space-between;
+  padding: common.$spacing-medium;
 
-  background: var(--md-sys-color-surface);
-  border-radius: 12px;
+  .left {
+    @include common.flex-column;
+  }
 
-  padding: common.$spacing-large;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  .right {
+    flex-shrink: 0;
+  }
+
+  .title {
+    @include typescale.title-small;
+    margin-bottom: common.$spacing-small;
+  }
 }
 
-.paper:last-child {
-  border-bottom: none;
+a {
+  color: var(--md-sys-color-primary);
+
+  &:focus,
+  &:hover {
+    color: var(--md-sys-color-secondary);
+  }
 }
 
-.title {
-  @include typescale.body-large;
-  font-weight: 500;
-}
-
-.authors {
-  @include typescale.body-small;
-  color: var(--md-sys-color-on-surface-variant);
-}
-
-.zero-state {
-  @include typescale.body-small;
-  font-style: italic;
-  text-align: center;
-
-  color: var(--md-sys-color-on-surface-higher);
+pr-button {
+  width: max-content;
 }

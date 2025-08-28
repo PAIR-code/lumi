@@ -86,22 +86,4 @@ describe("lumi-doc", () => {
     expect(title).to.exist;
     expect(title!.textContent).to.contain("Test Paper");
   });
-
-  it("opens arXiv link in a new tab when the open_in_new icon is clicked", async () => {
-    const windowOpen = sinon.stub(window, "open");
-    const el = await fixture(
-      html`<lumi-doc
-        .lumiDocManager=${lumiDocManager}
-        .collapseManager=${collapseManager}
-        .highlightManager=${highlightManager}
-      ></lumi-doc>`
-    );
-
-    const openInNewButton = el.querySelector(
-      'pr-icon-button[icon="open_in_new"]'
-    ) as HTMLElement;
-    openInNewButton.click();
-
-    expect(windowOpen.calledOnce).to.be.true;
-  });
 });

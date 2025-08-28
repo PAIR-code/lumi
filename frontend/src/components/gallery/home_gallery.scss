@@ -198,3 +198,8 @@ h1 {
   @include common.flex-column;
   gap: common.$spacing-xl;
 }
+
+a.paper-card-link {
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none;
+}

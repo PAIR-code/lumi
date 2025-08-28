@@ -25,6 +25,7 @@ from firebase_functions import logger
 from firebase_functions import logger
 
 API_KEY_LOGGING_MESSAGE = "Ran with user-specified API key"
+QUERY_RESPONSE_MAX_OUTPUT_TOKENS = 2000
 
 T = TypeVar("T")
 
@@ -36,20 +37,21 @@ class GeminiInvalidResponseException(Exception):
 def call_predict(
     query="The opposite of happy is",
     model="gemini-2.5-flash",
-    api_key:str|None=None
+    api_key: str | None = None,
 ) -> str:
     if not api_key:
         api_key = api_config.DEFAULT_API_KEY
     else:
         logger.info(API_KEY_LOGGING_MESSAGE)
 
-
     client = genai.Client(api_key=api_key)
 
     response = client.models.generate_content(
         model=model,
         contents=query,
-        config=types.GenerateContentConfig(temperature=0),
+        config=types.GenerateContentConfig(
+            temperature=0, max_output_tokens=QUERY_RESPONSE_MAX_OUTPUT_TOKENS
+        ),
     )
     if not response.text:
         raise GeminiInvalidResponseException()
@@ -60,18 +62,20 @@ def call_predict_with_image(
     prompt: str,
     image_bytes: bytes,
     model="gemini-2.5-flash",
-    api_key:str|None=None
+    api_key: str | None = None,
 ) -> str:
     """Calls Gemini with a prompt and an image."""
     if not api_key:
         api_key = api_config.DEFAULT_API_KEY
     else:
         logger.info(API_KEY_LOGGING_MESSAGE)
-    
+
     client = genai.Client(api_key=api_key)
-    
+
     truncated_query = (prompt[:200] + "...") if len(prompt) > 200 else prompt
-    print(f"  > Calling Gemini with image, prompt: '{truncated_query}' \nimage: {image_bytes[:50]}")
+    print(
+        f"  > Calling Gemini with image, prompt: '{truncated_query}' \nimage: {image_bytes[:50]}"
+    )
     response = client.models.generate_content(
         model=model,
         contents=[
@@ -79,7 +83,9 @@ def call_predict_with_image(
             # When imported, paper images are all saved in PNG format.
             types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
         ],
-        config=types.GenerateContentConfig(temperature=0),
+        config=types.GenerateContentConfig(
+            temperature=0, max_output_tokens=QUERY_RESPONSE_MAX_OUTPUT_TOKENS
+        ),
     )
     if not response.text:
         raise GeminiInvalidResponseException()
@@ -90,7 +96,7 @@ def call_predict_with_schema(
     query: str,
     response_schema: Type[T],
     model="gemini-2.5-flash",
-    api_key:str|None=None
+    api_key: str | None = None,
 ) -> T | List[T] | None:
     """Calls Gemini with a response schema for structured output."""
     if not api_key:

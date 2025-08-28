@@ -25,7 +25,6 @@ import "../lumi_questions/lumi_questions";
 import "../tab_component/tab_component";
 import "../table_of_contents/table_of_contents";
 import "./sidebar_header";
-import "../history_view/history_view";
 import { styles } from "./sidebar.scss";
 
 import { DocumentStateService } from "../../services/document_state.service";
