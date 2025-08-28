@@ -356,6 +356,7 @@
   --md-sys-color-on-error-container: var(--md-ref-palette-error10);
   --md-sys-color-surface: var(--md-ref-palette-gray100);
   --md-sys-color-on-surface: var(--md-ref-gray10);
+  --md-sys-color-on-surface-low: var(--md-ref-palette-gray5);
   --md-sys-color-on-surface-high: var(--md-ref-palette-gray30);
   --md-sys-color-on-surface-higher: var(--md-ref-palette-gray50);
   --md-sys-color-on-surface-highest: var(--md-ref-palette-gray70);
@@ -414,6 +415,10 @@
   --md-sys-color-gray-outline: var(--md-ref-palette-gray50);
   --md-sys-color-gray-outline-variant: var(--md-ref-palette-gray80);
   // visualization highlight variables
+  --md-sys-color-highlight-primary: var(--md-ref-palette-primary90);
+  --md-sys-color-highlight-primary-light: var(--md-ref-palette-primary95);
+  --md-sys-color-highlight-secondary: var(--md-ref-palette-secondary90);
+  --md-sys-color-highlight-secondary-light: var(--md-ref-palette-secondary95);
   --md-sys-color-highlight-gray: var(--md-ref-palette-gray90);
   --md-sys-color-highlight-light-gray: var(--md-ref-palette-gray95);
   --md-sys-color-highlight-blue: var(--md-ref-palette-blue95);
@@ -451,6 +456,7 @@
   --md-sys-color-on-error-container: var(--md-ref-palette-error90);
   --md-sys-color-surface: var(--md-ref-palette-gray5);
   --md-sys-color-on-surface: var(--md-ref-palette-gray80);
+  --md-sys-color-on-surface-low: var(--md-ref-palette-gray90);
   --md-sys-color-on-surface-high: var(--md-ref-palette-gray70);
   --md-sys-color-on-surface-higher: var(--md-ref-palette-gray60);
   --md-sys-color-on-surface-highest: var(--md-ref-palette-gray30);
@@ -509,6 +515,10 @@
   --md-sys-color-gray-outline: var(--md-ref-palette-gray50);
   --md-sys-color-gray-outline-variant: var(--md-ref-palette-gray30);
   // visualization highlight variables
+  --md-sys-color-highlight-primary: var(--md-ref-palette-primary10);
+  --md-sys-color-highlight-primary-light: var(--md-ref-palette-primary5);
+  --md-sys-color-highlight-secondary: var(--md-ref-palette-secondary10);
+  --md-sys-color-highlight-secondary-light: var(--md-ref-palette-secondary5);
   --md-sys-color-highlight-gray: var(--md-ref-palette-gray20);
   --md-sys-color-highlight-light-gray: var(--md-ref-palette-gray10);
   --md-sys-color-highlight-blue: var(--md-ref-palette-blue10);

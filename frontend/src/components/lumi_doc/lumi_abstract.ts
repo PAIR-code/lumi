@@ -83,7 +83,7 @@ export class LumiAbstractViz extends LightMobxLitElement {
         // Add a special highlight for the excerpt span when not collapsed
         if (!this.isCollapsed && span.id === this.excerptSpanId) {
           newHighlights.push({
-            color: "blue",
+            color: "cyan",
             spanId: span.id,
             position: {
               startIndex: 0,

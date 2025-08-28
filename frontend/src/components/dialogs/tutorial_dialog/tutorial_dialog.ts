@@ -90,7 +90,7 @@ export class TutorialDialog extends MobxLitElement {
         }}
         .showDialog=${this.shouldShowDialog()}
       >
-        <div slot="title">Asking Lumi Questions...</div>
+        <div slot="title">✨ Tip: Ask Lumi</div>
         <div>
           <p class="dialog-explanation">
             Try selecting some text or clicking an image:

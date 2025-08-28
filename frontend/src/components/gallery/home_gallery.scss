@@ -109,6 +109,8 @@ h1 {
 
 .preview-metadata {
   @include common.flex-row;
+  gap: common.$spacing-small;
+
   @include typescale.label-small;
   margin: common.$spacing-small 0;
   color: var(--md-sys-color-on-surface-higher);
