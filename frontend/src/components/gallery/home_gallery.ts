@@ -224,21 +224,17 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderContent() {
-    const historyItems = sortPaperDataByTimestamp(
-      this.historyService.getPaperHistory()
-    ).map((item) => item.metadata);
-
+    const currentPapers = this.homeService.currentMetadata ?? [];
     switch (this.galleryView) {
       case GalleryView.CURRENT:
-        const currentPapers = this.homeService.currentMetadata ?? [];
         return html`
           ${this.renderCollectionMenu()} ${this.renderCollection(currentPapers)}
         `;
       case GalleryView.LOCAL:
         return html`
           ${this.renderCollectionMenu()}
-          ${this.renderLoadingMessages(historyItems)}
-          ${this.renderCollection(historyItems)}
+          ${this.renderLoadingMessages(currentPapers)}
+          ${this.renderCollection(currentPapers)}
         `;
       default:
         return nothing;
@@ -308,7 +304,7 @@ export class HomeGallery extends MobxLitElement {
 
   private renderLoadingMessages(metadata: ArxivMetadata[]) {
     const loadingItems = metadata.filter((item) =>
-      this.unsubscribeListeners.get(item.paperId)
+      item && this.unsubscribeListeners.get(item.paperId)
     );
 
     if (loadingItems.length > 0) {
