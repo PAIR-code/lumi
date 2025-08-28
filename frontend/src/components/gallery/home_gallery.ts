@@ -304,19 +304,26 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderLoadingMessages(metadata: ArxivMetadata[]) {
-    return html`
-      <div class="loading-section">
-        ${metadata.map((item) => {
-          if (this.unsubscribeListeners.get(item.paperId)) {
-            return html`
-              <div class="loading-message">
-                Loading <i>${item.title} (${item.paperId})</i>
-              </div>
-            `;
-          }
-        })}
-      </div>
-    `;
+    const loadingItems = metadata.filter((item) =>
+      this.unsubscribeListeners.get(item.paperId)
+    );
+
+    if (loadingItems.length > 0) {
+      return html`
+        <div class="loading-section">
+          ${loadingItems.map(item => html`
+            <div class="loading-message">
+              Loading <i>${item.title} (${item.paperId})</i>
+            </div>
+          `)}
+        </div>
+      `;
+    } else if (this.isLoadingMetadata) {
+      return html`
+        <i class="loading-message">Loading paper...</i>
+      `;
+    }
+    return nothing;
   }
 
   private renderCollectionMenu() {
