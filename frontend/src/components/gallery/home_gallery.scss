@@ -97,6 +97,10 @@ h1 {
   transition: all 0.25s ease-out;
   width: 100%;
 
+  @include common.viewport-small {
+    max-width: common.$info-content-max-width-mobile;
+  }
+
   &:focus,
   &:hover {
     box-shadow: common.$spacing-small common.$spacing-small 1px 0
