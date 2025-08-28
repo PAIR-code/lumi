@@ -118,6 +118,7 @@ export class LumiContentSummary extends LightMobxLitElement {
             .classMap=${{ "span-summary-text": true }}
             .span=${summary.summary}
             .focusState=${focusState}
+            .showFocusUnderline=${true}
             .highlights=${getSpanHighlightsFromManagers(
               summary.summary.id,
               this.highlightManager,

@@ -27,6 +27,14 @@ lumi-span {
 .outer-span {
   &.focused {
     background-color: var(--md-sys-color-highlight-cyan-light);
+
+    &.show-focus-underline {
+      background-color: inherit;
+      color: var(--md-sys-color-on-surface-low);
+      font-weight: bold;
+      opacity: 0.6;
+      text-decoration: underline;
+    }
   }
   &.unfocused {
     opacity: 0.3;

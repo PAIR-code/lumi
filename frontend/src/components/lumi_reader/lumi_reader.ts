@@ -130,6 +130,8 @@ export class LumiReader extends LightMobxLitElement {
   @state() metadata?: ArxivMetadata;
   @state() metadataNotFound? = false;
 
+  @state() hoveredSpanId: string | null = null;
+
   private mobileSmartHighlightContainerRef = createRef<HTMLElement>();
 
   private unsubscribeListener?: Unsubscribe;
@@ -416,6 +418,8 @@ export class LumiReader extends LightMobxLitElement {
     if (this.floatingPanelService.isVisible) {
       this.floatingPanelService.hide();
     }
+
+    this.hoveredSpanId = null;
   };
 
   private readonly handleTextSelection = (selectionInfo: SelectionInfo) => {
@@ -486,6 +490,17 @@ export class LumiReader extends LightMobxLitElement {
   private readonly handleHomeClick = () => {
     this.routerService.navigateToDefault();
   };
+
+  private onSpanSummaryMouseEnter(spanIds: string[]) {
+    if (spanIds.length === 0) {
+      return;
+    }
+    this.hoveredSpanId = spanIds[0];
+  }
+
+  private onSpanSummaryMouseLeave() {
+    this.hoveredSpanId = null;
+  }
 
   private renderLoadingMetadata() {
     return html`<div class="loading-metadata-container status-container">
@@ -627,6 +642,9 @@ export class LumiReader extends LightMobxLitElement {
           .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
           .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
           .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
+          .onSpanSummaryMouseEnter=${this.onSpanSummaryMouseEnter.bind(this)}
+          .onSpanSummaryMouseLeave=${this.onSpanSummaryMouseLeave.bind(this)}
+          .hoveredSpanId=${this.hoveredSpanId}
         ></lumi-doc>
       </div>
       ${this.renderMobileSmartHighlightMenu()}
