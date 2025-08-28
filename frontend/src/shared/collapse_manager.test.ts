@@ -97,7 +97,9 @@ describe("CollapseManager", () => {
 
     it("should initialize sidebar state", () => {
       collapseManager.initialize();
-      expect(collapseManager.sidebarTabSelection).to.equal(SIDEBAR_TABS.TOC);
+      expect(collapseManager.sidebarTabSelection).to.equal(
+        SIDEBAR_TABS.ANSWERS
+      );
       expect(collapseManager.isMobileSidebarCollapsed).to.be.true;
     });
   });
