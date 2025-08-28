@@ -55,7 +55,7 @@ export class LumiSidebar extends LightMobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly collapseManager = this.documentStateService.collapseManager;
 
-  @query(".tabs-container.mobile")
+  @query(".tabs-container")
   private readonly tabsContainer!: HTMLDivElement;
 
   @consume({ context: scrollContext, subscribe: true })
@@ -142,17 +142,25 @@ export class LumiSidebar extends LightMobxLitElement {
     `;
   }
 
-  private renderContentsDesktop() {
+  private renderContents() {
     if (this.documentStateService.isHistoryShowAll) {
-      return html` <div class="contents-desktop">
-        ${this.renderQuestions()}
-      </div>`;
+      return html`
+        <div class="contents">
+          ${this.renderQuestions()}
+        </div>
+      `;
     }
 
+    const tabsContainerClasses = classMap({
+      ["tabs-container"]: true,
+      ["is-mobile-sidebar-collapsed"]:
+        this.collapseManager?.isMobileSidebarCollapsed ?? true,
+    });
+
     return html`
-      <div class="contents-desktop">
+      <div class="contents">
         ${this.renderHeader()}
-        <div class="tabs-container">
+        <div class=${tabsContainerClasses}>
           <tab-component
             .tabs=${Object.values(SIDEBAR_TABS)}
             .selectedTab=${this.collapseManager?.sidebarTabSelection}
@@ -166,9 +174,12 @@ export class LumiSidebar extends LightMobxLitElement {
               }
             }}
           >
-            ${this.renderTabContents()}
+            ${this.renderQuestions()}
+            ${this.renderConcepts()}
+            ${this.renderToc()}
           </tab-component>
         </div>
+        ${this.renderMobileCollapseButton()}
       </div>
     `;
   }
@@ -190,56 +201,13 @@ export class LumiSidebar extends LightMobxLitElement {
     `;
   }
 
-  private renderTabContents() {
-    return html`
-      ${this.renderQuestions()} ${this.renderConcepts()} ${this.renderToc()}
-    `;
-  }
-
-  private renderContentsMobile() {
-    if (this.documentStateService.isHistoryShowAll) {
-      return html`<div class="contents-mobile">${this.renderQuestions()}</div>`;
-    }
-
-    const tabsContainerClasses = classMap({
-      ["tabs-container"]: true,
-      ["mobile"]: true,
-      ["is-mobile-sidebar-collapsed"]:
-        this.collapseManager?.isMobileSidebarCollapsed ?? true,
-    });
-
-    return html`
-      <div class="contents-mobile">
-        ${this.renderHeader()}
-        <div class=${tabsContainerClasses}>
-          <tab-component
-            .tabs=${Object.values(SIDEBAR_TABS)}
-            .selectedTab=${this.collapseManager?.sidebarTabSelection}
-            @tab-selected=${(e: CustomEvent) => {
-              this.analyticsService.trackAction(
-                AnalyticsAction.SIDEBAR_TAB_CHANGE
-              );
-              this.collapseManager?.setSidebarTabSelection(e.detail.tab);
-              if (this.collapseManager?.isMobileSidebarCollapsed) {
-                this.collapseManager?.toggleMobileSidebarCollapsed();
-              }
-            }}
-          >
-            ${this.renderTabContents()}
-          </tab-component>
-        </div>
-        ${this.renderMobileCollapseButton()}
-      </div>
-    `;
-  }
-
   override render() {
     return html`
       <style>
         ${styles}
       </style>
       <div class="sidebar-host">
-        ${this.renderContentsDesktop()} ${this.renderContentsMobile()}
+        ${this.renderContents()}
       </div>
     `;
   }

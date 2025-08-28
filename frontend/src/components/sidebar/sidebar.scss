@@ -23,29 +23,18 @@
   background-color: var(--md-sys-color-surface-variant);
 }
 
-.contents-mobile {
-  display: none;
-  flex-direction: column;
-  height: 100%;
-
-  @include common.viewport-small {
-    display: flex;
-  }
-
-  .mobile-collapse-button {
-    border-top: common.$border;
-    cursor: pointer;
-  }
-}
-
-.contents-desktop {
+.contents {
   display: flex;
   flex-direction: column;
-
   height: 100%;
 
-  @include common.viewport-small {
+  .mobile-collapse-button {
+    cursor: pointer;
     display: none;
+
+    @include common.viewport-small {
+      display: block;
+    }
   }
 }
 
@@ -72,13 +61,13 @@
 
   overflow-y: auto;
 
-  &.is-mobile-sidebar-collapsed {
-    overflow: hidden;
-  }
-
   margin-top: common.$spacing-medium;
   @include common.viewport-small {
     margin-top: 0;
+
+    &.is-mobile-sidebar-collapsed {
+      overflow: hidden;
+    }
   }
 }
 
