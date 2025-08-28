@@ -10,6 +10,13 @@ Read more about Lumi in our blog post (coming soon!), and give Lumi a try at [lu
 
 ![Screenshot of Lumi](assets/smart_ask_zoomed.png)
 
+## Ask Lumi questions
+
+Select text or click an image to ask Lumi questions:
+
+| ![Screenshot of Lumi - asking questions about text](assets/questions_tutorial.png) | ![Screenshot of Lumi - asking questions about an image](assets/questions_image_tutorial.png) |
+| :--------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
+
 ## Running Locally
 
 ### Set up Firebase functions and emulators
@@ -92,4 +99,4 @@ Copyright 2025 DeepMind Technologies Limited.
 
 Lumi was designed and built by Ellen Jiang, Vivian Tsai, and Nada Hussein.
 
-Special thanks to Andy Coenen, James Wexler, Tianchang He, Mahima Pushkarna, Michael Xieyang Liu, Alejandra Molina, Aaron Donsbach, Michael Terry, and Lucas Dixon for making this experiment possible!
+Special thanks to Andy Coenen, James Wexler, Tianchang He, Mahima Pushkarna, Michael Xieyang Liu, Alejandra Molina, Aaron Donsbach, Martin Wattenberg, Fernanda Viégas, Michael Terry, and Lucas Dixon for making this experiment possible!
