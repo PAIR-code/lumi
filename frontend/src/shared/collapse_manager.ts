@@ -19,10 +19,7 @@ import { action, makeObservable, observable } from "mobx";
 import { LumiSection } from "./lumi_doc";
 import { LumiDocManager } from "./lumi_doc_manager";
 import { isViewportSmall } from "./responsive_utils";
-import {
-  INITIAL_SIDEBAR_TAB_DESKTOP,
-  INITIAL_SIDEBAR_TAB_MOBILE,
-} from "./constants";
+import { INITIAL_SIDEBAR_TAB } from "./constants";
 
 const INITIAL_SECTION_COLLAPSE_STATE = false;
 const INITIAL_REFERENCES_COLLAPSE_STATE = true;
@@ -43,10 +40,7 @@ export class CollapseManager {
   areFootnotesCollapsed = INITIAL_FOOTNOTES_COLLAPSE_STATE;
 
   // Sidebar state
-  sidebarTabSelection: string = isViewportSmall()
-    ? INITIAL_SIDEBAR_TAB_MOBILE
-    : INITIAL_SIDEBAR_TAB_DESKTOP;
-
+  sidebarTabSelection: string = INITIAL_SIDEBAR_TAB;
   isMobileSidebarCollapsed = INITIAL_MOBILE_SIDEBAR_COLLAPSED;
 
   constructor(private readonly lumiDocManager: LumiDocManager) {

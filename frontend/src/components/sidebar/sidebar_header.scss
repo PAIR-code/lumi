@@ -25,6 +25,7 @@
   @include common.flex-row-align-center;
   justify-content: space-between;
   width: 100%;
+  overflow: hidden;
   padding: common.$spacing-medium common.$sidebar-padding;
 }
 

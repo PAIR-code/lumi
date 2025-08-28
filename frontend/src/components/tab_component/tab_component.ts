@@ -27,30 +27,8 @@ export class TabComponent extends MobxLitElement {
   @property({ type: Array }) tabs: string[] = [];
   @property({ type: String }) selectedTab: string = "";
 
-  private handleTabClick(tab: string) {
-    this.dispatchEvent(
-      new CustomEvent("tab-selected", {
-        detail: { tab },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
   render() {
     return html`
-      <div class="tabs-header">
-        ${this.tabs.map(
-          (tab) => html`
-            <button
-              class="tab-button ${this.selectedTab === tab ? "selected" : ""}"
-              @click=${() => this.handleTabClick(tab)}
-            >
-              ${tab}
-            </button>
-          `
-        )}
-      </div>
       <div class="tab-content">
         ${this.tabs.map(
           (tab) => html`

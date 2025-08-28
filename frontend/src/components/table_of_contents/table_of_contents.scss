@@ -22,13 +22,8 @@ $tab-spacing: common.$spacing-medium;
 
 .toc-container {
   background: var(--md-sys-color-surface);
-  border-radius: 0 $item-border-radius $item-border-radius $item-border-radius;
-  border: 1px solid var(--md-sys-color-outline-variant);
-
-  @include common.viewport-small {
-    border-color: transparent;
-    border-radius: 0;
-  }
+  border-radius: $item-border-radius;
+  overflow: hidden;
 }
 
 .toc-list {

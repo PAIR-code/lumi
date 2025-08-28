@@ -174,7 +174,7 @@ export class AnswerItem extends LightMobxLitElement {
       <div class="highlight" .title=${this.answer.request.highlight}>
         <span>"${this.answer.request.highlight}"</span>
         <pr-icon-button
-          icon="open_in_new"
+          icon="arrow_forward"
           ?disabled=${this.isLoading}
           variant="default"
           @click=${() => {

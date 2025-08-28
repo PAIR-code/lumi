@@ -309,9 +309,16 @@ export class HomeGallery extends MobxLitElement {
       this.unsubscribeListeners.get(item.paperId)
     );
 
+    const renderNewLoading = () => {
+      return html`
+        <div class="loading-message"><i>Loading new paper...</i></div>
+      `;
+    };
+
     if (loadingItems.length > 0) {
       return html`
         <div class="loading-section">
+          ${this.isLoadingMetadata ? renderNewLoading() : nothing}
           ${loadingItems.map(item => html`
             <div class="loading-message">
               Loading <i>${item.title} (${item.paperId})</i>
@@ -321,7 +328,7 @@ export class HomeGallery extends MobxLitElement {
       `;
     } else if (this.isLoadingMetadata) {
       return html`
-        <i class="loading-message">Loading paper...</i>
+        <div class="loading-section">${renderNewLoading()}</div>
       `;
     }
     return nothing;
@@ -388,9 +395,6 @@ export class HomeGallery extends MobxLitElement {
         return nothing;
       }
 
-      const status = this.unsubscribeListeners.has(metadata.paperId)
-        ? "loading"
-        : "";
       const image = this.homeService.paperToFeaturedImageMap[metadata.paperId];
       return html`
         <a href=${getLumiPaperUrl(metadata.paperId)}
@@ -400,7 +404,6 @@ export class HomeGallery extends MobxLitElement {
           <paper-card
             .metadata=${metadata}
             .image=${ifDefined(image)}
-            .status=${status}
             .getImageUrl=${this.getImageUrl()}
           >
           </paper-card>
