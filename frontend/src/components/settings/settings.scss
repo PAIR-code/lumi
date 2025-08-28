@@ -57,3 +57,7 @@ a {
   flex-wrap: wrap;
   gap: common.$spacing-xl;
 }
+
+pr-textinput {
+  min-width: min(100%, 300px);
+}

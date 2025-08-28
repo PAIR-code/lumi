@@ -50,7 +50,11 @@ export class Settings extends MobxLitElement {
         <div class="section">
           <h2>Model API Key</h2>
           <div>
-            <i>Optional: Use your own Gemini API key for Lumi queries.</i>
+            Optional: Use your own
+            <a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank" rel="noopener noreferrer">Gemini API key</a>
+            for "Ask Lumi"
+            queries inside a paper. Your API key will never be used to
+            import papers.
           </div>
           <div class="field">
             <pr-textinput
@@ -59,7 +63,7 @@ export class Settings extends MobxLitElement {
                 const value = (e.target as HTMLInputElement).value;
                 this.settingsService.apiKey.value = value;
               }}
-              placeholder="API key"
+              placeholder="Paste Gemini API key here"
             ></pr-textinput>
           </div>
         </div>
