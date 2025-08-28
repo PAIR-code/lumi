@@ -18,7 +18,7 @@
 @use "../../sass/typescale";
 
 $input-container-height: 50px;
-$lumi-questions-gap: common.$spacing-medium;
+$lumi-questions-gap: common.$spacing-large;
 $button-height: 32px;
 
 .lumi-questions-host {
@@ -28,7 +28,7 @@ $button-height: 32px;
 
   .history-container {
     @include common.flex-column;
-    gap: common.$spacing-large;
+    gap: common.$spacing-medium;
   }
 
   .search-input {

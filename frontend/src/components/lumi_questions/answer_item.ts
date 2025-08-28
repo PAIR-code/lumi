@@ -18,8 +18,6 @@
 import { html, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
-import { consume } from "@lit/context";
-import { scrollContext, ScrollState } from "../../contexts/scroll_context";
 import { LumiAnswer } from "../../shared/api";
 import { LumiContent, LumiSpan } from "../../shared/lumi_doc";
 import { getReferencedSpanIdsFromContent } from "../../shared/lumi_doc_utils";
@@ -35,10 +33,11 @@ import { styles } from "./answer_item.scss";
 
 import { HighlightSelection } from "../../shared/selection_utils";
 import { HighlightManager } from "../../shared/highlight_manager";
-import { CollapseManager } from "../../shared/collapse_manager";
+import { HistoryCollapseManager } from "../../shared/history_collapse_manager";
 import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
+import { CollapseManager } from "../../shared/collapse_manager";
 
 /**
  * An answer item in the Lumi questions history.
@@ -56,6 +55,7 @@ export class AnswerItem extends LightMobxLitElement {
   ) => void;
 
   @property({ type: Object }) collapseManager?: CollapseManager;
+  @property({ type: Object }) historyCollapseManager?: HistoryCollapseManager;
 
   @property()
   onReferenceClick: (highlightedSpans: HighlightSelection[]) => void = () => {};
@@ -66,11 +66,7 @@ export class AnswerItem extends LightMobxLitElement {
   onInfoTooltipClick: (text: string, element: HTMLElement) => void = () => {};
   @property() infoTooltipText: string = "";
 
-  @consume({ context: scrollContext })
-  private scrollContext?: ScrollState;
-
   @state() private areReferencesShown = false;
-  @state() private isAnswerCollapsed = false;
   @state() private referencedSpans: LumiSpan[] = [];
 
   private toggleReferences() {
@@ -78,7 +74,13 @@ export class AnswerItem extends LightMobxLitElement {
   }
 
   private toggleAnswer() {
-    this.isAnswerCollapsed = !this.isAnswerCollapsed;
+    if (!this.historyCollapseManager) return;
+    this.historyCollapseManager.toggleAnswerCollapsed(this.answer.id);
+  }
+
+  private isCollapsed() {
+    if (!this.historyCollapseManager) return false;
+    return this.historyCollapseManager.isAnswerCollapsed(this.answer.id);
   }
 
   protected override updated(_changedProperties: PropertyValues): void {
@@ -96,7 +98,7 @@ export class AnswerItem extends LightMobxLitElement {
 
     if (_changedProperties.has("isLoading")) {
       if (this.isLoading) {
-        this.isAnswerCollapsed = false;
+        this.historyCollapseManager?.setAnswerCollapsed(this.answer.id, false);
       }
     }
   }
@@ -210,7 +212,7 @@ export class AnswerItem extends LightMobxLitElement {
           .highlightManager=${this.highlightManager!}
           .answerHighlightManager=${this.answerHighlightManager!}
           .onAnswerHighlightClick=${this.onAnswerHighlightClick?.bind(this)}
-          .collapseManager=${this.collapseManager!}
+          .collapseManager=${this.collapseManager}
           .onSpanSummaryMouseEnter=${() => {}}
           .onSpanSummaryMouseLeave=${() => {}}
           .onSpanReferenceClicked=${this.onAnswerSpanReferenceClicked.bind(
@@ -223,7 +225,7 @@ export class AnswerItem extends LightMobxLitElement {
   }
 
   private renderContent() {
-    if (this.isAnswerCollapsed) return nothing;
+    if (this.isCollapsed()) return nothing;
     return html`
       ${this.renderHighlightedText()} ${this.renderImagePreview()}
       ${this.renderAnswer()}
@@ -259,7 +261,7 @@ export class AnswerItem extends LightMobxLitElement {
 
     if (!highlight) return "";
 
-    if (this.isAnswerCollapsed) {
+    if (this.isCollapsed()) {
       return `Explain "${highlight}"`;
     }
 
@@ -287,6 +289,8 @@ export class AnswerItem extends LightMobxLitElement {
   }
 
   override render() {
+    const isAnswerCollapsed = this.isCollapsed();
+
     const classes = {
       "history-item": true,
     };
@@ -298,7 +302,12 @@ export class AnswerItem extends LightMobxLitElement {
 
     const historyItemClasses = {
       "history-item": true,
-      "is-collapsed": this.isAnswerCollapsed,
+      "is-collapsed": isAnswerCollapsed,
+    };
+
+    const questionTextClasses = {
+      "question-text": true,
+      "is-collapsed": isAnswerCollapsed,
     };
 
     return html`
@@ -311,12 +320,15 @@ export class AnswerItem extends LightMobxLitElement {
             <div class="left">
               <pr-icon-button
                 class="toggle-answer-button"
-                icon=${this.isAnswerCollapsed ? "chevron_right" : "expand_more"}
+                icon=${isAnswerCollapsed ? "chevron_right" : "expand_more"}
                 variant="default"
                 @click=${this.toggleAnswer}
                 ?disabled=${this.isLoading}
               ></pr-icon-button>
-              <span class="question-text" title=${this.answer.request.query}>
+              <span
+                class=${classMap(questionTextClasses)}
+                title=${this.answer.request.query}
+              >
                 ${this.getTitleText()} ${this.renderInfoIcon()}
               </span>
             </div>

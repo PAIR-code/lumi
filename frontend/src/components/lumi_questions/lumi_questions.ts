@@ -177,7 +177,7 @@ export class LumiQuestions extends LightMobxLitElement {
               this.handleSearch();
             }
           }}
-          placeholder="Ask Lumi"
+          placeholder="Ask Lumi..."
           class="search-input"
           ?disabled=${isLoading}
         ></pr-textarea>
@@ -224,6 +224,7 @@ export class LumiQuestions extends LightMobxLitElement {
         .onInfoTooltipClick=${this.handleInfoTooltipClick.bind(this)}
         .infoTooltipText=${ifDefined(infoTooltipText)}
         .collapseManager=${this.documentStateService.collapseManager}
+        .historyCollapseManager=${this.historyService.historyCollapseManager}
       ></answer-item>
     `;
   }
@@ -241,7 +242,6 @@ export class LumiQuestions extends LightMobxLitElement {
     if (answersToRender.length === 0 && !personalSummary) {
       return nothing;
     }
-
 
     const historyContainerClasses = classMap({
       "history-container": true,

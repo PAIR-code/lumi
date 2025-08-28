@@ -24,8 +24,10 @@ import { ArxivMetadata } from "../shared/lumi_doc";
 import { sortPaperDataByTimestamp } from "../shared/lumi_paper_utils";
 import { PERSONAL_SUMMARY_QUERY_NAME } from "../shared/constants";
 import { AnswerHighlightManager } from "../shared/answer_highlight_manager";
+import { HistoryCollapseManager } from "../shared/history_collapse_manager";
 
 const PAPER_KEY_PREFIX = "lumi-paper:";
+const INITIAL_SUMMARY_COLLAPSE_STATE = false;
 
 interface ServiceProvider {
   localStorageService: LocalStorageService;
@@ -41,10 +43,12 @@ export class HistoryService extends Service {
   paperMetadata = new Map<string, ArxivMetadata>();
   personalSummaries = new Map<string, LumiAnswer>();
   readonly answerHighlightManager: AnswerHighlightManager;
+  readonly historyCollapseManager: HistoryCollapseManager;
 
   constructor(private readonly sp: ServiceProvider) {
     super();
     this.answerHighlightManager = new AnswerHighlightManager();
+    this.historyCollapseManager = new HistoryCollapseManager();
     makeObservable(this, {
       answers: observable.shallow,
       temporaryAnswers: observable.shallow,
@@ -94,10 +98,15 @@ export class HistoryService extends Service {
         allAnswers.push(...paperData.history);
         if (paperData.personalSummary) {
           this.personalSummaries.set(paperId, paperData.personalSummary);
+          this.historyCollapseManager.setAnswerCollapsed(
+            paperData.personalSummary.id,
+            INITIAL_SUMMARY_COLLAPSE_STATE
+          );
         }
       }
     }
     this.answerHighlightManager.populateFromAnswers(allAnswers);
+    this.historyCollapseManager.initialize(allAnswers);
   }
 
   /**
@@ -146,6 +155,8 @@ export class HistoryService extends Service {
     const currentAnswers = this.getAnswers(docId);
     this.answers.set(docId, [answer, ...currentAnswers]);
     this.answerHighlightManager.addAnswer(answer);
+    this.historyCollapseManager.setAnswerCollapsed(answer.id, false);
+
     this.syncPaperToLocalStorage(docId);
   }
 
@@ -153,9 +164,14 @@ export class HistoryService extends Service {
    * Adds a new temporary answer for a given document ID.
    * @param docId The ID of the document.
    * @param answer The temporary LumiAnswer object to add.
+   * @param collapseOthers Whether to collapse other answers.
    */
-  addTemporaryAnswer(answer: LumiAnswer) {
+  addTemporaryAnswer(answer: LumiAnswer, collapseOthers = true) {
     this.temporaryAnswers.push(answer);
+
+    if (collapseOthers) {
+      this.historyCollapseManager.collapseAllAnswersExcept(answer.id);
+    }
   }
 
   /**
