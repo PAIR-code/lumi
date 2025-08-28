@@ -68,9 +68,7 @@ export class LumiSidebar extends LightMobxLitElement {
 
   private renderHeader() {
     const handleTabClick = (tab: string) => {
-      this.analyticsService.trackAction(
-        AnalyticsAction.SIDEBAR_TAB_CHANGE
-      );
+      this.analyticsService.trackAction(AnalyticsAction.SIDEBAR_TAB_CHANGE);
       this.collapseManager?.setSidebarTabSelection(tab);
       if (this.collapseManager?.isMobileSidebarCollapsed) {
         this.collapseManager?.toggleMobileSidebarCollapsed();
@@ -98,17 +96,12 @@ export class LumiSidebar extends LightMobxLitElement {
 
   private renderQuestions() {
     const classes = {
-      "history-view-active": this.documentStateService.isHistoryShowAll,
       "lumi-questions-container": true,
     };
 
     return html`
       <div class=${classMap(classes)} slot=${SIDEBAR_TABS.ANSWERS}>
-        <lumi-questions
-          .isHistoryShowAll=${this.documentStateService.isHistoryShowAll}
-          .setHistoryVisible=${(isVisible: boolean) =>
-            this.documentStateService.setHistoryShowAll(isVisible)}
-        ></lumi-questions>
+        <lumi-questions></lumi-questions>
       </div>
     `;
   }
@@ -168,14 +161,6 @@ export class LumiSidebar extends LightMobxLitElement {
   }
 
   private renderContents() {
-    if (this.documentStateService.isHistoryShowAll) {
-      return html`
-        <div class="contents">
-          ${this.renderQuestions()}
-        </div>
-      `;
-    }
-
     const tabsContainerClasses = classMap({
       ["tabs-container"]: true,
       ["is-mobile-sidebar-collapsed"]:
@@ -190,8 +175,7 @@ export class LumiSidebar extends LightMobxLitElement {
             .tabs=${Object.values(SIDEBAR_TABS)}
             .selectedTab=${this.collapseManager?.sidebarTabSelection}
           >
-            ${this.renderQuestions()}
-            ${this.renderConcepts()}
+            ${this.renderQuestions()} ${this.renderConcepts()}
             ${this.renderToc()}
           </tab-component>
         </div>
@@ -222,9 +206,7 @@ export class LumiSidebar extends LightMobxLitElement {
       <style>
         ${styles}
       </style>
-      <div class="sidebar-host">
-        ${this.renderContents()}
-      </div>
+      <div class="sidebar-host">${this.renderContents()}</div>
     `;
   }
 }

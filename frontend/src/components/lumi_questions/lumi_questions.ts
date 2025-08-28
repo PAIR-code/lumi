@@ -76,8 +76,6 @@ export class LumiQuestions extends LightMobxLitElement {
   private readonly snackbarService = core.getService(SnackbarService);
   private readonly settingsService = core.getService(SettingsService);
 
-  @property({ type: Boolean }) isHistoryShowAll = false;
-  @property({ type: Object }) setHistoryVisible?: (isVisible: boolean) => void;
   @property() onTextSelection: (selectionInfo: SelectionInfo) => void =
     () => {};
   @state() private dismissedAnswers = new Set<string>();
@@ -108,47 +106,11 @@ export class LumiQuestions extends LightMobxLitElement {
     this.documentStateService.focusOnImage(imageStoragePath);
   }
 
-  private onDismiss(answerId: string) {
-    this.analyticsService.trackAction(AnalyticsAction.QUESTIONS_DISMISS_ANSWER);
-    this.dismissedAnswers.add(answerId);
-    this.requestUpdate();
-  }
-
-  private getAnswersToRender(docId: string): {
-    answers: LumiAnswer[];
-    canDismiss: boolean;
-    infoTooltipText?: string;
-  } {
+  private getAnswersToRender(docId: string): LumiAnswer[] {
     const answers = this.historyService.getAnswers(docId);
     const tempAnswers = this.historyService.getTemporaryAnswers();
-    const personalSummary = docId
-      ? this.historyService.personalSummaries.get(docId)
-      : undefined;
 
-    let allAnswers = [...tempAnswers, ...answers];
-
-    const latestAnswer = allAnswers.length > 0 ? allAnswers[0] : null;
-    const isLatestAnswerDismissed = latestAnswer
-      ? this.dismissedAnswers.has(latestAnswer.id)
-      : false;
-
-    if (this.isHistoryShowAll)
-      return {
-        answers: allAnswers,
-        canDismiss: false,
-      };
-    if (!isLatestAnswerDismissed && latestAnswer)
-      return {
-        answers: [latestAnswer],
-        canDismiss: true,
-      };
-    if (personalSummary)
-      return {
-        answers: [personalSummary],
-        canDismiss: false,
-        infoTooltipText: SIDEBAR_PERSONAL_SUMMARY_TOOLTIP_TEXT,
-      };
-    return { answers: [], canDismiss: false };
+    return [...tempAnswers, ...answers];
   }
 
   private getDocId() {
@@ -248,110 +210,58 @@ export class LumiQuestions extends LightMobxLitElement {
     this.floatingPanelService.show(props, target);
   };
 
+  private renderAnswer(answer: LumiAnswer, infoTooltipText?: string) {
+    return html`
+      <answer-item
+        .onReferenceClick=${this.onReferenceClick.bind(this)}
+        .onImageReferenceClick=${this.onImageReferenceClick.bind(this)}
+        .answer=${answer}
+        .isLoading=${answer.isLoading || false}
+        .lumiDocManager=${this.documentStateService.lumiDocManager}
+        .highlightManager=${this.documentStateService.highlightManager}
+        .answerHighlightManager=${this.historyService.answerHighlightManager}
+        .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
+        .onInfoTooltipClick=${this.handleInfoTooltipClick.bind(this)}
+        .infoTooltipText=${ifDefined(infoTooltipText)}
+        .collapseManager=${this.documentStateService.collapseManager}
+      ></answer-item>
+    `;
+  }
+
   private renderHistory() {
     const docId = this.getDocId();
     if (!docId) return nothing;
 
-    const {
-      answers: answersToRender,
-      canDismiss,
-      infoTooltipText,
-    } = this.getAnswersToRender(docId);
+    const answersToRender = this.getAnswersToRender(docId);
 
-    if (answersToRender.length === 0) {
+    const personalSummary = docId
+      ? this.historyService.personalSummaries.get(docId)
+      : undefined;
+
+    if (answersToRender.length === 0 && !personalSummary) {
       return nothing;
     }
 
-    const showSeeAllButton =
-      !this.isHistoryShowAll &&
-      this.historyService.getAnswers(docId).length > 0;
 
     const historyContainerClasses = classMap({
       "history-container": true,
-      "is-history-show-all": this.isHistoryShowAll,
-      "show-see-all-button": showSeeAllButton,
     });
     return html`
       <div class=${historyContainerClasses}>
         ${answersToRender.map((answer: LumiAnswer) => {
-          const onDismiss = canDismiss ? this.onDismiss.bind(this) : undefined;
-
-          return html`
-            <answer-item
-              .onReferenceClick=${this.onReferenceClick.bind(this)}
-              .onImageReferenceClick=${this.onImageReferenceClick.bind(this)}
-              .onDismiss=${ifDefined(onDismiss)}
-              .answer=${answer}
-              .isLoading=${answer.isLoading || false}
-              .lumiDocManager=${this.documentStateService.lumiDocManager}
-              .highlightManager=${this.documentStateService.highlightManager}
-              .answerHighlightManager=${this.historyService
-                .answerHighlightManager}
-              .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(
-                this
-              )}
-              .onInfoTooltipClick=${this.handleInfoTooltipClick.bind(this)}
-              .infoTooltipText=${ifDefined(infoTooltipText)}
-              .collapseManager=${this.documentStateService.collapseManager}
-            ></answer-item>
-          `;
+          return this.renderAnswer(answer);
         })}
-      </div>
-      ${showSeeAllButton
-        ? html`
-            <div class="history-controls">
-              <pr-button
-                class="history-button"
-                variant="default"
-                @click=${() => {
-                  this.analyticsService.trackAction(
-                    AnalyticsAction.QUESTIONS_SEE_ALL_CLICK
-                  );
-                  this.setHistoryVisible?.(true);
-                }}
-                >See all answers</pr-button
-              >
-            </div>
-          `
-        : nothing}
-    `;
-  }
-
-  private renderBackButton() {
-    if (!this.isHistoryShowAll) {
-      return nothing;
-    }
-
-    return html`
-      <div class="back-button-container">
-        <pr-icon-button
-          @click=${() => {
-            this.analyticsService.trackAction(
-              AnalyticsAction.QUESTIONS_BACK_CLICK
-            );
-            this.setHistoryVisible?.(false);
-          }}
-          .icon=${"arrow_back"}
-          variant="default"
-        ></pr-icon-button>
-        <div class="all-answers-title">Answers</div>
+        ${personalSummary
+          ? this.renderAnswer(
+              personalSummary,
+              SIDEBAR_PERSONAL_SUMMARY_TOOLTIP_TEXT
+            )
+          : nothing}
       </div>
     `;
   }
 
   override render() {
-    // TODO(ellenj): Fix loading state in pr-icon-button.
-    const isLoading = this.historyService.isAnswerLoading;
-
-    if (this.isHistoryShowAll) {
-      return html`<style>
-          ${styles}
-        </style>
-        <div class="lumi-questions-host">
-          ${this.renderBackButton()} ${this.renderHistory()}
-        </div>`;
-    }
-
     return html`
       <style>
         ${styles}
