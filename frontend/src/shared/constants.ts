@@ -52,6 +52,6 @@ export const TUTORIAL_IMAGE_QUESTION_IMAGE_PATH =
 export const INPUT_DEBOUNCE_MS = 100;
 
 // Keep in sync with constants.py
-export const PERSONAL_SUMMARY_QUERY_NAME = "Summary";
+export const PERSONAL_SUMMARY_QUERY_NAME = "Summarize this paper";
 export const CONCEPT_CONTENT_LABEL_DEFINITION = "definition";
 export const CONCEPT_CONTENT_LABEL_RELEVANCE = "relevance";
