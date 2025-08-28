@@ -32,7 +32,7 @@ export const MAX_QUERY_INPUT_LENGTH = 1000;
 /** Sidebar tabs. */
 export const SIDEBAR_TABS = {
   ANSWERS: "Ask",
-  TOC: "Contents",
+  TOC: "Outline",
   CONCEPTS: "Concepts",
 };
 
