@@ -34,6 +34,12 @@ from shared.lumi_doc import (
     TextContent,
     ListContent,
     ListItem,
+    LumiAbstract,
+    LumiReference,
+    LumiFootnote,
+    ImageContent,
+    FigureContent,
+    HtmlFigureContent,
 )
 
 
@@ -167,6 +173,18 @@ class PromptUtilsTest(unittest.TestCase):
         span3 = LumiSpan(id="s3", text="This is a sublist item.", inner_tags=[])
         span4 = LumiSpan(id="s4", text="Another text span.", inner_tags=[])
         span5 = LumiSpan(id="s5", text="This is a sub-section span.", inner_tags=[])
+        span_abstract = LumiSpan(id="s_abs", text="Abstract text.", inner_tags=[])
+        span_ref = LumiSpan(id="s_ref", text="Reference text.", inner_tags=[])
+        span_foot = LumiSpan(id="s_foot", text="Footnote text.", inner_tags=[])
+        span_img_caption = LumiSpan(
+            id="s_img_cap", text="Image caption.", inner_tags=[]
+        )
+        span_fig_caption = LumiSpan(
+            id="s_fig_cap", text="Figure caption.", inner_tags=[]
+        )
+        span_html_caption = LumiSpan(
+            id="s_html_cap", text="HTML caption.", inner_tags=[]
+        )
 
         doc = LumiDoc(
             markdown="",
@@ -199,6 +217,29 @@ class PromptUtilsTest(unittest.TestCase):
                             id="c3",
                             text_content=TextContent(spans=[span4], tag_name="p"),
                         ),
+                        LumiContent(
+                            id="c_img",
+                            image_content=ImageContent(
+                                storage_path="",
+                                latex_path="",
+                                alt_text="",
+                                width=0,
+                                height=0,
+                                caption=span_img_caption,
+                            ),
+                        ),
+                        LumiContent(
+                            id="c_fig",
+                            figure_content=FigureContent(
+                                images=[], caption=span_fig_caption
+                            ),
+                        ),
+                        LumiContent(
+                            id="c_html",
+                            html_figure_content=HtmlFigureContent(
+                                html="", caption=span_html_caption
+                            ),
+                        ),
                     ],
                     sub_sections=[
                         LumiSection(
@@ -216,19 +257,60 @@ class PromptUtilsTest(unittest.TestCase):
                     ],
                 )
             ],
+            abstract=LumiAbstract(
+                contents=[
+                    LumiContent(
+                        id="c_abs",
+                        text_content=TextContent(spans=[span_abstract], tag_name="p"),
+                    )
+                ]
+            ),
+            references=[LumiReference(id="ref1", span=span_ref)],
+            footnotes=[LumiFootnote(id="fn1", span=span_foot)],
         )
 
         # Test case 1: Extract all spans
         with self.subTest(name="extract_all"):
             extracted_spans = get_all_spans_from_doc(doc)
-            self.assertEqual(len(extracted_spans), 5)
-            self.assertIn(span1, extracted_spans)
-            self.assertIn(span2, extracted_spans)
-            self.assertIn(span3, extracted_spans)
-            self.assertIn(span4, extracted_spans)
-            self.assertIn(span5, extracted_spans)
+            self.assertEqual(len(extracted_spans), 11)
+            expected_spans = [
+                span1,
+                span2,
+                span3,
+                span4,
+                span_img_caption,
+                span_fig_caption,
+                span_html_caption,
+                span5,
+                span_abstract,
+                span_ref,
+                span_foot,
+            ]
+            for span in expected_spans:
+                self.assertIn(span, extracted_spans)
 
         # Test case 2: Empty document
         with self.subTest(name="empty_doc"):
             empty_doc = LumiDoc(sections=[], concepts=[], markdown="")
             self.assertEqual(get_all_spans_from_doc(empty_doc), [])
+
+        # Test case 3: Document with only abstract
+        with self.subTest(name="only_abstract"):
+            doc_only_abstract = LumiDoc(
+                markdown="",
+                concepts=[],
+                sections=[],
+                abstract=LumiAbstract(
+                    contents=[
+                        LumiContent(
+                            id="c_abs",
+                            text_content=TextContent(
+                                spans=[span_abstract], tag_name="p"
+                            ),
+                        )
+                    ]
+                ),
+            )
+            extracted = get_all_spans_from_doc(doc_only_abstract)
+            self.assertEqual(len(extracted), 1)
+            self.assertIn(span_abstract, extracted)
