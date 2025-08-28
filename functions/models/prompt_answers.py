@@ -40,6 +40,7 @@ For example, if you use text from a sentence with id 's1', the output should loo
 _LUMI_ANSWER_BASE_PROMPT = (
     LUMI_ANSWER_PREAMBLE_PROMPT
     + r"""
+{metadata_string}
 Here are the sentences from the document:
 {spans_string}
 """

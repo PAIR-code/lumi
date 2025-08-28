@@ -46,6 +46,20 @@ def generate_lumi_answer(
     formatted_spans = prompt_utils.get_formatted_spans_list(all_spans)
     spans_string = "\n".join(formatted_spans)
 
+    metadata_string = ""
+    if doc.metadata:
+        metadata = doc.metadata
+        authors = ", ".join(metadata.authors)
+        metadata_string = f"""
+Document Metadata:
+Title: {metadata.title}
+Authors: {authors}
+Paper ID: {metadata.paper_id}
+Version: {metadata.version}
+Published: {metadata.published_timestamp}
+Last Updated: {metadata.updated_timestamp}
+"""
+
     if image_info:
         caption = image_info.caption or ""
         if query:
@@ -53,11 +67,13 @@ def generate_lumi_answer(
                 spans_string=spans_string,
                 query=query,
                 caption=caption,
+                metadata_string=metadata_string,
             )
         else:
             prompt = prompts.LUMI_PROMPT_DEFINE_IMAGE.format(
                 spans_string=spans_string,
                 caption=caption,
+                metadata_string=metadata_string,
             )
     else:
         if query and highlight:
@@ -65,16 +81,19 @@ def generate_lumi_answer(
                 spans_string=spans_string,
                 highlight=highlight,
                 query=query,
+                metadata_string=metadata_string,
             )
         elif query:
             prompt = prompts.LUMI_PROMPT_ANSWER.format(
                 spans_string=spans_string,
                 query=query,
+                metadata_string=metadata_string,
             )
         elif highlight:
             prompt = prompts.LUMI_PROMPT_DEFINE.format(
                 spans_string=spans_string,
                 highlight=highlight,
+                metadata_string=metadata_string,
             )
         else:
             # Should not happen with proper request validation
