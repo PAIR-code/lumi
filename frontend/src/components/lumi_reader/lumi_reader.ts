@@ -157,7 +157,7 @@ export class LumiReader extends LightMobxLitElement {
     };
   }
 
-  protected override firstUpdated(): void {
+  private showPopupDialogs() {
     if (!this.settingsService.isTosConfirmed.value) {
       const onClose = () => {
         this.dialogService.show(new TutorialDialogProps());
@@ -189,6 +189,10 @@ export class LumiReader extends LightMobxLitElement {
       if (this.bannerService.isBannerOpen) {
         this.bannerService.clearBannerProperties();
       }
+    }
+
+    if (status === LoadingStatus.SUCCESS) {
+      this.showPopupDialogs();
     }
 
     this.loadingStatus = status;

@@ -60,6 +60,7 @@ export class LumiConceptViz extends LightMobxLitElement {
   private renderContents() {
     return html`
       <lumi-concept-contents
+        .conceptId=${this.concept.id}
         .contents=${this.concept.contents}
         .highlightManager=${this.highlightManager}
         .answerHighlightManager=${this.answerHighlightManager}

@@ -78,7 +78,7 @@ export class HomeService extends Service {
       (collection) => collection.collectionId === currentCollectionId
     );
     // Load papers for current collection
-    this.loadMetadata(this.currentCollection?.paperIds.reverse() ?? []);
+    this.loadMetadata(this.currentCollection?.paperIds ?? []);
   }
 
   get currentCollectionId() {
@@ -117,7 +117,11 @@ export class HomeService extends Service {
               orderBy("priority", "desc")
             )
           )
-        ).docs.map((doc) => doc.data() as ArxivCollection);
+        ).docs.map((doc) => {
+          const collection = doc.data() as ArxivCollection;
+          collection.paperIds.reverse();
+          return collection;
+        });
         this.hasLoadedCollections = true;
       } catch (e) {
         console.log(e);

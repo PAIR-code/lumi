@@ -23,6 +23,12 @@ import { CollapseManager } from "../shared/collapse_manager";
 import { LumiDocManager } from "../shared/lumi_doc_manager";
 import { action, makeObservable, observable } from "mobx";
 import { HighlightSelection } from "../shared/selection_utils";
+import { HistoryService } from "./history.service";
+import { LUMI_CONCEPT_SPAN_ID_PREFIX, SIDEBAR_TABS } from "../shared/constants";
+
+interface ServiceProvider {
+  historyService: HistoryService;
+}
 
 /**
  * A service to manage the UI state of a single document, such as section
@@ -36,7 +42,7 @@ export class DocumentStateService extends Service {
 
   private scrollState?: ScrollState;
 
-  constructor() {
+  constructor(private readonly sp: ServiceProvider) {
     super();
     makeObservable(this);
   }
@@ -101,6 +107,22 @@ export class DocumentStateService extends Service {
     );
     this.highlightManager.addHighlights(highlights);
 
-    this.scrollToSpan(spanId);
+    const isConceptId = spanId.includes(LUMI_CONCEPT_SPAN_ID_PREFIX);
+    if (isConceptId) {
+      this.collapseManager.setSidebarTabSelection(SIDEBAR_TABS.CONCEPTS);
+    } else {
+      const answerId = this.sp.historyService.getAnswerIdForSpan(spanId);
+      if (answerId) {
+        this.collapseManager.setSidebarTabSelection(SIDEBAR_TABS.ANSWERS);
+        this.sp.historyService.historyCollapseManager.setAnswerCollapsed(
+          answerId,
+          false
+        );
+      }
+    }
+
+    window.setTimeout(() => {
+      this.scrollToSpan(spanId);
+    });
   }
 }

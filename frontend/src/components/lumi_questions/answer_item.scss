@@ -102,6 +102,8 @@ answer-item {
     @include common.overflow-ellipsis;
     @include typescale.title-medium;
 
+    -webkit-text-size-adjust: none;
+
     transition: opacity 0.25s ease;
     -moz-transition: opacity 0.25s ease;
     -webkit-transition: opacity 0.25s ease;
