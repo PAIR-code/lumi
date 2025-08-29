@@ -20,8 +20,8 @@
 .sidebar-host {
   @include common.flex-column;
   @include common.full-percentage;
-  background-color: var(--md-sys-color-primary-container-lowest);
-  border-right: 1px solid var(--md-sys-color-primary-container-low);
+  background-color: var(--md-sys-color-primary-container-low);
+  border-right: 2px solid var(--md-sys-color-primary-container);
 }
 
 .contents {
@@ -31,6 +31,7 @@
 
   .mobile-collapse-button {
     background-color: var(--md-sys-color-primary-container-lowest);
+    border-bottom: 2px solid var(--md-sys-color-primary-container);
 
     cursor: pointer;
     display: none;
@@ -118,9 +119,9 @@
   padding: common.$spacing-small common.$spacing-medium;
 
   background: none;
-  border: 2px solid var(--md-sys-color-gray-container);
+  border: 2px solid var(--md-sys-color-primary-container);
   border-radius: common.$spacing-medium;
-  color: var(--md-sys-color-gray-container-high);
+  color: var(--md-sys-color-gray);
   cursor: pointer;
   font-size: 90%;
   max-width: max-content;
@@ -128,8 +129,7 @@
 
   &:focus,
   &:hover {
-    border-color: var(--md-sys-color-gray-container-high);
-    color: var(--md-sys-color-gray);
+    border-color: var(--md-sys-color-primary-container-high);
     cursor: pointer;
   }
 
