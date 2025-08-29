@@ -305,17 +305,16 @@ export class LumiReader extends LightMobxLitElement {
     return (path: string) => this.firebaseService.getDownloadUrl(path);
   }
 
-  private checkOpenMobileSidebar() {
-    if (isViewportSmall()) {
-      const { collapseManager } = this.documentStateService;
-      if (collapseManager) {
-        if (collapseManager.isMobileSidebarCollapsed) {
-          collapseManager.toggleMobileSidebarCollapsed();
-        }
-        if (collapseManager.sidebarTabSelection !== SIDEBAR_TABS.ANSWERS) {
-          collapseManager.setSidebarTabSelection(SIDEBAR_TABS.ANSWERS);
-        }
-      }
+  private checkChangeTabs() {
+    const { collapseManager } = this.documentStateService;
+    if (!collapseManager) return;
+
+    if (isViewportSmall() && collapseManager.isMobileSidebarCollapsed) {
+      collapseManager.toggleMobileSidebarCollapsed();
+    }
+
+    if (collapseManager.sidebarTabSelection !== SIDEBAR_TABS.ANSWERS) {
+      collapseManager.setSidebarTabSelection(SIDEBAR_TABS.ANSWERS);
     }
   }
 
@@ -336,7 +335,7 @@ export class LumiReader extends LightMobxLitElement {
     const tempAnswer = createTemporaryAnswer(request);
     this.historyService.addTemporaryAnswer(tempAnswer);
 
-    this.checkOpenMobileSidebar();
+    this.checkChangeTabs();
 
     try {
       const response = await getLumiResponseCallable(
@@ -381,7 +380,7 @@ export class LumiReader extends LightMobxLitElement {
       image: imageInfo,
     };
 
-    this.checkOpenMobileSidebar();
+    this.checkChangeTabs();
 
     const tempAnswer = createTemporaryAnswer(request);
     this.historyService.addTemporaryAnswer(tempAnswer);
