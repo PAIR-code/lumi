@@ -88,7 +88,7 @@ h1 {
 
 .preview-item {
   @include common.flex-column;
-  border: 1px solid var(--md-sys-color-outline-variant);
+  border: 2px solid var(--md-sys-color-gray-container);
   border-radius: common.$spacing-small;
   gap: common.$spacing-large;
   height: 100%;
@@ -104,7 +104,8 @@ h1 {
   &:focus,
   &:hover {
     box-shadow: common.$spacing-small common.$spacing-small 1px 0
-      var(--md-sys-color-outline-variant);
+      var(--md-sys-color-gray-container);
+    border-color: var(--md-sys-color-primary-container-high);
     cursor: pointer;
     transform: translate(-2px);
     transition: all 0.25s ease-out;
@@ -204,6 +205,11 @@ h1 {
 }
 
 a.paper-card-link {
+  @include common.flex-column;
   color: var(--md-sys-color-on-surface);
   text-decoration: none;
+}
+
+paper-card {
+  flex-grow: 1;
 }
