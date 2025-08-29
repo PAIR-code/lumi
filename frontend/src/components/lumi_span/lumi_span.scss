@@ -197,8 +197,8 @@ span.collapsed {
     cursor: pointer;
 
     &.span-inline-citation {
-      background: var(--md-sys-color-surface-container);
-      color: var(--md-sys-color-on-surface-high);
+      background: var(--md-sys-color-gray-container);
+      color: var(--md-sys-color-on-gray-container);
     }
   }
 
