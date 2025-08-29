@@ -42,6 +42,7 @@ import {
 } from "../../shared/constants";
 import { debounce } from "../../shared/utils";
 import { HistoryService } from "../../services/history.service";
+import { isViewportSmall } from "../../shared/responsive_utils";
 
 /**
  * The menu that appears on text selection.
@@ -114,8 +115,10 @@ export class SmartHighlightMenu extends MobxLitElement {
   }, INPUT_DEBOUNCE_MS);
 
   private renderAskView() {
+    const inputSize = isViewportSmall() ? "medium" : "small";
     return html`
       <pr-textinput
+        size=${inputSize}
         .value=${this.queryText}
         .onChange=${(e: InputEvent) => {
           this.debouncedUpdate((e.target as HTMLInputElement).value);
