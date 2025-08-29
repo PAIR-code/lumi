@@ -30,10 +30,9 @@ import { core } from "../../core/core";
 import { HomeService } from "../../services/home.service";
 import { HistoryService } from "../../services/history.service";
 import {
-  ARXIV_DOCS_ROUTE_NAME,
   Pages,
   RouterService,
-  getLumiPaperUrl
+  getLumiPaperUrl,
 } from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
@@ -223,7 +222,8 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderContent() {
-    const historyItems = this.historyService.getPaperHistory()
+    const historyItems = this.historyService
+      .getPaperHistory()
       .map((item) => item.metadata);
 
     switch (this.galleryView) {
@@ -319,17 +319,17 @@ export class HomeGallery extends MobxLitElement {
       return html`
         <div class="loading-section">
           ${this.isLoadingMetadata ? renderNewLoading() : nothing}
-          ${loadingItems.map(item => html`
-            <div class="loading-message">
-              Loading <i>${item.title} (${item.paperId})</i>
-            </div>
-          `)}
+          ${loadingItems.map(
+            (item) => html`
+              <div class="loading-message">
+                Loading <i>${item.title} (${item.paperId})</i>
+              </div>
+            `
+          )}
         </div>
       `;
     } else if (this.isLoadingMetadata) {
-      return html`
-        <div class="loading-section">${renderNewLoading()}</div>
-      `;
+      return html` <div class="loading-section">${renderNewLoading()}</div> `;
     }
     return nothing;
   }
@@ -395,9 +395,12 @@ export class HomeGallery extends MobxLitElement {
         return nothing;
       }
 
-      const image = this.homeService.paperToFeaturedImageMap[metadata.paperId];
+      const image = this.homeService.paperToFeaturedImageMap.get(
+        metadata.paperId
+      );
       return html`
-        <a href=${getLumiPaperUrl(metadata.paperId)}
+        <a
+          href=${getLumiPaperUrl(metadata.paperId)}
           class="paper-card-link"
           rel="noopener noreferrer"
         >

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
+import {  makeObservable, observable, ObservableMap } from "mobx";
 import {
   collection,
   doc,
@@ -61,7 +61,8 @@ export class HomeService extends Service {
 
   // Map of paper ID to arXiv metadata
   paperToMetadataMap: Record<string, ArxivMetadata> = {};
-  paperToFeaturedImageMap: Record<string, FeaturedImage> = {};
+  paperToFeaturedImageMap: ObservableMap<string, FeaturedImage> =
+    new ObservableMap();
 
   // Current collection based on page route (undefined if home page)
   currentCollection: ArxivCollection | undefined = undefined;
@@ -85,9 +86,9 @@ export class HomeService extends Service {
     } else {
       // Otherwise, load for local storage collection
       this.loadMetadata(
-        this.sp.historyService.getPaperHistory().map(
-          item => item.metadata?.paperId
-        )
+        this.sp.historyService
+          .getPaperHistory()
+          .map((item) => item.metadata?.paperId)
       );
     }
   }
@@ -151,7 +152,7 @@ export class HomeService extends Service {
    */
   async loadMetadata(paperIds: string[], forceReload = false) {
     for (const paperId of paperIds) {
-      if (!paperId || this.paperToMetadataMap[paperId] && !forceReload) {
+      if (!paperId || (this.paperToMetadataMap[paperId] && !forceReload)) {
         break;
       }
       try {
@@ -162,7 +163,7 @@ export class HomeService extends Service {
         ).data() as MetadataCollectionItem;
         this.paperToMetadataMap[paperId] = metadataItem.metadata;
         if (metadataItem.featuredImage) {
-          this.paperToFeaturedImageMap[paperId] = metadataItem.featuredImage;
+          this.paperToFeaturedImageMap.set(paperId, metadataItem.featuredImage);
         }
       } catch (e) {
         console.log(`Error loading ${paperId}: ${e}`);
