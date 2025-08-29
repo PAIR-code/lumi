@@ -85,7 +85,9 @@ export class HomeService extends Service {
     } else {
       // Otherwise, load for local storage collection
       this.loadMetadata(
-        this.sp.historyService.getPaperHistory().map(item => item.metadata.paperId)
+        this.sp.historyService.getPaperHistory().map(
+          item => item.metadata?.paperId
+        )
       );
     }
   }
@@ -149,7 +151,7 @@ export class HomeService extends Service {
    */
   async loadMetadata(paperIds: string[], forceReload = false) {
     for (const paperId of paperIds) {
-      if (this.paperToMetadataMap[paperId] && !forceReload) {
+      if (!paperId || this.paperToMetadataMap[paperId] && !forceReload) {
         break;
       }
       try {
