@@ -25,6 +25,10 @@ lumi-span {
 }
 
 .outer-span {
+  -webkit-tap-highlight-color: none;
+  -webkit-text-size-adjust: none;
+  touch-action: manipulation;
+
   &.focused {
     background-color: var(--md-sys-color-highlight-cyan-light);
 
