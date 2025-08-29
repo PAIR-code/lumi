@@ -20,7 +20,8 @@
 .sidebar-host {
   @include common.flex-column;
   @include common.full-percentage;
-  background-color: var(--md-sys-color-surface-variant);
+  background-color: var(--md-sys-color-primary-container-lowest);
+  border-right: 1px solid var(--md-sys-color-primary-container-low);
 }
 
 .contents {
@@ -49,8 +50,6 @@
 
   @include common.flex-column;
   gap: common.$spacing-small;
-
-  background: var(--md-sys-color-surface-variant);
   z-index: 1; // To be above the lumi answer item responses container
 
   height: calc(100% - common.$header-height);
@@ -72,7 +71,6 @@
   align-items: center;
   position: sticky;
   top: 0;
-  background-color: var(--md-sys-color-surface-variant);
   padding-top: common.$spacing-medium;
   padding-bottom: common.$spacing-medium;
   z-index: 1;
@@ -108,7 +106,6 @@
 
 .tabs-header {
   @include common.flex-row;
-  background: var(--md-sys-color-surface-variant);
   gap: common.$spacing-small;
   height: max-content;
   overflow-x: auto;
