@@ -118,9 +118,9 @@
   padding: common.$spacing-small common.$spacing-medium;
 
   background: none;
-  border: 2px solid var(--md-sys-color-outline-variant);
+  border: 2px solid var(--md-sys-color-gray-container);
   border-radius: common.$spacing-medium;
-  color: var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-gray-container-high);
   cursor: pointer;
   font-size: 90%;
   max-width: max-content;
@@ -128,8 +128,8 @@
 
   &:focus,
   &:hover {
-    border-color: var(--md-sys-color-outline);
-    color: var(--md-sys-color-outline);
+    border-color: var(--md-sys-color-gray-container-high);
+    color: var(--md-sys-color-gray);
     cursor: pointer;
   }
 
