@@ -147,7 +147,8 @@ export class LumiDocViz extends LightMobxLitElement {
           <div class="title-section">
             <h1 class="main-column title">
               ${this.lumiDoc.metadata?.title}
-              <a href=${getArxivPaperUrl(this.lumiDoc.metadata?.paperId ?? '')}
+              <a
+                href=${getArxivPaperUrl(this.lumiDoc.metadata?.paperId ?? "")}
                 class="arxiv-link"
                 rel="noopener noreferrer"
               >
@@ -176,6 +177,7 @@ export class LumiDocViz extends LightMobxLitElement {
             .excerptSpanId=${this.lumiDoc.summaries?.abstractExcerptSpanId}
             .highlightManager=${this.highlightManager}
             .answerHighlightManager=${this.answerHighlightManager}
+            .onAnswerHighlightClick=${this.onAnswerHighlightClick}
             .footnotes=${this.lumiDoc.footnotes}
           >
           </lumi-abstract>

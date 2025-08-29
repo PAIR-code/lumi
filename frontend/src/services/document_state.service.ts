@@ -36,11 +36,6 @@ export class DocumentStateService extends Service {
 
   private scrollState?: ScrollState;
 
-  @observable isHistoryShowAll = false;
-  @action setHistoryShowAll(isVisible: boolean) {
-    this.isHistoryShowAll = isVisible;
-  }
-
   constructor() {
     super();
     makeObservable(this);
@@ -93,16 +88,6 @@ export class DocumentStateService extends Service {
       return;
 
     const spanId = highlightedSpans[0].spanId;
-    const isSpanFromLumiDoc = !!this.lumiDocManager?.getSpanById(spanId);
-
-    if (!isSpanFromLumiDoc) {
-      // For now, assumes that the span is in the history if not in the document.
-      // TODO(ellenj): Once we can also ask questions from Lumi Concepts, we will need
-      // handle that case here.
-      if (!this.isHistoryShowAll) {
-        this.setHistoryShowAll(true);
-      }
-    }
 
     this.highlightManager.clearHighlights();
     const highlights: Highlight[] = highlightedSpans.map(

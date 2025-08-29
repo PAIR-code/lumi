@@ -43,6 +43,7 @@ import {
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { HistoryService } from "../../services/history.service";
 import { LumiAnswer } from "../../shared/api";
+import { createRef, Ref, ref } from "lit/directives/ref.js";
 
 /**
  * A sidebar component that displays a list of concepts.
@@ -58,6 +59,8 @@ export class LumiSidebar extends LightMobxLitElement {
   @query(".tabs-container")
   private readonly tabsContainer!: HTMLDivElement;
 
+  private scrollContainerRef: Ref<HTMLElement> = createRef();
+
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
 
@@ -66,11 +69,26 @@ export class LumiSidebar extends LightMobxLitElement {
     makeObservable(this);
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.updateComplete.then(() => {
+      if (this.scrollContainerRef.value) {
+        this.scrollContext?.registerAnswersScrollContainer(
+          this.scrollContainerRef
+        );
+      }
+    });
+  }
+
+  override disconnectedCallback() {
+    this.scrollContext?.unregisterAnswersScrollContainer();
+    super.disconnectedCallback();
+  }
+
   private renderHeader() {
     const handleTabClick = (tab: string) => {
-      this.analyticsService.trackAction(
-        AnalyticsAction.SIDEBAR_TAB_CHANGE
-      );
+      this.analyticsService.trackAction(AnalyticsAction.SIDEBAR_TAB_CHANGE);
       this.collapseManager?.setSidebarTabSelection(tab);
       if (this.collapseManager?.isMobileSidebarCollapsed) {
         this.collapseManager?.toggleMobileSidebarCollapsed();
@@ -98,17 +116,12 @@ export class LumiSidebar extends LightMobxLitElement {
 
   private renderQuestions() {
     const classes = {
-      "history-view-active": this.documentStateService.isHistoryShowAll,
       "lumi-questions-container": true,
     };
 
     return html`
       <div class=${classMap(classes)} slot=${SIDEBAR_TABS.ANSWERS}>
-        <lumi-questions
-          .isHistoryShowAll=${this.documentStateService.isHistoryShowAll}
-          .setHistoryVisible=${(isVisible: boolean) =>
-            this.documentStateService.setHistoryShowAll(isVisible)}
-        ></lumi-questions>
+        <lumi-questions></lumi-questions>
       </div>
     `;
   }
@@ -168,14 +181,6 @@ export class LumiSidebar extends LightMobxLitElement {
   }
 
   private renderContents() {
-    if (this.documentStateService.isHistoryShowAll) {
-      return html`
-        <div class="contents">
-          ${this.renderQuestions()}
-        </div>
-      `;
-    }
-
     const tabsContainerClasses = classMap({
       ["tabs-container"]: true,
       ["is-mobile-sidebar-collapsed"]:
@@ -185,13 +190,12 @@ export class LumiSidebar extends LightMobxLitElement {
     return html`
       <div class="contents">
         ${this.renderHeader()}
-        <div class=${tabsContainerClasses}>
+        <div class=${tabsContainerClasses} ${ref(this.scrollContainerRef)}>
           <tab-component
             .tabs=${Object.values(SIDEBAR_TABS)}
             .selectedTab=${this.collapseManager?.sidebarTabSelection}
           >
-            ${this.renderQuestions()}
-            ${this.renderConcepts()}
+            ${this.renderQuestions()} ${this.renderConcepts()}
             ${this.renderToc()}
           </tab-component>
         </div>
@@ -222,9 +226,7 @@ export class LumiSidebar extends LightMobxLitElement {
       <style>
         ${styles}
       </style>
-      <div class="sidebar-host">
-        ${this.renderContents()}
-      </div>
+      <div class="sidebar-host">${this.renderContents()}</div>
     `;
   }
 }

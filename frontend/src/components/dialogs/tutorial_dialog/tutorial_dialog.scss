@@ -23,6 +23,10 @@
 .images {
   @include common.flex-row;
   gap: common.$spacing-medium;
+
+  @include common.viewport-small {
+    flex-direction: column;
+  }
 }
 
 .tutorial-image {

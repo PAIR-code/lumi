@@ -360,6 +360,11 @@
   --md-sys-color-surface: var(--md-ref-palette-gray100);
   // --md-sys-color-on-surface: rgb(29 26 32); // default assignment
   --md-sys-color-on-surface: var(--md-ref-gray10);
+  --md-sys-color-on-surface-low: var(--md-ref-palette-gray5);
+  --md-sys-color-on-surface-high: var(--md-ref-palette-gray30);
+  --md-sys-color-on-surface-higher: var(--md-ref-palette-gray50);
+  --md-sys-color-on-surface-highest: var(--md-ref-palette-gray70);
+  --md-sys-color-on-surface-highest-variant: var(--md-ref-palette-gray80);
   --md-sys-color-surface-variant: rgb(232 224 235);
   --md-sys-color-on-surface-variant: rgb(74 69 78);
   --md-sys-color-outline: rgb(123 117 127);
@@ -505,6 +510,11 @@
   --md-sys-color-on-background: rgb(231 224 232);
   --md-sys-color-surface: rgb(21 18 24);
   --md-sys-color-on-surface: rgb(231 224 232);
+  --md-sys-color-on-surface-low: var(--md-ref-palette-gray90);
+  --md-sys-color-on-surface-high: var(--md-ref-palette-gray70);
+  --md-sys-color-on-surface-higher: var(--md-ref-palette-gray60);
+  --md-sys-color-on-surface-highest: var(--md-ref-palette-gray30);
+  --md-sys-color-on-surface-highest-variant: var(--md-ref-palette-gray20);
   --md-sys-color-surface-variant: rgb(74 69 78);
   --md-sys-color-on-surface-variant: rgb(203 196 207);
   --md-sys-color-outline: rgb(149 142 153);

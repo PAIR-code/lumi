@@ -39,14 +39,7 @@
 }
 
 .lumi-questions-container {
-  max-height: 60%;
-}
-
-.history-view-active.lumi-questions-container {
-  flex-grow: 1;
-
-  max-height: 100%;
-  overflow-y: auto;
+  height: 100%;
 }
 
 .tabs-container {
@@ -54,12 +47,11 @@
 
   @include common.flex-column;
   gap: common.$spacing-small;
-  padding: 0 common.$sidebar-padding common.$sidebar-padding;
 
   background: var(--md-sys-color-surface-variant);
   z-index: 1; // To be above the lumi answer item responses container
 
-  overflow-y: auto;
+  height: calc(100% - common.$header-height);
 
   @include common.viewport-small {
     &.is-mobile-sidebar-collapsed {
@@ -93,6 +85,14 @@
   @include typescale.title-small;
   color: var(--md-sys-color-on-surface-high);
   margin: 0;
+}
+
+.concepts-container,
+.toc-container {
+  height: 100%;
+  padding: 0 common.$sidebar-padding common.$sidebar-padding;
+
+  overflow: auto;
 }
 
 .concepts-list {

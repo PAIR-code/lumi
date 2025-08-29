@@ -17,8 +17,8 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-$input-container-height: 50px;
-$lumi-questions-gap: common.$spacing-medium;
+$input-container-height: 48px;
+$lumi-questions-gap: common.$spacing-large;
 $button-height: 32px;
 
 .lumi-questions-host {
@@ -28,19 +28,11 @@ $button-height: 32px;
 
   .history-container {
     @include common.flex-column;
-    gap: common.$spacing-large;
+    gap: common.$spacing-medium;
+    padding: 0 common.$sidebar-padding common.$sidebar-padding;
 
-    &:not(.is-history-show-all) {
-      height: calc(100% - $button-height - $lumi-questions-gap);
-
-      &:not(.show-see-all-button) {
-        height: calc(100%);
-      }
-    }
-
-    &.is-history-show-all {
-      padding-bottom: common.$sidebar-padding;
-    }
+    height: calc(100% - $input-container-height);
+    overflow: auto;
   }
 
   .search-input {
@@ -51,25 +43,10 @@ $button-height: 32px;
     @include common.flex-row-align-center;
   }
 
-  .back-button-container {
-    background: var(--md-sys-color-surface-variant);
-
-    @include common.flex-row-align-center;
-    gap: common.$spacing-medium;
-    padding: common.$sidebar-padding;
-
-    position: sticky;
-    top: 0;
-    z-index: 2; // Above answer sticky headings.
-
-    span {
-      @include typescale.label-large;
-    }
-  }
-
   .input-container {
     @include common.flex-row-align-center;
     padding: common.$spacing-medium common.$sidebar-padding;
+    margin: common.$sidebar-padding common.$sidebar-padding 0;
 
     background: var(--md-sys-color-surface);
     border-radius: common.$border-radius-small;
@@ -77,7 +54,7 @@ $button-height: 32px;
 
     max-width: common.$info-content-max-width;
     gap: common.$spacing-medium;
-    width: 100%;
+    width: calc(100% - 2 * common.$sidebar-padding);
 
     flex-shrink: 0;
 
@@ -88,9 +65,5 @@ $button-height: 32px;
     pr-icon-button {
       flex-shrink: 1;
     }
-  }
-
-  .all-answers-title {
-    @include typescale.label-large;
   }
 }
