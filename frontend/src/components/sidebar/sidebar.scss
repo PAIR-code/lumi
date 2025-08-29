@@ -117,10 +117,10 @@
   flex: 1;
   padding: common.$spacing-small common.$spacing-medium;
 
-  background: var(--md-sys-color-surface-variant);
+  background: none;
   border: 2px solid var(--md-sys-color-outline-variant);
   border-radius: common.$spacing-medium;
-  color: var(--md-sys-color-outline);
+  color: var(--md-sys-color-outline-variant);
   cursor: pointer;
   font-size: 90%;
   max-width: max-content;
@@ -129,15 +129,15 @@
   &:focus,
   &:hover {
     border-color: var(--md-sys-color-outline);
-    color: var(--md-sys-color-on-surface);
+    color: var(--md-sys-color-outline);
     cursor: pointer;
   }
 
   &.selected,
   &.selected:focus,
   &.selected:hover {
-    background: var(--md-sys-color-primary-container-low);
-    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-primary-container);
+    border-color: var(--md-sys-color-primary-container-high);
     color: var(--md-sys-color-primary);
   }
 }
