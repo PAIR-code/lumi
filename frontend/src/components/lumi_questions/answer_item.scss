@@ -64,7 +64,8 @@ answer-item {
   justify-content: space-between;
 
   color: var(--md-sys-color-on-tertiary-container);
-  background: var(--md-sys-color-tertiary-container-low);
+  background: var(--md-sys-color-tertiary-container-lowest);
+  border: 1px solid var(--md-sys-color-tertiary-container);
   padding: common.$spacing-medium;
   border-radius: 4px;
   margin: 0 $history-item-horizontal-padding;
