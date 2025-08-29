@@ -97,7 +97,7 @@ export class Header extends MobxLitElement {
       <pr-tooltip text="Home" position="BOTTOM_START">
         <pr-icon-button
           color="neutral"
-          icon=${activePage === Pages.SETTINGS ? 'arrow_back' : LOGO_ICON_NAME}
+          icon=${activePage === Pages.SETTINGS ? "arrow_back" : LOGO_ICON_NAME}
           variant="default"
           @click=${handleClick}
         >
@@ -113,7 +113,7 @@ export class Header extends MobxLitElement {
     };
 
     return html`
-      <pr-tooltip text="" position="BOTTOM_END">
+      <pr-tooltip text="" position="BOTTOM_END" class="import-button-tooltip">
         <pr-button variant="filled" @click=${openDialog}>
           Import paper
         </pr-button>
