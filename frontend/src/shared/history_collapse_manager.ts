@@ -19,6 +19,7 @@ import { action, makeObservable, observable } from "mobx";
 import { LumiAnswer } from "./api";
 
 const INITIAL_ANSWERS_COLLAPSE_STATE = true;
+const FIRST_ANSWER_COLLAPSE_STATE = false;
 
 /**
  * Manages the collapse/expand state of answers in the history panel.
@@ -36,8 +37,12 @@ export class HistoryCollapseManager {
   }
 
   initialize(answers: LumiAnswer[]) {
-    answers.forEach((answer) => {
-      this.answerCollapseState.set(answer.id, INITIAL_ANSWERS_COLLAPSE_STATE);
+    answers.forEach((answer, index) => {
+      let collapseState = INITIAL_ANSWERS_COLLAPSE_STATE;
+      if (index === 0) {
+        collapseState = FIRST_ANSWER_COLLAPSE_STATE;
+      }
+      this.answerCollapseState.set(answer.id, collapseState);
     });
   }
 

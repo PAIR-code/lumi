@@ -28,7 +28,7 @@ import { HistoryCollapseManager } from "../shared/history_collapse_manager";
 import { ScrollState } from "../contexts/scroll_context";
 
 const PAPER_KEY_PREFIX = "lumi-paper:";
-const INITIAL_SUMMARY_COLLAPSE_STATE = false;
+const INITIAL_SUMMARY_COLLAPSE_STATE = true;
 
 interface ServiceProvider {
   localStorageService: LocalStorageService;
