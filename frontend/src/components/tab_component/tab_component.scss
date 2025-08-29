@@ -19,9 +19,15 @@
 @use "../../sass/typescale";
 
 :host {
-  width: 100%;
   @include common.flex-column;
   gap: common.$spacing-medium;
+
+  width: 100%;
+  height: 100%;
+}
+
+.tab-content {
+  height: 100%;
 }
 
 .tab-content .tab-pane {
@@ -30,4 +36,5 @@
 
 .tab-content .tab-pane.active {
   display: block;
+  height: 100%;
 }

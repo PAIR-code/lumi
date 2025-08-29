@@ -23,11 +23,11 @@ $tab-spacing: common.$spacing-medium;
 .toc-container {
   background: var(--md-sys-color-surface);
   border-radius: $item-border-radius;
-  overflow: hidden;
 }
 
 .toc-list {
-  padding: 0;
+  padding: common.$spacing-medium 0;
+  margin: 0;
 
   list-style: none;
 

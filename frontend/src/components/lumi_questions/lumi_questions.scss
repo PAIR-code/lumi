@@ -17,7 +17,7 @@
 @use "../../sass/common";
 @use "../../sass/typescale";
 
-$input-container-height: 50px;
+$input-container-height: 48px;
 $lumi-questions-gap: common.$spacing-large;
 $button-height: 32px;
 
@@ -29,6 +29,10 @@ $button-height: 32px;
   .history-container {
     @include common.flex-column;
     gap: common.$spacing-medium;
+    padding: 0 common.$sidebar-padding common.$sidebar-padding;
+
+    height: calc(100% - $input-container-height);
+    overflow: auto;
   }
 
   .search-input {
@@ -42,6 +46,7 @@ $button-height: 32px;
   .input-container {
     @include common.flex-row-align-center;
     padding: common.$spacing-medium common.$sidebar-padding;
+    margin: common.$sidebar-padding common.$sidebar-padding 0;
 
     background: var(--md-sys-color-surface);
     border-radius: common.$border-radius-small;
@@ -49,7 +54,7 @@ $button-height: 32px;
 
     max-width: common.$info-content-max-width;
     gap: common.$spacing-medium;
-    width: 100%;
+    width: calc(100% - 2 * common.$sidebar-padding);
 
     flex-shrink: 0;
 
