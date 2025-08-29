@@ -107,11 +107,13 @@ Last Updated: {metadata.updated_timestamp}
     else:
         markdown_response = gemini.call_predict(prompt, api_key=api_key)
 
+    # Extract equations before markdown conversion to prevent misinterpretation.
+    markdown_response, equation_map = markdown_utils.extract_equations_to_placeholders(markdown_response)
     html_response = markdown_utils.markdown_to_html(markdown_response)
 
     # Parse the markdown response to create LumiContent objects.
     response_sections = convert_html_to_lumi.convert_to_lumi_sections(
-        html_response, placeholder_map={}, strip_double_brackets=True
+        html_response, placeholder_map=equation_map, strip_double_brackets=True
     )
 
     response_content: List[LumiContent] = []

@@ -14,12 +14,17 @@
 # ==============================================================================
 
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from dataclasses import dataclass
 from mistletoe import Document, HtmlRenderer
 from shared import import_tags
 from shared.lumi_doc import InnerTagName
 from shared.utils import get_unique_id
+
+from shared.constants import (
+    PLACEHOLDER_SUFFIX,
+    EQUATION_PLACEHOLDER_PREFIX,
+)
 
 
 @dataclass
@@ -30,7 +35,9 @@ class KatexSubstitution:
 
 # A list of unsupported KaTeX functions and their replacements.
 KATEX_SUBSTITUTIONS: List[KatexSubstitution] = [
-    KatexSubstitution(pattern=re.compile(re.escape(r"\normalfont")), replacement=r"\\text"),
+    KatexSubstitution(
+        pattern=re.compile(re.escape(r"\normalfont")), replacement=r"\\text"
+    ),
     KatexSubstitution(pattern=re.compile(re.escape(r"\mbox")), replacement=r"\\text"),
     KatexSubstitution(pattern=re.compile(r"\\label\{[^}]*\}"), replacement=""),
 ]
@@ -134,6 +141,26 @@ def _protect_math_expressions(markdown: str) -> Tuple[str, dict]:
     return markdown, math_placeholders
 
 
+def extract_equations_to_placeholders(markdown: str) -> Tuple[str, Dict[str, str]]:
+    """
+    Finds all inline and display math expressions, replaces them with placeholders,
+    and returns the modified string and a map from placeholder to the original equation.
+    """
+    equation_map = {}
+
+    def replacer(match):
+        uid = get_unique_id()
+        placeholder = f"{EQUATION_PLACEHOLDER_PREFIX}{uid}{PLACEHOLDER_SUFFIX}"
+        equation_map[placeholder] = match.group(0)
+        return placeholder
+
+    # Important: Replace display math first to avoid its content being partially matched by inline math.
+    markdown = import_tags.MATH_DISPLAY_PATTERN.sub(replacer, markdown)
+    markdown = import_tags.MATH_PATTERN.sub(replacer, markdown)
+
+    return markdown, equation_map
+
+
 def markdown_to_html(markdown: str) -> str:
     """
     Converts markdown text to an html string, protecting LaTeX math expressions.
@@ -146,7 +173,7 @@ def markdown_to_html(markdown: str) -> str:
     """
     if not markdown:
         return ""
-    
+
     markdown = _apply_katex_substitutions(markdown)
     markdown = markdown.replace("\\$", "\\\\$")
     protected_markdown, math_placeholders = _protect_math_expressions(markdown)

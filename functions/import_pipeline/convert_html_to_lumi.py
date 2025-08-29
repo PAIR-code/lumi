@@ -36,11 +36,15 @@ from import_pipeline.convert_lumi_spans import (
     create_lumi_spans,
 )
 
+from shared.constants import (
+    PLACEHOLDER_PREFIX,
+    PLACEHOLDER_SUFFIX,
+    EQUATION_PLACEHOLDER_PREFIX,
+)
+
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
 TAGS_TO_PROCESS = DEFAULT_TEXT_TAGS + DEFAULT_LIST_TAGS
 STORAGE_PATH_DELIMETER = "__"
-PLACEHOLDER_PREFIX = "[[LUMI_PLACEHOLDER_"
-PLACEHOLDER_SUFFIX = "]]"
 
 
 def convert_to_lumi_sections(
@@ -163,6 +167,19 @@ def _parse_html_block_for_lumi_contents(
     """
     if not text.strip():
         return
+
+    # First, substitute equation placeholders back into the text.
+    # This happens before splitting by other placeholders.
+    equation_placeholder_pattern = re.compile(
+        f"({re.escape(EQUATION_PLACEHOLDER_PREFIX)}.*?{re.escape(PLACEHOLDER_SUFFIX)})"
+    )
+
+    def replace_equation(match):
+        placeholder = match.group(1)
+        # The equation content is stored directly as a string in the map
+        return placeholder_map.get(placeholder, "")
+
+    text = equation_placeholder_pattern.sub(replace_equation, text)
 
     lumi_contents: List[LumiContent] = []
 
