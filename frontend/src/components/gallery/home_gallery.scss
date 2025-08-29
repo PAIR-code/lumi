@@ -81,7 +81,7 @@ h1 {
   grid-template-columns: repeat(2, 1fr);
   max-width: common.$info-content-max-width;
 
-  @include common.viewport-small {
+  @include common.viewport-medium {
     grid-template-columns: repeat(1, 1fr);
   }
 }

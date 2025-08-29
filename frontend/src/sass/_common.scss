@@ -329,6 +329,12 @@ pr-circular-progress {
   }
 }
 
+@mixin viewport-medium {
+  @media screen and (max-width: 850px) {
+    @content;
+  }
+}
+
 @mixin viewport-small {
   @media screen and (max-width: 600px) {
     @content;
