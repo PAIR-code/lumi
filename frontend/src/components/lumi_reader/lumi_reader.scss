@@ -46,7 +46,6 @@ lumi-reader {
 
       height: min-content;
       max-height: 65%;
-      border-bottom: common.$border;
 
       &.is-mobile-sidebar-collapsed {
         height: $mobile-sidebar-collapsed-height;
