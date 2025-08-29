@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {  makeObservable, observable, ObservableMap } from "mobx";
+import { makeObservable, observable, ObservableMap } from "mobx";
 import {
   collection,
   doc,
@@ -49,7 +49,6 @@ export class HomeService extends Service {
       currentCollection: observable,
       hasLoadedCollections: observable,
       isLoadingCollections: observable,
-      paperToMetadataMap: observable,
       showUploadDialog: observable,
     });
   }
@@ -60,7 +59,8 @@ export class HomeService extends Service {
   isLoadingCollections = false;
 
   // Map of paper ID to arXiv metadata
-  paperToMetadataMap: Record<string, ArxivMetadata> = {};
+  paperToMetadataMap: ObservableMap<string, ArxivMetadata> =
+    new ObservableMap();
   paperToFeaturedImageMap: ObservableMap<string, FeaturedImage> =
     new ObservableMap();
 
@@ -99,9 +99,9 @@ export class HomeService extends Service {
 
   get currentMetadata() {
     return (
-      this.currentCollection?.paperIds.map(
-        (id) => this.paperToMetadataMap[id]
-      ) ?? undefined
+      this.currentCollection?.paperIds
+        .map((id) => this.paperToMetadataMap.get(id))
+        .filter((metadata) => metadata !== undefined)
     );
   }
 
@@ -152,7 +152,7 @@ export class HomeService extends Service {
    */
   async loadMetadata(paperIds: string[], forceReload = false) {
     for (const paperId of paperIds) {
-      if (!paperId || (this.paperToMetadataMap[paperId] && !forceReload)) {
+      if (!paperId || (this.paperToMetadataMap.get(paperId) && !forceReload)) {
         break;
       }
       try {
@@ -161,7 +161,7 @@ export class HomeService extends Service {
             doc(this.sp.firebaseService.firestore, "arxiv_metadata", paperId)
           )
         ).data() as MetadataCollectionItem;
-        this.paperToMetadataMap[paperId] = metadataItem.metadata;
+        this.paperToMetadataMap.set(paperId, metadataItem.metadata);
         if (metadataItem.featuredImage) {
           this.paperToFeaturedImageMap.set(paperId, metadataItem.featuredImage);
         }
