@@ -25,7 +25,7 @@ from firebase_functions import logger
 from firebase_functions import logger
 
 API_KEY_LOGGING_MESSAGE = "Ran with user-specified API key"
-QUERY_RESPONSE_MAX_OUTPUT_TOKENS = 2000
+QUERY_RESPONSE_MAX_OUTPUT_TOKENS = 4000
 
 T = TypeVar("T")
 
