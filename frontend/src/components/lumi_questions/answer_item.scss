@@ -63,7 +63,8 @@ answer-item {
   @include common.flex-row-align-center;
   justify-content: space-between;
 
-  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  background: var(--md-sys-color-tertiary-container-low);
   padding: common.$spacing-medium;
   border-radius: 4px;
   margin: 0 $history-item-horizontal-padding;
@@ -136,7 +137,7 @@ answer-item {
   gap: common.$spacing-medium;
 
   border-top: 1px solid var(--md-sys-color-outline-variant);
-  color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-tertiary);
 
   padding: 6px $history-item-horizontal-padding;
 
@@ -179,7 +180,7 @@ answer-item {
   cursor: pointer;
 
   &:hover {
-    background: var(--md-sys-color-surface-variant);
+    background: var(--md-sys-color-tertiary-container-lowest);
   }
 }
 

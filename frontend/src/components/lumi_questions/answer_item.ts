@@ -177,6 +177,7 @@ export class AnswerItem extends LightMobxLitElement {
         <span>"${this.answer.request.highlight}"</span>
         <pr-icon-button
           icon="arrow_forward"
+          color="tertiary"
           ?disabled=${this.isLoading}
           variant="default"
           @click=${() => {
@@ -239,6 +240,7 @@ export class AnswerItem extends LightMobxLitElement {
       <pr-icon-button
         class="dismiss-button"
         icon="close"
+        color="tertiary"
         variant="default"
         title="Close"
         @click=${() => {
@@ -321,6 +323,7 @@ export class AnswerItem extends LightMobxLitElement {
               <pr-icon-button
                 class="toggle-answer-button"
                 icon=${isAnswerCollapsed ? "chevron_right" : "expand_more"}
+                color="tertiary"
                 variant="default"
                 @click=${this.toggleAnswer}
                 ?disabled=${this.isLoading}
@@ -347,6 +350,7 @@ export class AnswerItem extends LightMobxLitElement {
                   .icon=${this.areReferencesShown
                     ? "keyboard_arrow_up"
                     : "keyboard_arrow_down"}
+                  color="tertiary"
                 ></pr-icon>
                 <span class="mentions-text"
                   >${this.referencedSpans.length} references</span
