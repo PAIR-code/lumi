@@ -22,16 +22,7 @@ import { customElement, state } from "lit/decorators.js";
 import { provide } from "@lit/context";
 
 // Run the main_import_pdf_script.py to import a paper to use locally.
-
-// These are commented out for now so that the main app does not have syntax errors.
-// TODO(ellenj): Update the INNER_TAG type enum to allow strings to be set as the values.
-// import { paper as paper_2410_18808 } from "../.examples/paper_2410.18808";
-// import { paper as paper_2406_10252 } from "../.examples/paper_2406.10252";
-// import { paper as paper_2405_17767 } from "../.examples/paper_2405.17767";
-// import { paper as paper_2506_09018 } from "../.examples/paper_2506.09018";
-// import { paper as paper_2309_12864 } from "../.examples/paper_2309.12864";
-// import { paper as paper_2406_09403 } from "../.examples/paper_2406.09403";
-// import { paper as paper_2406_13892 } from "../.examples/paper_2406.13892";
+// import { paper as paper_xxxx_xxxxx } from "../.examples/paper_xxxx.xxxxx";
 
 import "../components/lumi_doc/lumi_doc";
 import { InnerTagName, LumiDoc, LoadingStatus } from "../shared/lumi_doc";
@@ -42,13 +33,7 @@ import { CollapseManager } from "../shared/collapse_manager";
 import { HighlightManager } from "../shared/highlight_manager";
 
 const PAPERS: { [key: string]: LumiDoc } = {
-  // "2410.18808": paper_2410_18808,
-  // "2406.10252": paper_2406_10252,
-  // "2405.17767": paper_2405_17767,
-  // "2506.09018": paper_2506_09018,
-  // "2309.12864": paper_2309_12864,
-  // "2406.09403": paper_2406_09403,
-  // "2406.13892": paper_2406_13892,
+  // "xxxx.xxxxx": paper_xxxx_xxxxx,
 };
 
 const TEST_TABLE_HTML = `<table>
@@ -104,6 +89,11 @@ const mockLumiDoc: LumiDoc = {
                 },
               ],
             },
+            {
+              id: "abstract_span_1_1_2",
+              text: "This is the second sentence in the abstract. ",
+              innerTags: [],
+            },
           ],
         },
         imageContent: null,
@@ -131,6 +121,7 @@ const mockLumiDoc: LumiDoc = {
     },
   ],
   summaries: {
+    abstractExcerptSpanId: "abstract_span_1_1_1",
     sectionSummaries: [
       {
         id: "section_1",
