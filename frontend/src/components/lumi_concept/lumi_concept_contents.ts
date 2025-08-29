@@ -28,12 +28,14 @@ import "../../pair-components/icon";
 import "../lumi_span/lumi_span";
 import { classMap } from "lit/directives/class-map.js";
 import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
+import { LUMI_CONCEPT_SPAN_ID_PREFIX } from "../../shared/constants";
 
 /**
  * A component to render the contents of a LumiConcept.
  */
 @customElement("lumi-concept-contents")
 export class LumiConceptContents extends LightMobxLitElement {
+  @property({ type: String }) conceptId: string = "";
   @property({ type: Array }) contents: ConceptContent[] = [];
   @property({ type: Object }) highlightManager?: HighlightManager;
   @property({ type: Object }) answerHighlightManager?: AnswerHighlightManager;
@@ -68,7 +70,7 @@ export class LumiConceptContents extends LightMobxLitElement {
       </style>
       ${contentToShow.map((content, index) => {
         const tempSpan: LumiSpan = {
-          id: `concept-content-${index}`,
+          id: `${LUMI_CONCEPT_SPAN_ID_PREFIX}-${this.conceptId}-${index}`,
           text: content.value,
           innerTags: [],
         };

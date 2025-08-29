@@ -26,6 +26,7 @@ import { PERSONAL_SUMMARY_QUERY_NAME } from "../shared/constants";
 import { AnswerHighlightManager } from "../shared/answer_highlight_manager";
 import { HistoryCollapseManager } from "../shared/history_collapse_manager";
 import { ScrollState } from "../contexts/scroll_context";
+import { getAllSpansFromContents } from "../shared/lumi_doc_utils";
 
 const PAPER_KEY_PREFIX = "lumi-paper:";
 const INITIAL_SUMMARY_COLLAPSE_STATE = true;
@@ -47,6 +48,7 @@ export class HistoryService extends Service {
   readonly historyCollapseManager: HistoryCollapseManager;
 
   private scrollState?: ScrollState;
+  private readonly spanIdToAnswerIdMap = new Map<string, string>();
 
   constructor(private readonly sp: ServiceProvider) {
     super();
@@ -114,6 +116,10 @@ export class HistoryService extends Service {
     }
     this.answerHighlightManager.populateFromAnswers(allAnswers);
     this.historyCollapseManager.initialize(allAnswers);
+
+    for (const answer of allAnswers) {
+      this.updateAnswerSpansMap(answer);
+    }
   }
 
   /**
@@ -152,6 +158,14 @@ export class HistoryService extends Service {
     return papers;
   }
 
+  private updateAnswerSpansMap(answer: LumiAnswer) {
+    const spans = getAllSpansFromContents(answer.responseContent);
+    for (const span of spans) {
+      this.spanIdToAnswerIdMap.set(span.id, answer.id);
+    }
+
+  }
+
   /**
    * Adds a new answer to the history for a given document ID.
    * Answers are prepended to the array to keep the most recent first.
@@ -164,6 +178,7 @@ export class HistoryService extends Service {
     this.answerHighlightManager.addAnswer(answer);
     this.historyCollapseManager.setAnswerCollapsed(answer.id, false);
 
+    this.updateAnswerSpansMap(answer);
     this.syncPaperToLocalStorage(docId);
   }
 
@@ -297,7 +312,18 @@ export class HistoryService extends Service {
     this.answers.clear();
     this.personalSummaries.clear();
     this.answerHighlightManager.clearHighlights();
+    this.spanIdToAnswerIdMap.clear();
   }
+
+  /**
+   * Retrieves the Answer ID for a given Span ID.
+   * @param spanId The ID of the span.
+   * @returns The Answer ID if found, otherwise undefined.
+   */
+  getAnswerIdForSpan(spanId: string): string | undefined {
+    return this.spanIdToAnswerIdMap.get(spanId);
+  }
+
   private syncPaperToLocalStorage(docId: string) {
     const paperData = this.getPaperData(docId);
     if (!paperData) {

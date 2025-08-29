@@ -18,6 +18,7 @@
 import { expect } from "@esm-bundle/chai";
 import {
   getAllContents,
+  getAllSpansFromContents,
   getReferencedSpanIdsFromContent,
 } from "./lumi_doc_utils";
 import { InnerTagName, LumiContent, LumiSection, LumiSpan } from "./lumi_doc";
@@ -215,5 +216,157 @@ describe("getAllContents", () => {
       subSections: [],
     };
     expect(getAllContents(section)).to.deep.equal([]);
+  });
+});
+
+describe("getAllSpansFromContents", () => {
+  const span1: LumiSpan = { id: "s1", text: "one", innerTags: [] };
+  const span2: LumiSpan = { id: "s2", text: "two", innerTags: [] };
+  const span3: LumiSpan = { id: "s3", text: "three", innerTags: [] };
+  const span4: LumiSpan = { id: "s4", text: "four", innerTags: [] };
+  const span5: LumiSpan = { id: "s5", text: "five", innerTags: [] };
+
+  it("should return an empty array for empty content", () => {
+    expect(getAllSpansFromContents([])).to.deep.equal([]);
+  });
+
+  it("should extract spans from textContent", () => {
+    const contents: LumiContent[] = [
+      {
+        id: "c1",
+        textContent: { tagName: "p", spans: [span1, span2] },
+        imageContent: null,
+        figureContent: null,
+        htmlFigureContent: null,
+        listContent: null,
+      },
+    ];
+    expect(getAllSpansFromContents(contents)).to.deep.equal([span1, span2]);
+  });
+
+  it("should extract spans from listContent, including nested lists", () => {
+    const contents: LumiContent[] = [
+      {
+        id: "c1",
+        textContent: null,
+        imageContent: null,
+        figureContent: null,
+        htmlFigureContent: null,
+        listContent: {
+          isOrdered: false,
+          listItems: [
+            { spans: [span1] },
+            {
+              spans: [span2],
+              subListContent: {
+                isOrdered: false,
+                listItems: [{ spans: [span3] }],
+              },
+            },
+          ],
+        },
+      },
+    ];
+    expect(getAllSpansFromContents(contents)).to.have.deep.members([
+      span1,
+      span2,
+      span3,
+    ]);
+  });
+
+  it("should extract spans from various captions", () => {
+    const contents: LumiContent[] = [
+      {
+        id: "c1",
+        textContent: null,
+        imageContent: {
+          storagePath: "",
+          latexPath: "",
+          caption: span1,
+          altText: "",
+          width: 0,
+          height: 0,
+        },
+        figureContent: null,
+        htmlFigureContent: null,
+        listContent: null,
+      },
+      {
+        id: "c2",
+        textContent: null,
+        imageContent: null,
+        figureContent: { images: [], caption: span2 },
+        htmlFigureContent: null,
+        listContent: null,
+      },
+      {
+        id: "c3",
+        textContent: null,
+        imageContent: null,
+        figureContent: null,
+        htmlFigureContent: { html: "", caption: span3 },
+        listContent: null,
+      },
+    ];
+    expect(getAllSpansFromContents(contents)).to.have.deep.members([
+      span1,
+      span2,
+      span3,
+    ]);
+  });
+
+  it("should handle mixed content types and collect all spans", () => {
+    const contents: LumiContent[] = [
+      {
+        id: "c1",
+        textContent: { tagName: "p", spans: [span1] },
+        imageContent: null,
+        figureContent: null,
+        htmlFigureContent: null,
+        listContent: null,
+      },
+      {
+        id: "c2",
+        textContent: null,
+        imageContent: {
+          storagePath: "",
+          latexPath: "",
+          caption: span2,
+          altText: "",
+          width: 0,
+          height: 0,
+        },
+        figureContent: null,
+        htmlFigureContent: null,
+        listContent: null,
+      },
+      {
+        id: "c3",
+        textContent: null,
+        imageContent: null,
+        figureContent: null,
+        htmlFigureContent: null,
+        listContent: {
+          isOrdered: true,
+          listItems: [
+            { spans: [span3] },
+            {
+              spans: [span4],
+              subListContent: {
+                isOrdered: false,
+                listItems: [{ spans: [span5] }],
+              },
+            },
+          ],
+        },
+      },
+    ];
+    expect(getAllSpansFromContents(contents)).to.have.deep.members([
+      span1,
+      span2,
+      span3,
+      span4,
+      span5,
+    ]);
   });
 });

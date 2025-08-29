@@ -15,7 +15,13 @@
  * limitations under the License.
  */
 
-import { InnerTagName, LumiContent, LumiSection, LumiSpan } from "./lumi_doc";
+import {
+  InnerTagName,
+  ListContent,
+  LumiContent,
+  LumiSection,
+  LumiSpan,
+} from "./lumi_doc";
 
 /**
  * Extracts all unique referenced span IDs from the `spanref` tags within an
@@ -90,4 +96,45 @@ export function getAllContents(section: LumiSection): LumiContent[] {
 
   traverse(section);
   return allContents;
+}
+
+/**
+ * Extracts all `LumiSpan` objects from an array of `LumiContent` objects.
+ * This function recursively traverses different content types (text, lists,
+ * captions) to find all spans.
+ *
+ * @param contents The array of `LumiContent` objects to search through.
+ * @returns A flattened array of all `LumiSpan` objects found.
+ */
+export function getAllSpansFromContents(contents: LumiContent[]): LumiSpan[] {
+  const allSpans: LumiSpan[] = [];
+
+  function findSpansInList(listContent: ListContent) {
+    for (const item of listContent.listItems) {
+      allSpans.push(...item.spans);
+      if (item.subListContent) {
+        findSpansInList(item.subListContent);
+      }
+    }
+  }
+
+  for (const content of contents) {
+    if (content.textContent?.spans) {
+      allSpans.push(...content.textContent.spans);
+    }
+    if (content.listContent) {
+      findSpansInList(content.listContent);
+    }
+    if (content.imageContent?.caption) {
+      allSpans.push(content.imageContent.caption);
+    }
+    if (content.figureContent?.caption) {
+      allSpans.push(content.figureContent.caption);
+    }
+    if (content.htmlFigureContent?.caption) {
+      allSpans.push(content.htmlFigureContent.caption);
+    }
+  }
+
+  return allSpans;
 }

@@ -43,6 +43,7 @@ export class ConceptTooltip extends MobxLitElement {
       <div class="concept-tooltip-component">
         <div class="concept-name">${concept.name}</div>
         <lumi-concept-contents
+          .conceptId=${concept.id}
           .contents=${concept.contents}
         ></lumi-concept-contents>
       </div>
