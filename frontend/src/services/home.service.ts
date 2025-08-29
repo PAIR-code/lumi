@@ -33,10 +33,12 @@ import {
 } from "../shared/lumi_doc";
 
 import { FirebaseService } from "./firebase.service";
+import { HistoryService } from "./history.service";
 import { Service } from "./service";
 
 interface ServiceProvider {
   firebaseService: FirebaseService;
+  historyService: HistoryService;
 }
 
 export class HomeService extends Service {
@@ -77,8 +79,15 @@ export class HomeService extends Service {
     this.currentCollection = this.collections.find(
       (collection) => collection.collectionId === currentCollectionId
     );
-    // Load papers for current collection
-    this.loadMetadata(this.currentCollection?.paperIds ?? []);
+    if (this.currentCollection) {
+      // Load papers for current collection
+      this.loadMetadata(this.currentCollection?.paperIds ?? []);
+    } else {
+      // Otherwise, load for local storage collection
+      this.loadMetadata(
+        this.sp.historyService.getPaperHistory().map(item => item.metadata.paperId)
+      );
+    }
   }
 
   get currentCollectionId() {
