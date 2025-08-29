@@ -183,6 +183,7 @@ export class LumiQuestions extends LightMobxLitElement {
         ></pr-textarea>
         <pr-icon-button
           title="Ask Lumi"
+          color="tertiary"
           icon="search"
           ?disabled=${!this.query || isLoading}
           @click=${this.handleSearch}

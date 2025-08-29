@@ -88,7 +88,7 @@ h1 {
 
 .preview-item {
   @include common.flex-column;
-  border: 1px solid var(--md-sys-color-outline-variant);
+  border: 2px solid var(--md-sys-color-gray-container);
   border-radius: common.$spacing-small;
   gap: common.$spacing-large;
   height: 100%;
@@ -104,7 +104,8 @@ h1 {
   &:focus,
   &:hover {
     box-shadow: common.$spacing-small common.$spacing-small 1px 0
-      var(--md-sys-color-outline-variant);
+      var(--md-sys-color-gray-container);
+    border-color: var(--md-sys-color-primary);
     cursor: pointer;
     transform: translate(-2px);
     transition: all 0.25s ease-out;
@@ -166,9 +167,9 @@ h1 {
   @include common.flex-row;
   @include typescale.label-medium;
   align-items: center;
-  border: 2px solid var(--md-sys-color-outline-variant);
+  border: 2px solid var(--md-sys-color-gray-container);
   border-radius: common.$spacing-medium;
-  color: var(--md-sys-color-outline);
+  color: var(--md-sys-color-gray);
   font-size: 90%;
   gap: common.$spacing-small;
   justify-content: center;
@@ -177,24 +178,24 @@ h1 {
 
   &:focus,
   &:hover {
-    border-color: var(--md-sys-color-outline);
+    border-color: var(--md-sys-color-gray-container-high);
     cursor: pointer;
   }
 
   &.active,
   &.active:focus,
   &.active:hover {
-    background: var(--md-sys-color-secondary-container-low);
-    border-color: var(--md-sys-color-secondary);
-    color: var(--md-sys-color-secondary);
+    background: var(--md-sys-color-primary-container-low);
+    border-color: var(--md-sys-color-primary-container-high);
+    color: var(--md-sys-color-primary);
 
     pr-icon {
-      --pr-icon-color: var(--md-sys-color-secondary);
+      --pr-icon-color: var(--md-sys-color-primary);
     }
   }
 
   pr-icon {
-    --pr-icon-color: var(--md-sys-color-secondary);
+    --pr-icon-color: var(--md-sys-color-gray);
   }
 }
 
@@ -204,6 +205,11 @@ h1 {
 }
 
 a.paper-card-link {
+  @include common.flex-column;
   color: var(--md-sys-color-on-surface);
   text-decoration: none;
+}
+
+paper-card {
+  flex-grow: 1;
 }

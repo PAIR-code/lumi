@@ -50,7 +50,7 @@ $button-height: 32px;
 
     background: var(--md-sys-color-surface);
     border-radius: common.$border-radius-small;
-    border: common.$border;
+    border: 2px solid var(--md-sys-color-outline-variant);
 
     max-width: common.$info-content-max-width;
     gap: common.$spacing-medium;

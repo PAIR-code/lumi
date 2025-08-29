@@ -96,6 +96,7 @@ export class SmartHighlightMenu extends MobxLitElement {
     return html`
       <pr-button
         variant="default"
+        color="tertiary"
         @click=${this.handleDefineClick}
         ?disabled=${this.historyService.isAnswerLoading}
         >${explainButtonName}</pr-button
@@ -103,6 +104,7 @@ export class SmartHighlightMenu extends MobxLitElement {
       <div class="divider"></div>
       <pr-button
         variant="default"
+        color="tertiary"
         @click=${this.handleAskClick}
         ?disabled=${this.historyService.isAnswerLoading}
         >Ask Lumi...</pr-button
@@ -129,9 +131,11 @@ export class SmartHighlightMenu extends MobxLitElement {
         ?disabled=${this.historyService.isAnswerLoading}
         placeholder="Ask Lumi"
         .maxLength=${MAX_QUERY_INPUT_LENGTH}
+        color="tertiary"
       ></pr-textinput>
       <pr-icon-button
         icon="send"
+        color="tertiary"
         ?disabled=${!this.queryText || this.historyService.isAnswerLoading}
         @click=${this.handleSendClick}
         variant="default"
