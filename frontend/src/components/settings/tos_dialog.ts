@@ -66,7 +66,7 @@ export class TosDialog extends MobxLitElement {
       <div slot="title">Welcome to Lumi</div>
       <tos-content></tos-content>
       <div slot="actions-right">
-        <pr-button color="tertiary" variant="outlined" @click=${handleClick}>
+        <pr-button color="primary" variant="outlined" @click=${handleClick}>
           Acknowledge
         </pr-button>
       </div>

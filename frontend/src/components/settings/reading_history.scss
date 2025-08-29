@@ -51,11 +51,11 @@ h2 {
 }
 
 a {
-  color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-surface);
 
   &:focus,
   &:hover {
-    color: var(--md-sys-color-secondary);
+    color: var(--md-sys-color-primary);
   }
 }
 
