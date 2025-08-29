@@ -25,6 +25,7 @@ import { sortPaperDataByTimestamp } from "../shared/lumi_paper_utils";
 import { PERSONAL_SUMMARY_QUERY_NAME } from "../shared/constants";
 import { AnswerHighlightManager } from "../shared/answer_highlight_manager";
 import { HistoryCollapseManager } from "../shared/history_collapse_manager";
+import { ScrollState } from "../contexts/scroll_context";
 
 const PAPER_KEY_PREFIX = "lumi-paper:";
 const INITIAL_SUMMARY_COLLAPSE_STATE = false;
@@ -44,6 +45,8 @@ export class HistoryService extends Service {
   personalSummaries = new Map<string, LumiAnswer>();
   readonly answerHighlightManager: AnswerHighlightManager;
   readonly historyCollapseManager: HistoryCollapseManager;
+
+  private scrollState?: ScrollState;
 
   constructor(private readonly sp: ServiceProvider) {
     super();
@@ -66,6 +69,10 @@ export class HistoryService extends Service {
       clearAllHistory: action,
       getPaperHistory: observable,
     });
+  }
+
+  setScrollState(scrollState: ScrollState) {
+    this.scrollState = scrollState;
   }
 
   get isAnswerLoading() {
@@ -171,6 +178,7 @@ export class HistoryService extends Service {
 
     if (collapseOthers) {
       this.historyCollapseManager.collapseAllAnswersExcept(answer.id);
+      this.scrollState?.scrollAnswersToTop();
     }
   }
 

@@ -27,6 +27,8 @@ export class ScrollState {
   private sectionMap = new Map<string, Ref<HTMLElement>>();
   private imageMap = new Map<string, Ref<HTMLElement>>();
 
+  private answersScrollContainer: Ref<HTMLElement> | null = null;
+
   registerSpan = (id: string, element: Ref<HTMLElement>) => {
     this.spanMap.set(id, element);
   };
@@ -75,6 +77,20 @@ export class ScrollState {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
     } else {
       console.warn(`[ScrollContext] Image with id "${id}" not found.`);
+    }
+  };
+
+  registerAnswersScrollContainer = (element: Ref<HTMLElement>) => {
+    this.answersScrollContainer = element;
+  };
+
+  unregisterAnswersScrollContainer = () => {
+    this.answersScrollContainer = null;
+  };
+
+  scrollAnswersToTop = () => {
+    if (this.answersScrollContainer?.value) {
+      this.answersScrollContainer.value.scrollTop = 0;
     }
   };
 }

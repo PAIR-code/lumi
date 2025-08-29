@@ -139,6 +139,7 @@ export class LumiReader extends LightMobxLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.documentStateService.setScrollState(this.scrollState);
+    this.historyService.setScrollState(this.scrollState);
     if (this.documentId) {
       this.loadDocument();
     }
@@ -311,9 +312,7 @@ export class LumiReader extends LightMobxLitElement {
         if (collapseManager.isMobileSidebarCollapsed) {
           collapseManager.toggleMobileSidebarCollapsed();
         }
-        if (
-          collapseManager.sidebarTabSelection !== SIDEBAR_TABS.ANSWERS
-        ) {
+        if (collapseManager.sidebarTabSelection !== SIDEBAR_TABS.ANSWERS) {
           collapseManager.setSidebarTabSelection(SIDEBAR_TABS.ANSWERS);
         }
       }
@@ -533,7 +532,8 @@ export class LumiReader extends LightMobxLitElement {
         <span class="error-header">Something went wrong...</span>
         <span class="error-body"
           >Could not import: "${metadata?.title}"
-          <a href=${getArxivPaperUrl(this.metadata?.paperId ?? '')}
+          <a
+            href=${getArxivPaperUrl(this.metadata?.paperId ?? "")}
             class="arxiv-link"
             rel="noopener noreferrer"
           >

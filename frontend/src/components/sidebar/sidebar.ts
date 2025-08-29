@@ -43,6 +43,7 @@ import {
 import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
 import { HistoryService } from "../../services/history.service";
 import { LumiAnswer } from "../../shared/api";
+import { createRef, Ref, ref } from "lit/directives/ref.js";
 
 /**
  * A sidebar component that displays a list of concepts.
@@ -58,12 +59,31 @@ export class LumiSidebar extends LightMobxLitElement {
   @query(".tabs-container")
   private readonly tabsContainer!: HTMLDivElement;
 
+  private scrollContainerRef: Ref<HTMLElement> = createRef();
+
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
 
   constructor() {
     super();
     makeObservable(this);
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.updateComplete.then(() => {
+      if (this.scrollContainerRef.value) {
+        this.scrollContext?.registerAnswersScrollContainer(
+          this.scrollContainerRef
+        );
+      }
+    });
+  }
+
+  override disconnectedCallback() {
+    this.scrollContext?.unregisterAnswersScrollContainer();
+    super.disconnectedCallback();
   }
 
   private renderHeader() {
@@ -170,7 +190,7 @@ export class LumiSidebar extends LightMobxLitElement {
     return html`
       <div class="contents">
         ${this.renderHeader()}
-        <div class=${tabsContainerClasses}>
+        <div class=${tabsContainerClasses} ${ref(this.scrollContainerRef)}>
           <tab-component
             .tabs=${Object.values(SIDEBAR_TABS)}
             .selectedTab=${this.collapseManager?.sidebarTabSelection}
