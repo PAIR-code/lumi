@@ -41,6 +41,7 @@ import {
   MAX_QUERY_INPUT_LENGTH,
 } from "../../shared/constants";
 import { debounce } from "../../shared/utils";
+import { HistoryService } from "../../services/history.service";
 
 /**
  * The menu that appears on text selection.
@@ -50,6 +51,7 @@ export class SmartHighlightMenu extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly historyService = core.getService(HistoryService);
 
   @property({ type: Object }) props!: SmartHighlightMenuProps;
 
@@ -91,11 +93,17 @@ export class SmartHighlightMenu extends MobxLitElement {
       ? "Explain image"
       : "Explain text";
     return html`
-      <pr-button @click=${this.handleDefineClick} variant="default"
+      <pr-button
+        variant="default"
+        @click=${this.handleDefineClick}
+        ?disabled=${this.historyService.isAnswerLoading}
         >${explainButtonName}</pr-button
       >
       <div class="divider"></div>
-      <pr-button variant="default" @click=${this.handleAskClick}
+      <pr-button
+        variant="default"
+        @click=${this.handleAskClick}
+        ?disabled=${this.historyService.isAnswerLoading}
         >Ask Lumi...</pr-button
       >
     `;
@@ -115,12 +123,13 @@ export class SmartHighlightMenu extends MobxLitElement {
         .onKeydown=${(e: KeyboardEvent) => {
           if (e.key === "Enter") this.handleSendClick();
         }}
+        ?disabled=${this.historyService.isAnswerLoading}
         placeholder="Ask Lumi"
         .maxLength=${MAX_QUERY_INPUT_LENGTH}
       ></pr-textinput>
       <pr-icon-button
         icon="send"
-        ?disabled=${!this.queryText}
+        ?disabled=${!this.queryText || this.historyService.isAnswerLoading}
         @click=${this.handleSendClick}
         variant="default"
       ></pr-icon-button>
