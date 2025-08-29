@@ -22,12 +22,12 @@ $history-item-horizontal-padding: common.$spacing-large;
 
 answer-item {
   display: block;
-  height: 100%;
+  height: max-content;
 }
 
 .history-item {
   @include common.flex-column;
-  height: 100%;
+  height: max-content;
 
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: 8px;
