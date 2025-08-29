@@ -35,7 +35,7 @@ img {
 }
 
 .highlighted img {
-  outline: common.$spacing-small solid var(--md-sys-color-highlight-blue-high);
+  outline: common.$spacing-small solid var(--md-sys-color-highlight-green-high);
 }
 
 .enable-hover {
@@ -43,7 +43,7 @@ img {
 }
 
 .enable-hover:not(.highlighted):hover img {
-  outline: common.$spacing-small solid var(--md-sys-color-highlight-blue);
+  outline: common.$spacing-small solid var(--md-sys-color-highlight-green);
 }
 
 .image-error-placeholder,
