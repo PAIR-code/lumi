@@ -60,6 +60,17 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { DialogService, TOSDialogProps } from "../../services/dialog.service";
 import { SettingsService } from "../../services/settings.service";
 
+function getStatusDisplayText(status: LoadingStatus) {
+  switch (status) {
+    case LoadingStatus.WAITING:
+      return "Loading";
+    case LoadingStatus.SUMMARIZING:
+      return "Summarizing";
+    default:
+      return "";
+  }
+}
+
 /** Gallery for home/landing page */
 @customElement("home-gallery")
 export class HomeGallery extends MobxLitElement {
@@ -85,6 +96,7 @@ export class HomeGallery extends MobxLitElement {
     string,
     Unsubscribe
   >();
+  private loadingStatusMap = new ObservableMap<string, LoadingStatus>();
 
   constructor() {
     super();
@@ -190,6 +202,14 @@ export class HomeGallery extends MobxLitElement {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data() as LumiDoc;
+
+          if (data.metadata) {
+            this.loadingStatusMap.set(
+              data.metadata.paperId,
+              data.loadingStatus as LoadingStatus
+            );
+          }
+
           // Once the document has loaded successfully, update its status
           // to 'complete' and unsubscribe.
           if (data.loadingStatus === LoadingStatus.SUCCESS) {
@@ -398,6 +418,7 @@ export class HomeGallery extends MobxLitElement {
       const image = this.homeService.paperToFeaturedImageMap.get(
         metadata.paperId
       );
+      const status = this.loadingStatusMap.get(metadata.paperId);
       return html`
         <a
           href=${getLumiPaperUrl(metadata.paperId)}
@@ -405,6 +426,7 @@ export class HomeGallery extends MobxLitElement {
           rel="noopener noreferrer"
         >
           <paper-card
+            .status=${status ? getStatusDisplayText(status) : ""}
             .metadata=${metadata}
             .image=${ifDefined(image)}
             .getImageUrl=${this.getImageUrl()}
