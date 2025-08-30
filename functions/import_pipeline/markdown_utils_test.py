@@ -191,6 +191,45 @@ class TestMarkdownUtils(unittest.TestCase):
             self.assertEqual(processed_text, markdown_input)
             self.assertEqual(equation_map, {})
 
+    def test_substitute_equation_placeholders(self):
+        with self.subTest("substitutes a single valid placeholder"):
+            text = "Here is an equation: [[LUMI_EQUATION_123]]."
+            placeholder_map = {"[[LUMI_EQUATION_123]]": "$E=mc^2$"}
+            expected = "Here is an equation: $E=mc^2$."
+            self.assertEqual(
+                markdown_utils.substitute_equation_placeholders(text, placeholder_map),
+                expected,
+            )
+
+        with self.subTest("substitutes multiple placeholders"):
+            text = "Eq 1: [[LUMI_EQUATION_A]]. Eq 2: [[LUMI_EQUATION_B]]."
+            placeholder_map = {
+                "[[LUMI_EQUATION_A]]": "$a^2+b^2=c^2$",
+                "[[LUMI_EQUATION_B]]": "$F=ma$",
+            }
+            expected = "Eq 1: $a^2+b^2=c^2$. Eq 2: $F=ma$."
+            self.assertEqual(
+                markdown_utils.substitute_equation_placeholders(text, placeholder_map),
+                expected,
+            )
+
+        with self.subTest("handles placeholder not in map"):
+            text = "This placeholder [[LUMI_EQUATION_C]] is missing."
+            placeholder_map = {"[[LUMI_EQUATION_A]]": "$a=b$"}
+            expected = "This placeholder  is missing."
+            self.assertEqual(
+                markdown_utils.substitute_equation_placeholders(text, placeholder_map),
+                expected,
+            )
+
+        with self.subTest("returns original string if no placeholders"):
+            text = "This string has no placeholders."
+            placeholder_map = {"[[LUMI_EQUATION_A]]": "$a=b$"}
+            self.assertEqual(
+                markdown_utils.substitute_equation_placeholders(text, placeholder_map),
+                text,
+            )
+
     def test_markdown_to_html(self):
         with self.subTest("test_basic_paragraph"):
             markdown_input = "Hello, world!"

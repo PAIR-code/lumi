@@ -18,7 +18,7 @@ from typing import List, Tuple, Dict
 from dataclasses import dataclass
 from mistletoe import Document, HtmlRenderer
 from shared import import_tags
-from shared.lumi_doc import InnerTagName
+from shared.lumi_doc import LumiContent
 from shared.utils import get_unique_id
 
 from shared.constants import (
@@ -159,6 +159,30 @@ def extract_equations_to_placeholders(markdown: str) -> Tuple[str, Dict[str, str
     markdown = import_tags.MATH_PATTERN.sub(replacer, markdown)
 
     return markdown, equation_map
+
+
+def substitute_equation_placeholders(
+    text: str, placeholder_map: Dict[str, LumiContent]
+) -> str:
+    """
+    Substitutes equation placeholders in a string with their original content.
+
+    Args:
+        text: The string containing equation placeholders.
+        placeholder_map: A dictionary mapping placeholders to their content.
+
+    Returns:
+        The string with placeholders replaced.
+    """
+    equation_placeholder_pattern = re.compile(
+        f"({re.escape(EQUATION_PLACEHOLDER_PREFIX)}.*?{re.escape(PLACEHOLDER_SUFFIX)})"
+    )
+
+    def replace_equation(match):
+        placeholder = match.group(1)
+        return placeholder_map.get(placeholder, "")
+
+    return equation_placeholder_pattern.sub(replace_equation, text)
 
 
 def markdown_to_html(markdown: str) -> str:
