@@ -1618,6 +1618,50 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                 {},
                 False,  # strip_double_brackets
             ),
+            # EQUATION PLACEHOLDER TESTS
+            (
+                "list_with_equation_placeholder",
+                "<ul><li>An equation [[LUMI_EQUATION_123]]</li></ul>",
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                list_content=ListContent(
+                                    is_ordered=False,
+                                    list_items=[
+                                        ListItem(
+                                            spans=[
+                                                LumiSpan(
+                                                    id="123",
+                                                    text="An equation E=mc^2",
+                                                    inner_tags=[
+                                                        InnerTag(
+                                                            id="123",
+                                                            tag_name=InnerTagName.MATH,
+                                                            metadata={},
+                                                            position=Position(
+                                                                start_index=12,
+                                                                end_index=18,
+                                                            ),
+                                                            children=[],
+                                                        )
+                                                    ],
+                                                )
+                                            ],
+                                            subListContent=None,
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    )
+                ],
+                {"[[LUMI_EQUATION_123]]": "$E=mc^2$"},
+            ),
         ]
     )
     @patch.object(convert_list_content, "get_unique_id", return_value="123")

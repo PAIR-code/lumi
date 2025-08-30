@@ -31,7 +31,7 @@ lumi-content-summary {
   flex-shrink: 0;
   align-items: flex-start;
 
-  margin-top: common.$spacing-xl;
+  margin-top: common.$spacing-medium;
 
   @include common.viewport-small {
     align-items: flex-end;

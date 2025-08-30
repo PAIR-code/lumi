@@ -171,6 +171,8 @@ export class LumiReader extends LightMobxLitElement {
   }
 
   override disconnectedCallback() {
+    this.bannerService.clearBannerProperties();
+
     super.disconnectedCallback();
     if (this.unsubscribeListener) {
       this.unsubscribeListener();

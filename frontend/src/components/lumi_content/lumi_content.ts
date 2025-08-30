@@ -98,6 +98,7 @@ export class LumiContentViz extends LightMobxLitElement {
   @property({ type: Boolean }) dense?: boolean = false;
 
   @property({ type: Boolean }) virtualize: boolean = false;
+  @property({ type: Boolean }) shouldFadeIn: boolean = false;
 
   @state() private isVisible = false;
   @state() private height: number | null = null;
@@ -162,6 +163,7 @@ export class LumiContentViz extends LightMobxLitElement {
         .onAnswerHighlightClick=${this.onAnswerHighlightClick}
         .font=${this.font}
         .isVirtual=${isVirtual}
+        .shouldFadeIn=${this.shouldFadeIn}
       ></lumi-span>`;
     });
   }

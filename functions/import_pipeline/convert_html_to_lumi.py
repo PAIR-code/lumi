@@ -25,7 +25,10 @@ from shared.lumi_doc import (
     LumiSpan,
 )
 from shared.utils import get_unique_id
-from import_pipeline.markdown_utils import markdown_to_html
+from import_pipeline.markdown_utils import (
+    markdown_to_html,
+    substitute_equation_placeholders,
+)
 from import_pipeline.import_utils import get_text
 from import_pipeline.convert_list_content import (
     DEFAULT_LIST_TAGS,
@@ -36,11 +39,15 @@ from import_pipeline.convert_lumi_spans import (
     create_lumi_spans,
 )
 
+from shared.constants import (
+    PLACEHOLDER_PREFIX,
+    PLACEHOLDER_SUFFIX,
+    EQUATION_PLACEHOLDER_PREFIX,
+)
+
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
 TAGS_TO_PROCESS = DEFAULT_TEXT_TAGS + DEFAULT_LIST_TAGS
 STORAGE_PATH_DELIMETER = "__"
-PLACEHOLDER_PREFIX = "[[LUMI_PLACEHOLDER_"
-PLACEHOLDER_SUFFIX = "]]"
 
 
 def convert_to_lumi_sections(
@@ -137,7 +144,9 @@ def convert_to_lumi_sections(
             else:
                 # For now, we assume list content will not contain images or figures.
                 new_content = get_list_content_from_tag(
-                    tag, strip_double_brackets=strip_double_brackets
+                    tag,
+                    placeholder_map=placeholder_map,
+                    strip_double_brackets=strip_double_brackets,
                 )
                 if new_content:
                     current_section.contents.append(new_content)
@@ -163,6 +172,8 @@ def _parse_html_block_for_lumi_contents(
     """
     if not text.strip():
         return
+
+    text = substitute_equation_placeholders(text, placeholder_map)
 
     lumi_contents: List[LumiContent] = []
 

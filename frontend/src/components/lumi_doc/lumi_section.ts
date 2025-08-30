@@ -213,6 +213,7 @@ export class LumiSectionViz extends LightMobxLitElement {
           .onImageClick=${this.onImageClick}
           .font=${LumiFont.PAPER_TEXT}
           .virtualize=${true}
+          .shouldFadeIn=${true}
         ></lumi-content>`;
       })}
       ${this.renderSubsections()}

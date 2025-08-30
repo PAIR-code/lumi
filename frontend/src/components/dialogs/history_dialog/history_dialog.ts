@@ -52,15 +52,15 @@ export class HistoryDialog extends MobxLitElement {
   override render() {
     return html`
       <pr-dialog
-        .onClose=${this.handleClose}
+        .onClose=${this.handleClose.bind(this)}
         .showDialog=${this.shouldShowDialog()}
         showCloseButton
       >
         <div slot="title">Reading History</div>
         <div>
           <p class="dialog-explanation">
-            The following papers are included as context for the
-            model when generating personalized paper-level summaries:
+            The following papers are included as context for the model when
+            generating personalized paper-level summaries:
           </p>
           <reading-history></reading-history>
         </div>
