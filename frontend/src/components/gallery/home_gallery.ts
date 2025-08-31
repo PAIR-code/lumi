@@ -127,7 +127,7 @@ export class HomeGallery extends MobxLitElement {
     if (!this.settingsService.isTosConfirmed.value) {
       this.dialogService.show(
         new TOSDialogProps(() => {
-          this.dialogService.hide();
+          this.dialogService.hide(new TOSDialogProps(() => {}));
         })
       );
     }

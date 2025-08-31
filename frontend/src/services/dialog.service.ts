@@ -78,7 +78,14 @@ export class DialogService extends Service {
   /**
    * Hides the currently visible dialog.
    */
-  hide() {
+  hide(dialogProps?: DialogProps) {
+    if (
+      dialogProps &&
+      this.dialogProps?.constructor !== dialogProps.constructor
+    ) {
+      return;
+    }
+
     this.dialogProps = null;
   }
 }

@@ -41,7 +41,7 @@ export class HistoryDialog extends MobxLitElement {
 
   private handleClose() {
     if (this.dialogService) {
-      this.dialogService.hide();
+      this.dialogService.hide(new HistoryDialogProps());
     }
   }
 
