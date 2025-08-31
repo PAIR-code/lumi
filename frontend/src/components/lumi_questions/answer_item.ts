@@ -151,7 +151,7 @@ export class AnswerItem extends LightMobxLitElement {
       <div class="highlight" .title="The image this answer is about">
         <span>Image</span>
         <pr-icon-button
-          icon="open_in_new"
+          icon="arrow_forward"
           ?disabled=${this.isLoading}
           variant="default"
           @click=${() => {
