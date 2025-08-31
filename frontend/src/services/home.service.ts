@@ -153,7 +153,7 @@ export class HomeService extends Service {
   async loadMetadata(paperIds: string[], forceReload = false) {
     for (const paperId of paperIds) {
       if (!paperId || (this.paperToMetadataMap.get(paperId) && !forceReload)) {
-        break;
+        continue;
       }
       try {
         const metadataItem = (
