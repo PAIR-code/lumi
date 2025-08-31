@@ -280,6 +280,7 @@ export class HomeGallery extends MobxLitElement {
     };
 
     const submit = () => {
+      this.routerService.navigate(Pages.HOME);
       this.loadDocument();
       close();
     };
