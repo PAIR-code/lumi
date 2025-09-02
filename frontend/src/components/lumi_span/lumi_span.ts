@@ -82,6 +82,7 @@ export class LumiSpanViz extends LightMobxLitElement {
   @property({ type: Boolean }) noScrollContext = false;
   @property({ type: Boolean }) showFocusUnderline = false;
   @property({ type: Boolean }) isVirtual = false;
+  @property({ type: Boolean }) shouldFadeIn = false;
 
   // Renderer properties
   @property({ type: Array }) highlights?: Highlight[];
@@ -162,7 +163,7 @@ export class LumiSpanViz extends LightMobxLitElement {
   private getSpanClassesObject() {
     const classesObject: { [key: string]: boolean } = {
       "outer-span": true,
-      "span-fade-in": true,
+      "span-fade-in": this.shouldFadeIn,
       monospace: this.monospace,
       focused: this.focusState === FocusState.FOCUSED,
       unfocused: this.focusState === FocusState.UNFOCUSED,

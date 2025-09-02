@@ -53,7 +53,7 @@ export class UserFeedbackDialog extends MobxLitElement {
 
   private handleClose() {
     if (this.dialogService) {
-      this.dialogService.hide();
+      this.dialogService.hide(new UserFeedbackDialogProps());
     }
   }
 
@@ -98,8 +98,8 @@ export class UserFeedbackDialog extends MobxLitElement {
         <div slot="title">User Feedback</div>
         <div class="dialog-content">
           <p class="dialog-explanation">
-            If you're experiencing an issue and/or have suggestions,
-            we'd love to hear from you!
+            If you're experiencing an issue and/or have suggestions, we'd love
+            to hear from you!
           </p>
           <md-outlined-text-field
             ?focused=${true}

@@ -49,7 +49,7 @@ export class TutorialDialog extends MobxLitElement {
 
   private handleClose() {
     if (this.dialogService) {
-      this.dialogService.hide();
+      this.dialogService.hide(new TutorialDialogProps());
     }
   }
 

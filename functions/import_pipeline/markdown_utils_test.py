@@ -14,6 +14,7 @@
 # ==============================================================================
 
 import unittest
+from unittest.mock import patch
 from import_pipeline import markdown_utils
 from shared import import_tags
 
@@ -146,6 +147,89 @@ class TestMarkdownUtils(unittest.TestCase):
             {"id": "1", "content": "This is the first footnote."},
         )
 
+    @patch("import_pipeline.markdown_utils.get_unique_id", side_effect=["uid1", "uid2"])
+    def test_extract_equations_to_placeholders(self, mock_get_unique_id):
+        self.maxDiff = None
+
+        with self.subTest("extracts inline and display math"):
+            markdown_input = "Inline math $a=b$ and display math $$c=d$$."
+            expected_text = "Inline math [[LUMI_EQUATION_uid1]] and display math [[LUMI_EQUATION_uid2]]."
+            expected_map = {
+                "[[LUMI_EQUATION_uid1]]": "$a=b$",
+                "[[LUMI_EQUATION_uid2]]": "$$c=d$$",
+            }
+
+            # Reset mock for this subtest
+            mock_get_unique_id.side_effect = ["uid2", "uid1"]
+
+            processed_text, equation_map = (
+                markdown_utils.extract_equations_to_placeholders(markdown_input)
+            )
+
+            self.assertEqual(processed_text, expected_text)
+            self.assertEqual(equation_map, expected_map)
+
+        with self.subTest("ignores escaped dollar signs"):
+            markdown_input = r"This costs \$40, not $a=b$."
+            expected_text = r"This costs \$40, not [[LUMI_EQUATION_uid1]]."
+            expected_map = {"[[LUMI_EQUATION_uid1]]": "$a=b$"}
+
+            mock_get_unique_id.side_effect = ["uid1"]
+
+            processed_text, equation_map = (
+                markdown_utils.extract_equations_to_placeholders(markdown_input)
+            )
+
+            self.assertEqual(processed_text, expected_text)
+            self.assertEqual(equation_map, expected_map)
+
+        with self.subTest("returns empty map for no equations"):
+            markdown_input = "Just plain text."
+            processed_text, equation_map = (
+                markdown_utils.extract_equations_to_placeholders(markdown_input)
+            )
+            self.assertEqual(processed_text, markdown_input)
+            self.assertEqual(equation_map, {})
+
+    def test_substitute_equation_placeholders(self):
+        with self.subTest("substitutes a single valid placeholder"):
+            text = "Here is an equation: [[LUMI_EQUATION_123]]."
+            placeholder_map = {"[[LUMI_EQUATION_123]]": "$E=mc^2$"}
+            expected = "Here is an equation: $E=mc^2$."
+            self.assertEqual(
+                markdown_utils.substitute_equation_placeholders(text, placeholder_map),
+                expected,
+            )
+
+        with self.subTest("substitutes multiple placeholders"):
+            text = "Eq 1: [[LUMI_EQUATION_A]]. Eq 2: [[LUMI_EQUATION_B]]."
+            placeholder_map = {
+                "[[LUMI_EQUATION_A]]": "$a^2+b^2=c^2$",
+                "[[LUMI_EQUATION_B]]": "$F=ma$",
+            }
+            expected = "Eq 1: $a^2+b^2=c^2$. Eq 2: $F=ma$."
+            self.assertEqual(
+                markdown_utils.substitute_equation_placeholders(text, placeholder_map),
+                expected,
+            )
+
+        with self.subTest("handles placeholder not in map"):
+            text = "This placeholder [[LUMI_EQUATION_C]] is missing."
+            placeholder_map = {"[[LUMI_EQUATION_A]]": "$a=b$"}
+            expected = "This placeholder  is missing."
+            self.assertEqual(
+                markdown_utils.substitute_equation_placeholders(text, placeholder_map),
+                expected,
+            )
+
+        with self.subTest("returns original string if no placeholders"):
+            text = "This string has no placeholders."
+            placeholder_map = {"[[LUMI_EQUATION_A]]": "$a=b$"}
+            self.assertEqual(
+                markdown_utils.substitute_equation_placeholders(text, placeholder_map),
+                text,
+            )
+
     def test_markdown_to_html(self):
         with self.subTest("test_basic_paragraph"):
             markdown_input = "Hello, world!"
@@ -214,7 +298,9 @@ Hello, world again!"""
 
         with self.subTest("preserves block display math"):
             markdown_input = "This is a formula:\n\n$$E = mc^2$$\n\nMore text."
-            expected_html = "<p>This is a formula:</p>\n<p>$$E = mc^2$$</p>\n<p>More text.</p>\n"
+            expected_html = (
+                "<p>This is a formula:</p>\n<p>$$E = mc^2$$</p>\n<p>More text.</p>\n"
+            )
             self.assertEqual(
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )
@@ -243,7 +329,9 @@ Hello, world again!"""
     def test_katex_substitutions(self):
         with self.subTest("replaces simple functions"):
             markdown_input = r"Some text in \normalfont{normal font} and a \mbox{box}."
-            expected_html = "<p>Some text in \\text{normal font} and a \\text{box}.</p>\n"
+            expected_html = (
+                "<p>Some text in \\text{normal font} and a \\text{box}.</p>\n"
+            )
             self.assertEqual(
                 markdown_utils.markdown_to_html(markdown_input), expected_html
             )

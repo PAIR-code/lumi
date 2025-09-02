@@ -38,7 +38,11 @@ from shared.lumi_doc import (
     LumiFootnote,
 )
 from shared.types import ArxivMetadata
-from shared.constants import MAX_LATEX_CHARACTER_COUNT
+from shared.constants import (
+    MAX_LATEX_CHARACTER_COUNT,
+    PLACEHOLDER_PREFIX,
+    PLACEHOLDER_SUFFIX,
+)
 from shared.utils import get_unique_id
 
 DEFAULT_TEXT_TAGS = ["p", "code", "pre"]
@@ -47,8 +51,6 @@ UNORDERED_LIST_TAG = "ul"
 DEFAULT_LIST_TAGS = [ORDERED_LIST_TAG, UNORDERED_LIST_TAG]
 TAGS_TO_PROCESS = DEFAULT_TEXT_TAGS + DEFAULT_LIST_TAGS
 STORAGE_PATH_DELIMETER = "__"
-PLACEHOLDER_PREFIX = "[[LUMI_PLACEHOLDER_"
-PLACEHOLDER_SUFFIX = "]]"
 
 
 def import_arxiv_latex_and_pdf(
@@ -180,9 +182,17 @@ def convert_model_output_to_lumi_doc(
 
     lumi_abstract = None
     if parsed_data.get("abstract"):
-        abstract_html = markdown_utils.markdown_to_html(parsed_data.get("abstract"))
+        # Extract equations before markdown conversion
+        abstract_markdown, equation_map = (
+            markdown_utils.extract_equations_to_placeholders(
+                parsed_data.get("abstract")
+            )
+        )
+        abstract_html = markdown_utils.markdown_to_html(abstract_markdown)
+        combined_placeholder_map = {**placeholder_map, **equation_map}
+
         abstract_sections = convert_html_to_lumi.convert_to_lumi_sections(
-            abstract_html, placeholder_map=placeholder_map
+            abstract_html, placeholder_map=combined_placeholder_map
         )
         if len(abstract_sections) > 1:
             # TODO(ellenj): Consider raising error
@@ -199,9 +209,15 @@ def convert_model_output_to_lumi_doc(
 
     lumi_sections = []
     if parsed_data.get("content"):
-        content_html = markdown_utils.markdown_to_html(parsed_data.get("content"))
+        # Extract equations before markdown conversion
+        content_markdown, equation_map = (
+            markdown_utils.extract_equations_to_placeholders(parsed_data.get("content"))
+        )
+        content_html = markdown_utils.markdown_to_html(content_markdown)
+        combined_placeholder_map = {**placeholder_map, **equation_map}
+
         lumi_sections = convert_html_to_lumi.convert_to_lumi_sections(
-            content_html, placeholder_map=placeholder_map
+            content_html, placeholder_map=combined_placeholder_map
         )
 
     lumi_references = []

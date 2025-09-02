@@ -41,7 +41,9 @@ export class TOSContent extends MobxLitElement {
         or device—will be stored. Please do not enter any sensitive or personal
         information into Lumi. If you would like to request that a query on Lumi
         be removed from storage, please contact
-        <a href="lumi-team@google.com" target="_blank"> lumi-team@google.com</a>
+        <a href="mailto:lumi-team@google.com" target="_blank">
+          lumi-team@google.com</a
+        >
         and include the full text of that query (which can be found in your
         search history).
       </p>

@@ -15,7 +15,7 @@
  */
 
 import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
+import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
 
 import { customElement, property } from "lit/decorators.js";
 import { Ref, createRef, ref } from "lit/directives/ref.js";
@@ -36,7 +36,7 @@ export class Dialog extends MobxLitElement {
 
   dialogRef: Ref<Element> = createRef();
 
-  override updated() {
+  protected override updated(_changedProperties: PropertyValues): void {
     if (this.showDialog) {
       this.openDialog();
     } else {

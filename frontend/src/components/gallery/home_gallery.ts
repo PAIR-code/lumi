@@ -30,10 +30,9 @@ import { core } from "../../core/core";
 import { HomeService } from "../../services/home.service";
 import { HistoryService } from "../../services/history.service";
 import {
-  ARXIV_DOCS_ROUTE_NAME,
   Pages,
   RouterService,
-  getLumiPaperUrl
+  getLumiPaperUrl,
 } from "../../services/router.service";
 import { FirebaseService } from "../../services/firebase.service";
 import { SnackbarService } from "../../services/snackbar.service";
@@ -61,6 +60,17 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { DialogService, TOSDialogProps } from "../../services/dialog.service";
 import { SettingsService } from "../../services/settings.service";
 
+function getStatusDisplayText(status: LoadingStatus) {
+  switch (status) {
+    case LoadingStatus.WAITING:
+      return "Loading";
+    case LoadingStatus.SUMMARIZING:
+      return "Summarizing";
+    default:
+      return "";
+  }
+}
+
 /** Gallery for home/landing page */
 @customElement("home-gallery")
 export class HomeGallery extends MobxLitElement {
@@ -86,6 +96,7 @@ export class HomeGallery extends MobxLitElement {
     string,
     Unsubscribe
   >();
+  private loadingStatusMap = new ObservableMap<string, LoadingStatus>();
 
   constructor() {
     super();
@@ -116,7 +127,7 @@ export class HomeGallery extends MobxLitElement {
     if (!this.settingsService.isTosConfirmed.value) {
       this.dialogService.show(
         new TOSDialogProps(() => {
-          this.dialogService.hide();
+          this.dialogService.hide(new TOSDialogProps(() => {}));
         })
       );
     }
@@ -191,6 +202,14 @@ export class HomeGallery extends MobxLitElement {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data() as LumiDoc;
+
+          if (data.metadata) {
+            this.loadingStatusMap.set(
+              data.metadata.paperId,
+              data.loadingStatus as LoadingStatus
+            );
+          }
+
           // Once the document has loaded successfully, update its status
           // to 'complete' and unsubscribe.
           if (data.loadingStatus === LoadingStatus.SUCCESS) {
@@ -223,7 +242,8 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private renderContent() {
-    const historyItems = this.historyService.getPaperHistory()
+    const historyItems = this.historyService
+      .getPaperHistory()
       .map((item) => item.metadata);
 
     switch (this.galleryView) {
@@ -260,6 +280,7 @@ export class HomeGallery extends MobxLitElement {
     };
 
     const submit = () => {
+      this.routerService.navigate(Pages.HOME);
       this.loadDocument();
       close();
     };
@@ -319,17 +340,17 @@ export class HomeGallery extends MobxLitElement {
       return html`
         <div class="loading-section">
           ${this.isLoadingMetadata ? renderNewLoading() : nothing}
-          ${loadingItems.map(item => html`
-            <div class="loading-message">
-              Loading <i>${item.title} (${item.paperId})</i>
-            </div>
-          `)}
+          ${loadingItems.map(
+            (item) => html`
+              <div class="loading-message">
+                Loading <i>${item.title} (${item.paperId})</i>
+              </div>
+            `
+          )}
         </div>
       `;
     } else if (this.isLoadingMetadata) {
-      return html`
-        <div class="loading-section">${renderNewLoading()}</div>
-      `;
+      return html` <div class="loading-section">${renderNewLoading()}</div> `;
     }
     return nothing;
   }
@@ -395,13 +416,18 @@ export class HomeGallery extends MobxLitElement {
         return nothing;
       }
 
-      const image = this.homeService.paperToFeaturedImageMap[metadata.paperId];
+      const image = this.homeService.paperToFeaturedImageMap.get(
+        metadata.paperId
+      );
+      const status = this.loadingStatusMap.get(metadata.paperId);
       return html`
-        <a href=${getLumiPaperUrl(metadata.paperId)}
+        <a
+          href=${getLumiPaperUrl(metadata.paperId)}
           class="paper-card-link"
           rel="noopener noreferrer"
         >
           <paper-card
+            .status=${status ? getStatusDisplayText(status) : ""}
             .metadata=${metadata}
             .image=${ifDefined(image)}
             .getImageUrl=${this.getImageUrl()}

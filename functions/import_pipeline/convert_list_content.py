@@ -10,12 +10,13 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
+# limitations under a license.
 # ==============================================================================
 
 
 import bs4
-from typing import Optional
+import re
+from typing import Dict, Optional
 
 
 from import_pipeline.convert_lumi_spans import (
@@ -23,12 +24,17 @@ from import_pipeline.convert_lumi_spans import (
     create_lumi_spans,
 )
 from import_pipeline.import_utils import unescape
+from import_pipeline.markdown_utils import substitute_equation_placeholders
 from shared.lumi_doc import (
     LumiContent,
     ListContent,
     ListItem,
 )
 from shared.utils import get_unique_id
+from shared.constants import (
+    PLACEHOLDER_SUFFIX,
+    EQUATION_PLACEHOLDER_PREFIX,
+)
 
 ORDERED_LIST_TAG = "ol"
 UNORDERED_LIST_TAG = "ul"
@@ -36,7 +42,9 @@ DEFAULT_LIST_TAGS = [ORDERED_LIST_TAG, UNORDERED_LIST_TAG]
 
 
 def get_list_content_from_tag(
-    tag: bs4.Tag, strip_double_brackets=False
+    tag: bs4.Tag,
+    placeholder_map: Dict[str, LumiContent],
+    strip_double_brackets=False,
 ) -> Optional[LumiContent]:
     """
     Returns a LumiContent object for list tags (ul, ol).
@@ -55,7 +63,9 @@ def get_list_content_from_tag(
                 # If the child node is a list, process it as a nested sublist.
                 # (There can only be one nested sublist per list item.)
                 if child_node.name in DEFAULT_LIST_TAGS and subListContent is None:
-                    nested_lumi_content_obj = get_list_content_from_tag(child_node)
+                    nested_lumi_content_obj = get_list_content_from_tag(
+                        child_node, placeholder_map
+                    )
                     if nested_lumi_content_obj and nested_lumi_content_obj.list_content:
                         subListContent = nested_lumi_content_obj.list_content
                 # If the child node is a <p> tag, process its contents instead of the tag itself.
@@ -65,6 +75,11 @@ def get_list_content_from_tag(
                 else:
                     # Otherwise, we add the child node to the raw html content.
                     raw_li_content_html += unescape(str(child_node))
+
+            # Substitute equation placeholders before parsing for inner tags.
+            raw_li_content_html = substitute_equation_placeholders(
+                raw_li_content_html, placeholder_map
+            )
 
             cleaned_li_text, li_inner_tags = parse_text_and_extract_inner_tags(
                 raw_li_content_html
