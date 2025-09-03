@@ -1,6 +1,6 @@
 # Lumi
 
-Lumi is a web app with AI-powered features to help you quickly read and understand arXiv papers. Features include:
+Lumi is a web app with AI-powered features to help you quickly read and understand [arXiv](https://arxiv.org/) papers. Features include:
 
 - ✏️ **AI-augmented annotations** - summaries at multiple granularities
 - 🔖 **Smart highlights** - highlight text + ask questions
