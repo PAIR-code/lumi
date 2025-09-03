@@ -6,7 +6,7 @@ Lumi is a web app with AI-powered features to help you quickly read and understa
 - 🔖 **Smart highlights** - highlight text + ask questions
 - 🖼️ **Explain figures** - ask Lumi about images in the paper
 
-Read more about Lumi in our blog post (coming soon!), and give Lumi a try at [lumi.withgoogle.com](https://lumi.withgoogle.com).
+Read more about Lumi in our blog post (coming soon!).
 
 ![Screenshot of Lumi](assets/smart_ask_zoomed.png)
 
