@@ -15,10 +15,10 @@
 """A utility for inlining custom LaTeX commands.
 
 This module provides functionality to parse custom command definitions (e.g.,
-`\\newcommand`, `\\DeclareRobustCommand`) from a LaTeX string, and then replace
-all usages of these custom commands with their expanded definitions. It is
-designed to handle commands with multiple arguments, optional arguments with
-default values, and nested command definitions.
+`\\newcommand`, `\\DeclareRobustCommand`, `\\def`) from a LaTeX string, and then
+replace all usages of these custom commands with their expanded definitions.
+It is designed to handle commands with multiple arguments, optional arguments
+with default values, and nested command definitions.
 
 The main public function is `inline_custom_commands`.
 """
@@ -27,7 +27,7 @@ from typing import List, Optional, Tuple
 
 # A list of command definition keywords that are supported. They are expected
 # to share the same syntax as \newcommand.
-_SUPPORTED_COMMAND_DEFS = [r"\newcommand", r"\DeclareRobustCommand"]
+_SUPPORTED_COMMAND_DEFS = [r"\newcommand", r"\DeclareRobustCommand", r"\def"]
 
 
 class Command:
@@ -145,6 +145,36 @@ class LatexParser:
         except ValueError:
             return None  # Unmatched bracket
 
+    def parse_command_name(self) -> Optional[str]:
+        """Parses a LaTeX def command name directly, e.g., `\\foo` or `\\&`.
+
+        This finds a command token (a backslash followed by either a string
+        of letters or a single non-letter character) and advances the parser
+        position past it.
+
+        Returns:
+            The command name as a string (e.g., r'\\foo'), or None if a
+            command token is not found.
+        """
+        self._skip_space()
+        if self.pos >= self.n or self.content[self.pos] != "\\":
+            return None
+
+        start_cmd = self.pos
+        self.pos += 1  # Skip the backslash
+
+        if self.pos >= self.n:
+            return None
+
+        if self.content[self.pos].isalpha():
+            while self.pos < self.n and self.content[self.pos].isalpha():
+                self.pos += 1
+        else:
+            # Command is a single non-letter symbol (e.g., \&)
+            self.pos += 1
+
+        return self.content[start_cmd : self.pos]
+
 
 def _find_next_command_def(content: str, start_pos: int) -> Optional[Tuple[str, int]]:
     """Finds the earliest occurrence of any supported command definition."""
@@ -162,12 +192,58 @@ def _find_next_command_def(content: str, start_pos: int) -> Optional[Tuple[str, 
     return None
 
 
+def _get_command_from_def_style(parser: LatexParser, found_command: str) -> Optional[Tuple[str, int, str]]:
+    name = parser.parse_command_name()
+    if name is None:
+        i = start_index + len(found_command)
+        return None
+
+    # Find parameter text (e.g., #1#2) and count args
+    # to do this we find the opening brace of the definition
+    parser._skip_space()
+    param_start = parser.pos
+    brace_pos = -1
+    temp_pos = parser.pos
+    while temp_pos < parser.n:
+        char = parser.content[temp_pos]
+        if char == "{":
+            brace_pos = temp_pos
+            break
+        elif char == "\\" and temp_pos + 1 < parser.n:
+            temp_pos += 1  # Skip next character (escaped)
+        temp_pos += 1
+    if brace_pos == -1:  # No definition brace found
+        i = start_index + len(found_command)
+        return None
+
+    param_text = parser.content[param_start:brace_pos]
+    # Count arguments by finding the highest #N in the param text
+    j = 0
+    nargs = 0
+    while j < len(param_text):
+        if (
+            param_text[j] == "#"
+            and j + 1 < len(param_text)
+            and param_text[j + 1].isdigit()
+        ):
+            digit = int(param_text[j + 1])
+            if 1 <= digit <= 9:
+                nargs = max(nargs, digit)
+                j += 1  # Skip the digit
+        j += 1
+
+    parser.pos = brace_pos
+    definition = parser.parse_braces()
+    return (name, nargs, definition)
+
+
+
 def find_and_parse_commands(content: str) -> List[Command]:
     """Finds and parses all custom command definitions in a string.
 
     This function scans the input content for command definitions like
-    `\\newcommand` and extracts their name, number of arguments, optional
-    default value, and the definition body.
+    `\\newcommand` and `\\def`, and extracts their name, number of arguments,
+    optional default value, and the definition body.
 
     Args:
         content: The LaTeX content to search.
@@ -186,32 +262,55 @@ def find_and_parse_commands(content: str) -> List[Command]:
         parser_start_pos = start_index + len(found_command)
         # Check for an optional star `*` which can follow \newcommand.
         # We can just skip it as it doesn't affect argument parsing for our needs.
-        if parser_start_pos < len(content) and content[parser_start_pos] == "*":
+        if (
+            found_command != r"\def"
+            and parser_start_pos < len(content)
+            and content[parser_start_pos] == "*"
+        ):
             parser_start_pos += 1
 
         parser = LatexParser(content, parser_start_pos)
-        # 1. Parse the command name, which is required (e.g., `{\\R}`).
-        name = parser.parse_braces()
-        if name is None:
-            # If parsing fails, advance past the command to avoid infinite loop.
-            i = start_index + len(found_command)
-            continue
 
-        # 2. Parse the optional number of arguments (e.g., `[1]`).
-        nargs_str = parser.parse_brackets()
-        if nargs_str is not None:
-            try:
-                nargs = int(nargs_str)
-            except (ValueError, TypeError):
-                nargs = 0  # Not a valid number, assume 0 args.
+        name = None
+        nargs = 0
+        definition = None
+        optional_default = None
+
+        if found_command == r"\def":
+            # --- Handle \def syntax: \def\name<params>{definition} ---
+
+            command_details = _get_command_from_def_style(parser, found_command)
+
+            if command_details is None:
+                continue
+
+            name, nargs, definition = command_details
+            optional_default = None
         else:
-            nargs = 0
+            # --- Handle \newcommand syntax: \cmd{name}[nargs][opt]{def} ---
 
-        # 3. Parse the optional default value for the first argument (e.g., `[default]`).
-        optional_default = parser.parse_brackets()
+            # 1. Parse the command name, which is required (e.g., `{\\R}`).
+            name = parser.parse_braces()
+            if name is None:
+                # If parsing fails, advance past the command to avoid infinite loop.
+                i = start_index + len(found_command)
+                continue
 
-        # 4. Parse the command definition, which is required (e.g., `{\\mathbb{R}}`).
-        definition = parser.parse_braces()
+            # 2. Parse the optional number of arguments (e.g., `[1]`).
+            nargs_str = parser.parse_brackets()
+            if nargs_str is not None:
+                try:
+                    nargs = int(nargs_str)
+                except (ValueError, TypeError):
+                    nargs = 0  # Not a valid number, assume 0 args.
+            else:
+                nargs = 0
+
+            # 3. Parse the optional default value for the first argument (e.g., `[default]`).
+            optional_default = parser.parse_brackets()
+
+            # 4. Parse the command definition, which is required (e.g., `{\\mathbb{R}}`).
+            definition = parser.parse_braces()
         if definition is None:
             i = start_index + len(found_command)
             continue
@@ -340,8 +439,9 @@ def remove_custom_definitions(content: str) -> str:
     """Removes all custom command definitions from the content.
 
     This function scans the content for command definition blocks (like
-    `\\newcommand`) and removes them, correctly handling nested braces in the
-    definition part to ensure the entire definition is removed.
+    `\\newcommand` and `\\def`) and removes them,
+    correctly handling the different syntaxes to ensure the entire definition
+    is removed.
 
     Args:
         content: The LaTeX content string.
@@ -369,21 +469,57 @@ def remove_custom_definitions(content: str) -> str:
             parser_start_pos += 1
 
         parser = LatexParser(content, parser_start_pos)
-        # 1. Skip over the command name.
-        if parser.parse_braces() is None:
-            i = start_index + len(found_command)
-            continue
 
-        # 2. Skip optional number of arguments
-        parser.parse_brackets()
+        if found_command == r"\def":
+            # --- Skip \def syntax ---
 
-        # 3. Skip optional default value
-        parser.parse_brackets()
+            # 1. Skip over the command name.
+            if parser.parse_command_name() is None:
+                i = start_index + len(found_command)
+                continue
 
-        # 4. Skip over the main definition body.
-        if parser.parse_braces() is None:
-            i = start_index + len(found_command)
-            continue
+            # 2. Skip over param text by finding the definition brace.
+            parser._skip_space()
+            brace_pos = -1
+            temp_pos = parser.pos
+            while temp_pos < n:
+                char = parser.content[temp_pos]
+                if char == "{":
+                    brace_pos = temp_pos
+                    break
+                elif char == "\\" and temp_pos + 1 < n:
+                    temp_pos += 1  # Skip escaped char
+                temp_pos += 1
+
+            if brace_pos == -1:
+                i = start_index + len(found_command)
+                continue
+
+            parser.pos = brace_pos  # Set parser to the brace
+
+            # 3. Skip over the main definition body.
+            if parser.parse_braces() is None:
+                i = start_index + len(found_command)
+                continue
+
+        else:
+            # --- Skip \newcommand syntax  ---
+
+            # 1. Skip over the command name.
+            if parser.parse_braces() is None:
+                i = start_index + len(found_command)
+                continue
+
+            # 2. Skip optional number of arguments
+            parser.parse_brackets()
+
+            # 3. Skip optional default value
+            parser.parse_brackets()
+
+            # 4. Skip over the main definition body.
+            if parser.parse_braces() is None:
+                i = start_index + len(found_command)
+                continue
 
         # Move the main index to the position after the parsed definition.
         i = parser.pos

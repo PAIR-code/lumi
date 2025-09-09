@@ -121,6 +121,18 @@ class LatexInlineCommandTest(unittest.TestCase):
                 "Text after. Use it: \mycmd{bold}",
                 "Text before.\n\nText after. Use it: \n  \\textbf{bold}\n",
             ),
+            "def_style_command": (
+                r"\def\calX{{\mathcal{X}}} This is an example of \calX",
+                r"This is an example of {\mathcal{X}}",
+            ),
+            "def_style_command_with_args": (
+                r"\def\myfrac#1#2{{\frac{#1}{#2}}} This is an example of \myfrac{3}{4}",
+                r"This is an example of {\frac{3}{4}}",
+            ),
+            "def_style_with_single_non_letter_symbol": (
+                r"\def\1{\mathbf{1}} \1 is in bold",
+                r"\mathbf{1} is in bold",
+            )
         }
 
         for name, (content, expected) in test_cases.items():
