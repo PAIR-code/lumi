@@ -362,7 +362,7 @@ def _add_summaries_to_lumi_doc(versioned_doc_ref, doc_data):
     versioned_doc_ref.update(lumi_doc_json)
 
 
-@https_fn.on_call()
+@https_fn.on_call(memory=options.MemoryOption.MB_512)
 def request_arxiv_doc_import(req: https_fn.CallableRequest) -> dict:
     """
     Requests the import for a given arxiv doc, after requesting its metadata.
@@ -472,7 +472,7 @@ def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
     _create_doc_transaction(transaction, versioned_doc_ref)
 
 
-@https_fn.on_call()
+@https_fn.on_call(memory=options.MemoryOption.MB_512)
 def get_arxiv_metadata(req: https_fn.CallableRequest) -> dict:
     arxiv_id = req.data.get("arxiv_id")
 
@@ -536,7 +536,7 @@ def _log_query(doc: LumiDoc, lumi_answer: LumiAnswer):
         )
 
 
-@https_fn.on_call(timeout_sec=120)
+@https_fn.on_call(timeout_sec=120, memory=options.MemoryOption.MB_512)
 def get_lumi_response(req: https_fn.CallableRequest) -> dict:
     """
     Generates a Lumi answer based on the document and user input.
@@ -598,7 +598,7 @@ def get_lumi_response(req: https_fn.CallableRequest) -> dict:
     return convert_keys(asdict(lumi_answer), "snake_to_camel")
 
 
-@https_fn.on_call(timeout_sec=120)
+@https_fn.on_call(timeout_sec=120, memory=options.MemoryOption.MB_512)
 def get_personal_summary(req: https_fn.CallableRequest) -> dict:
     """
     Generates a personalized summary based on the document and user's history.
@@ -649,7 +649,7 @@ def get_personal_summary(req: https_fn.CallableRequest) -> dict:
     return convert_keys(asdict(summary), "snake_to_camel")
 
 
-@https_fn.on_call()
+@https_fn.on_call(memory=options.MemoryOption.MB_512)
 def save_user_feedback(req: https_fn.CallableRequest) -> dict:
     """
     Saves user feedback to Firestore.
