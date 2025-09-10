@@ -169,11 +169,31 @@ class LatexParser:
         if self.content[self.pos].isalpha():
             while self.pos < self.n and self.content[self.pos].isalpha():
                 self.pos += 1
-        else:
+        elif self.content[self.pos] != " ":
             # Command is a single non-letter symbol (e.g., \&)
             self.pos += 1
 
         return self.content[start_cmd : self.pos]
+
+    def parse_parameter_text(self) -> Optional[str]:
+        """Parses the parameter text of a LaTeX def command."""
+        # Find parameter text (e.g., #1#2)
+        # to do this we find the opening brace of the definition
+        self._skip_space()
+        brace_pos = -1
+        param_start = self.pos
+        while self.pos < self.n:
+            char = self.content[self.pos]
+            if char == "{":
+                brace_pos = self.pos
+                break
+            elif char == "\\" and self.pos + 1 < self.n:
+                self.pos += 1  # Skip next character (escaped)
+            self.pos += 1
+        if brace_pos == -1:  # No definition brace found
+            return None
+        param_text = self.content[param_start:brace_pos]
+        return param_text
 
 
 def _find_next_command_def(content: str, start_pos: int) -> Optional[Tuple[str, int]]:
@@ -195,28 +215,12 @@ def _find_next_command_def(content: str, start_pos: int) -> Optional[Tuple[str, 
 def _get_command_from_def_style(parser: LatexParser, found_command: str) -> Optional[Tuple[str, int, str]]:
     name = parser.parse_command_name()
     if name is None:
-        i = start_index + len(found_command)
         return None
 
-    # Find parameter text (e.g., #1#2) and count args
-    # to do this we find the opening brace of the definition
-    parser._skip_space()
-    param_start = parser.pos
-    brace_pos = -1
-    temp_pos = parser.pos
-    while temp_pos < parser.n:
-        char = parser.content[temp_pos]
-        if char == "{":
-            brace_pos = temp_pos
-            break
-        elif char == "\\" and temp_pos + 1 < parser.n:
-            temp_pos += 1  # Skip next character (escaped)
-        temp_pos += 1
-    if brace_pos == -1:  # No definition brace found
-        i = start_index + len(found_command)
+    param_text = parser.parse_parameter_text()
+    if param_text is None:
         return None
 
-    param_text = parser.content[param_start:brace_pos]
     # Count arguments by finding the highest #N in the param text
     j = 0
     nargs = 0
@@ -232,7 +236,6 @@ def _get_command_from_def_style(parser: LatexParser, found_command: str) -> Opti
                 j += 1  # Skip the digit
         j += 1
 
-    parser.pos = brace_pos
     definition = parser.parse_braces()
     return (name, nargs, definition)
 
@@ -478,24 +481,8 @@ def remove_custom_definitions(content: str) -> str:
                 i = start_index + len(found_command)
                 continue
 
-            # 2. Skip over param text by finding the definition brace.
-            parser._skip_space()
-            brace_pos = -1
-            temp_pos = parser.pos
-            while temp_pos < n:
-                char = parser.content[temp_pos]
-                if char == "{":
-                    brace_pos = temp_pos
-                    break
-                elif char == "\\" and temp_pos + 1 < n:
-                    temp_pos += 1  # Skip escaped char
-                temp_pos += 1
-
-            if brace_pos == -1:
-                i = start_index + len(found_command)
-                continue
-
-            parser.pos = brace_pos  # Set parser to the brace
+            # 2. Skip over param text.
+            parser.parse_parameter_text()
 
             # 3. Skip over the main definition body.
             if parser.parse_braces() is None:

@@ -53,6 +53,37 @@ class LatexParserTest(unittest.TestCase):
                 if result is not None:
                     self.assertEqual(parser.pos, expected_pos)
 
+    def test_parse_command_name(self):
+        test_cases = {
+            "simple": (r"\abc{xyz}", r"\abc", 4),
+            "non_letter_command": (r"\&{xyz}", r"\&", 2),
+            "simple_with_params": (r"\abc#1{xyz}", r"\abc", 4),
+            "no_command": ("abc", None, 0),
+            "whitespace": (" {xyz}", None, 0),
+        }
+        for name, (content, expected_result, expected_pos) in test_cases.items():
+            with self.subTest(name=name):
+                parser = latex_inline_command.LatexParser(content)
+                result = parser.parse_command_name()
+                self.assertEqual(result, expected_result)
+                if result is not None:
+                    self.assertEqual(parser.pos, expected_pos)
+
+    def test_parse_parameter_text(self):
+        test_cases = {
+            "simple": ("#1#2#3{xyz}", "#1#2#3", 6),
+            "no_parameter": ("{xyz}", "", 0),
+            "no_braces": ("#1#2#3", None, 0),
+        }
+        for name, (content, expected_result, expected_pos) in test_cases.items():
+            with self.subTest(name=name):
+                parser = latex_inline_command.LatexParser(content)
+                result = parser.parse_parameter_text()
+                self.assertEqual(result, expected_result)
+                if result is not None:
+                    self.assertEqual(parser.pos, expected_pos)
+
+
 
 class LatexInlineCommandTest(unittest.TestCase):
     """Tests the public API of the latex_inline_command module."""
