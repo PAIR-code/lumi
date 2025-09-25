@@ -1,21 +1,27 @@
-# Lumi
+# Welcome to Lumi
 
-Lumi is a web app with AI-powered features to help you quickly read and understand [arXiv](https://arxiv.org/) papers. Features include:
+[Lumi](lumi.withgoogle.com) is a web app with AI-powered features to help you quickly read and understand [arXiv](https://arxiv.org/) papers. Features include:
 
-- ✏️ **AI-augmented annotations** - summaries at multiple granularities
+- ✏️ **AI-augmented annotations** - read summaries at multiple granularities
 - 🔖 **Smart highlights** - highlight text + ask questions
 - 🖼️ **Explain figures** - ask Lumi about images in the paper
 
 ![Screenshot of Lumi](assets/smart_ask_zoomed.png)
 
-## Ask Lumi questions
+## Using Lumi
+
+Lumi is available as an experimental demo at lumi.withgoogle.com! Try it out and [share feedback or other suggestions in our Discussions tab](https://github.com/PAIR-code/lumi/discussions).
+
+Please note that Lumi can only currently process arXiv papers under a Creative Commons license.
+
+**Tip: Ask Lumi questions**
 
 Select text or click an image to ask Lumi questions:
 
 | ![Screenshot of Lumi - asking questions about text](assets/questions_tutorial.png) | ![Screenshot of Lumi - asking questions about an image](assets/questions_image_tutorial.png) |
 | :--------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
 
-## Running Locally
+## Running Lumi locally
 
 ### Set up Firebase functions and emulators
 
@@ -41,7 +47,7 @@ npm run start
 
 Then, view the app at http://localhost:4201.
 
-### Storybook Stories
+### Storybook stories
 
 To view [Storybook](https://storybook.js.org/docs) stories for Lumi:
 
@@ -59,7 +65,7 @@ set of papers for local debugging.
 The locally imported papers can be rendered in `lumi_doc.stories.ts`
 via Storybook.
 
-## Deploying the app
+## Deploying the Lumi app
 
 To deploy the web app via App Engine, add an
 [app.yaml](https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js)
