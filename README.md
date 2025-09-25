@@ -14,9 +14,7 @@ Lumi is available as an experimental demo at [https://lumi.withgoogle.com](lumi.
 
 Please note that Lumi can only currently process arXiv papers under a Creative Commons license.
 
-**Tip: Ask Lumi questions**
-
-Select text or click an image to ask Lumi questions:
+> **Tip:** Select text or click an image to ask Lumi questions!
 
 | ![Screenshot of Lumi - asking questions about text](assets/questions_tutorial.png) | ![Screenshot of Lumi - asking questions about an image](assets/questions_image_tutorial.png) |
 | :--------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
