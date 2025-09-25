@@ -1,6 +1,6 @@
 # Welcome to Lumi
 
-[Lumi](lumi.withgoogle.com) is a web app with AI-powered features to help you quickly read and understand [arXiv](https://arxiv.org/) papers. Features include:
+[Lumi](https://lumi.withgoogle.com) is a web app with AI-powered features to help you quickly read and understand [arXiv](https://arxiv.org/) papers. Features include:
 
 - ✏️ **AI-augmented annotations** - read summaries at multiple granularities
 - 🔖 **Smart highlights** - highlight text + ask questions
@@ -10,7 +10,7 @@
 
 ## Using Lumi
 
-Lumi is available as an experimental demo at lumi.withgoogle.com! Try it out and [share feedback or other suggestions in our Discussions tab](https://github.com/PAIR-code/lumi/discussions).
+Lumi is available as an experimental demo at [https://lumi.withgoogle.com](lumi.withgoogle.com)! Try it out and [share feedback + feature requests in our Discussions tab](https://github.com/PAIR-code/lumi/discussions).
 
 Please note that Lumi can only currently process arXiv papers under a Creative Commons license.
 
