@@ -10,7 +10,7 @@
 
 ## Using Lumi
 
-Lumi is available as an experimental demo at [https://lumi.withgoogle.com](lumi.withgoogle.com)! Try it out and [share feedback + feature requests in our Discussions tab](https://github.com/PAIR-code/lumi/discussions).
+Lumi is available as an experimental demo at [lumi.withgoogle.com](https://lumi.withgoogle.com)! Try it out and [share feedback + feature requests in our Discussions tab](https://github.com/PAIR-code/lumi/discussions).
 
 Please note that Lumi can only currently process arXiv papers under a Creative Commons license.
 
