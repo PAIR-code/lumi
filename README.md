@@ -6,7 +6,7 @@
 - 🔖 **Smart highlights** - highlight text + ask questions
 - 🖼️ **Explain figures** - ask Lumi about images in the paper
 
-![Screenshot of Lumi](assets/smart_ask_zoomed.png)
+![Screenshot of Lumi](assets/combined_desktop_mobile.png)
 
 ## Using Lumi
 
