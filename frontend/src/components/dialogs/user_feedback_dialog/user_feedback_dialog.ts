@@ -99,7 +99,12 @@ export class UserFeedbackDialog extends MobxLitElement {
         <div class="dialog-content">
           <p class="dialog-explanation">
             If you're experiencing an issue and/or have suggestions, we'd love
-            to hear from you!
+            to hear from you! You're also welcome to submit feature requests on
+            <a
+              href="https://github.com/PAIR-code/lumi/discussions/categories/feature-requests"
+              target="_blank"
+              >Github</a
+            >.
           </p>
           <md-outlined-text-field
             ?focused=${true}
