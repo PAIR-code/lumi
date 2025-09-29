@@ -17,6 +17,7 @@
 
 import { createContext } from "@lit/context";
 import { Ref } from "lit/directives/ref.js";
+import { SPAN_BLINK_ANIMATION_CLASS } from "../shared/constants";
 
 /**
  * The provided/consumed state for managing scrolling.
@@ -41,6 +42,22 @@ export class ScrollState {
     const element = this.spanMap.get(id)?.value;
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      // Add animation class on child span so it does not interfere with
+      // other animations on the parent span.
+      const childSpan = element.querySelector("span");
+      if (childSpan) {
+        childSpan.classList.add(SPAN_BLINK_ANIMATION_CLASS);
+        childSpan.addEventListener(
+          "animationend",
+          () => {
+            childSpan.classList.remove(SPAN_BLINK_ANIMATION_CLASS);
+          },
+          {
+            once: true,
+          }
+        );
+      }
     } else {
       console.warn(`[ScrollContext] Span with id "${id}" not found.`);
     }
