@@ -57,3 +57,6 @@ export const LUMI_CONCEPT_SPAN_ID_PREFIX = "concept-content";
 export const PERSONAL_SUMMARY_QUERY_NAME = "Summarize this paper";
 export const CONCEPT_CONTENT_LABEL_DEFINITION = "definition";
 export const CONCEPT_CONTENT_LABEL_RELEVANCE = "relevance";
+
+// Keep in sync with lumi_span.scss
+export const SPAN_BLINK_ANIMATION_CLASS = "span-blink";

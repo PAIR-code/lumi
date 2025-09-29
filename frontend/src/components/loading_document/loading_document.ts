@@ -44,14 +44,21 @@ export class LoadingDocument extends LitElement {
       <div class="loading-container">
         <div class="loading-content">
           <div class="header">
-            <pr-circular-progress></pr-circular-progress>
-            <span>Importing document...</span>
+            <div class="importing-group">
+              <pr-circular-progress></pr-circular-progress>
+              <span>Importing document...</span>
+            </div>
+            <span class="note-text">
+              This may take a few minutes. Feel free to browse other papers and
+              come back to this link.
+            </span>
           </div>
           <div class="metadata-content">
             <h1 class="title">
               <span
                 >${this.metadata.title}
-                <a href=${getArxivPaperUrl(this.metadata.paperId)}
+                <a
+                  href=${getArxivPaperUrl(this.metadata.paperId)}
                   class="arxiv-link"
                   rel="noopener noreferrer"
                 >

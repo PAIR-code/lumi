@@ -49,12 +49,22 @@
 }
 
 .header {
-  @include common.flex-row-align-center;
-  gap: common.$spacing-medium;
-  justify-content: center;
-  padding: common.$spacing-large;
-  @include typescale.title-medium;
-  color: var(--md-sys-color-on-surface-variant);
+  @include common.flex-column-align-center;
+  gap: common.$spacing-small;
+
+  .importing-group {
+    @include common.flex-row-align-center;
+    gap: common.$spacing-large;
+    justify-content: center;
+    padding: common.$spacing-large;
+    @include typescale.title-medium;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .note-text {
+    color: var(--md-sys-color-on-surface-high);
+    font-style: italic;
+  }
 }
 
 .metadata-content {

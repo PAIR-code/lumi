@@ -236,3 +236,23 @@ span.collapsed {
     opacity: 1;
   }
 }
+
+// Keep name in sync with constants.ts
+.span-blink {
+  opacity: 1;
+  animation-name: blink;
+  animation-iteration-count: 1;
+  animation-duration: 0.8s;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
