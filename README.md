@@ -8,16 +8,13 @@
 
 ![Screenshot of Lumi](assets/combined_desktop_mobile.png)
 
-## Using Lumi
+Lumi is available as an experimental demo!
 
-Lumi is available as an experimental demo at [lumi.withgoogle.com](https://lumi.withgoogle.com)! Try it out and [share feedback + feature requests in our Discussions tab](https://github.com/PAIR-code/lumi/discussions).
+- Try it out at [lumi.withgoogle.com](https://lumi.withgoogle.com)
+- [Read the Medium article](https://medium.com/people-ai-research/read-smarter-not-harder-with-lumi-6a1a8210ccc7)
+- [Share feedback + feature requests via GitHub Discussions](https://github.com/PAIR-code/lumi/discussions).
 
 Please note that Lumi can only currently process arXiv papers under a Creative Commons license.
-
-> **Tip:** Select text or click an image to ask Lumi questions!
-
-| ![Screenshot of Lumi - asking questions about text](assets/questions_tutorial.png) | ![Screenshot of Lumi - asking questions about an image](assets/questions_image_tutorial.png) |
-| :--------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
 
 ## Running Lumi locally
 
