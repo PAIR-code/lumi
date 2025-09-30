@@ -8,10 +8,9 @@
 
 <img src="assets/combined_desktop_mobile.png" alt-text="Screenshots of Lumi desktop and mobile views" height="400" />
 
-Lumi is publicly available as an experimental demo:
 - Try it out at [lumi.withgoogle.com](https://lumi.withgoogle.com)
 - [Read the Medium article](https://medium.com/people-ai-research/read-smarter-not-harder-with-lumi-6a1a8210ccc7)
-- [Share feedback + feature requests via GitHub Discussions](https://github.com/PAIR-code/lumi/discussions).
+- [Share feedback + feature requests via GitHub Discussions](https://github.com/PAIR-code/lumi/discussions)
 
 *Please note that Lumi can only currently process arXiv papers under a Creative Commons license.*
 
