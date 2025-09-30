@@ -4,17 +4,16 @@
 
 - ✏️ **AI-augmented annotations** - read summaries at multiple granularities
 - 🔖 **Smart highlights** - highlight text + ask questions
-- 🖼️ **Explain figures** - ask Lumi about images in the paper
+- 🖼️ **Figure explanations** - ask Lumi about images in the paper
 
-![Screenshot of Lumi](assets/combined_desktop_mobile.png)
+<img src="assets/combined_desktop_mobile.png" alt-text="Screenshots of Lumi desktop and mobile views" height="400" />
 
-Lumi is available as an experimental demo!
-
+Lumi is publicly available as an experimental demo:
 - Try it out at [lumi.withgoogle.com](https://lumi.withgoogle.com)
 - [Read the Medium article](https://medium.com/people-ai-research/read-smarter-not-harder-with-lumi-6a1a8210ccc7)
 - [Share feedback + feature requests via GitHub Discussions](https://github.com/PAIR-code/lumi/discussions).
 
-Please note that Lumi can only currently process arXiv papers under a Creative Commons license.
+*Please note that Lumi can only currently process arXiv papers under a Creative Commons license.*
 
 ## Running Lumi locally
 
