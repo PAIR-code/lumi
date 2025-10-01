@@ -6,11 +6,9 @@
 - 🔖 **Smart highlights** - highlight text + ask questions
 - 🖼️ **Figure explanations** - ask Lumi about images in the paper
 
-<img src="assets/combined_desktop_mobile.png" alt-text="Screenshots of Lumi desktop and mobile views" height="400" />
+[Demo](https://lumi.withgoogle.com) | [Medium article](https://medium.com/people-ai-research/read-smarter-not-harder-with-lumi-6a1a8210ccc7) | [GitHub discussions](https://github.com/PAIR-code/lumi/discussions)
 
-- Try it out at [lumi.withgoogle.com](https://lumi.withgoogle.com)
-- [Read the Medium article](https://medium.com/people-ai-research/read-smarter-not-harder-with-lumi-6a1a8210ccc7)
-- [Share feedback + feature requests via GitHub Discussions](https://github.com/PAIR-code/lumi/discussions)
+<img src="assets/combined_desktop_mobile.png" alt-text="Screenshots of Lumi desktop and mobile views" height="400" />
 
 *Please note that Lumi can only currently process arXiv papers under a Creative Commons license.*
 
