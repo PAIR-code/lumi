@@ -1,6 +1,6 @@
 # Welcome to Lumi
 
-[Lumi](https://lumi.withgoogle.com) uses AI to help you quickly read and understand [arXiv](https://arxiv.org/) papers. Features include:
+[Lumi](https://lumi.withgoogle.com) uses AI to help you quickly read and understand [arXiv papers](https://arxiv.org/). Features include:
 
 - ✏️ **AI-augmented annotations** - read summaries at multiple granularities
 - 🔖 **Smart highlights** - highlight text + ask questions
