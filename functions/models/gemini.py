@@ -131,7 +131,7 @@ def format_pdf_with_latex(
     pdf_data: bytes,
     latex_string: str,
     concepts: List[LumiConcept],
-    model="gemini-2.5-pro",
+    model="gemini-2.5-flash",
 ) -> str:
     """
     Calls Gemini to format the pdf, using the latex source as additional context.
