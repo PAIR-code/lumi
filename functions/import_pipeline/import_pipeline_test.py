@@ -344,7 +344,7 @@ class ImportPipelineTest(unittest.TestCase):
             )
 
     @patch("import_pipeline.import_pipeline.convert_model_output_to_lumi_doc")
-    @patch("import_pipeline.import_pipeline.gemini")
+    @patch("import_pipeline.import_pipeline.llm")
     @patch("import_pipeline.import_pipeline.image_utils")
     @patch("import_pipeline.import_pipeline.latex_utils")
     @patch("import_pipeline.import_pipeline.fetch_utils")
@@ -355,7 +355,7 @@ class ImportPipelineTest(unittest.TestCase):
         mock_fetch_utils,
         mock_latex_utils,
         mock_image_utils,
-        mock_gemini,
+        mock_llm,
         mock_convert_to_doc,
     ):
         """Tests the full import pipeline with LaTeX and PDF."""
@@ -363,7 +363,7 @@ class ImportPipelineTest(unittest.TestCase):
         mock_fetch_utils.fetch_pdf_bytes.return_value = b"pdf_bytes"
         mock_fetch_utils.fetch_latex_source.return_value = b"latex_source_bytes"
         mock_latex_utils.inline_tex_files.return_value = "inlined_latex_string"
-        mock_gemini.format_pdf_with_latex.return_value = "model_output"
+        mock_llm.format_pdf_with_latex.return_value = "model_output"
 
         # Mock the returned LumiDoc to have an image
         mock_image_content = ImageContent(
@@ -426,7 +426,7 @@ class ImportPipelineTest(unittest.TestCase):
         mock_latex_utils.find_main_tex_file.assert_called_once()
         mock_latex_utils.inline_tex_files.assert_called_once()
 
-        mock_gemini.format_pdf_with_latex.assert_called_once_with(
+        mock_llm.format_pdf_with_latex.assert_called_once_with(
             pdf_data=b"pdf_bytes",
             latex_string="inlined_latex_string",
             concepts=concepts,

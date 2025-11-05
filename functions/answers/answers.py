@@ -20,7 +20,7 @@ from typing import List
 from shared.lumi_doc import LumiDoc, LumiSpan, LumiContent, TextContent
 from shared import prompt_utils
 from shared.api import LumiAnswer, LumiAnswerRequest
-from models import gemini
+from models import llm
 from models import prompts
 from import_pipeline import convert_html_to_lumi, markdown_utils, image_utils
 from shared.utils import get_unique_id
@@ -101,11 +101,11 @@ Last Updated: {metadata.updated_timestamp}
 
     if image_info:
         image_bytes = image_utils.download_image_from_gcs(image_info.image_storage_path)
-        markdown_response = gemini.call_predict_with_image(
+        markdown_response = llm.call_predict_with_image(
             prompt=prompt, image_bytes=image_bytes, api_key=api_key
         )
     else:
-        markdown_response = gemini.call_predict(prompt, api_key=api_key)
+        markdown_response = llm.call_predict(prompt, api_key=api_key)
 
     # Extract equations before markdown conversion to prevent misinterpretation.
     markdown_response, equation_map = markdown_utils.extract_equations_to_placeholders(markdown_response)

@@ -21,7 +21,7 @@ from import_pipeline import markdown_utils
 from import_pipeline import image_utils
 from import_pipeline import latex_utils
 from import_pipeline import convert_html_to_lumi
-from models import gemini
+from models import llm
 from models import extract_concepts as extract_concepts_util
 from shared import import_tags
 from shared.lumi_doc import (
@@ -109,8 +109,8 @@ def import_arxiv_latex_and_pdf(
             with open(existing_model_output_file, "r") as file:
                 model_output = file.read()
         else:
-            # Format into markdown with Gemini, using both PDF and LaTeX
-            model_output = gemini.format_pdf_with_latex(
+            # Format into markdown with GPT-4.1, using both PDF and LaTeX
+            model_output = llm.format_pdf_with_latex(
                 pdf_data=pdf_data, latex_string=latex_string, concepts=concepts
             )
 

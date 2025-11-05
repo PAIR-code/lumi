@@ -85,7 +85,7 @@ class SummariesTest(unittest.TestCase):
             mock_obj.reset_mock()
 
     @patch('import_pipeline.summaries.get_unique_id', return_value='unique_span_id')
-    @patch('import_pipeline.summaries.gemini.call_predict_with_schema')
+    @patch('import_pipeline.summaries.llm.call_predict_with_schema')
     def test_generate_lumi_summaries(self, mock_call_predict_with_schema, mock_get_unique_id):
         with self.subTest(name="include_section_summaries"):
             self._reset_mocks(mock_call_predict_with_schema, mock_get_unique_id)
@@ -187,7 +187,7 @@ class SummariesTest(unittest.TestCase):
             mock_call_predict_with_schema.assert_not_called()
             self.assertIsNone(summaries.abstract_excerpt_span_id)
 
-    @patch('import_pipeline.summaries.gemini.call_predict_with_schema')
+    @patch('import_pipeline.summaries.llm.call_predict_with_schema')
     def test_generate_lumi_summaries_with_abstract_excerpt(self, mock_call_predict_with_schema):
         self._reset_mocks(mock_call_predict_with_schema)
         # Mock the response for the abstract excerpt selection

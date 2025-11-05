@@ -32,7 +32,7 @@ from shared.lumi_doc import (
     LumiContent,
 )
 from shared import prompt_utils
-import models.gemini as gemini
+import models.llm as llm
 from import_pipeline.convert_html_to_lumi import (
     convert_raw_output_to_spans,
 )
@@ -194,7 +194,7 @@ def _select_abstract_excerpt(document: LumiDoc) -> str | None:
         return None
 
     prompt = _select_abstract_excerpt_prompt(abstract_spans)
-    response = gemini.call_predict_with_schema(
+    response = llm.call_predict_with_schema(
         prompt, response_schema=AbstractExcerptSchema
     )
 
@@ -239,7 +239,7 @@ def generate_span_summaries(
         prompts.append(prompt)
 
     for prompt in prompts:
-        schema_labels = gemini.call_predict_with_schema(
+        schema_labels = llm.call_predict_with_schema(
             prompt, response_schema=list[LabelSchema]
         )
         if schema_labels:
@@ -303,7 +303,7 @@ def generate_section_summaries(
     for i in range(0, len(all_sections_data), batch_size):
         batch_data = all_sections_data[i : i + batch_size]
         prompt = _generate_section_summaries_prompt(batch_data)
-        schema_labels = gemini.call_predict_with_schema(
+        schema_labels = llm.call_predict_with_schema(
             prompt, response_schema=list[LabelSchema]
         )
 
@@ -371,7 +371,7 @@ def generate_content_summaries(
     for i in range(0, len(all_contents_data), batch_size):
         batch_data = all_contents_data[i : i + batch_size]
         prompt = _get_generate_content_summaries_prompt(batch_data)
-        schema_labels = gemini.call_predict_with_schema(
+        schema_labels = llm.call_predict_with_schema(
             prompt, response_schema=list[LabelSchema]
         )
 

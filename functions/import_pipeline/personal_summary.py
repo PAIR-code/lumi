@@ -14,7 +14,7 @@
 # ==============================================================================
 import time
 from typing import List
-from models import gemini, prompts
+from models import llm, prompts
 from shared.lumi_doc import LumiDoc, LumiSpan, LumiContent, TextContent
 from shared.types_local_storage import PaperData
 from import_pipeline import convert_html_to_lumi, markdown_utils
@@ -35,7 +35,7 @@ def get_personal_summary(doc: LumiDoc, past_papers: List[PaperData], api_key:str
         LumiAnswer: The generated personalized summary, packaged as a LumiAnswer.
     """
     prompt = prompts.make_personal_summary_prompt(doc, past_papers)
-    markdown_response = gemini.call_predict(prompt, api_key=api_key)
+    markdown_response = llm.call_predict(prompt, api_key=api_key)
     html_response = markdown_utils.markdown_to_html(markdown_response)
 
     # Parse the markdown response to create LumiContent objects.

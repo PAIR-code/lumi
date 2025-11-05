@@ -39,7 +39,7 @@ from firebase_functions.firestore_fn import (
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 from google.api_core import exceptions
 
-from models.gemini import GeminiInvalidResponseException
+from models.llm import GeminiInvalidResponseException
 from shared.firebase_constants import (
     ARXIV_DOCS_COLLECTION,
     ARXIV_METADATA_COLLECTION,

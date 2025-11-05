@@ -207,3 +207,6 @@ functions/.script*
 # GCA
 GEMINI.md
 model_context
+
+# Thoughts directory (local workspace)
+thoughts/

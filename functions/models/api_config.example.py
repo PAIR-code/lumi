@@ -13,5 +13,5 @@
 # limitations under the License.
 # ==============================================================================
 
-# TODO(developer): Add GEMINI API key.
+# TODO(developer): Add OPENAI API key.
 DEFAULT_API_KEY = ""
