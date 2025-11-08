@@ -14,20 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-@use "../src/sass/colors";
-@use "../src/sass/common";
-@use "../src/sass/typescale";
 
+@use '../src/sass/colors';
+@use '../src/sass/common';
+@use '../src/sass/typescale';
 
 :root {
-    @include colors.global;
-    @include colors.orchid-ref;
-    @include typescale.app-small;
-    @include colors.light;
-    @include common.default;
+  @include colors.global;
+  @include colors.orchid-ref;
+  @include typescale.app-small;
+  @include colors.light;
+  @include common.default;
 }
 
 body {
-    padding: 0 !important;
+  padding: 0 !important;
 }

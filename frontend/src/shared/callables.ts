@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { Functions, httpsCallable } from "firebase/functions";
-import { ArxivMetadata, LumiDoc } from "./lumi_doc";
-import { LumiAnswer, LumiAnswerRequest, UserFeedback } from "./api";
-import { PaperData } from "./types_local_storage";
+import { Functions, httpsCallable } from 'firebase/functions';
+import { ArxivMetadata, LumiDoc } from './lumi_doc';
+import { LumiAnswer, LumiAnswerRequest, UserFeedback } from './api';
+import { PaperData } from './types_local_storage';
 
 /** Firebase cloud function callables */
 
@@ -42,7 +42,7 @@ export const requestArxivDocImportCallable = async (
     RequestArxivDocImportResult
   >(
     functions,
-    "request_arxiv_doc_import"
+    'request_arxiv_doc_import'
   )({ arxiv_id: arxivId });
   return result.data;
 };
@@ -65,7 +65,7 @@ export const getLumiResponseCallable = async (
     LumiAnswer
   >(
     functions,
-    "get_lumi_response"
+    'get_lumi_response'
   )({ doc, request, apiKey });
 
   return result.data;
@@ -83,7 +83,7 @@ export const getArxivMetadata = async (
 ): Promise<ArxivMetadata> => {
   const result = await httpsCallable<{ arxiv_id: string }, ArxivMetadata>(
     functions,
-    "get_arxiv_metadata"
+    'get_arxiv_metadata'
   )({ arxiv_id: arxivId });
 
   return result.data;
@@ -107,7 +107,7 @@ export const getPersonalSummaryCallable = async (
     LumiAnswer
   >(
     functions,
-    "get_personal_summary"
+    'get_personal_summary'
   )({ doc, past_papers: pastPapers, apiKey });
 
   return result.data;
@@ -127,7 +127,7 @@ export const saveUserFeedbackCallable = async (
     { status: string }
   >(
     functions,
-    "save_user_feedback"
+    'save_user_feedback'
   )({
     user_feedback_text: feedback.userFeedbackText,
     arxiv_id: feedback.arxivId,

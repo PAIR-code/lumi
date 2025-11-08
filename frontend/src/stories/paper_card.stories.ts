@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import { fn } from "@storybook/test";
+import { fn } from '@storybook/test';
 
-import type { Meta, StoryObj } from "@storybook/web-components";
+import type { Meta, StoryObj } from '@storybook/web-components';
 
-import { html } from "lit";
+import { html } from 'lit';
 
-import "../components/gallery/home_gallery";
+import '../components/gallery/home_gallery';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 const meta = {
-  title: "Components/PaperCard",
-  tags: ["autodocs"],
+  title: 'Components/PaperCard',
+  tags: ['autodocs'],
   render: (args) =>
     html`<paper-card
       .metadata=${{
@@ -41,14 +41,14 @@ const meta = {
       .status=${args.status}
     ></paper-card>`,
   argTypes: {
-    title: { control: "text" },
-    summary: { control: "text" },
-    authors: { control: "text" },
-    publishedTimestamp: { control: "text" },
-    updatededTimestamp: { control: "text" },
-    version: { control: "number" },
-    paperId: { control: "text" },
-    status: { control: "text" },
+    title: { control: 'text' },
+    summary: { control: 'text' },
+    authors: { control: 'text' },
+    publishedTimestamp: { control: 'text' },
+    updatededTimestamp: { control: 'text' },
+    version: { control: 'number' },
+    paperId: { control: 'text' },
+    status: { control: 'text' },
   },
   args: { onClick: fn() },
 } satisfies Meta;
@@ -59,12 +59,13 @@ type Story = StoryObj;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
   args: {
-    title: "Headscarf drosera bell cardamom backwards lemon custard",
-    summary: "Pilot pumpernickel ginger prunus crown grits slushie half-moons black tee scarf. Pinguicula fuzzy jacket potato chips pepper malvaceae macaroon.",
-    authors: "Cashew, Biscuit",
-    version: "1",
-    updatedTimestamp: "",
-    publishedTimestamp: "",
-    paperId: "my-paper-id",
+    title: 'Headscarf drosera bell cardamom backwards lemon custard',
+    summary:
+      'Pilot pumpernickel ginger prunus crown grits slushie half-moons black tee scarf. Pinguicula fuzzy jacket potato chips pepper malvaceae macaroon.',
+    authors: 'Cashew, Biscuit',
+    version: '1',
+    updatedTimestamp: '',
+    publishedTimestamp: '',
+    paperId: 'my-paper-id',
   },
 };

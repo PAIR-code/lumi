@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from "@storybook/web-components";
-import { html } from "lit";
-import "../pair-components/circular_progress";
-import { COMPONENT_COLORS, COMPONENT_SIZES } from "../pair-components/types";
+import type { Meta, StoryObj } from '@storybook/web-components';
+import { html } from 'lit';
+import '../pair-components/circular_progress';
+import { COMPONENT_COLORS, COMPONENT_SIZES } from '../pair-components/types';
 
 const meta = {
-  title: "Components/CircularProgress",
-  tags: ["autodocs"],
+  title: 'Components/CircularProgress',
+  tags: ['autodocs'],
   render: (args) =>
     html`<div style="--pr-color: gray;">
       <pr-circular-progress size=${args.size}></pr-circular-progress>
     </div>`,
   argTypes: {
     size: {
-      control: "select",
+      control: 'select',
       options: COMPONENT_SIZES,
     },
   },
@@ -39,6 +39,6 @@ type Story = StoryObj;
 
 export const Default: Story = {
   args: {
-    size: "medium",
+    size: 'medium',
   },
 };

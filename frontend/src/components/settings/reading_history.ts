@@ -15,41 +15,47 @@
  * limitations under the License.
  */
 
-import "../../pair-components/button";
-import "./tos_content";
-import "../../pair-components/textinput";
+import '../../pair-components/button';
+import './tos_content';
+import '../../pair-components/textinput';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-import { core } from "../../core/core";
-import { HistoryService } from "../../services/history.service";
-import { Pages, RouterService, getLumiPaperUrl } from "../../services/router.service";
-import { SettingsService } from "../../services/settings.service";
+import { core } from '../../core/core';
+import { HistoryService } from '../../services/history.service';
+import {
+  Pages,
+  RouterService,
+  getLumiPaperUrl,
+} from '../../services/router.service';
+import { SettingsService } from '../../services/settings.service';
 
-import { ArxivMetadata } from "../../shared/lumi_doc";
-import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
-import { ColorMode } from "../../shared/types";
+import { ArxivMetadata } from '../../shared/lumi_doc';
+import { sortPaperDataByTimestamp } from '../../shared/lumi_paper_utils';
+import { ColorMode } from '../../shared/types';
 
-import { styles } from "./reading_history.scss";
+import { styles } from './reading_history.scss';
 
 /** Reading history used for history dialog, settings page */
-@customElement("reading-history")
+@customElement('reading-history')
 export class ReadingHistory extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly historyService = core.getService(HistoryService);
 
-  @property({type: Boolean}) showTitle = false;
+  @property({ type: Boolean }) showTitle = false;
 
   renderHistoryItem(item: ArxivMetadata) {
     return html`
       <div class="history-item">
         <div class="left">
-          <a href=${getLumiPaperUrl(item.paperId)}
+          <a
+            href=${getLumiPaperUrl(item.paperId)}
             rel="noopener noreferrer"
-            class="title">
+            class="title"
+          >
             ${item.title}
           </a>
           <div>${item.authors.join(', ')}</div>
@@ -101,11 +107,12 @@ export class ReadingHistory extends MobxLitElement {
     const historyItems = sortPaperDataByTimestamp(
       this.historyService.getPaperHistory()
     ).map((item) => item.metadata);
-  const hasItems = historyItems.length > 0;
+    const hasItems = historyItems.length > 0;
 
     return html`
-      ${this.showTitle ?
-        html`<h2>Reading History (${historyItems.length})</h2>` : nothing}
+      ${this.showTitle
+        ? html`<h2>Reading History (${historyItems.length})</h2>`
+        : nothing}
       ${!hasItems ? html`<i>No papers yet</i>` : nothing}
       ${historyItems.map((item) => this.renderHistoryItem(item))}
       ${hasItems ? this.renderClearButton() : nothing}
@@ -115,6 +122,6 @@ export class ReadingHistory extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "reading-history": ReadingHistory;
+    'reading-history': ReadingHistory;
   }
 }

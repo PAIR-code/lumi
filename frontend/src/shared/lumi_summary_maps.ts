@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Label, LumiSummaries, LumiSummary } from "./lumi_doc";
-import { makeObservable, observable } from "mobx";
+import { Label, LumiSummaries, LumiSummary } from './lumi_doc';
+import { makeObservable, observable } from 'mobx';
 
 /**
  * LumiSummaryMaps helper.

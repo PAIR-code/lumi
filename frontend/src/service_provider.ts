@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-import { Core } from "./core/core";
-import { AnalyticsService } from "./services/analytics.service";
-import { BannerService } from "./services/banner.service";
-import { DialogService } from "./services/dialog.service";
-import { DocumentStateService } from "./services/document_state.service";
-import { FirebaseService } from "./services/firebase.service";
-import { FloatingPanelService } from "./services/floating_panel_service";
-import { HistoryService } from "./services/history.service";
-import { HomeService } from "./services/home.service";
-import { InitializationService } from "./services/initialization.service";
-import { LocalStorageService } from "./services/local_storage.service";
-import { RouterService } from "./services/router.service";
-import { SnackbarService } from "./services/snackbar.service";
-import { SettingsService } from "./services/settings.service";
+import { Core } from './core/core';
+import { AnalyticsService } from './services/analytics.service';
+import { ApiService } from './services/api.service';
+import { BannerService } from './services/banner.service';
+import { DialogService } from './services/dialog.service';
+import { DocumentStateService } from './services/document_state.service';
+import { FirebaseService } from './services/firebase.service';
+import { FloatingPanelService } from './services/floating_panel_service';
+import { HistoryService } from './services/history.service';
+import { HomeService } from './services/home.service';
+import { InitializationService } from './services/initialization.service';
+import { LocalStorageService } from './services/local_storage.service';
+import { RouterService } from './services/router.service';
+import { SnackbarService } from './services/snackbar.service';
+import { SettingsService } from './services/settings.service';
 
 /**
  * Defines a map of services to their identifier
@@ -37,6 +38,9 @@ export function makeServiceProvider(self: Core) {
   const serviceProvider = {
     get analyticsService() {
       return self.getService(AnalyticsService);
+    },
+    get apiService() {
+      return self.getService(ApiService);
     },
     get bannerService() {
       return self.getService(BannerService);

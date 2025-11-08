@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { createRef, ref, Ref } from "lit/directives/ref.js";
-import { consume } from "@lit/context";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing, TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { createRef, ref, Ref } from 'lit/directives/ref.js';
+import { consume } from '@lit/context';
 
-import { FigureContent, ImageContent, LumiSpan } from "../../shared/lumi_doc";
-import "../lumi_span/lumi_span";
-import "../lumi_image/lumi_image";
+import { FigureContent, ImageContent, LumiSpan } from '../../shared/lumi_doc';
+import '../lumi_span/lumi_span';
+import '../lumi_image/lumi_image';
 
-import { styles } from "./lumi_image_content.scss";
-import { makeObservable } from "mobx";
-import { classMap } from "lit/directives/class-map.js";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { scrollContext, ScrollState } from "../../contexts/scroll_context";
-import { ImageInfo } from "../../shared/api";
-import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
+import { styles } from './lumi_image_content.scss';
+import { makeObservable } from 'mobx';
+import { classMap } from 'lit/directives/class-map.js';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { scrollContext, ScrollState } from '../../contexts/scroll_context';
+import { ImageInfo } from '../../shared/api';
+import { getSpanHighlightsFromManagers } from '../lumi_span/lumi_span_utils';
 
 function isFigureContent(
   content: ImageContent | FigureContent
 ): content is FigureContent {
-  return "images" in content;
+  return 'images' in content;
 }
 
 /**
  * An image visualization in the Lumi visualization.
  * Can render a single image or a group of subfigures.
  */
-@customElement("lumi-image-content")
+@customElement('lumi-image-content')
 export class LumiImageContent extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -162,8 +162,8 @@ export class LumiImageContent extends MobxLitElement {
           <div class="subfigures-container">
             ${figureContent.images.map((image) => {
               const subFigureClasses = classMap({
-                ["subfigure"]: true,
-                ["is-only-image"]: figureContent.images.length === 1,
+                ['subfigure']: true,
+                ['is-only-image']: figureContent.images.length === 1,
               });
               return html`
                 <figure class=${subFigureClasses}>
@@ -188,6 +188,6 @@ export class LumiImageContent extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-image-content": LumiImageContent;
+    'lumi-image-content': LumiImageContent;
   }
 }

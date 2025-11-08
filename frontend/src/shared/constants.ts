@@ -16,7 +16,7 @@
  */
 
 /** App name. */
-export const APP_NAME = "Lumi";
+export const APP_NAME = 'Lumi';
 
 /** Firebase constants. */
 export const FIREBASE_LOCAL_HOST_PORT_FIRESTORE = 8080;
@@ -31,32 +31,32 @@ export const MAX_QUERY_INPUT_LENGTH = 1000;
 
 /** Sidebar tabs. */
 export const SIDEBAR_TABS = {
-  ANSWERS: "Ask",
-  TOC: "Outline",
-  CONCEPTS: "Concepts",
+  ANSWERS: 'Ask',
+  TOC: 'Outline',
+  CONCEPTS: 'Concepts',
 };
 
 export const INITIAL_SIDEBAR_TAB = SIDEBAR_TABS.ANSWERS;
 
-export const HIGHLIGHT_METADATA_ANSWER_KEY = "answer";
+export const HIGHLIGHT_METADATA_ANSWER_KEY = 'answer';
 
-export const CITATION_CLASSNAME = "citation-marker";
-export const FOOTNOTE_CLASSNAME = "footnote-marker";
+export const CITATION_CLASSNAME = 'citation-marker';
+export const FOOTNOTE_CLASSNAME = 'footnote-marker';
 
-export const LOGO_ICON_NAME = "book_ribbon";
+export const LOGO_ICON_NAME = 'book_ribbon';
 
-export const TUTORIAL_QUESTION_IMAGE_PATH = "assets/questions_tutorial.png";
+export const TUTORIAL_QUESTION_IMAGE_PATH = 'assets/questions_tutorial.png';
 export const TUTORIAL_IMAGE_QUESTION_IMAGE_PATH =
-  "assets/questions_image_tutorial.png";
+  'assets/questions_image_tutorial.png';
 
 export const INPUT_DEBOUNCE_MS = 100;
 
-export const LUMI_CONCEPT_SPAN_ID_PREFIX = "concept-content";
+export const LUMI_CONCEPT_SPAN_ID_PREFIX = 'concept-content';
 
 // Keep in sync with constants.py
-export const PERSONAL_SUMMARY_QUERY_NAME = "Summarize this paper";
-export const CONCEPT_CONTENT_LABEL_DEFINITION = "definition";
-export const CONCEPT_CONTENT_LABEL_RELEVANCE = "relevance";
+export const PERSONAL_SUMMARY_QUERY_NAME = 'Summarize this paper';
+export const CONCEPT_CONTENT_LABEL_DEFINITION = 'definition';
+export const CONCEPT_CONTENT_LABEL_RELEVANCE = 'relevance';
 
 // Keep in sync with lumi_span.scss
-export const SPAN_BLINK_ANIMATION_CLASS = "span-blink";
+export const SPAN_BLINK_ANIMATION_CLASS = 'span-blink';

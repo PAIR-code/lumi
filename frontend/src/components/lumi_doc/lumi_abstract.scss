@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-@use "../../sass/common";
-@use "../../sass/typescale";
+@use '../../sass/common';
+@use '../../sass/typescale';
 
 .abstract-renderer-container {
   @include common.lumi-doc-grid;

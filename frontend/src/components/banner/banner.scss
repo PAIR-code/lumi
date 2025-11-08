@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@use "../../sass/common";
-@use "../../sass/typescale";
+@use '../../sass/common';
+@use '../../sass/typescale';
 
 :host {
   @include common.flex-row-align-center;
@@ -23,7 +23,7 @@
 
   background-color: var(--md-sys-color-gray-container);
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  
+
   color: var(--md-sys-color-on-secondary-container);
   padding: 0 common.$spacing-large;
 }
@@ -41,7 +41,7 @@
 .main-message {
   @include common.flex-row-align-center;
   gap: common.$spacing-medium;
-  
+
   @include common.overflow-ellipsis;
 
   color: var(--md-sys-color-on-gray-container);
@@ -53,9 +53,7 @@
 }
 
 .close-button {
-  --pr-icon-button-unselected-color: var(
-    --md-sys-color-on-secondary-container
-  );
+  --pr-icon-button-unselected-color: var(--md-sys-color-on-secondary-container);
 }
 
 .icon {

@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LumiContent } from "./lumi_doc";
-import { HighlightSelection } from "./selection_utils";
+import { LumiContent } from './lumi_doc';
+import { HighlightSelection } from './selection_utils';
 
 // Kept in sync with: functions/shared/api.py
 export interface ImageInfo {

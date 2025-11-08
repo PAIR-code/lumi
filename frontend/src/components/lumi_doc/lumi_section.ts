@@ -22,14 +22,14 @@ import {
   nothing,
   PropertyValues,
   TemplateResult,
-} from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { createRef, ref, Ref } from "lit/directives/ref.js";
-import { consume } from "@lit/context";
-import { classMap } from "lit/directives/class-map.js";
+} from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { createRef, ref, Ref } from 'lit/directives/ref.js';
+import { consume } from '@lit/context';
+import { classMap } from 'lit/directives/class-map.js';
 
-import { scrollContext, ScrollState } from "../../contexts/scroll_context";
-import { LumiFont, FocusState } from "../../shared/types";
+import { scrollContext, ScrollState } from '../../contexts/scroll_context';
+import { LumiFont, FocusState } from '../../shared/types';
 import {
   ListContent,
   LumiContent,
@@ -38,27 +38,27 @@ import {
   LumiSection,
   LumiSpan,
   LumiSummary,
-} from "../../shared/lumi_doc";
-import { LumiSummaryMaps } from "../../shared/lumi_summary_maps";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { HighlightSelection } from "../../shared/selection_utils";
-import { CollapseManager } from "../../shared/collapse_manager";
-import { getAllContents } from "../../shared/lumi_doc_utils";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { LumiAnswer } from "../../shared/api";
+} from '../../shared/lumi_doc';
+import { LumiSummaryMaps } from '../../shared/lumi_summary_maps';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { HighlightSelection } from '../../shared/selection_utils';
+import { CollapseManager } from '../../shared/collapse_manager';
+import { getAllContents } from '../../shared/lumi_doc_utils';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { LumiAnswer } from '../../shared/api';
 
-import { styles } from "./lumi_section.scss";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import { styles } from './lumi_section.scss';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
 
-import "../lumi_span/lumi_span";
-import "../lumi_content/lumi_content";
+import '../lumi_span/lumi_span';
+import '../lumi_content/lumi_content';
 
-const EMPTY_PLACEHOLDER_TEXT = "section";
+const EMPTY_PLACEHOLDER_TEXT = 'section';
 
 /**
  * Displays a lumi section
  */
-@customElement("lumi-section")
+@customElement('lumi-section')
 export class LumiSectionViz extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -134,8 +134,8 @@ export class LumiSectionViz extends LightMobxLitElement {
     const isEmpty = headingText.length === 0;
 
     const classesObject: { [key: string]: boolean } = {
-      "heading-text": true,
-      "empty-heading-placeholder": isEmpty,
+      'heading-text': true,
+      'empty-heading-placeholder': isEmpty,
     };
 
     if (isEmpty) {
@@ -182,8 +182,8 @@ export class LumiSectionViz extends LightMobxLitElement {
         const spans = content.textContent
           ? content.textContent.spans
           : content.listContent
-          ? this.getSpansFromListContent(content.listContent!)
-          : [];
+            ? this.getSpansFromListContent(content.listContent!)
+            : [];
 
         const spanSummaries = new Map<string, LumiSummary>();
         spans.forEach((span: LumiSpan) => {
@@ -256,8 +256,8 @@ export class LumiSectionViz extends LightMobxLitElement {
     }
 
     const sectionContainerClasses = {
-      ["section-container"]: true,
-      ["is-subsection"]: this.isSubsection,
+      ['section-container']: true,
+      ['is-subsection']: this.isSubsection,
     };
 
     return html`
@@ -284,6 +284,6 @@ export class LumiSectionViz extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-section": LumiSectionViz;
+    'lumi-section': LumiSectionViz;
   }
 }

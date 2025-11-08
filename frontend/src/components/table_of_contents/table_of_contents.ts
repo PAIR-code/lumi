@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, HTMLTemplateResult, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { styles } from "./table_of_contents.scss";
-import { LumiSection, LumiSpan, LumiSummaries } from "../../shared/lumi_doc";
-import { classMap } from "lit/directives/class-map.js";
-import { LumiSummaryMaps } from "../../shared/lumi_summary_maps";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, HTMLTemplateResult, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { styles } from './table_of_contents.scss';
+import { LumiSection, LumiSpan, LumiSummaries } from '../../shared/lumi_doc';
+import { classMap } from 'lit/directives/class-map.js';
+import { LumiSummaryMaps } from '../../shared/lumi_summary_maps';
 
-@customElement("table-of-contents")
+@customElement('table-of-contents')
 export class TableOfContents extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -44,11 +44,11 @@ export class TableOfContents extends MobxLitElement {
       <ul class="toc-list">
         ${sections.map((section: LumiSection) => {
           const listClasses = {
-            ["level"]: true,
+            ['level']: true,
           };
 
           const buttonClasses = {
-            ["toc-button"]: true,
+            ['toc-button']: true,
             [`level-${section.heading.headingLevel}`]: true,
           };
 
@@ -78,9 +78,7 @@ export class TableOfContents extends MobxLitElement {
   private renderSummarySpan(span?: LumiSpan) {
     if (!span) return nothing;
 
-    return html`
-      <lumi-span class="item-summary" .span=${span}></lumi-span>
-    `;
+    return html` <lumi-span class="item-summary" .span=${span}></lumi-span> `;
   }
 
   override render() {
@@ -92,6 +90,6 @@ export class TableOfContents extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "table-of-contents": TableOfContents;
+    'table-of-contents': TableOfContents;
   }
 }

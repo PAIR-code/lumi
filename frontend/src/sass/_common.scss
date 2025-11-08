@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-@use "./typescale.scss";
-@use "./colors.scss";
+@use './typescale.scss';
+@use './colors.scss';
 
 /**
  * Common mixins to be used across app.
@@ -359,7 +359,7 @@ pr-circular-progress {
 
 // Fonts
 @mixin lumi-paper-text-font {
-  font-family: "Lora", "Georgia", "Serif";
+  font-family: 'Lora', 'Georgia', 'Serif';
 }
 
 @mixin lumi-paper-text {

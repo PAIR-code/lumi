@@ -449,8 +449,8 @@
   --md-sys-color-tertiary-container-lowest: var(--md-ref-palette-green98);
   --md-sys-color-tertiary-container-high: var(--md-ref-palette-green80);
   --md-sys-color-outline-variant-high: var(--md-ref-palette-gray90);
-  --md-sys-color-box-shadow-3: 0px 1px 3px 0px rgba(0, 0, 0, 0.3),
-    0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+  --md-sys-color-box-shadow-3:
+    0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
   // gray variables
   --md-sys-color-gray: var(--md-ref-palette-gray40);
   --md-sys-color-on-gray: var(--md-ref-palette-gray100);
@@ -600,8 +600,8 @@
   --md-sys-color-tertiary-container-lowest: var(--md-ref-palette-green10);
   --md-sys-color-tertiary-container-high: var(--md-ref-palette-green40);
   --md-sys-color-outline-variant-high: var(--md-ref-palette-gray25);
-  --md-sys-color-box-shadow-3: 0px 1px 3px 0px rgba(0, 0, 0, 0.3),
-    0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+  --md-sys-color-box-shadow-3:
+    0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
   // gray variables
   --md-sys-color-gray: var(--md-ref-palette-gray80);
   --md-sys-color-on-gray: var(--md-ref-palette-gray20);

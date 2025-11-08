@@ -136,12 +136,17 @@ celerybeat.pid
 
 # Environments
 .env
+.env.docker
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# uv
+# Note: uv.lock should be committed for reproducible builds
+.python-version.lock
 
 # Spyder project settings
 .spyderproject
@@ -210,3 +215,6 @@ model_context
 
 # Thoughts directory (local workspace)
 thoughts/
+
+# Pre-commit
+.pre-commit-config.yaml.backup

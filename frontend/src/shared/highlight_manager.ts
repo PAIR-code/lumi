@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
-import { Highlight } from "./lumi_doc";
+import { action, makeObservable, observable } from 'mobx';
+import { Highlight } from './lumi_doc';
 
 /**
  * Manages the highlight state of spans in a document.

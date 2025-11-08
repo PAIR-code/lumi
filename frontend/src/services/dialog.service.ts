@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from 'mobx';
 
-import { Service } from "./service";
+import { Service } from './service';
 
 /** Base class for all dialog content props. */
 export abstract class DialogProps {}

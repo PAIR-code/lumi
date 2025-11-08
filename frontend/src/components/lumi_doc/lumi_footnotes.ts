@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import { html, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { LumiFootnote } from "../../shared/lumi_doc";
-import { LumiFont } from "../../shared/types";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { styles } from "./lumi_footnotes.scss";
+import { html, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { LumiFootnote } from '../../shared/lumi_doc';
+import { LumiFont } from '../../shared/types';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { styles } from './lumi_footnotes.scss';
 
-import "../lumi_span/lumi_span";
-import "../../pair-components/icon_button";
+import '../lumi_span/lumi_span';
+import '../../pair-components/icon_button';
 
-@customElement("lumi-footnotes")
+@customElement('lumi-footnotes')
 export class LumiFootnotes extends LightMobxLitElement {
   @property({ type: Array }) footnotes: LumiFootnote[] = [];
   @property({ type: Boolean }) isCollapsed = false;
@@ -60,8 +60,8 @@ export class LumiFootnotes extends LightMobxLitElement {
                 this.onCollapseChange(!this.isCollapsed);
               }}
               .icon=${this.isCollapsed
-                ? "chevron_right"
-                : "keyboard_arrow_down"}
+                ? 'chevron_right'
+                : 'keyboard_arrow_down'}
             ></pr-icon-button>
             Footnotes
           </h2>
@@ -78,6 +78,6 @@ export class LumiFootnotes extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-footnotes": LumiFootnotes;
+    'lumi-footnotes': LumiFootnotes;
   }
 }

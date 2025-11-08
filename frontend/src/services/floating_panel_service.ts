@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
-import { Service } from "./service";
-import { HighlightSelection } from "../shared/selection_utils";
-import { LumiConcept, LumiFootnote, LumiReference } from "../shared/lumi_doc";
-import { ImageInfo, LumiAnswer } from "../shared/api";
+import { action, makeObservable, observable } from 'mobx';
+import { Service } from './service';
+import { HighlightSelection } from '../shared/selection_utils';
+import { LumiConcept, LumiFootnote, LumiReference } from '../shared/lumi_doc';
+import { ImageInfo, LumiAnswer } from '../shared/api';
 
 /** Defines the allowed values for menu and anchor corners. */
-export type Corner = "start-start" | "start-end" | "end-start" | "end-end";
-const ANCHOR_CORNER_DEFAULT: Corner = "start-start";
-const MENU_CORNER_DEFAULT: Corner = "end-start";
+export type Corner = 'start-start' | 'start-end' | 'end-start' | 'end-end';
+const ANCHOR_CORNER_DEFAULT: Corner = 'start-start';
+const MENU_CORNER_DEFAULT: Corner = 'end-start';
 
 /** Base class for all floating panel content props. */
 export abstract class FloatingPanelContentProps {
@@ -94,8 +94,8 @@ export interface OverflowMenuItem {
 export class OverflowMenuProps extends FloatingPanelContentProps {
   constructor(public items: OverflowMenuItem[]) {
     super();
-    this.anchorCorner = "start-end";
-    this.menuCorner = "end-end";
+    this.anchorCorner = 'start-end';
+    this.menuCorner = 'end-end';
   }
 }
 
@@ -103,8 +103,8 @@ export class OverflowMenuProps extends FloatingPanelContentProps {
 export class InfoTooltipProps extends FloatingPanelContentProps {
   constructor(public text: string) {
     super();
-    this.anchorCorner = "end-start";
-    this.menuCorner = "start-start";
+    this.anchorCorner = 'end-start';
+    this.menuCorner = 'start-start';
     this.hasFlatContainer = true;
   }
 }

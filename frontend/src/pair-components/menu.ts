@@ -18,12 +18,12 @@
 import './button';
 import './icon';
 
-import {MobxLitElement} from '@adobe/lit-mobx';
-import {CSSResultGroup, html, nothing} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {classMap} from 'lit/directives/class-map.js';
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
-import {styles} from './menu.scss';
+import { styles } from './menu.scss';
 
 type MenuVariant = 'default' | 'outlined';
 
@@ -35,7 +35,7 @@ export class Menu extends MobxLitElement {
   @property() name = '';
   @property() icon = '';
   @property() variant: MenuVariant = 'default';
-  @property({type: Boolean}) disabled = false;
+  @property({ type: Boolean }) disabled = false;
 
   @state() showMenu = false;
 

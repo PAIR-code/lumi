@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from "@esm-bundle/chai";
-import { AnswerHighlightManager } from "./answer_highlight_manager";
-import { LumiAnswer } from "./api";
+import { expect } from '@esm-bundle/chai';
+import { AnswerHighlightManager } from './answer_highlight_manager';
+import { LumiAnswer } from './api';
 
 const MOCK_ANSWER_1: LumiAnswer = {
-  id: "ans-1",
+  id: 'ans-1',
   request: {
     highlightedSpans: [
-      { spanId: "span-1", position: { startIndex: 0, endIndex: 5 } },
-      { spanId: "span-2" },
+      { spanId: 'span-1', position: { startIndex: 0, endIndex: 5 } },
+      { spanId: 'span-2' },
     ],
   },
   responseContent: [],
@@ -32,73 +32,73 @@ const MOCK_ANSWER_1: LumiAnswer = {
 };
 
 const MOCK_ANSWER_2: LumiAnswer = {
-  id: "ans-2",
+  id: 'ans-2',
   request: {
-    highlightedSpans: [{ spanId: "span-1" }],
+    highlightedSpans: [{ spanId: 'span-1' }],
   },
   responseContent: [],
   timestamp: 0,
 };
 
-describe("AnswerHighlightManager", () => {
+describe('AnswerHighlightManager', () => {
   let manager: AnswerHighlightManager;
 
   beforeEach(() => {
     manager = new AnswerHighlightManager();
   });
 
-  it("should be empty on instantiation", () => {
+  it('should be empty on instantiation', () => {
     expect(manager.highlightedSpans.size).to.equal(0);
   });
 
-  it("should add highlights from a single answer", () => {
+  it('should add highlights from a single answer', () => {
     manager.addAnswer(MOCK_ANSWER_1);
 
     expect(manager.highlightedSpans.size).to.equal(2);
-    const span1Highlights = manager.getSpanHighlights("span-1");
+    const span1Highlights = manager.getSpanHighlights('span-1');
     expect(span1Highlights).to.have.lengthOf(1);
-    expect(span1Highlights[0].color).to.equal("green");
+    expect(span1Highlights[0].color).to.equal('green');
     expect(span1Highlights[0].position).to.deep.equal({
       startIndex: 0,
       endIndex: 5,
     });
 
-    const span2Highlights = manager.getSpanHighlights("span-2");
+    const span2Highlights = manager.getSpanHighlights('span-2');
     expect(span2Highlights).to.have.lengthOf(1);
-    expect(span2Highlights[0].color).to.equal("green");
+    expect(span2Highlights[0].color).to.equal('green');
     expect(span2Highlights[0].position).to.be.undefined;
   });
 
-  it("should accumulate highlights for the same span from different answers", () => {
+  it('should accumulate highlights for the same span from different answers', () => {
     manager.addAnswer(MOCK_ANSWER_1);
     manager.addAnswer(MOCK_ANSWER_2);
 
     expect(manager.highlightedSpans.size).to.equal(2);
-    const span1Highlights = manager.getSpanHighlights("span-1");
+    const span1Highlights = manager.getSpanHighlights('span-1');
     expect(span1Highlights).to.have.lengthOf(2);
   });
 
-  it("should populate highlights from an array of answers", () => {
+  it('should populate highlights from an array of answers', () => {
     manager.populateFromAnswers([MOCK_ANSWER_1, MOCK_ANSWER_2]);
 
     expect(manager.highlightedSpans.size).to.equal(2);
-    expect(manager.getSpanHighlights("span-1")).to.have.lengthOf(2);
-    expect(manager.getSpanHighlights("span-2")).to.have.lengthOf(1);
+    expect(manager.getSpanHighlights('span-1')).to.have.lengthOf(2);
+    expect(manager.getSpanHighlights('span-2')).to.have.lengthOf(1);
   });
 
-  it("should clear existing highlights when populating", () => {
+  it('should clear existing highlights when populating', () => {
     manager.addAnswer(MOCK_ANSWER_1);
     expect(manager.highlightedSpans.size).to.equal(2);
 
     manager.populateFromAnswers([MOCK_ANSWER_2]);
     expect(manager.highlightedSpans.size).to.equal(1);
-    expect(manager.getSpanHighlights("span-1")).to.have.lengthOf(1);
-    expect(manager.getSpanHighlights("span-2")).to.be.empty;
+    expect(manager.getSpanHighlights('span-1')).to.have.lengthOf(1);
+    expect(manager.getSpanHighlights('span-2')).to.be.empty;
   });
 
-  it("should handle answers with no highlighted spans gracefully", () => {
+  it('should handle answers with no highlighted spans gracefully', () => {
     const answerWithoutHighlights: LumiAnswer = {
-      id: "ans-3",
+      id: 'ans-3',
       request: {},
       responseContent: [],
       timestamp: 0,

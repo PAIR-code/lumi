@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-import "../../pair-components/icon";
-import "../../pair-components/icon_button";
+import '../../pair-components/icon';
+import '../../pair-components/icon_button';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { html, nothing, CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { html, nothing, CSSResultGroup } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
-import { styles } from "./banner.scss";
-import { classMap } from "lit/directives/class-map.js";
+import { styles } from './banner.scss';
+import { classMap } from 'lit/directives/class-map.js';
 
 export const BANNER_HEIGHT = 40;
 
 /**
  * Renders a banner.
  */
-@customElement("lumi-banner")
+@customElement('lumi-banner')
 export class LumiBanner extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  @property({ type: String }) text: string | string[] = "";
-  @property({ type: String }) icon = "";
-  @property({ type: String }) actionText = "";
+  @property({ type: String }) text: string | string[] = '';
+  @property({ type: String }) icon = '';
+  @property({ type: String }) actionText = '';
   @property({ type: Object }) actionCallback = () => {};
   @property({ type: Object }) onBannerClose: (() => void) | undefined =
     undefined;
@@ -48,9 +48,9 @@ export class LumiBanner extends MobxLitElement {
     });
 
     const bannerClasses = classMap({
-      "banner": true,
-      "justify-center": this.onBannerClose == null 
-    })
+      banner: true,
+      'justify-center': this.onBannerClose == null,
+    });
 
     return html`
       <div class=${bannerClasses} style=${hostStyles}>
@@ -68,7 +68,11 @@ export class LumiBanner extends MobxLitElement {
     if (!this.icon) {
       return nothing;
     }
-    return html`<pr-icon color="neutral" class="icon" icon=${this.icon}></pr-icon>`;
+    return html`<pr-icon
+      color="neutral"
+      class="icon"
+      icon=${this.icon}
+    ></pr-icon>`;
   }
 
   private renderActionButton() {
@@ -100,6 +104,6 @@ export class LumiBanner extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-banner": LumiBanner;
+    'lumi-banner': LumiBanner;
   }
 }

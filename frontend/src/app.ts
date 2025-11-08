@@ -15,37 +15,37 @@
  * limitations under the License.
  */
 
-import "./pair-components/button";
-import "./components/gallery/home_gallery";
-import "./components/header/header";
-import "./components/settings/settings";
-import "./components/lumi_reader/lumi_reader";
-import "./components/floating_panel_host/floating_panel_host";
-import "./components/smart_highlight_menu/smart_highlight_menu";
-import "./components/dialogs/dialogs";
-import "./components/banner/banner";
-import "lit-toast/lit-toast.js";
+import './pair-components/button';
+import './components/gallery/home_gallery';
+import './components/header/header';
+import './components/settings/settings';
+import './components/lumi_reader/lumi_reader';
+import './components/floating_panel_host/floating_panel_host';
+import './components/smart_highlight_menu/smart_highlight_menu';
+import './components/dialogs/dialogs';
+import './components/banner/banner';
+import 'lit-toast/lit-toast.js';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
-import { customElement } from "lit/decorators.js";
-import { createRef, ref, Ref } from "lit/directives/ref.js";
-import { styleMap } from "lit/directives/style-map.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing, TemplateResult } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { createRef, ref, Ref } from 'lit/directives/ref.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
-import { core } from "./core/core";
-import { Pages, RouterService } from "./services/router.service";
-import { SettingsService } from "./services/settings.service";
-import { SnackbarService } from "./services/snackbar.service";
-import { BannerService } from "./services/banner.service";
-import { BANNER_HEIGHT } from "./components/banner/banner";
+import { core } from './core/core';
+import { Pages, RouterService } from './services/router.service';
+import { SettingsService } from './services/settings.service';
+import { SnackbarService } from './services/snackbar.service';
+import { BannerService } from './services/banner.service';
+import { BANNER_HEIGHT } from './components/banner/banner';
 
-import { styles } from "./app.scss";
-import { LightMobxLitElement } from "./components/light_mobx_lit_element/light_mobx_lit_element";
+import { styles } from './app.scss';
+import { LightMobxLitElement } from './components/light_mobx_lit_element/light_mobx_lit_element';
 
-import { GalleryView } from "./shared/types";
+import { GalleryView } from './shared/types';
 
 /** App main component. */
-@customElement("lumi-app")
+@customElement('lumi-app')
 export class App extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -98,7 +98,7 @@ export class App extends LightMobxLitElement {
     `;
   }
 
-  private render404(message = "Page not found") {
+  private render404(message = 'Page not found') {
     return html`<div class="content">404: ${message}</div>`;
   }
 
@@ -124,7 +124,7 @@ export class App extends LightMobxLitElement {
     const mainStyles = styleMap({
       height: this.bannerService.isBannerOpen
         ? `calc(100% - ${BANNER_HEIGHT}px)`
-        : "100%",
+        : '100%',
     });
 
     return html`
@@ -146,6 +146,6 @@ export class App extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-app": App;
+    'lumi-app': App;
   }
 }

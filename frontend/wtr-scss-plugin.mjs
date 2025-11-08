@@ -1,11 +1,11 @@
 export function scssPlugin() {
   return {
-    name: "scss-plugin",
+    name: 'scss-plugin',
     serve(context) {
-      if (context.path.endsWith(".scss")) {
+      if (context.path.endsWith('.scss')) {
         return {
-          body: "export const styles = new CSSStyleSheet();",
-          type: "js",
+          body: 'export const styles = new CSSStyleSheet();',
+          type: 'js',
         };
       }
     },

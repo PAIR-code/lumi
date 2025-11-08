@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { ifDefined } from "lit/directives/if-defined.js";
-import { classMap } from "lit/directives/class-map.js";
-import { styles } from "./lumi_image.scss";
-import { makeObservable, observable } from "mobx";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { styles } from './lumi_image.scss';
+import { makeObservable, observable } from 'mobx';
 
 /**
  * A reusable component for loading and displaying images with loading and error
  * states.
  */
-@customElement("lumi-image")
+@customElement('lumi-image')
 export class LumiImage extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  @property({ type: String }) storagePath = "";
+  @property({ type: String }) storagePath = '';
   @property({ type: String }) altText?: string;
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
   @property({ type: Object }) onImageClick?: (e: MouseEvent) => void;
@@ -48,7 +48,7 @@ export class LumiImage extends MobxLitElement {
   }
 
   override updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has("storagePath")) {
+    if (changedProperties.has('storagePath')) {
       this.fetchImageUrl();
     }
   }
@@ -91,9 +91,9 @@ export class LumiImage extends MobxLitElement {
     }
 
     const containerClasses = classMap({
-      "image-container": true,
+      'image-container': true,
       highlighted: this.highlighted,
-      "enable-hover": this.enableHover,
+      'enable-hover': this.enableHover,
     });
 
     return html`
@@ -117,6 +117,6 @@ export class LumiImage extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-image": LumiImage;
+    'lumi-image': LumiImage;
   }
 }

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { createContext } from "@lit/context";
-import { Ref } from "lit/directives/ref.js";
-import { SPAN_BLINK_ANIMATION_CLASS } from "../shared/constants";
+import { createContext } from '@lit/context';
+import { Ref } from 'lit/directives/ref.js';
+import { SPAN_BLINK_ANIMATION_CLASS } from '../shared/constants';
 
 /**
  * The provided/consumed state for managing scrolling.
@@ -41,15 +41,15 @@ export class ScrollState {
   scrollToSpan = (id: string) => {
     const element = this.spanMap.get(id)?.value;
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
       // Add animation class on child span so it does not interfere with
       // other animations on the parent span.
-      const childSpan = element.querySelector("span");
+      const childSpan = element.querySelector('span');
       if (childSpan) {
         childSpan.classList.add(SPAN_BLINK_ANIMATION_CLASS);
         childSpan.addEventListener(
-          "animationend",
+          'animationend',
           () => {
             childSpan.classList.remove(SPAN_BLINK_ANIMATION_CLASS);
           },
@@ -74,7 +74,7 @@ export class ScrollState {
   scrollToSection = (id: string) => {
     const element = this.sectionMap.get(id)?.value;
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       console.warn(`[ScrollContext] Section with id "${id}" not found.`);
     }
@@ -91,7 +91,7 @@ export class ScrollState {
   scrollToImage = (id: string) => {
     const element = this.imageMap.get(id)?.value;
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
       console.warn(`[ScrollContext] Image with id "${id}" not found.`);
     }
@@ -117,4 +117,4 @@ export class ScrollState {
  * Components can provide or consume this context to interact with the scrolling
  * functionality.
  */
-export const scrollContext = createContext<ScrollState>("scroll-context");
+export const scrollContext = createContext<ScrollState>('scroll-context');

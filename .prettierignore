@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+frontend/storybook-static/
+
+# Lock files
+package-lock.json
+frontend/package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Local files
+local_image_bucket/
+thoughts/
+
+# Data files
+backend/import_pipeline/nltk_data/
+
+# Generated files
+*.min.js
+*.min.css
+
+# Config examples
+*.example.html
+*.example.ts

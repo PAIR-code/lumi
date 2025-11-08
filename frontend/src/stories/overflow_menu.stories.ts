@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import "../components/overflow_menu/overflow_menu";
+import '../components/overflow_menu/overflow_menu';
 
-import { html } from "lit";
-import type { Meta, StoryObj } from "@storybook/web-components";
+import { html } from 'lit';
+import type { Meta, StoryObj } from '@storybook/web-components';
 
-import { OverflowMenuProps } from "../services/floating_panel_service";
+import { OverflowMenuProps } from '../services/floating_panel_service';
 
 interface Args {
   props: OverflowMenuProps;
 }
 
 const meta: Meta<Args> = {
-  title: "Components/Overflow Menu",
+  title: 'Components/Overflow Menu',
   render: (args) =>
     html`<div style="width:200px;margin:12px;">
       <overflow-menu .props=${args.props}></overflow-menu>
@@ -41,23 +41,23 @@ export const Default: Story = {
   args: {
     props: new OverflowMenuProps([
       {
-        icon: "edit",
-        label: "Edit item",
+        icon: 'edit',
+        label: 'Edit item',
         onClick: () => {
-          console.log("Edit clicked");
+          console.log('Edit clicked');
         },
       },
       {
-        icon: "delete",
-        label: "Delete item",
+        icon: 'delete',
+        label: 'Delete item',
         onClick: () => {
-          console.log("Delete clicked");
+          console.log('Delete clicked');
         },
       },
       {
-        label: "Share",
+        label: 'Share',
         onClick: () => {
-          console.log("Share clicked");
+          console.log('Share clicked');
         },
       },
     ]),

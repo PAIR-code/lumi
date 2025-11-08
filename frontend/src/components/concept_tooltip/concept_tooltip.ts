@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { ConceptTooltipProps } from "../../services/floating_panel_service";
-import { styles } from "./concept_tooltip.scss";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { ConceptTooltipProps } from '../../services/floating_panel_service';
+import { styles } from './concept_tooltip.scss';
 
-import "../lumi_concept/lumi_concept_contents";
+import '../lumi_concept/lumi_concept_contents';
 
 /**
  * A tooltip component to display information about a LumiConcept.
  */
-@customElement("concept-tooltip")
+@customElement('concept-tooltip')
 export class ConceptTooltip extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -53,6 +53,6 @@ export class ConceptTooltip extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "concept-tooltip": ConceptTooltip;
+    'concept-tooltip': ConceptTooltip;
   }
 }

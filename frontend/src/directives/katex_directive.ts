@@ -21,25 +21,25 @@ import {
   ElementPart,
   PartInfo,
   PartType,
-} from "lit/directive.js";
-import katex from "katex";
+} from 'lit/directive.js';
+import katex from 'katex';
 
 function makeErrorSpan(equationText: string, error: Error) {
-  const span = document.createElement("span");
-  span.innerText = "error";
-  span.style.background = "#ffcfc9"; // $error87
-  span.style.color = "#690005"; // $error20
-  span.style.borderRadius = "8px";
-  span.style.padding = "4px 8px";
-  span.style.fontSize = "11px";
-  span.style.fontFamily = "Inter";
-  span.style.height = "100%";
-  span.style.cursor = "pointer";
+  const span = document.createElement('span');
+  span.innerText = 'error';
+  span.style.background = '#ffcfc9'; // $error87
+  span.style.color = '#690005'; // $error20
+  span.style.borderRadius = '8px';
+  span.style.padding = '4px 8px';
+  span.style.fontSize = '11px';
+  span.style.fontFamily = 'Inter';
+  span.style.height = '100%';
+  span.style.cursor = 'pointer';
   span.title = error.toString();
 
   span.onclick = () => {
     span.innerText = equationText;
-    span.style.background = "unset";
+    span.style.background = 'unset';
   };
 
   return span;
@@ -52,7 +52,7 @@ class KatexDirective extends Directive {
     super(partInfo);
     // Ensure this directive is used on an element part (e.g., <div ${...}>)
     if (partInfo.type !== PartType.ELEMENT) {
-      throw new Error("The `katex` directive must be used in an element part.");
+      throw new Error('The `katex` directive must be used in an element part.');
     }
   }
 

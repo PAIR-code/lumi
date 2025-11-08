@@ -21,7 +21,7 @@ import {
   LumiContent,
   LumiSection,
   LumiSpan,
-} from "./lumi_doc";
+} from './lumi_doc';
 
 /**
  * Extracts all unique referenced span IDs from the `spanref` tags within an

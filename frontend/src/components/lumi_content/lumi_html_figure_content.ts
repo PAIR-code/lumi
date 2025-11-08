@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import DOMPurify from "dompurify";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing, PropertyValues } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import DOMPurify from 'dompurify';
 
-import { HtmlFigureContent } from "../../shared/lumi_doc";
+import { HtmlFigureContent } from '../../shared/lumi_doc';
 
 import {
   preprocessHtmlForKatex,
   renderKatexInHtml,
-} from "./lumi_html_figure_utils";
+} from './lumi_html_figure_utils';
 
-import { styles } from "./lumi_html_figure_content.scss";
+import { styles } from './lumi_html_figure_content.scss';
 
 /**
  * A component to render sanitized HTML content for figures like tables,
  * algorithms, etc.
  */
-@customElement("lumi-html-figure-content")
+@customElement('lumi-html-figure-content')
 export class LumiHtmlFigureContent extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -45,8 +45,8 @@ export class LumiHtmlFigureContent extends MobxLitElement {
     super.updated(changedProperties);
 
     // After the component has rendered, find and replace LaTeX placeholders.
-    if (changedProperties.has("content") && this.katexExpressions.length > 0) {
-      const container = this.shadowRoot?.querySelector(".html-container");
+    if (changedProperties.has('content') && this.katexExpressions.length > 0) {
+      const container = this.shadowRoot?.querySelector('.html-container');
       if (!container) return;
       renderKatexInHtml(container, this.katexExpressions);
     }
@@ -93,6 +93,6 @@ export class LumiHtmlFigureContent extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-html-figure-content": LumiHtmlFigureContent;
+    'lumi-html-figure-content': LumiHtmlFigureContent;
   }
 }

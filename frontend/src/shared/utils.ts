@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Timestamp } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
+import { Timestamp } from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
 
 /** Shared utils. */
 
@@ -38,7 +38,7 @@ export const LUMI_DOCUMENT_VERSION = 0;
 // in the same codebase.
 // When creating a new Timestamp, use the Timestamp class from the correct
 // package (its type is compatible with this type)
-export type UnifiedTimestamp = Omit<Timestamp, "toJSON">;
+export type UnifiedTimestamp = Omit<Timestamp, 'toJSON'>;
 
 /** Temporary LumiDocument object. */
 export interface LumiDocument {
@@ -61,8 +61,8 @@ export function createLumiDocument(
   return {
     id: config.id ?? generateId(),
     versionLumi: config.versionLumi ?? LUMI_DOCUMENT_VERSION,
-    versionArxiv: config.versionArxiv ?? "",
-    content: config.content ?? "",
+    versionArxiv: config.versionArxiv ?? '',
+    content: config.content ?? '',
     dateCreated: config.dateCreated ?? Timestamp.now(),
     dateEdited: config.dateEdited ?? Timestamp.now(),
   };

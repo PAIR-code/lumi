@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { InnerTag } from "../../shared/lumi_doc";
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { InnerTag } from '../../shared/lumi_doc';
 
 /**
  * Flattens a list of potentially nested `InnerTag`s into a single list.

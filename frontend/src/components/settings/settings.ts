@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-import "../../pair-components/button";
-import "../../pair-components/textinput";
-import "./reading_history";
-import "./tos_content";
+import '../../pair-components/button';
+import '../../pair-components/textinput';
+import './reading_history';
+import './tos_content';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-import { core } from "../../core/core";
-import { getLumiPaperUrl } from "../../services/router.service";
-import { SettingsService } from "../../services/settings.service";
+import { core } from '../../core/core';
+import { getLumiPaperUrl } from '../../services/router.service';
+import { SettingsService } from '../../services/settings.service';
 
-import { ArxivMetadata } from "../../shared/lumi_doc";
-import { sortPaperDataByTimestamp } from "../../shared/lumi_paper_utils";
-import { ColorMode } from "../../shared/types";
+import { ArxivMetadata } from '../../shared/lumi_doc';
+import { sortPaperDataByTimestamp } from '../../shared/lumi_paper_utils';
+import { ColorMode } from '../../shared/types';
 
-import { styles } from "./settings.scss";
+import { styles } from './settings.scss';
 
 /** Settings page component */
-@customElement("settings-page")
+@customElement('settings-page')
 export class Settings extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -51,10 +51,14 @@ export class Settings extends MobxLitElement {
           <h2>Model API Key</h2>
           <div>
             Optional: Use your own
-            <a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank" rel="noopener noreferrer">Gemini API key</a>
-            for "Ask Lumi"
-            queries inside a paper. Your API key will never be used to
-            import papers.
+            <a
+              href="https://ai.google.dev/gemini-api/docs/api-key"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Gemini API key</a
+            >
+            for "Ask Lumi" queries inside a paper. Your API key will never be
+            used to import papers.
           </div>
           <div class="field">
             <pr-textinput
@@ -89,8 +93,8 @@ export class Settings extends MobxLitElement {
         <h2>Color Mode</h2>
         <div class="action-buttons">
           <pr-button
-            color=${isMode(ColorMode.LIGHT) ? "primary" : "neutral"}
-            variant=${isMode(ColorMode.LIGHT) ? "tonal" : "default"}
+            color=${isMode(ColorMode.LIGHT) ? 'primary' : 'neutral'}
+            variant=${isMode(ColorMode.LIGHT) ? 'tonal' : 'default'}
             @click=${() => {
               handleClick(ColorMode.LIGHT);
             }}
@@ -98,8 +102,8 @@ export class Settings extends MobxLitElement {
             Light
           </pr-button>
           <pr-button
-            color=${isMode(ColorMode.DARK) ? "primary" : "neutral"}
-            variant=${isMode(ColorMode.DARK) ? "tonal" : "default"}
+            color=${isMode(ColorMode.DARK) ? 'primary' : 'neutral'}
+            variant=${isMode(ColorMode.DARK) ? 'tonal' : 'default'}
             @click=${() => {
               handleClick(ColorMode.DARK);
             }}
@@ -107,8 +111,8 @@ export class Settings extends MobxLitElement {
             Dark
           </pr-button>
           <pr-button
-            color=${isMode(ColorMode.DEFAULT) ? "primary" : "neutral"}
-            variant=${isMode(ColorMode.DEFAULT) ? "tonal" : "default"}
+            color=${isMode(ColorMode.DEFAULT) ? 'primary' : 'neutral'}
+            variant=${isMode(ColorMode.DEFAULT) ? 'tonal' : 'default'}
             @click=${() => {
               handleClick(ColorMode.DEFAULT);
             }}
@@ -123,6 +127,6 @@ export class Settings extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "settings-page": Settings;
+    'settings-page': Settings;
   }
 }

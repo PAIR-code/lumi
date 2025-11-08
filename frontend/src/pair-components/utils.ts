@@ -24,7 +24,7 @@
  */
 export function getComponentClassName(
   classBase: string,
-  customPropertyName: string,
+  customPropertyName: string
 ): string {
   return `${classBase}-${customPropertyName}`;
 }

@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing, TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import {
   AnswerHighlightTooltipProps,
   FloatingPanelService,
-} from "../../services/floating_panel_service";
-import { styles } from "./answer_highlight_tooltip.scss";
-import { core } from "../../core/core";
-import { DocumentStateService } from "../../services/document_state.service";
-import { HistoryService } from "../../services/history.service";
-import { LumiAnswer } from "../../shared/api";
+} from '../../services/floating_panel_service';
+import { styles } from './answer_highlight_tooltip.scss';
+import { core } from '../../core/core';
+import { DocumentStateService } from '../../services/document_state.service';
+import { HistoryService } from '../../services/history.service';
+import { LumiAnswer } from '../../shared/api';
 
-import { LumiContent } from "../../shared/lumi_doc";
-import { classMap } from "lit/directives/class-map.js";
+import { LumiContent } from '../../shared/lumi_doc';
+import { classMap } from 'lit/directives/class-map.js';
 
-import "../lumi_content/lumi_content";
+import '../lumi_content/lumi_content';
 
 /**
  * A tooltip that displays the content of a LumiAnswer.
  */
-@customElement("answer-highlight-tooltip")
+@customElement('answer-highlight-tooltip')
 export class AnswerHighlightTooltip extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -95,8 +95,8 @@ export class AnswerHighlightTooltip extends MobxLitElement {
     const showButton = hasMoreContent && !this.showAll;
 
     const answerHighlightClasses = classMap({
-      "answer-highlight-tooltip": true,
-      "no-show-all-button": !showButton,
+      'answer-highlight-tooltip': true,
+      'no-show-all-button': !showButton,
     });
 
     return html`
@@ -119,6 +119,6 @@ export class AnswerHighlightTooltip extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "answer-highlight-tooltip": AnswerHighlightTooltip;
+    'answer-highlight-tooltip': AnswerHighlightTooltip;
   }
 }

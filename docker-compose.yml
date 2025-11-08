@@ -1,0 +1,70 @@
+services:
+  # SurrealDB - Document database
+  surrealdb:
+    image: surrealdb/surrealdb:latest
+    container_name: lumi-surrealdb
+    ports:
+      - "8000:8000"
+    command: start --log info --user root --pass root memory
+    volumes:
+      - surrealdb-data:/data
+    networks:
+      - lumi-network
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: lumi-backend
+    env_file:
+      - .env.docker
+    ports:
+      - "8001:8001"
+    environment:
+      - SURREAL_URL=ws://surrealdb:8000/rpc
+      - SURREAL_USERNAME=root
+      - SURREAL_PASSWORD=root
+      - SURREAL_NAMESPACE=lumi
+      - SURREAL_DATABASE=lumi
+      - STORAGE_MODE=local
+      - LOCAL_STORAGE_PATH=/app/local_image_bucket
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:4201
+    volumes:
+      - ./backend:/app
+      - ./functions:/functions
+      - ./local_image_bucket:/app/local_image_bucket
+      - ./assets:/app/assets
+    depends_on:
+      surrealdb:
+        condition: service_started
+    networks:
+      - lumi-network
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+
+  # Frontend - Webpack Dev Server
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lumi-frontend
+    ports:
+      - "4201:4201"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - lumi-network
+    depends_on:
+      - backend
+
+volumes:
+  surrealdb-data:
+    driver: local
+
+networks:
+  lumi-network:
+    driver: bridge

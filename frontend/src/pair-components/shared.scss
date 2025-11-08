@@ -16,7 +16,7 @@
  */
 
 :host {
-  --component-font-family: "Google Sans Text", Helvetica, sans-serif;
+  --component-font-family: 'Google Sans Text', Helvetica, sans-serif;
   --state-layer-opacity-hover: 0.08; /* Material 3 spec */
   --state-layer-opacity-focus: 0.1; /* Material 3 spec */
   --state-layer-opacity-press: 0.1; /* Material 3 spec */
@@ -27,7 +27,7 @@
 .body-size-small {
   --pr-body-font-family: var(
     --md-sys-typescale-body-small-font-family-name,
-    "Google Sans Text"
+    'Google Sans Text'
   );
   --pr-body-font-style: var(
     --md-sys-typescale-body-small-font-family-style,
@@ -45,7 +45,7 @@
 .body-size-medium {
   --pr-body-font-family: var(
     --md-sys-typescale-body-medium-font-family-name,
-    "Google Sans Text"
+    'Google Sans Text'
   );
   --pr-body-font-style: var(
     --md-sys-typescale-body-medium-font-family-style,
@@ -63,7 +63,7 @@
 .body-size-large {
   --pr-body-font-family: var(
     --md-sys-typescale-body-large-font-family-name,
-    "Google Sans Text"
+    'Google Sans Text'
   );
   --pr-body-font-style: var(
     --md-sys-typescale-body-large-font-family-style,
@@ -81,7 +81,7 @@
 .label-size-small {
   --pr-label-font-family: var(
     --md-sys-typescale-label-small-font-family-name,
-    "Google Sans"
+    'Google Sans'
   );
   --pr-label-font-style: var(
     --md-sys-typescale-label-small-font-family-style,
@@ -99,7 +99,7 @@
 .label-size-medium {
   --pr-label-font-family: var(
     --md-sys-typescale-label-medium-font-family-name,
-    "Google Sans"
+    'Google Sans'
   );
   --pr-label-font-style: var(
     --md-sys-typescale-label-medium-font-family-style,
@@ -120,7 +120,7 @@
 .label-size-large {
   --pr-label-font-family: var(
     --md-sys-typescale-label-large-font-family-name,
-    "Google Sans"
+    'Google Sans'
   );
   --pr-label-font-style: var(
     --md-sys-typescale-label-large-font-family-style,
@@ -145,9 +145,9 @@
 
 .palette-success {
   /* Defaults = primary green from GM3 Design Kit baseline color scheme */
-  --pr-palette: var(--md-sys-color-success, #146C2E);
-  --pr-palette-container: var(--md-sys-color-success-container, #C4EED0);
-  --pr-on-palette: var(--md-sys-color-on-success, #FFFFFF);
+  --pr-palette: var(--md-sys-color-success, #146c2e);
+  --pr-palette-container: var(--md-sys-color-success-container, #c4eed0);
+  --pr-on-palette: var(--md-sys-color-on-success, #ffffff);
   --pr-on-palette-container: var(--md-sys-color-on-success-container, #072711);
 }
 

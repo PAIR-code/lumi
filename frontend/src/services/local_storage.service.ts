@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Service } from "./service";
-import { computed, makeObservable, observable } from "mobx";
+import { Service } from './service';
+import { computed, makeObservable, observable } from 'mobx';
 
 /**
  * A service for interacting with the browser's local storage.

@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-import "../../../pair-components/dialog";
-import "../../../pair-components/button";
-import "../../lumi_image/lumi_image";
+import '../../../pair-components/dialog';
+import '../../../pair-components/button';
+import '../../lumi_image/lumi_image';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-import { core } from "../../../core/core";
+import { core } from '../../../core/core';
 import {
   DialogService,
   TutorialDialogProps,
-} from "../../../services/dialog.service";
-import { styles } from "./tutorial_dialog.scss";
+} from '../../../services/dialog.service';
+import { styles } from './tutorial_dialog.scss';
 import {
   TUTORIAL_IMAGE_QUESTION_IMAGE_PATH,
   TUTORIAL_QUESTION_IMAGE_PATH,
-} from "../../../shared/constants";
-import { FirebaseService } from "../../../services/firebase.service";
-import { SettingsService } from "../../../services/settings.service";
+} from '../../../shared/constants';
+import { ApiService } from '../../../services/api.service';
+import { SettingsService } from '../../../services/settings.service';
 
 /**
  * The tutorial dialog component.
  */
-@customElement("tutorial-dialog")
+@customElement('tutorial-dialog')
 export class TutorialDialog extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly dialogService = core.getService(DialogService);
-  private readonly firebaseService = core.getService(FirebaseService);
+  private readonly apiService = core.getService(ApiService);
   private readonly settingsService = core.getService(SettingsService);
 
   private handleClose() {
@@ -58,7 +58,10 @@ export class TutorialDialog extends MobxLitElement {
   }
 
   private getImageUrl(path: string) {
-    return this.firebaseService.getDownloadUrl(path);
+    // Assets are served directly from backend at /assets/
+    // Don't use apiService.getDownloadUrl() which adds /files/ prefix
+    const baseUrl = this.apiService['baseUrl'] || 'http://localhost:8001';
+    return Promise.resolve(`${baseUrl}/${path}`);
   }
 
   private renderHideForeverButton() {
@@ -125,6 +128,6 @@ export class TutorialDialog extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "tutorial-dialog": TutorialDialog;
+    'tutorial-dialog': TutorialDialog;
   }
 }

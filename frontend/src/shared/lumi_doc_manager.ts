@@ -22,8 +22,8 @@ import {
   LumiDoc,
   LumiSection,
   LumiSpan,
-} from "./lumi_doc";
-import { LumiSummaryMaps } from "./lumi_summary_maps";
+} from './lumi_doc';
+import { LumiSummaryMaps } from './lumi_summary_maps';
 
 function makeEmptySummaries() {
   return {

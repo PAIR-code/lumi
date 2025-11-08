@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import "@material/web/menu/menu.js";
+import '@material/web/menu/menu.js';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
-import { customElement } from "lit/decorators.js";
-import { createRef, ref } from "lit/directives/ref.js";
-import { reaction } from "mobx";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing, PropertyValues } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { createRef, ref } from 'lit/directives/ref.js';
+import { reaction } from 'mobx';
 
-import { core } from "../../core/core";
+import { core } from '../../core/core';
 import {
   AnswerHighlightTooltipProps,
   ConceptTooltipProps,
@@ -33,23 +33,23 @@ import {
   OverflowMenuProps,
   ReferenceTooltipProps,
   SmartHighlightMenuProps,
-} from "../../services/floating_panel_service";
+} from '../../services/floating_panel_service';
 
-import type { MdMenu } from "@material/web/menu/menu.js";
-import { styles } from "./floating_panel_host.scss";
+import type { MdMenu } from '@material/web/menu/menu.js';
+import { styles } from './floating_panel_host.scss';
 
-import "../answer_highlight_tooltip/answer_highlight_tooltip";
-import "../concept_tooltip/concept_tooltip";
-import "../footnote_tooltip/footnote_tooltip";
-import "../info_tooltip/info_tooltip";
-import "../overflow_menu/overflow_menu";
-import "../reference_tooltip/reference_tooltip";
-import { classMap } from "lit/directives/class-map.js";
+import '../answer_highlight_tooltip/answer_highlight_tooltip';
+import '../concept_tooltip/concept_tooltip';
+import '../footnote_tooltip/footnote_tooltip';
+import '../info_tooltip/info_tooltip';
+import '../overflow_menu/overflow_menu';
+import '../reference_tooltip/reference_tooltip';
+import { classMap } from 'lit/directives/class-map.js';
 
 /**
  * A host component that displays and positions a floating panel using md-menu.
  */
-@customElement("floating-panel-host")
+@customElement('floating-panel-host')
 export class FloatingPanelHost extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -161,13 +161,13 @@ export class FloatingPanelHost extends MobxLitElement {
     const hasFlatContainer = this.floatingPanelService.hasFlatContainer;
 
     const menuWrapperClasses = classMap({
-      "menu-wrapper": true,
-      "has-flat-container": hasFlatContainer === true,
+      'menu-wrapper': true,
+      'has-flat-container': hasFlatContainer === true,
     });
 
     const panelClasses = classMap({
       panel: true,
-      "has-flat-container": hasFlatContainer === true,
+      'has-flat-container': hasFlatContainer === true,
     });
     return html`
       <span class=${menuWrapperClasses}>
@@ -189,6 +189,6 @@ export class FloatingPanelHost extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "floating-panel-host": FloatingPanelHost;
+    'floating-panel-host': FloatingPanelHost;
   }
 }

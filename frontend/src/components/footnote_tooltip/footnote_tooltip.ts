@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { FootnoteTooltipProps } from "../../services/floating_panel_service";
-import { styles } from "./footnote_tooltip.scss";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { FootnoteTooltipProps } from '../../services/floating_panel_service';
+import { styles } from './footnote_tooltip.scss';
 
-import "../lumi_span/lumi_span";
+import '../lumi_span/lumi_span';
 
 /**
  * A tooltip component to display information about a LumiFootnote.
  */
-@customElement("footnote-tooltip")
+@customElement('footnote-tooltip')
 export class FootnoteTooltip extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -49,6 +49,6 @@ export class FootnoteTooltip extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "footnote-tooltip": FootnoteTooltip;
+    'footnote-tooltip': FootnoteTooltip;
   }
 }

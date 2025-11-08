@@ -1,7 +1,0 @@
-ARXIV_DOCS_COLLECTION = "arxiv_docs"
-ARXIV_METADATA_COLLECTION = "arxiv_metadata"
-ARXIV_COLLECTIONS_COLLECTION = "arxiv_collections"
-VERSIONS_COLLECTION = "versions"
-LOGS_QUERY_COLLECTION = "query_logs"
-USER_FEEDBACK_COLLECTION = "user_feedback"
-THROTTLE_COLLECTION_NAME = "import_attempts"

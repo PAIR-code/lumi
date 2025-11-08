@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-import { expect } from "@esm-bundle/chai";
-import { fixture, html } from "@open-wc/testing";
-import { CITATION_CLASSNAME, FOOTNOTE_CLASSNAME } from "./constants";
+import { expect } from '@esm-bundle/chai';
+import { fixture, html } from '@open-wc/testing';
+import { CITATION_CLASSNAME, FOOTNOTE_CLASSNAME } from './constants';
 
-import { getSelectionInfo } from "./selection_utils";
-import "./lumi_doc";
+import { getSelectionInfo } from './selection_utils';
+import './lumi_doc';
 
 class MockLumiSpan extends HTMLElement {}
-customElements.define("lumi-span", MockLumiSpan);
+customElements.define('lumi-span', MockLumiSpan);
 
 class ParentWithShadow extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
   }
 }
-customElements.define("parent-with-shadow", ParentWithShadow);
+customElements.define('parent-with-shadow', ParentWithShadow);
 
 /**
  * Test helper to create the DOM structure expected by getSelectionInfo.
@@ -41,10 +41,10 @@ customElements.define("parent-with-shadow", ParentWithShadow);
  * @returns A span element containing character-spans.
  */
 function createCharacterSpans(text: string): HTMLSpanElement {
-  const outerSpan = document.createElement("span");
-  outerSpan.className = "outer-span";
+  const outerSpan = document.createElement('span');
+  outerSpan.className = 'outer-span';
   for (const char of text) {
-    const charSpan = document.createElement("span");
+    const charSpan = document.createElement('span');
     charSpan.textContent = char;
     outerSpan.appendChild(charSpan);
   }
@@ -62,14 +62,14 @@ function createCharacterSpansWithInlines(
   text: string,
   inlinePositions: { [index: number]: HTMLElement }
 ): HTMLSpanElement {
-  const outerSpan = document.createElement("span");
-  outerSpan.className = "outer-span";
+  const outerSpan = document.createElement('span');
+  outerSpan.className = 'outer-span';
   let textIndex = 0;
   for (const char of text) {
     if (inlinePositions[textIndex]) {
       outerSpan.appendChild(inlinePositions[textIndex]);
     }
-    const charSpan = document.createElement("span");
+    const charSpan = document.createElement('span');
     charSpan.textContent = char;
     outerSpan.appendChild(charSpan);
     textIndex++;
@@ -81,18 +81,18 @@ function createCharacterSpansWithInlines(
   return outerSpan;
 }
 
-describe("getSelectionInfo", () => {
-  it("should return selection info for a partial selection within a single lumi-span", async () => {
+describe('getSelectionInfo', () => {
+  it('should return selection info for a partial selection within a single lumi-span', async () => {
     // 1. Create a fixture with our mock <lumi-span> element.
     const el = await fixture(html` <parent-with-shadow></parent-with-shadow> `);
-    const lumiSpan = document.createElement("lumi-span");
-    lumiSpan.id = "test-span-1";
-    const textContent = "This is some test text.";
+    const lumiSpan = document.createElement('lumi-span');
+    lumiSpan.id = 'test-span-1';
+    const textContent = 'This is some test text.';
     const characterSpans = createCharacterSpans(textContent);
     lumiSpan.appendChild(characterSpans);
 
     el.shadowRoot!.appendChild(lumiSpan);
-    const charSpans = characterSpans.querySelectorAll("span");
+    const charSpans = characterSpans.querySelectorAll('span');
     const startNode = charSpans[5].firstChild!; // "i" in "is"
     const endNode = charSpans[11].firstChild!; // "e" in "some"
 
@@ -107,26 +107,26 @@ describe("getSelectionInfo", () => {
     const selectionInfo = getSelectionInfo(window.getSelection()!);
 
     expect(selectionInfo).to.not.be.null;
-    expect(selectionInfo!.selectedText).to.equal("is some");
+    expect(selectionInfo!.selectedText).to.equal('is some');
     expect(selectionInfo!.highlightSelection).to.deep.equal([
-      { spanId: "test-span-1", position: { startIndex: 5, endIndex: 12 } },
+      { spanId: 'test-span-1', position: { startIndex: 5, endIndex: 12 } },
     ]);
   });
 
-  it("should correctly calculate offset with inline citation and footnote tags", async () => {
+  it('should correctly calculate offset with inline citation and footnote tags', async () => {
     const el = await fixture(html` <parent-with-shadow></parent-with-shadow> `);
-    const lumiSpan = document.createElement("lumi-span");
-    lumiSpan.id = "test-span-inline";
-    const textContent = "Some text.";
+    const lumiSpan = document.createElement('lumi-span');
+    lumiSpan.id = 'test-span-inline';
+    const textContent = 'Some text.';
 
     // Create mock inline elements
-    const citation = document.createElement("span");
+    const citation = document.createElement('span');
     citation.className = CITATION_CLASSNAME;
-    citation.textContent = "[1]";
+    citation.textContent = '[1]';
 
-    const footnote = document.createElement("sup");
+    const footnote = document.createElement('sup');
     footnote.className = FOOTNOTE_CLASSNAME;
-    footnote.textContent = "2";
+    footnote.textContent = '2';
 
     // "[1]S<sup>2</sup>ome text."
     const characterSpans = createCharacterSpansWithInlines(textContent, {
@@ -149,16 +149,16 @@ describe("getSelectionInfo", () => {
     const selectionInfo = getSelectionInfo(selection);
 
     expect(selectionInfo).to.not.be.null;
-    expect(selectionInfo!.selectedText).to.equal("text");
+    expect(selectionInfo!.selectedText).to.equal('text');
     expect(selectionInfo!.highlightSelection).to.deep.equal([
       {
-        spanId: "test-span-inline",
+        spanId: 'test-span-inline',
         position: { startIndex: 5, endIndex: 9 },
       },
     ]);
   });
 
-  it("should return null if selection is empty", async () => {
+  it('should return null if selection is empty', async () => {
     const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`);
     const selection = window.getSelection()!;
     selection.removeAllRanges(); // Ensure it's empty
@@ -166,7 +166,7 @@ describe("getSelectionInfo", () => {
     expect(selectionInfo).to.be.null;
   });
 
-  it("should return null if getComposedRanges returns an empty array", async () => {
+  it('should return null if getComposedRanges returns an empty array', async () => {
     const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`);
     const selection = window.getSelection()!;
     selection.removeAllRanges();
@@ -178,33 +178,33 @@ describe("getSelectionInfo", () => {
     expect(selectionInfo).to.be.null;
   });
 
-  it("should return selection info for a selection spanning multiple lumi-spans", async () => {
+  it('should return selection info for a selection spanning multiple lumi-spans', async () => {
     const el = await fixture(html`<parent-with-shadow></parent-with-shadow>`);
 
     // LumiSpan 1
-    const lumiSpan1 = document.createElement("lumi-span");
-    lumiSpan1.id = "test-span-1";
-    const text1 = "First part. ";
+    const lumiSpan1 = document.createElement('lumi-span');
+    lumiSpan1.id = 'test-span-1';
+    const text1 = 'First part. ';
     lumiSpan1.appendChild(createCharacterSpans(text1));
 
     // LumiSpan 2
-    const lumiSpan2 = document.createElement("lumi-span");
-    lumiSpan2.id = "test-span-2";
-    const text2 = "Second part. ";
+    const lumiSpan2 = document.createElement('lumi-span');
+    lumiSpan2.id = 'test-span-2';
+    const text2 = 'Second part. ';
     lumiSpan2.appendChild(createCharacterSpans(text2));
 
     // LumiSpan 3
-    const lumiSpan3 = document.createElement("lumi-span");
-    lumiSpan3.id = "test-span-3";
-    const text3 = "Third part.";
+    const lumiSpan3 = document.createElement('lumi-span');
+    lumiSpan3.id = 'test-span-3';
+    const text3 = 'Third part.';
     lumiSpan3.appendChild(createCharacterSpans(text3));
 
     el.shadowRoot!.appendChild(lumiSpan1);
     el.shadowRoot!.appendChild(lumiSpan2);
     el.shadowRoot!.appendChild(lumiSpan3);
 
-    const charSpans1 = lumiSpan1.querySelectorAll("span > span");
-    const charSpans3 = lumiSpan3.querySelectorAll("span > span");
+    const charSpans1 = lumiSpan1.querySelectorAll('span > span');
+    const charSpans3 = lumiSpan3.querySelectorAll('span > span');
 
     const startNode = charSpans1[6].firstChild!; // "p" in "part. "
     const endNode = charSpans3[4].firstChild!; // "d" in "Third"
@@ -222,11 +222,11 @@ describe("getSelectionInfo", () => {
     const selectionInfo = getSelectionInfo(selection);
 
     expect(selectionInfo).to.not.be.null;
-    expect(selectionInfo!.selectedText).to.equal("part. Second part. Third");
+    expect(selectionInfo!.selectedText).to.equal('part. Second part. Third');
     expect(selectionInfo!.highlightSelection).to.deep.equal([
-      { spanId: "test-span-1", position: { startIndex: 6, endIndex: 13 } },
-      { spanId: "test-span-2", position: { startIndex: 0, endIndex: 14 } },
-      { spanId: "test-span-3", position: { startIndex: 0, endIndex: 5 } },
+      { spanId: 'test-span-1', position: { startIndex: 6, endIndex: 13 } },
+      { spanId: 'test-span-2', position: { startIndex: 0, endIndex: 14 } },
+      { spanId: 'test-span-3', position: { startIndex: 0, endIndex: 5 } },
     ]);
   });
 });

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { PaperData } from "./types_local_storage";
+import { PaperData } from './types_local_storage';
 
 /**
  * Sorts an array of PaperData objects by their `addedTimestamp` in descending

@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
-import { CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
+import { CSSResultGroup, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
-import { styles as sharedStyles } from "./shared.scss";
-import { styles } from "./circular_progress.scss";
-import type { ComponentColor, ComponentSize } from "./types";
+import { styles as sharedStyles } from './shared.scss';
+import { styles } from './circular_progress.scss';
+import type { ComponentColor, ComponentSize } from './types';
 
 /**
  * A circular progress indicator component.
  */
-@customElement("pr-circular-progress")
+@customElement('pr-circular-progress')
 export class CircularProgress extends LitElement {
   static override styles: CSSResultGroup = [sharedStyles, styles];
 
-  @property({ type: String }) color: ComponentColor = "primary";
-  @property({ type: String }) size: ComponentSize = "medium";
+  @property({ type: String }) color: ComponentColor = 'primary';
+  @property({ type: String }) size: ComponentSize = 'medium';
 
   override render() {
     const classes = classMap({
-      "palette-primary": this.color === "primary",
-      "palette-secondary": this.color === "secondary",
-      "palette-tertiary": this.color === "tertiary",
-      "palette-neutral": this.color === "neutral",
-      "palette-error": this.color === "error",
-      "body-size-small": this.size === "small",
-      "body-size-medium": this.size === "medium",
-      "body-size-large": this.size === "large",
+      'palette-primary': this.color === 'primary',
+      'palette-secondary': this.color === 'secondary',
+      'palette-tertiary': this.color === 'tertiary',
+      'palette-neutral': this.color === 'neutral',
+      'palette-error': this.color === 'error',
+      'body-size-small': this.size === 'small',
+      'body-size-medium': this.size === 'medium',
+      'body-size-large': this.size === 'large',
     });
 
     return html`
@@ -54,6 +54,6 @@ export class CircularProgress extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "pr-circular-progress": CircularProgress;
+    'pr-circular-progress': CircularProgress;
   }
 }

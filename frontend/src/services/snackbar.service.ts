@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { Service } from "./service";
+import { Service } from './service';
 
-import type { Ref } from "lit/directives/ref.js";
+import type { Ref } from 'lit/directives/ref.js';
 
 /**
  * Service for showing snackbar notifications.
@@ -31,7 +31,7 @@ export class SnackbarService extends Service {
 
   show(message: string, time: number = 2500) {
     if (!this.toastRef?.value) {
-      console.error("Toast ref not set.");
+      console.error('Toast ref not set.');
       return;
     }
     this.toastRef.value.show(message, time);

@@ -53,8 +53,8 @@ export function parseColonKeyValue(originalString: string): {
   key: string;
   value: string;
 } {
-  const split = originalString.split(":");
+  const split = originalString.split(':');
   const key = split[0].trim();
-  const value = split.slice(1).join(":").trim();
+  const value = split.slice(1).join(':').trim();
   return { key, value };
 }

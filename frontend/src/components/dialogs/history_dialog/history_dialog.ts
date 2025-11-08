@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-import "../../../pair-components/dialog";
-import "../../../pair-components/button";
-import "../../settings/reading_history";
+import '../../../pair-components/dialog';
+import '../../../pair-components/button';
+import '../../settings/reading_history';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, query } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement, query } from 'lit/decorators.js';
 
-import { core } from "../../../core/core";
+import { core } from '../../../core/core';
 import {
   DialogService,
   HistoryDialogProps,
-} from "../../../services/dialog.service";
-import { styles } from "./history_dialog.scss";
+} from '../../../services/dialog.service';
+import { styles } from './history_dialog.scss';
 
 /**
  * The history dialog component.
  */
-@customElement("history-dialog")
+@customElement('history-dialog')
 export class HistoryDialog extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -71,6 +71,6 @@ export class HistoryDialog extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "history-dialog": HistoryDialog;
+    'history-dialog': HistoryDialog;
   }
 }

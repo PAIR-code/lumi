@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
+import { MobxLitElement } from '@adobe/lit-mobx';
 
 export class LightMobxLitElement extends MobxLitElement {
   // Override createRenderRoot to return the element itself,

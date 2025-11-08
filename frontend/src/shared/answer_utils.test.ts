@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { expect } from "@esm-bundle/chai";
-import * as sinon from "sinon";
-import { LumiAnswerRequest } from "./api";
-import { createTemporaryAnswer } from "./answer_utils";
+import { expect } from '@esm-bundle/chai';
+import * as sinon from 'sinon';
+import { LumiAnswerRequest } from './api';
+import { createTemporaryAnswer } from './answer_utils';
 
-describe("createTemporaryAnswer", () => {
+describe('createTemporaryAnswer', () => {
   let clock: sinon.SinonFakeTimers;
   const mockTimestamp = 1234567890;
 
@@ -33,9 +33,9 @@ describe("createTemporaryAnswer", () => {
     clock.restore();
   });
 
-  it("should create a temporary answer with the correct properties", () => {
+  it('should create a temporary answer with the correct properties', () => {
     const request: LumiAnswerRequest = {
-      query: "What is a neural network?",
+      query: 'What is a neural network?',
     };
 
     const tempAnswer = createTemporaryAnswer(request);
@@ -47,21 +47,21 @@ describe("createTemporaryAnswer", () => {
     expect(tempAnswer.isLoading).to.be.true;
   });
 
-  it("should include highlight and spans if provided in request", () => {
+  it('should include highlight and spans if provided in request', () => {
     const highlight = {
       position: { startIndex: 0, endIndex: 4 },
-      spanId: "p1",
+      spanId: 'p1',
     };
     const request: LumiAnswerRequest = {
-      query: "Tell me more about this.",
-      highlight: "this",
+      query: 'Tell me more about this.',
+      highlight: 'this',
       highlightedSpans: [highlight],
     };
 
     const tempAnswer = createTemporaryAnswer(request);
 
-    expect(tempAnswer.request.query).to.equal("Tell me more about this.");
-    expect(tempAnswer.request.highlight).to.equal("this");
+    expect(tempAnswer.request.query).to.equal('Tell me more about this.');
+    expect(tempAnswer.request.highlight).to.equal('this');
     expect(tempAnswer.request.highlightedSpans).to.deep.equal([highlight]);
     expect(tempAnswer.isLoading).to.be.true;
   });

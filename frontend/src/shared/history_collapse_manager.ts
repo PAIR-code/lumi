@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
-import { LumiAnswer } from "./api";
+import { action, makeObservable, observable } from 'mobx';
+import { LumiAnswer } from './api';
 
 const INITIAL_ANSWERS_COLLAPSE_STATE = true;
 const FIRST_ANSWER_COLLAPSE_STATE = false;

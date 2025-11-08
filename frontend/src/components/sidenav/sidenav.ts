@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-import "../../pair-components/icon";
-import "../../pair-components/icon_button";
-import "../../pair-components/tooltip";
+import '../../pair-components/icon';
+import '../../pair-components/icon_button';
+import '../../pair-components/tooltip';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
-import { core } from "../../core/core";
-import { FirebaseService } from "../../services/firebase.service";
+import { core } from '../../core/core';
+import { FirebaseService } from '../../services/firebase.service';
 import {
   NAV_ITEMS,
   NavItem,
   Pages,
   RouterService,
-} from "../../services/router.service";
+} from '../../services/router.service';
 
-import { APP_NAME } from "../../shared/constants";
+import { APP_NAME } from '../../shared/constants';
 
-import { styles } from "./sidenav.scss";
+import { styles } from './sidenav.scss';
 
 /** Sidenav menu component */
-@customElement("sidenav-menu")
+@customElement('sidenav-menu')
 export class SideNav extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
   private readonly firebaseService = core.getService(FirebaseService);
@@ -50,7 +50,7 @@ export class SideNav extends MobxLitElement {
     };
 
     const navClasses = classMap({
-      "nav-wrapper": true,
+      'nav-wrapper': true,
       closed: !this.routerService.isNavOpen,
     });
 
@@ -83,7 +83,7 @@ export class SideNav extends MobxLitElement {
 
   private renderNavItem(navItem: NavItem) {
     const navItemClasses = classMap({
-      "nav-item": true,
+      'nav-item': true,
       selected: this.routerService.activePage === navItem.page,
     });
 
@@ -94,7 +94,7 @@ export class SideNav extends MobxLitElement {
     return html`
       <div class=${navItemClasses} role="button" @click=${handleNavItemClicked}>
         <pr-icon class="icon" icon=${navItem.icon}></pr-icon>
-        ${this.routerService.isNavOpen ? navItem.title : ""}
+        ${this.routerService.isNavOpen ? navItem.title : ''}
       </div>
     `;
   }
@@ -102,6 +102,6 @@ export class SideNav extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "sidenav-menu": SideNav;
+    'sidenav-menu': SideNav;
   }
 }

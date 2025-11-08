@@ -1,16 +1,16 @@
-import { esbuildPlugin } from "@web/dev-server-esbuild";
-import { playwrightLauncher } from "@web/test-runner-playwright";
+import { esbuildPlugin } from '@web/dev-server-esbuild';
+import { playwrightLauncher } from '@web/test-runner-playwright';
 
-import { scssPlugin } from "./wtr-scss-plugin.mjs";
+import { scssPlugin } from './wtr-scss-plugin.mjs';
 
 export default {
-  browsers: [playwrightLauncher({ product: "chromium" })],
-  files: ["src/**/*.test.ts", "src/**/*.spec.ts"],
+  browsers: [playwrightLauncher({ product: 'chromium' })],
+  files: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
   plugins: [
     scssPlugin(),
     esbuildPlugin({
       ts: true,
-      tsconfig: "./tsconfig.json",
+      tsconfig: './tsconfig.json',
     }),
   ],
   nodeResolve: true,

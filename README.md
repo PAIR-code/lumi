@@ -1,16 +1,22 @@
 # Welcome to Lumi
 
-[Lumi](https://lumi.withgoogle.com) uses AI to help you quickly read and understand [arXiv papers](https://arxiv.org/). Features include:
+[Lumi](https://lumi.withgoogle.com) uses AI to help you quickly read and
+understand [arXiv papers](https://arxiv.org/). Features include:
 
 - ✏️ **AI-augmented annotations** - read summaries at multiple granularities
 - 🔖 **Smart highlights** - highlight text + ask questions
 - 🖼️ **Figure explanations** - ask Lumi about images in the paper
 
-[Demo](https://lumi.withgoogle.com) | [Medium article](https://medium.com/people-ai-research/read-smarter-not-harder-with-lumi-6a1a8210ccc7) | [GitHub discussions](https://github.com/PAIR-code/lumi/discussions)
+[Demo](https://lumi.withgoogle.com) |
+[Medium article][medium] |
+[GitHub discussions](https://github.com/PAIR-code/lumi/discussions)
 
-<img src="assets/combined_desktop_mobile.png" alt-text="Screenshots of Lumi desktop and mobile views" height="400" />
+[medium]: https://medium.com/people-ai-research/read-smarter-not-harder-with-lumi-6a1a8210ccc7
 
-*Please note that Lumi can only currently process arXiv papers under a Creative Commons license.*
+![Screenshots of Lumi desktop and mobile views](assets/combined_desktop_mobile.png)
+
+*Please note that Lumi can only currently process arXiv papers under a
+Creative Commons license.*
 
 ## Running Lumi locally
 
@@ -36,17 +42,17 @@ cp firebase_config.example.ts firebase_config.ts
 npm run start
 ```
 
-Then, view the app at http://localhost:4201.
+Then, view the app at <http://localhost:4201>.
 
 ### Storybook stories
 
 To view [Storybook](https://storybook.js.org/docs) stories for Lumi:
 
-```
+```bash
 npm run storybook
 ```
 
-Then, view the stories at http://localhost:6006.
+Then, view the stories at <http://localhost:6006>.
 
 ### Local paper import and debugging
 
@@ -74,7 +80,7 @@ To deploy the Firebase cloud functions, see functions/README.md.
 All software is licensed under the Apache License, Version 2.0 (Apache 2.0).
 You may not use this file except in compliance with the Apache 2.0 license.
 You may obtain a copy of the Apache 2.0 license at:
-https://www.apache.org/licenses/LICENSE-2.0.
+<https://www.apache.org/licenses/LICENSE-2.0>.
 
 Unless required by applicable law or agreed to in writing, all software and
 materials distributed here under the Apache 2.0 licenses are distributed on an
@@ -94,4 +100,7 @@ Copyright 2025 DeepMind Technologies Limited.
 
 Lumi was designed and built by Ellen Jiang, Vivian Tsai, and Nada Hussein.
 
-Special thanks to Andy Coenen, James Wexler, Tianchang He, Mahima Pushkarna, Michael Xieyang Liu, Alejandra Molina, Aaron Donsbach, Martin Wattenberg, Fernanda Viégas, Michael Terry, and Lucas Dixon for making this experiment possible!
+Special thanks to Andy Coenen, James Wexler, Tianchang He, Mahima Pushkarna,
+Michael Xieyang Liu, Alejandra Molina, Aaron Donsbach, Martin Wattenberg,
+Fernanda Viégas, Michael Terry, and Lucas Dixon for making this experiment
+possible!

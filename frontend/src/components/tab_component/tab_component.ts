@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { styles } from "./tab_component.scss";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { styles } from './tab_component.scss';
 
-@customElement("tab-component")
+@customElement('tab-component')
 export class TabComponent extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   @property({ type: Array }) tabs: string[] = [];
-  @property({ type: String }) selectedTab: string = "";
+  @property({ type: String }) selectedTab: string = '';
 
   render() {
     return html`
@@ -44,6 +44,6 @@ export class TabComponent extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "tab-component": TabComponent;
+    'tab-component': TabComponent;
   }
 }

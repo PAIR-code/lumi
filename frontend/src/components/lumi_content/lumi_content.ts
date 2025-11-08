@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { html, nothing, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
-import { styleMap } from "lit/directives/style-map.js";
+import { html, nothing, PropertyValues, TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { styleMap } from 'lit/directives/style-map.js';
 import {
   ListContent,
   LumiContent,
@@ -27,26 +27,26 @@ import {
   LumiSpan,
   LumiSummary,
   TextContent,
-} from "../../shared/lumi_doc";
-import { FocusState, LumiFont } from "../../shared/types";
-import "../lumi_span/lumi_span";
+} from '../../shared/lumi_doc';
+import { FocusState, LumiFont } from '../../shared/types';
+import '../lumi_span/lumi_span';
 
-import "../lumi_content/lumi_image_content";
-import "../lumi_content/lumi_html_figure_content";
-import "../lumi_doc/content_summary";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { CollapseManager } from "../../shared/collapse_manager";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { LumiAnswer } from "../../shared/api";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { styles } from "./lumi_content.scss";
-import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
+import '../lumi_content/lumi_image_content';
+import '../lumi_content/lumi_html_figure_content';
+import '../lumi_doc/content_summary';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { CollapseManager } from '../../shared/collapse_manager';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { LumiAnswer } from '../../shared/api';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { styles } from './lumi_content.scss';
+import { getSpanHighlightsFromManagers } from '../lumi_span/lumi_span_utils';
 
 /**
  * A custom event dispatched when a lumi-content element is first rendered.
  */
 export class LumiContentRenderedEvent extends Event {
-  static readonly eventName = "lumi-content-rendered";
+  static readonly eventName = 'lumi-content-rendered';
   readonly element: LumiContentViz;
 
   constructor(element: LumiContentViz) {
@@ -58,7 +58,7 @@ export class LumiContentRenderedEvent extends Event {
   }
 }
 
-@customElement("lumi-content")
+@customElement('lumi-content')
 export class LumiContentViz extends LightMobxLitElement {
   @property({ type: Object }) content!: LumiContent;
   @property({ type: Array }) references?: LumiReference[];
@@ -123,8 +123,8 @@ export class LumiContentViz extends LightMobxLitElement {
     const focusState = isFocused
       ? FocusState.FOCUSED
       : hasFocus
-      ? FocusState.UNFOCUSED
-      : FocusState.DEFAULT;
+        ? FocusState.UNFOCUSED
+        : FocusState.DEFAULT;
     return { isFocused, hasFocus, focusState };
   }
 
@@ -166,7 +166,7 @@ export class LumiContentViz extends LightMobxLitElement {
       (listItem) => {
         const spans = listItem.spans;
         const classesObject: { [key: string]: boolean } = {
-          "list-item": true,
+          'list-item': true,
         };
         return html`<li class=${classMap(classesObject)}>
           ${this.renderSpans(spans)}
@@ -191,24 +191,24 @@ export class LumiContentViz extends LightMobxLitElement {
   private renderTextContent(
     textContent: TextContent
   ): TemplateResult | typeof nothing {
-    const tagName = textContent?.tagName ?? "";
+    const tagName = textContent?.tagName ?? '';
     if (!tagName) {
       return nothing;
     }
     const spans = textContent?.spans ?? [];
-    const monospace = tagName === "code" || tagName === "pre";
+    const monospace = tagName === 'code' || tagName === 'pre';
 
     const spansHtml = this.renderSpans(spans, monospace);
-    if (tagName === "p") {
+    if (tagName === 'p') {
       return html`<p>${spansHtml}</p>`;
-    } else if (tagName === "code") {
+    } else if (tagName === 'code') {
       return html`<code class="code">${spansHtml}</code>`;
-    } else if (tagName === "pre") {
+    } else if (tagName === 'pre') {
       return html` <pre>${spansHtml}</pre> `;
-    } else if (tagName === "figcaption") {
+    } else if (tagName === 'figcaption') {
       return html`<figcaption>${spansHtml}</figcaption>`;
     } else {
-      console.error("Unsupported tag name: ", tagName);
+      console.error('Unsupported tag name: ', tagName);
       return html`<div>${spansHtml}</div>`;
     }
   }
@@ -254,9 +254,9 @@ export class LumiContentViz extends LightMobxLitElement {
     };
 
     const mainContentClassesObject: { [key: string]: boolean } = {
-      "main-content": true,
-      "pre-container": this.content.textContent?.tagName === "pre",
-      "code-container": this.content.textContent?.tagName === "code",
+      'main-content': true,
+      'pre-container': this.content.textContent?.tagName === 'pre',
+      'code-container': this.content.textContent?.tagName === 'code',
       dense: this.dense ?? false,
     };
 
@@ -270,15 +270,15 @@ export class LumiContentViz extends LightMobxLitElement {
       this.content.htmlFigureContent != null;
 
     const contentRendererContainerClassesObject: { [key: string]: boolean } = {
-      ["content-renderer-container"]: true,
-      ["has-summary"]: this.summary != null,
-      ["collapsed"]: isCollapsed,
-      ["is-figure-content"]: isFigureContent,
+      ['content-renderer-container']: true,
+      ['has-summary']: this.summary != null,
+      ['collapsed']: isCollapsed,
+      ['is-figure-content']: isFigureContent,
     };
 
     const outerContainerclasses = classMap({
-      "content-renderer-grid-container": true,
-      ["dense"]: this.dense ?? false,
+      'content-renderer-grid-container': true,
+      ['dense']: this.dense ?? false,
     });
 
     return html`
@@ -318,6 +318,6 @@ export class LumiContentViz extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-content": LumiContentViz;
+    'lumi-content': LumiContentViz;
   }
 }

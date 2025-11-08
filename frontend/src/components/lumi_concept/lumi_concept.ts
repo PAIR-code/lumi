@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-import { html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-import { LumiConcept } from "../../shared/lumi_doc";
+import { LumiConcept } from '../../shared/lumi_doc';
 
-import "../lumi_span/lumi_span";
-import "./lumi_concept_contents";
+import '../lumi_span/lumi_span';
+import './lumi_concept_contents';
 
-import { styles } from "./lumi_concept.scss";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { LumiAnswer } from "../../shared/api";
+import { styles } from './lumi_concept.scss';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { LumiAnswer } from '../../shared/api';
 
 /**
  * Displays a Lumi Concept.
  */
-@customElement("lumi-concept")
+@customElement('lumi-concept')
 export class LumiConceptViz extends LightMobxLitElement {
   @property({ type: Object }) concept!: LumiConcept;
   @property({ type: Object }) highlightManager!: HighlightManager;
@@ -73,6 +73,6 @@ export class LumiConceptViz extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-concept": LumiConceptViz;
+    'lumi-concept': LumiConceptViz;
   }
 }

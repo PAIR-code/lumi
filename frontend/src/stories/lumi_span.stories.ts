@@ -15,24 +15,24 @@ _ * You may obtain a copy of the License at
  * limitations under the License.
  */
 
-import { fn } from "@storybook/test";
-import type { Args, Meta, StoryObj } from "@storybook/web-components";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { fn } from '@storybook/test';
+import type { Args, Meta, StoryObj } from '@storybook/web-components';
+import { html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-import { FocusState } from "../shared/types";
-import { InnerTagName, LumiSpan } from "../shared/lumi_doc";
+import { FocusState } from '../shared/types';
+import { InnerTagName, LumiSpan } from '../shared/lumi_doc';
 
-import "../components/lumi_span/lumi_span";
+import '../components/lumi_span/lumi_span';
 
 // Use a mock parent to import the span renderer styles.
-@customElement("mock-span-parent")
+@customElement('mock-span-parent')
 class MockSpanParent extends LitElement {
   @property() args!: Args;
 
   override render() {
     const span: LumiSpan = {
-      id: "span_id",
+      id: 'span_id',
       text: this.args.text,
       innerTags: this.args.innerTags,
     };
@@ -44,10 +44,10 @@ class MockSpanParent extends LitElement {
       .classMap=${this.args.classMap}
       .references=${[
         {
-          id: "reference_1_id",
+          id: 'reference_1_id',
           span: {
-            id: "span_1",
-            text: "text",
+            id: 'span_1',
+            text: 'text',
             innerTags: [],
           },
         },
@@ -59,18 +59,18 @@ class MockSpanParent extends LitElement {
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 const meta = {
-  title: "Components/LumiSpan",
-  tags: ["autodocs"],
+  title: 'Components/LumiSpan',
+  tags: ['autodocs'],
   render: (args) => {
     return html`<mock-span-parent .args=${args}></mock-span-parent>`;
   },
   args: { onReferenceClick: fn() },
   argTypes: {
-    text: { control: "text" },
+    text: { control: 'text' },
     innerTags: {},
     highlights: {},
-    classMap: { control: "object" },
-    focusState: { control: "radio", options: Object.values(FocusState) },
+    classMap: { control: 'object' },
+    focusState: { control: 'radio', options: Object.values(FocusState) },
   },
 } satisfies Meta;
 
@@ -80,7 +80,7 @@ type Story = StoryObj;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
   args: {
-    text: "test span",
+    text: 'test span',
     innerTags: [],
     focusState: FocusState.DEFAULT,
   },
@@ -88,7 +88,7 @@ export const Default: Story = {
 
 export const Focused: Story = {
   args: {
-    text: "This span is focused.",
+    text: 'This span is focused.',
     innerTags: [],
     focusState: FocusState.FOCUSED,
   },
@@ -96,7 +96,7 @@ export const Focused: Story = {
 
 export const Unfocused: Story = {
   args: {
-    text: "This span is unfocused.",
+    text: 'This span is unfocused.',
     innerTags: [],
     focusState: FocusState.UNFOCUSED,
   },
@@ -104,15 +104,15 @@ export const Unfocused: Story = {
 
 export const StyledWithClass: Story = {
   args: {
-    text: "This span is styled with a class. (Can be seen in inspector)",
+    text: 'This span is styled with a class. (Can be seen in inspector)',
     innerTags: [],
-    classMap: { "styled-with-class": true },
+    classMap: { 'styled-with-class': true },
   },
 };
 
 export const Latex: Story = {
   args: {
-    text: "z = (z_1, ..., z_n) is my equation. Here is a fraction \\frac12",
+    text: 'z = (z_1, ..., z_n) is my equation. Here is a fraction \\frac12',
     innerTags: [
       {
         tagName: InnerTagName.MATH,
@@ -130,7 +130,7 @@ export const Latex: Story = {
 
 export const LatexSqrt: Story = {
   args: {
-    text: "Here is a sqrt: \\sqrt{x}",
+    text: 'Here is a sqrt: \\sqrt{x}',
     innerTags: [
       {
         tagName: InnerTagName.MATH,
@@ -143,7 +143,7 @@ export const LatexSqrt: Story = {
 
 export const BoldAndItalic: Story = {
   args: {
-    text: "Here are bold and italic words.",
+    text: 'Here are bold and italic words.',
     innerTags: [
       {
         tagName: InnerTagName.BOLD,
@@ -161,7 +161,7 @@ export const BoldAndItalic: Story = {
 
 export const Reference: Story = {
   args: {
-    text: "This is a sentence. ",
+    text: 'This is a sentence. ',
     onReferenceClick: (referenceId: string) => {
       console.log(referenceId);
     },
@@ -170,7 +170,7 @@ export const Reference: Story = {
         tagName: InnerTagName.REFERENCE,
         position: { startIndex: 20, endIndex: 20 },
         metadata: {
-          id: "reference_1_id",
+          id: 'reference_1_id',
         },
       },
     ],
@@ -179,13 +179,13 @@ export const Reference: Story = {
 
 export const Link: Story = {
   args: {
-    text: "This is a link to Google.",
+    text: 'This is a link to Google.',
     innerTags: [
       {
         tagName: InnerTagName.A,
         position: { startIndex: 10, endIndex: 14 },
         metadata: {
-          href: "https://www.google.com",
+          href: 'https://www.google.com',
         },
       },
     ],
@@ -194,7 +194,7 @@ export const Link: Story = {
 
 export const Code: Story = {
   args: {
-    text: "This is some inline code.",
+    text: 'This is some inline code.',
     innerTags: [
       {
         tagName: InnerTagName.CODE,
@@ -207,11 +207,11 @@ export const Code: Story = {
 
 export const Highlight: Story = {
   args: {
-    text: "This is some highlighted code.",
+    text: 'This is some highlighted code.',
     highlights: [
       {
-        color: "cyan",
-        spanId: "span_id",
+        color: 'cyan',
+        spanId: 'span_id',
         position: {
           startIndex: 13,
           endIndex: 24,
@@ -224,6 +224,6 @@ export const Highlight: Story = {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "mock-span-parent": MockSpanParent;
+    'mock-span-parent': MockSpanParent;
   }
 }

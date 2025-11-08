@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-import "../lumi_doc/lumi_doc";
-import "../sidebar/sidebar";
-import "../loading_document/loading_document";
-import "../../pair-components/circular_progress";
-import "../../pair-components/button";
-import "../../pair-components/icon_button";
+import '../lumi_doc/lumi_doc';
+import '../sidebar/sidebar';
+import '../loading_document/loading_document';
+import '../../pair-components/circular_progress';
+import '../../pair-components/button';
+import '../../pair-components/icon_button';
 
-import { CSSResultGroup, html, nothing, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
-import { provide } from "@lit/context";
+import { CSSResultGroup, html, nothing, TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { provide } from '@lit/context';
 
-import { core } from "../../core/core";
-import { FirebaseService } from "../../services/firebase.service";
-import { HistoryService } from "../../services/history.service";
-import { DocumentStateService } from "../../services/document_state.service";
-import { SnackbarService } from "../../services/snackbar.service";
+import { core } from '../../core/core';
+import { ApiService } from '../../services/api.service';
+import { HistoryService } from '../../services/history.service';
+import { DocumentStateService } from '../../services/document_state.service';
+import { SnackbarService } from '../../services/snackbar.service';
 import {
   LumiDoc,
   LoadingStatus,
@@ -39,13 +38,13 @@ import {
   LumiFootnote,
   LOADING_STATUS_ERROR_STATES,
   ArxivMetadata,
-} from "../../shared/lumi_doc";
+} from '../../shared/lumi_doc';
 import {
   getArxivMetadata,
   getLumiResponseCallable,
   getPersonalSummaryCallable,
-} from "../../shared/callables";
-import { scrollContext, ScrollState } from "../../contexts/scroll_context";
+} from '../../shared/api_callables';
+import { scrollContext, ScrollState } from '../../contexts/scroll_context';
 import {
   AnswerHighlightTooltipProps,
   ConceptTooltipProps,
@@ -53,38 +52,37 @@ import {
   FootnoteTooltipProps,
   ReferenceTooltipProps,
   SmartHighlightMenuProps,
-} from "../../services/floating_panel_service";
-import { ImageInfo, LumiAnswer, LumiAnswerRequest } from "../../shared/api";
+} from '../../services/floating_panel_service';
+import { ImageInfo, LumiAnswer, LumiAnswerRequest } from '../../shared/api';
 
-import { styles } from "./lumi_reader.scss";
+import { styles } from './lumi_reader.scss';
 
 import {
   getSelectionInfo,
   HighlightSelection,
   SelectionInfo,
-} from "../../shared/selection_utils";
-import { createTemporaryAnswer } from "../../shared/answer_utils";
-import { classMap } from "lit/directives/class-map.js";
+} from '../../shared/selection_utils';
+import { createTemporaryAnswer } from '../../shared/answer_utils';
+import { classMap } from 'lit/directives/class-map.js';
 import {
   AnalyticsAction,
   AnalyticsService,
-} from "../../services/analytics.service";
-import { isViewportSmall } from "../../shared/responsive_utils";
+} from '../../services/analytics.service';
+import { isViewportSmall } from '../../shared/responsive_utils';
 import {
   PERSONAL_SUMMARY_QUERY_NAME,
   SIDEBAR_TABS,
-} from "../../shared/constants";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { FirebaseError } from "firebase/app";
-import { RouterService, getArxivPaperUrl } from "../../services/router.service";
-import { BannerService } from "../../services/banner.service";
-import { createRef, ref } from "lit/directives/ref.js";
-import { SettingsService } from "../../services/settings.service";
+} from '../../shared/constants';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { RouterService, getArxivPaperUrl } from '../../services/router.service';
+import { BannerService } from '../../services/banner.service';
+import { createRef, ref } from 'lit/directives/ref.js';
+import { SettingsService } from '../../services/settings.service';
 import {
   DialogService,
   TOSDialogProps,
   TutorialDialogProps,
-} from "../../services/dialog.service";
+} from '../../services/dialog.service';
 
 const LOADING_STATES_ALLOW_PERSONAL_SUMMARY: string[] = [
   LoadingStatus.SUCCESS,
@@ -107,15 +105,15 @@ const TUTORIAL_DIALOG_DELAY = 800;
  * The component responsible for fetching a single document and passing it
  * to the lumi-doc component.
  */
-@customElement("lumi-reader")
+@customElement('lumi-reader')
 export class LumiReader extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly apiService = core.getService(ApiService);
   private readonly bannerService = core.getService(BannerService);
   private readonly dialogService = core.getService(DialogService);
   private readonly documentStateService = core.getService(DocumentStateService);
-  private readonly firebaseService = core.getService(FirebaseService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly historyService = core.getService(HistoryService);
   private readonly routerService = core.getService(RouterService);
@@ -125,7 +123,7 @@ export class LumiReader extends LightMobxLitElement {
   @provide({ context: scrollContext })
   private scrollState = new ScrollState();
 
-  @property({ type: String }) documentId = "";
+  @property({ type: String }) documentId = '';
   @state() loadingStatus = LoadingStatus.UNSET;
   @state() metadata?: ArxivMetadata;
   @state() metadataNotFound? = false;
@@ -134,7 +132,7 @@ export class LumiReader extends LightMobxLitElement {
 
   private mobileSmartHighlightContainerRef = createRef<HTMLElement>();
 
-  private unsubscribeListener?: Unsubscribe;
+  private websocket?: WebSocket;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -174,8 +172,8 @@ export class LumiReader extends LightMobxLitElement {
     this.bannerService.clearBannerProperties();
 
     super.disconnectedCallback();
-    if (this.unsubscribeListener) {
-      this.unsubscribeListener();
+    if (this.websocket) {
+      this.websocket.close();
     }
   }
 
@@ -184,8 +182,8 @@ export class LumiReader extends LightMobxLitElement {
 
     if (status === LoadingStatus.SUMMARIZING) {
       this.bannerService.setBannerProperties({
-        message: "Loading summaries...",
-        icon: "hourglass",
+        message: 'Loading summaries...',
+        icon: 'hourglass',
       });
     } else {
       if (this.bannerService.isBannerOpen) {
@@ -201,18 +199,21 @@ export class LumiReader extends LightMobxLitElement {
   }
 
   private async loadDocument() {
-    if (this.unsubscribeListener) {
-      this.unsubscribeListener();
+    // Guard against undefined or empty documentId
+    if (!this.documentId || this.documentId === 'undefined') {
+      this.metadataNotFound = true;
+      return;
+    }
+
+    if (this.websocket) {
+      this.websocket.close();
     }
 
     let metadata: ArxivMetadata | null = null;
     try {
-      metadata = await getArxivMetadata(
-        this.firebaseService.functions,
-        this.documentId
-      );
+      metadata = await getArxivMetadata(this.apiService, this.documentId);
     } catch (error) {
-      console.error("Warning: Document metadata or version not found.", error);
+      console.error('Warning: Document metadata or version not found.', error);
     }
 
     if (!metadata || !metadata.version) {
@@ -226,49 +227,45 @@ export class LumiReader extends LightMobxLitElement {
       this.historyService.addPaper(this.documentId, metadata);
     }
 
-    const docPath = `arxiv_docs/${this.documentId}/versions/${metadata.version}`;
-    this.unsubscribeListener = onSnapshot(
-      doc(this.firebaseService.firestore, docPath),
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.data() as LumiDoc;
+    this.websocket = this.apiService.connectDocumentSocket(
+      this.documentId,
+      metadata.version,
+      (data) => {
+        const lumiDoc = data as LumiDoc;
 
-          if (
-            data.loadingStatus === LoadingStatus.SUCCESS ||
-            data.loadingStatus === LoadingStatus.SUMMARIZING
-          ) {
-            this.documentStateService.setDocument(data);
+        if (
+          lumiDoc.loadingStatus === LoadingStatus.SUCCESS ||
+          lumiDoc.loadingStatus === LoadingStatus.SUMMARIZING
+        ) {
+          this.documentStateService.setDocument(lumiDoc);
+        }
+
+        this.setLoadingStatus(lumiDoc.loadingStatus as LoadingStatus);
+        this.metadata = lumiDoc.metadata;
+        this.requestUpdate();
+
+        if (
+          LOADING_STATES_ALLOW_PERSONAL_SUMMARY.includes(lumiDoc.loadingStatus)
+        ) {
+          // Once the document is fully loaded, check for personal summary.
+          if (!this.historyService.personalSummaries.has(this.documentId)) {
+            this.fetchPersonalSummary();
           }
+        }
 
-          this.setLoadingStatus(data.loadingStatus as LoadingStatus);
-          this.metadata = data.metadata;
-          this.requestUpdate();
-
-          if (
-            LOADING_STATES_ALLOW_PERSONAL_SUMMARY.includes(data.loadingStatus)
-          ) {
-            // Once the document is fully loaded, check for personal summary.
-            if (!this.historyService.personalSummaries.has(this.documentId)) {
-              this.fetchPersonalSummary();
-            }
-          }
-
-          if (
-            LOADING_STATUS_ERROR_STATES.includes(
-              data.loadingStatus as LoadingStatus
-            )
-          ) {
-            this.snackbarService.show(
-              `Error loading document: ${this.documentId}`
-            );
-          }
-        } else {
-          this.snackbarService.show(`Document ${this.documentId} not found.`);
+        if (
+          LOADING_STATUS_ERROR_STATES.includes(
+            lumiDoc.loadingStatus as LoadingStatus
+          )
+        ) {
+          this.snackbarService.show(
+            `Error loading document: ${this.documentId}`
+          );
         }
       },
       (error) => {
-        this.snackbarService.show(`Error loading document: ${error.message}`);
-        console.error(error);
+        this.snackbarService.show(`Error loading document`);
+        console.error('WebSocket error:', error);
       }
     );
   }
@@ -289,10 +286,10 @@ export class LumiReader extends LightMobxLitElement {
         .filter(
           (paper) =>
             paper.metadata.paperId !== this.documentId &&
-            paper.status === "complete"
+            paper.status === 'complete'
         );
       const summaryAnswer = await getPersonalSummaryCallable(
-        this.firebaseService.functions,
+        this.apiService,
         currentDoc,
         pastPapers,
         this.settingsService.apiKey.value
@@ -300,15 +297,15 @@ export class LumiReader extends LightMobxLitElement {
 
       this.historyService.addPersonalSummary(this.documentId, summaryAnswer);
     } catch (e) {
-      console.error("Error getting personal summary:", e);
-      this.snackbarService.show("Error: Could not generate personal summary.");
+      console.error('Error getting personal summary:', e);
+      this.snackbarService.show('Error: Could not generate personal summary.');
     } finally {
       this.historyService.removeTemporaryAnswer(tempAnswer.id);
     }
   }
 
   private get getImageUrl() {
-    return (path: string) => this.firebaseService.getDownloadUrl(path);
+    return (path: string) => this.apiService.getDownloadUrl(path);
   }
 
   private checkChangeTabs() {
@@ -345,23 +342,27 @@ export class LumiReader extends LightMobxLitElement {
 
     try {
       const response = await getLumiResponseCallable(
-        this.firebaseService.functions,
+        this.apiService,
         this.documentStateService.lumiDocManager.lumiDoc,
         request,
         this.settingsService.apiKey.value
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
-      let message = "Error: Could not get response from Lumi.";
+      let message = 'Error: Could not get response from Lumi.';
+      const errorMessage = (e as Error).message || '';
 
       if (
-        (e as FirebaseError).code === "functions/unavailable" &&
-        this.settingsService.apiKey.value !== ""
+        errorMessage.includes('unavailable') &&
+        this.settingsService.apiKey.value !== ''
       ) {
-        message = "Error: Your API key may be incorrect";
-      } else if ((e as FirebaseError).code === "functions/resource-exhausted") {
+        message = 'Error: Your API key may be incorrect';
+      } else if (
+        errorMessage.includes('resource-exhausted') ||
+        errorMessage.includes('quota')
+      ) {
         message =
-          "Model quota exceeded. Add your own API key in Home > Settings";
+          'Model quota exceeded. Add your own API key in Home > Settings';
       }
 
       this.snackbarService.show(message, 5000);
@@ -393,15 +394,15 @@ export class LumiReader extends LightMobxLitElement {
 
     try {
       const response = await getLumiResponseCallable(
-        this.firebaseService.functions,
+        this.apiService,
         currentDoc,
         request,
         this.settingsService.apiKey.value
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
-      console.error("Error getting Lumi response:", e);
-      this.snackbarService.show("Error: Could not get response from Lumi.");
+      console.error('Error getting Lumi response:', e);
+      this.snackbarService.show('Error: Could not get response from Lumi.');
     } finally {
       this.historyService.removeTemporaryAnswer(tempAnswer.id);
     }
@@ -455,7 +456,7 @@ export class LumiReader extends LightMobxLitElement {
     this.analyticsService.trackAction(AnalyticsAction.READER_IMAGE_CLICK);
 
     const props = new SmartHighlightMenuProps(
-      "",
+      '',
       [],
       this.handleDefine.bind(this),
       this.handleAsk.bind(this),
@@ -538,7 +539,7 @@ export class LumiReader extends LightMobxLitElement {
         <span class="error-body"
           >Could not import: "${metadata?.title}"
           <a
-            href=${getArxivPaperUrl(this.metadata?.paperId ?? "")}
+            href=${getArxivPaperUrl(this.metadata?.paperId ?? '')}
             class="arxiv-link"
             rel="noopener noreferrer"
           >
@@ -611,8 +612,8 @@ export class LumiReader extends LightMobxLitElement {
     }
 
     const sidebarWrapperClasses = classMap({
-      ["sidebar-wrapper"]: true,
-      ["is-mobile-sidebar-collapsed"]:
+      ['sidebar-wrapper']: true,
+      ['is-mobile-sidebar-collapsed']:
         this.documentStateService.collapseManager?.isMobileSidebarCollapsed ??
         false,
     });
@@ -642,7 +643,7 @@ export class LumiReader extends LightMobxLitElement {
           .onImageClick=${this.handleImageClick.bind(this)}
           .onScroll=${this.handleScroll.bind(this)}
           .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
-            this.documentStateService.focusOnSpan(highlights, "gray");
+            this.documentStateService.focusOnSpan(highlights, 'gray');
           }}
           .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
           .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
@@ -659,6 +660,6 @@ export class LumiReader extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-reader": LumiReader;
+    'lumi-reader': LumiReader;
   }
 }

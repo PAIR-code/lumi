@@ -16,5 +16,5 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "strict": true
-  },
+  }
 }

@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-import { expect } from "@esm-bundle/chai";
-import { CollapseManager } from "./collapse_manager";
-import { LumiDoc, LumiSection } from "./lumi_doc";
-import { LumiDocManager } from "./lumi_doc_manager";
-import { SIDEBAR_TABS } from "./constants";
+import { expect } from '@esm-bundle/chai';
+import { CollapseManager } from './collapse_manager';
+import { LumiDoc, LumiSection } from './lumi_doc';
+import { LumiDocManager } from './lumi_doc_manager';
+import { SIDEBAR_TABS } from './constants';
 
 // Mocks
 const mockLumiDoc: LumiDoc = {
-  markdown: "",
+  markdown: '',
   abstract: { contents: [] },
   sections: [
     {
-      id: "sec1",
-      heading: { headingLevel: 1, text: "Section 1" },
+      id: 'sec1',
+      heading: { headingLevel: 1, text: 'Section 1' },
       contents: [
         {
-          id: "content1",
+          id: 'content1',
           textContent: {
-            tagName: "p",
-            spans: [{ id: "span1", text: "text", innerTags: [] }],
+            tagName: 'p',
+            spans: [{ id: 'span1', text: 'text', innerTags: [] }],
           },
           imageContent: null,
           htmlFigureContent: null,
@@ -44,14 +44,14 @@ const mockLumiDoc: LumiDoc = {
       ],
       subSections: [
         {
-          id: "sub1",
-          heading: { headingLevel: 2, text: "Subsection 1.1" },
+          id: 'sub1',
+          heading: { headingLevel: 2, text: 'Subsection 1.1' },
           contents: [
             {
-              id: "content2",
+              id: 'content2',
               textContent: {
-                tagName: "p",
-                spans: [{ id: "span2", text: "text", innerTags: [] }],
+                tagName: 'p',
+                spans: [{ id: 'span2', text: 'text', innerTags: [] }],
               },
               imageContent: null,
               htmlFigureContent: null,
@@ -63,20 +63,20 @@ const mockLumiDoc: LumiDoc = {
       ],
     },
     {
-      id: "sec2",
-      heading: { headingLevel: 1, text: "Section 2" },
+      id: 'sec2',
+      heading: { headingLevel: 1, text: 'Section 2' },
       contents: [],
     },
   ],
   concepts: [
-    { id: "concept1", name: "Concept 1", inTextCitations: [], contents: [] },
-    { id: "concept2", name: "Concept 2", inTextCitations: [], contents: [] },
+    { id: 'concept1', name: 'Concept 1', inTextCitations: [], contents: [] },
+    { id: 'concept2', name: 'Concept 2', inTextCitations: [], contents: [] },
   ],
-  loadingStatus: "SUCCESS",
+  loadingStatus: 'SUCCESS',
   references: [],
 };
 
-describe("CollapseManager", () => {
+describe('CollapseManager', () => {
   let collapseManager: CollapseManager;
   let lumiDocManager: LumiDocManager;
 
@@ -85,17 +85,17 @@ describe("CollapseManager", () => {
     collapseManager = new CollapseManager(lumiDocManager);
   });
 
-  it("should be created", () => {
+  it('should be created', () => {
     expect(collapseManager).to.exist;
   });
 
-  describe("initialize", () => {
-    it("should set all sections and abstract to expanded", () => {
+  describe('initialize', () => {
+    it('should set all sections and abstract to expanded', () => {
       collapseManager.initialize();
       expect(collapseManager.isAbstractCollapsed).to.be.false;
     });
 
-    it("should initialize sidebar state", () => {
+    it('should initialize sidebar state', () => {
       collapseManager.initialize();
       expect(collapseManager.sidebarTabSelection).to.equal(
         SIDEBAR_TABS.ANSWERS
@@ -104,17 +104,17 @@ describe("CollapseManager", () => {
     });
   });
 
-  describe("Sidebar State Management", () => {
+  describe('Sidebar State Management', () => {
     beforeEach(() => {
       collapseManager.initialize();
     });
 
-    it("should set sidebar tab selection", () => {
+    it('should set sidebar tab selection', () => {
       collapseManager.setSidebarTabSelection(SIDEBAR_TABS.TOC);
       expect(collapseManager.sidebarTabSelection).to.equal(SIDEBAR_TABS.TOC);
     });
 
-    it("should toggle mobile sidebar collapse state", () => {
+    it('should toggle mobile sidebar collapse state', () => {
       const initialState = collapseManager.isMobileSidebarCollapsed;
       collapseManager.toggleMobileSidebarCollapsed();
       expect(collapseManager.isMobileSidebarCollapsed).to.not.equal(

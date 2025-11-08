@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
-import { Highlight } from "./lumi_doc";
-import { LumiAnswer } from "./api";
-import { HighlightManagerBase } from "./highlight_manager";
-import { HIGHLIGHT_METADATA_ANSWER_KEY } from "./constants";
+import { action, makeObservable, observable } from 'mobx';
+import { Highlight } from './lumi_doc';
+import { LumiAnswer } from './api';
+import { HighlightManagerBase } from './highlight_manager';
+import { HIGHLIGHT_METADATA_ANSWER_KEY } from './constants';
 
-const ANSWER_HIGHLIGHT_COLOR = "green";
+const ANSWER_HIGHLIGHT_COLOR = 'green';
 
 /**
  * Manages the persistent highlight state of spans derived from LumiAnswers.

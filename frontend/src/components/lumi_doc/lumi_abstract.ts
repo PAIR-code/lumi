@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-import { html, nothing, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { Highlight, LumiAbstract, LumiFootnote } from "../../shared/lumi_doc";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { LumiAnswer } from "../../shared/api";
-import { LumiFont } from "../../shared/types";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { styles } from "./lumi_abstract.scss";
+import { html, nothing, PropertyValues } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { Highlight, LumiAbstract, LumiFootnote } from '../../shared/lumi_doc';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { LumiAnswer } from '../../shared/api';
+import { LumiFont } from '../../shared/types';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { styles } from './lumi_abstract.scss';
 
-import "../lumi_span/lumi_span";
-import "../../pair-components/icon_button";
-import { makeObservable, observable, ObservableMap } from "mobx";
-import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
+import '../lumi_span/lumi_span';
+import '../../pair-components/icon_button';
+import { makeObservable, observable, ObservableMap } from 'mobx';
+import { getSpanHighlightsFromManagers } from '../lumi_span/lumi_span_utils';
 
-@customElement("lumi-abstract")
+@customElement('lumi-abstract')
 export class LumiAbstractViz extends LightMobxLitElement {
   @property({ type: Object }) abstract!: LumiAbstract;
   @property({ type: Boolean }) isCollapsed = false;
   @property({ type: Object }) onCollapseChange: (isCollapsed: boolean) => void =
     () => {};
-  @property() excerptSpanId?: string = "";
+  @property() excerptSpanId?: string = '';
   @property({ type: Object }) highlightManager!: HighlightManager;
   @property({ type: Object }) answerHighlightManager!: AnswerHighlightManager;
   @property({ type: Object }) onAnswerHighlightClick?: (
@@ -68,7 +68,7 @@ export class LumiAbstractViz extends LightMobxLitElement {
   }
 
   protected override updated(_changedProperties: PropertyValues): void {
-    if (!_changedProperties.get("abstract")) {
+    if (!_changedProperties.get('abstract')) {
       return;
     }
     this.updateHighlightsMap();
@@ -83,7 +83,7 @@ export class LumiAbstractViz extends LightMobxLitElement {
         // Add a special highlight for the excerpt span when not collapsed
         if (!this.isCollapsed && span.id === this.excerptSpanId) {
           newHighlights.push({
-            color: "cyan",
+            color: 'cyan',
             spanId: span.id,
             position: {
               startIndex: 0,
@@ -110,8 +110,8 @@ export class LumiAbstractViz extends LightMobxLitElement {
                 this.onCollapseChange(!this.isCollapsed);
               }}
               .icon=${this.isCollapsed
-                ? "chevron_right"
-                : "keyboard_arrow_down"}
+                ? 'chevron_right'
+                : 'keyboard_arrow_down'}
             ></pr-icon-button
             >Abstract
           </h2>
@@ -149,6 +149,6 @@ export class LumiAbstractViz extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-abstract": LumiAbstractViz;
+    'lumi-abstract': LumiAbstractViz;
   }
 }

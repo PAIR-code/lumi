@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import { html, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { createRef, ref, Ref } from "lit/directives/ref.js";
-import { consume } from "@lit/context";
-import { classMap } from "lit/directives/class-map.js";
-import { renderKatex } from "../../directives/katex_directive";
+import { html, PropertyValues, TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { createRef, ref, Ref } from 'lit/directives/ref.js';
+import { consume } from '@lit/context';
+import { classMap } from 'lit/directives/class-map.js';
+import { renderKatex } from '../../directives/katex_directive';
 
-import { scrollContext, ScrollState } from "../../contexts/scroll_context";
-import { FocusState, LumiFont } from "../../shared/types";
+import { scrollContext, ScrollState } from '../../contexts/scroll_context';
+import { FocusState, LumiFont } from '../../shared/types';
 import {
   HIGHLIGHT_METADATA_ANSWER_KEY,
   CITATION_CLASSNAME,
   FOOTNOTE_CLASSNAME,
-} from "../../shared/constants";
+} from '../../shared/constants';
 import {
   Highlight,
   InnerTagMetadata,
@@ -36,16 +36,16 @@ import {
   LumiFootnote,
   LumiReference,
   LumiSpan,
-} from "../../shared/lumi_doc";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { LumiAnswer } from "../../shared/api";
-import { flattenTags } from "./lumi_span_utils";
+} from '../../shared/lumi_doc';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { LumiAnswer } from '../../shared/api';
+import { flattenTags } from './lumi_span_utils';
 
-import { styles } from "./lumi_span.scss";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { styleMap } from "lit/directives/style-map.js";
-import { areArraysEqual } from "../../shared/utils";
+import { styles } from './lumi_span.scss';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { styleMap } from 'lit/directives/style-map.js';
+import { areArraysEqual } from '../../shared/utils';
 
 interface FormattingCounter {
   [key: string]: InnerTagMetadata;
@@ -61,13 +61,13 @@ interface InlineSpanCitation {
   id: string;
 }
 
-const GENERAL_HIGHLIGHT_KEY = "general_highlight_key";
-const COLOR_HIGHLIGHT_KEY = "highlight_color";
+const GENERAL_HIGHLIGHT_KEY = 'general_highlight_key';
+const COLOR_HIGHLIGHT_KEY = 'highlight_color';
 
 /**
  * A span visualization in the Lumi visualization.
  */
-@customElement("lumi-span")
+@customElement('lumi-span')
 export class LumiSpanViz extends LightMobxLitElement {
   @consume({ context: scrollContext, subscribe: true })
   private scrollContext?: ScrollState;
@@ -135,19 +135,19 @@ export class LumiSpanViz extends LightMobxLitElement {
     super.updated(changedProperties);
 
     const hasHighlightChanges =
-      changedProperties.has("highlights") &&
+      changedProperties.has('highlights') &&
       this.highlights &&
       !areArraysEqual(
-        changedProperties.get("highlights") ?? [],
+        changedProperties.get('highlights') ?? [],
         this.highlights
       );
 
     if (
-      changedProperties.has("span") ||
+      changedProperties.has('span') ||
       hasHighlightChanges ||
-      changedProperties.has("references") ||
-      changedProperties.has("footnotes") ||
-      changedProperties.has("referencedSpans")
+      changedProperties.has('references') ||
+      changedProperties.has('footnotes') ||
+      changedProperties.has('referencedSpans')
     ) {
       this.calculateRenderedContent();
     }
@@ -162,12 +162,12 @@ export class LumiSpanViz extends LightMobxLitElement {
 
   private getSpanClassesObject() {
     const classesObject: { [key: string]: boolean } = {
-      "outer-span": true,
-      "span-fade-in": this.shouldFadeIn,
+      'outer-span': true,
+      'span-fade-in': this.shouldFadeIn,
       monospace: this.monospace,
       focused: this.focusState === FocusState.FOCUSED,
       unfocused: this.focusState === FocusState.UNFOCUSED,
-      "show-focus-underline": this.showFocusUnderline,
+      'show-focus-underline': this.showFocusUnderline,
       ...this.classMap,
     };
     return classesObject;
@@ -178,8 +178,8 @@ export class LumiSpanViz extends LightMobxLitElement {
     hasDisplayMathTag: boolean
   ): TemplateResult {
     const equationClasses = classMap({
-      ["equation"]: true,
-      ["display"]: hasDisplayMathTag,
+      ['equation']: true,
+      ['display']: hasDisplayMathTag,
     });
     return html`<span
       class=${equationClasses}
@@ -204,7 +204,7 @@ export class LumiSpanViz extends LightMobxLitElement {
     if (highlightMetadata) {
       classesObject[highlightMetadata[COLOR_HIGHLIGHT_KEY]] = true;
       if (highlightMetadata[HIGHLIGHT_METADATA_ANSWER_KEY]) {
-        classesObject["clickable"] = true;
+        classesObject['clickable'] = true;
       }
     }
 
@@ -219,7 +219,7 @@ export class LumiSpanViz extends LightMobxLitElement {
 
     if (classesObject[InnerTagName.A]) {
       const metadata = classesAndMetadata[InnerTagName.A];
-      const href = metadata["href"] || "#";
+      const href = metadata['href'] || '#';
       // Use a real <a> tag for links.
       return html`<a
         href=${href}
@@ -232,9 +232,9 @@ export class LumiSpanViz extends LightMobxLitElement {
     const onClick = (e: MouseEvent) => {
       if (Object.keys(classesObject).includes(InnerTagName.CONCEPT)) {
         const metadata = classesAndMetadata[InnerTagName.CONCEPT];
-        if (metadata["conceptId"] && this.onConceptClick) {
+        if (metadata['conceptId'] && this.onConceptClick) {
           this.onConceptClick(
-            metadata["conceptId"],
+            metadata['conceptId'],
             e.currentTarget as HTMLElement
           );
         }
@@ -259,7 +259,7 @@ export class LumiSpanViz extends LightMobxLitElement {
 
   private renderNonformattedCharacters(value: string): TemplateResult {
     const characterClasses: { [key: string]: boolean } = {
-      ["character"]: true,
+      ['character']: true,
     };
 
     if (this.font) {
@@ -267,7 +267,7 @@ export class LumiSpanViz extends LightMobxLitElement {
     }
 
     return html`${value
-      .split("")
+      .split('')
       .map(
         (character) =>
           html`<span class=${classMap(characterClasses)}>${character}</span>`
@@ -290,10 +290,10 @@ export class LumiSpanViz extends LightMobxLitElement {
     span.innerTags.forEach((innerTag) => {
       if (
         innerTag.tagName === InnerTagName.REFERENCE &&
-        innerTag.metadata["id"] &&
+        innerTag.metadata['id'] &&
         references
       ) {
-        const refIds = innerTag.metadata["id"].split(",").map((s) => s.trim());
+        const refIds = innerTag.metadata['id'].split(',').map((s) => s.trim());
         const citations: InlineCitation[] = [];
 
         refIds.forEach((refId) => {
@@ -334,10 +334,10 @@ export class LumiSpanViz extends LightMobxLitElement {
         }
       } else if (
         innerTag.tagName === InnerTagName.FOOTNOTE &&
-        innerTag.metadata["id"] &&
+        innerTag.metadata['id'] &&
         footnotes
       ) {
-        const footnoteId = innerTag.metadata["id"];
+        const footnoteId = innerTag.metadata['id'];
         const footnoteIndex = footnotes.findIndex(
           (note) => note.id === footnoteId
         );
@@ -366,10 +366,10 @@ export class LumiSpanViz extends LightMobxLitElement {
         }
       } else if (
         innerTag.tagName === InnerTagName.SPAN_REFERENCE &&
-        innerTag.metadata["id"] &&
+        innerTag.metadata['id'] &&
         referencedSpans
       ) {
-        const refId = innerTag.metadata["id"];
+        const refId = innerTag.metadata['id'];
         const citations: InlineSpanCitation[] = [];
 
         const refIndex = referencedSpans.map((span) => span.id).indexOf(refId);
@@ -428,7 +428,7 @@ export class LumiSpanViz extends LightMobxLitElement {
     // Wrap all the character parts in a single parent span.
     const spanClasses = {
       monospace,
-      "lumi-span-renderer-element": true,
+      'lumi-span-renderer-element': true,
     };
 
     // If there are no inner tags or highlights, and no insertions,
@@ -444,7 +444,7 @@ export class LumiSpanViz extends LightMobxLitElement {
     // Each object will store the formatting tags (like 'b' for bold, 'i' for
     // italic, or a highlight color) that apply to that character.
     const formattingCounters = spanText
-      .split("")
+      .split('')
       .map((): FormattingCounter => ({}));
 
     // Iterate through each `innerTag` (e.g., bold, italic, link) defined in the
@@ -487,12 +487,12 @@ export class LumiSpanViz extends LightMobxLitElement {
       }
     });
 
-    let equationText = "";
+    let equationText = '';
     // Map over each character of the text to create a list of TemplateResults.
     // Each character will be wrapped in a <span> with the appropriate classes
     // based on the formatting counters we built above.
     const partsTemplateResults = spanText
-      .split("")
+      .split('')
       .flatMap((char: string, index: number) => {
         const templates: TemplateResult[] = [];
 
@@ -525,7 +525,7 @@ export class LumiSpanViz extends LightMobxLitElement {
           } else {
             // At the end of the equation, render it using KaTeX.
             const currentEquationText = equationText;
-            equationText = "";
+            equationText = '';
             templates.push(
               this.renderEquation(currentEquationText, hasDisplayMathTag)
             );
@@ -563,7 +563,7 @@ export class LumiSpanViz extends LightMobxLitElement {
       return html`<span
         ${ref(this.spanRef)}
         id=${this.span.id}
-        style=${styleMap({ visibility: "hidden" })}
+        style=${styleMap({ visibility: 'hidden' })}
       >
         ${this.span.text}
       </span>`;
@@ -586,6 +586,6 @@ export class LumiSpanViz extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-span": LumiSpanViz;
+    'lumi-span': LumiSpanViz;
   }
 }

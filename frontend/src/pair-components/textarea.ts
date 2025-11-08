@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import { CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
-import { createRef, Ref, ref } from "lit/directives/ref.js";
+import { CSSResultGroup, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { createRef, Ref, ref } from 'lit/directives/ref.js';
 
-import { styles as sharedStyles } from "./shared.scss";
-import type { ComponentColor, ComponentSize, ComponentVariant } from "./types";
-import { getComponentClassName } from "./utils";
+import { styles as sharedStyles } from './shared.scss';
+import type { ComponentColor, ComponentSize, ComponentVariant } from './types';
+import { getComponentClassName } from './utils';
 
-import { styles } from "./textarea.scss";
-import { ifDefined } from "lit/directives/if-defined.js";
+import { styles } from './textarea.scss';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
 function fitTextAreaToContent(
   textarea: HTMLElement,
@@ -48,14 +48,14 @@ function fitTextAreaToContent(
 /**
  * Textarea
  */
-@customElement("pr-textarea")
+@customElement('pr-textarea')
 export class TextArea extends LitElement {
   static override styles: CSSResultGroup = [sharedStyles, styles];
 
   // Component settings
-  @property({ type: String }) label = "";
-  @property({ type: String }) placeholder = "";
-  @property({ type: String }) value = "";
+  @property({ type: String }) label = '';
+  @property({ type: String }) placeholder = '';
+  @property({ type: String }) value = '';
   @property({ type: Boolean }) disabled = false;
   @property({ type: Boolean }) focused = false;
   @property({ type: Boolean }) maxLength?: number;
@@ -64,9 +64,9 @@ export class TextArea extends LitElement {
   @property() maxViewportHeight: number | undefined = undefined;
 
   // Custom styles
-  @property({ type: String }) color: ComponentColor = "primary";
-  @property({ type: String }) size: ComponentSize = "small";
-  @property({ type: String }) variant: ComponentVariant = "default";
+  @property({ type: String }) color: ComponentColor = 'primary';
+  @property({ type: String }) size: ComponentSize = 'small';
+  @property({ type: String }) variant: ComponentVariant = 'default';
 
   textareaRef: Ref<Element> = createRef();
   resizeObserver = new ResizeObserver((entries) => {
@@ -86,7 +86,7 @@ export class TextArea extends LitElement {
   }
 
   focusElement() {
-    (this.renderRoot.querySelector("#textarea") as HTMLElement).focus();
+    (this.renderRoot.querySelector('#textarea') as HTMLElement).focus();
   }
 
   override updated(changedProperties: Map<string, unknown>) {
@@ -106,7 +106,7 @@ export class TextArea extends LitElement {
   }
 
   renderLabel() {
-    const className = getComponentClassName("label-size", this.size);
+    const className = getComponentClassName('label-size', this.size);
 
     return this.label.length > 0
       ? html`<label for=${this.id} class=${className}>${this.label}</label>`
@@ -120,27 +120,27 @@ export class TextArea extends LitElement {
       this.value = inputElement.value;
 
       const event = { detail: { value: inputElement.value } };
-      this.dispatchEvent(new CustomEvent("change", event));
+      this.dispatchEvent(new CustomEvent('change', event));
     }
   }
 
   onKeydown(e: KeyboardEvent) {
     const event = { detail: { key: e.key } };
-    this.dispatchEvent(new CustomEvent("keydown", event));
+    this.dispatchEvent(new CustomEvent('keydown', event));
   }
 
   override render() {
     const classes = classMap({
-      "body-size-small": this.size === "small",
-      "body-size-medium": this.size === "medium",
-      "body-size-large": this.size === "large",
-      "palette-primary": this.color === "primary",
-      "palette-secondary": this.color === "secondary",
-      "palette-tertiary": this.color === "tertiary",
-      "palette-neutral": this.color === "neutral",
-      "palette-error": this.color === "error",
-      "variant-default": this.variant === "default",
-      "variant-outlined": this.variant === "outlined",
+      'body-size-small': this.size === 'small',
+      'body-size-medium': this.size === 'medium',
+      'body-size-large': this.size === 'large',
+      'palette-primary': this.color === 'primary',
+      'palette-secondary': this.color === 'secondary',
+      'palette-tertiary': this.color === 'tertiary',
+      'palette-neutral': this.color === 'neutral',
+      'palette-error': this.color === 'error',
+      'variant-default': this.variant === 'default',
+      'variant-outlined': this.variant === 'outlined',
     });
 
     return html`
@@ -165,6 +165,6 @@ export class TextArea extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "pr-textarea": TextArea;
+    'pr-textarea': TextArea;
   }
 }

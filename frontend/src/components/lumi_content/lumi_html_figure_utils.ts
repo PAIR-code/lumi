@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import katex from "katex";
+import katex from 'katex';
 
-export const PLACEHOLDER_PREFIX = "__LATEX_PLACEHOLDER_";
+export const PLACEHOLDER_PREFIX = '__LATEX_PLACEHOLDER_';
 
 // Captures content (.*?) between $ and $
 const KATEK_REGEX = /\$(.*?)\$/g;
@@ -63,7 +63,7 @@ export function renderKatexInHtml(container: Element, latex: string[]) {
   // Matches prefix_{index}__, capturing the index.
   const placeholderRegex = new RegExp(
     `${PLACEHOLDER_PREFIX}(\\d+)__`,
-    /* find all matches */ "g"
+    /* find all matches */ 'g'
   );
 
   nodesToProcess.forEach((textNode) => {
@@ -86,7 +86,7 @@ export function renderKatexInHtml(container: Element, latex: string[]) {
             const latexIndex = parseInt(fragment, 10);
             const expression = latex[latexIndex];
             if (expression !== undefined) {
-              const span = document.createElement("span");
+              const span = document.createElement('span');
               try {
                 katex.render(expression, span, {
                   throwOnError: false,
@@ -94,7 +94,7 @@ export function renderKatexInHtml(container: Element, latex: string[]) {
                 });
                 newNodes.appendChild(span);
               } catch (e) {
-                console.error("KaTeX rendering failed:", e);
+                console.error('KaTeX rendering failed:', e);
                 // Revert to expression text on failure.
                 newNodes.appendChild(document.createTextNode(expression));
               }

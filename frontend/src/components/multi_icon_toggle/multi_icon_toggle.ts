@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
-import "../../pair-components/icon";
+import '../../pair-components/icon';
 
-import { styles } from "./multi_icon_toggle.scss";
+import { styles } from './multi_icon_toggle.scss';
 
-export type Selection = "collapsed" | "indeterminate" | "expanded";
+export type Selection = 'collapsed' | 'indeterminate' | 'expanded';
 
 /**
  * A three-icon toggle for managing collapse/expand all states.
  */
-@customElement("multi-icon-toggle")
+@customElement('multi-icon-toggle')
 export class MultiIconToggle extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
-  @property({ type: String }) selection: Selection = "collapsed";
+  @property({ type: String }) selection: Selection = 'collapsed';
 
-  private readonly onCollapseAll = new Event("onCollapseAll");
-  private readonly onExpandAll = new Event("onExpandAll");
+  private readonly onCollapseAll = new Event('onCollapseAll');
+  private readonly onExpandAll = new Event('onExpandAll');
 
   private handleCollapseAll() {
     this.dispatchEvent(this.onCollapseAll);
@@ -48,18 +48,18 @@ export class MultiIconToggle extends MobxLitElement {
 
   override render() {
     const collapseClasses = classMap({
-      ["selected"]: this.selection === "collapsed",
-      ["button-outer"]: true,
-      ["clickable"]: true,
+      ['selected']: this.selection === 'collapsed',
+      ['button-outer']: true,
+      ['clickable']: true,
     });
     const indeterminateClasses = classMap({
-      selected: this.selection === "indeterminate",
-      ["button-outer"]: true,
+      selected: this.selection === 'indeterminate',
+      ['button-outer']: true,
     });
     const expandClasses = classMap({
-      selected: this.selection === "expanded",
-      ["button-outer"]: true,
-      ["clickable"]: true,
+      selected: this.selection === 'expanded',
+      ['button-outer']: true,
+      ['clickable']: true,
     });
 
     return html`
@@ -93,6 +93,6 @@ export class MultiIconToggle extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "multi-icon-toggle": MultiIconToggle;
+    'multi-icon-toggle': MultiIconToggle;
   }
 }

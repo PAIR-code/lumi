@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-import { FirebaseApp, initializeApp } from "firebase/app";
+import { FirebaseApp, initializeApp } from 'firebase/app';
 import {
   type Firestore,
   Unsubscribe,
   connectFirestoreEmulator,
   getFirestore,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 import {
   Functions,
   connectFunctionsEmulator,
   getFunctions,
-} from "firebase/functions";
+} from 'firebase/functions';
 import {
   connectStorageEmulator,
   FirebaseStorage,
   getStorage,
   ref,
   getDownloadURL,
-} from "firebase/storage";
-import { makeObservable } from "mobx";
+} from 'firebase/storage';
+import { makeObservable } from 'mobx';
 
 import {
   FIREBASE_LOCAL_HOST_PORT_AUTH,
   FIREBASE_LOCAL_HOST_PORT_FIRESTORE,
   FIREBASE_LOCAL_HOST_PORT_FUNCTIONS,
   FIREBASE_LOCAL_HOST_PORT_STORAGE,
-} from "../shared/constants";
-import { FIREBASE_CONFIG } from "../../firebase_config";
+} from '../shared/constants';
+import { FIREBASE_CONFIG } from '../../firebase_config';
 
-import { Service } from "./service";
+import { Service } from './service';
 
 /** Manages Firebase connection, experiments subscription. */
 export class FirebaseService extends Service {
@@ -58,7 +58,7 @@ export class FirebaseService extends Service {
     this.storage = getStorage(this.app);
 
     // Only register emulators if in dev mode
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       this.registerEmulators();
     }
   }
@@ -72,17 +72,17 @@ export class FirebaseService extends Service {
   registerEmulators() {
     connectFirestoreEmulator(
       this.firestore,
-      "localhost",
+      'localhost',
       FIREBASE_LOCAL_HOST_PORT_FIRESTORE
     );
     connectStorageEmulator(
       this.storage,
-      "localhost",
+      'localhost',
       FIREBASE_LOCAL_HOST_PORT_STORAGE
     );
     connectFunctionsEmulator(
       this.functions,
-      "localhost",
+      'localhost',
       FIREBASE_LOCAL_HOST_PORT_FUNCTIONS
     );
   }

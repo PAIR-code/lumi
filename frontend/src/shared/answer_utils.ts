@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { LumiAnswer, LumiAnswerRequest } from "./api";
+import { LumiAnswer, LumiAnswerRequest } from './api';
 
 /**
  * Creates a temporary LumiAnswer object to be used as a placeholder

@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import { fixture, html } from "@open-wc/testing";
-import { expect } from "@esm-bundle/chai";
+import { fixture, html } from '@open-wc/testing';
+import { expect } from '@esm-bundle/chai';
 
-import "./lumi_span";
-import { LumiSpanViz } from "./lumi_span";
-import { Highlight, InnerTagName, LumiSpan } from "../../shared/lumi_doc";
-import { HighlightManager } from "../../shared/highlight_manager";
+import './lumi_span';
+import { LumiSpanViz } from './lumi_span';
+import { Highlight, InnerTagName, LumiSpan } from '../../shared/lumi_doc';
+import { HighlightManager } from '../../shared/highlight_manager';
 
-describe("lumi-span", () => {
-  it("renders a simple span", async () => {
+describe('lumi-span', () => {
+  it('renders a simple span', async () => {
     const span: LumiSpan = {
-      id: "s1",
-      text: "hello world",
+      id: 's1',
+      text: 'hello world',
       innerTags: [],
     };
 
@@ -35,13 +35,13 @@ describe("lumi-span", () => {
       html`<lumi-span .span=${span}></lumi-span>`
     );
     const spanElement = el.querySelector(`#${span.id}`);
-    expect(spanElement?.textContent?.trim()).to.equal("hello world");
+    expect(spanElement?.textContent?.trim()).to.equal('hello world');
   });
 
-  it("renders a span with bold text", async () => {
+  it('renders a span with bold text', async () => {
     const span: LumiSpan = {
-      id: "s1",
-      text: "hello bold world",
+      id: 's1',
+      text: 'hello bold world',
       innerTags: [
         {
           tagName: InnerTagName.BOLD,
@@ -54,24 +54,24 @@ describe("lumi-span", () => {
     const el = await fixture<LumiSpanViz>(
       html`<lumi-span .span=${span}></lumi-span>`
     );
-    const boldEls = el.querySelectorAll("span.b");
+    const boldEls = el.querySelectorAll('span.b');
     expect(boldEls.length).to.equal(4);
-    const expectedTextContents = ["b", "o", "l", "d"];
+    const expectedTextContents = ['b', 'o', 'l', 'd'];
     expectedTextContents.forEach((expectedContent, index) => {
       expect(boldEls[index]).to.exist;
       expect(boldEls[index]!.textContent).to.equal(expectedContent);
     });
   });
 
-  it("renders a span with a link", async () => {
+  it('renders a span with a link', async () => {
     const span: LumiSpan = {
-      id: "s1",
-      text: "a link to google",
+      id: 's1',
+      text: 'a link to google',
       innerTags: [
         {
           tagName: InnerTagName.A,
           position: { startIndex: 2, endIndex: 6 },
-          metadata: { href: "https://www.google.com" },
+          metadata: { href: 'https://www.google.com' },
         },
       ],
     };
@@ -79,26 +79,26 @@ describe("lumi-span", () => {
     const el = await fixture<LumiSpanViz>(
       html`<lumi-span .span=${span}></lumi-span>`
     );
-    const linkEls = el.querySelectorAll("a");
-    const expectedTextContents = ["l", "i", "n", "k"];
+    const linkEls = el.querySelectorAll('a');
+    const expectedTextContents = ['l', 'i', 'n', 'k'];
     expectedTextContents.forEach((expectedContent, index) => {
       const linkEl = linkEls[index];
       expect(linkEl).to.exist;
       expect(linkEl!.textContent).to.equal(expectedContent);
-      expect(linkEl!.href).to.equal("https://www.google.com/");
+      expect(linkEl!.href).to.equal('https://www.google.com/');
     });
   });
 
-  it("renders a span with a highlight", async () => {
+  it('renders a span with a highlight', async () => {
     const span: LumiSpan = {
-      id: "s1",
-      text: "some highlighted text",
+      id: 's1',
+      text: 'some highlighted text',
       innerTags: [],
     };
     const highlights: Highlight[] = [
       {
-        color: "yellow",
-        spanId: "s1",
+        color: 'yellow',
+        spanId: 's1',
         position: { startIndex: 5, endIndex: 16 },
       },
     ];
@@ -106,19 +106,19 @@ describe("lumi-span", () => {
     const el = await fixture<LumiSpanViz>(
       html`<lumi-span .span=${span} .highlights=${highlights}></lumi-span>`
     );
-    const highlightedEls = el.querySelectorAll("span.yellow");
+    const highlightedEls = el.querySelectorAll('span.yellow');
     expect(highlightedEls.length).to.equal(11); // 'highlighted'.length
 
     const spanElement = el.querySelector(`#${span.id}`);
-    expect(spanElement?.textContent?.trim()).to.equal("some highlighted text");
-    expect(highlightedEls[0].textContent).to.equal("h");
-    expect(highlightedEls[10].textContent).to.equal("d");
+    expect(spanElement?.textContent?.trim()).to.equal('some highlighted text');
+    expect(highlightedEls[0].textContent).to.equal('h');
+    expect(highlightedEls[10].textContent).to.equal('d');
   });
 
-  it("renders a span with an equation", async () => {
+  it('renders a span with an equation', async () => {
     const span: LumiSpan = {
-      id: "s2",
-      text: "An equation: E=mc^2",
+      id: 's2',
+      text: 'An equation: E=mc^2',
       innerTags: [
         {
           tagName: InnerTagName.MATH,
@@ -135,27 +135,27 @@ describe("lumi-span", () => {
     const spanElement = el.querySelector(`#${span.id}`);
 
     // Check that the text outside the equation is still there
-    expect(spanElement?.textContent?.trim()).to.include("An equation:");
+    expect(spanElement?.textContent?.trim()).to.include('An equation:');
 
     // Check for the KaTeX rendered element
-    const katexEl = el.querySelector(".katex");
+    const katexEl = el.querySelector('.katex');
     expect(katexEl).to.exist;
 
     // Check for specific KaTeX rendered content if possible
-    const miE = katexEl!.querySelector(".mord.mathnormal");
+    const miE = katexEl!.querySelector('.mord.mathnormal');
     expect(miE).to.exist;
-    expect(miE!.textContent).to.equal("E");
+    expect(miE!.textContent).to.equal('E');
   });
 
-  it("renders a span with an l-ref reference", async () => {
+  it('renders a span with an l-ref reference', async () => {
     const span: LumiSpan = {
-      id: "s2",
-      text: "Sentence",
+      id: 's2',
+      text: 'Sentence',
       innerTags: [
         {
           tagName: InnerTagName.REFERENCE,
           position: { startIndex: 8, endIndex: 8 },
-          metadata: { id: "ref1, ref2" },
+          metadata: { id: 'ref1, ref2' },
         },
       ],
     };
@@ -164,29 +164,29 @@ describe("lumi-span", () => {
       html`<lumi-span
         .span=${span}
         .references=${[
-          { id: "ref1", span: { id: "ref-s1", text: "", innerTags: [] } },
-          { id: "ref2", span: { id: "ref-s2", text: "", innerTags: [] } },
+          { id: 'ref1', span: { id: 'ref-s1', text: '', innerTags: [] } },
+          { id: 'ref2', span: { id: 'ref-s2', text: '', innerTags: [] } },
         ]}
       ></lumi-span>`
     );
 
-    expect(el.textContent).to.include("Sentence12");
+    expect(el.textContent).to.include('Sentence12');
   });
 
-  it("renders a span with an s-ref reference as a numerical index", async () => {
+  it('renders a span with an s-ref reference as a numerical index', async () => {
     const span: LumiSpan = {
-      id: "s2",
-      text: "Sentence",
+      id: 's2',
+      text: 'Sentence',
       innerTags: [
         {
           tagName: InnerTagName.SPAN_REFERENCE,
           position: { startIndex: 8, endIndex: 8 },
-          metadata: { id: "sref1" },
+          metadata: { id: 'sref1' },
         },
         {
           tagName: InnerTagName.SPAN_REFERENCE,
           position: { startIndex: 8, endIndex: 8 },
-          metadata: { id: "sref2" },
+          metadata: { id: 'sref2' },
         },
       ],
     };
@@ -195,19 +195,19 @@ describe("lumi-span", () => {
       html`<lumi-span
         .span=${span}
         .referencedSpans=${[
-          { id: "sref1", innerTags: [], text: "ref text 1" },
-          { id: "sref2", innerTags: [], text: "ref text 2" },
+          { id: 'sref1', innerTags: [], text: 'ref text 1' },
+          { id: 'sref2', innerTags: [], text: 'ref text 2' },
         ]}
       ></lumi-span>`
     );
 
-    expect(el.textContent).to.include("Sentence12");
+    expect(el.textContent).to.include('Sentence12');
   });
 
-  it("renders a span with nested bold and italic tags", async () => {
+  it('renders a span with nested bold and italic tags', async () => {
     const span: LumiSpan = {
-      id: "s1",
-      text: "This is bold and italic text.",
+      id: 's1',
+      text: 'This is bold and italic text.',
       innerTags: [
         {
           tagName: InnerTagName.BOLD,
@@ -228,20 +228,20 @@ describe("lumi-span", () => {
       html`<lumi-span .span=${span}></lumi-span>`
     );
 
-    const boldEls = el.querySelectorAll("span.b");
+    const boldEls = el.querySelectorAll('span.b');
     expect(boldEls.length).to.equal(16); // "bold and italic".length
 
-    const italicEls = el.querySelectorAll("span.i");
+    const italicEls = el.querySelectorAll('span.i');
     expect(italicEls.length).to.equal(6); // "italic".length
 
-    const boldAndItalicEls = el.querySelectorAll("span.b.i");
+    const boldAndItalicEls = el.querySelectorAll('span.b.i');
     expect(boldAndItalicEls.length).to.equal(6);
 
     const spanElement = el.querySelector(`#${span.id}`);
     expect(spanElement?.textContent?.trim()).to.equal(
-      "This is bold and italic text."
+      'This is bold and italic text.'
     );
-    expect(boldAndItalicEls[0].textContent).to.equal("i");
-    expect(boldAndItalicEls[5].textContent).to.equal("c");
+    expect(boldAndItalicEls[0].textContent).to.equal('i');
+    expect(boldAndItalicEls[5].textContent).to.equal('c');
   });
 });

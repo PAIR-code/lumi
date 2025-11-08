@@ -1,0 +1,143 @@
+# Pre-commit hooks configuration for lumi-litellm project
+# Install pre-commit: uv tool install pre-commit
+# Setup hooks: pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # General hooks for all files
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(.*\.md|.*\.txt)$
+      - id: end-of-file-fixer
+        exclude: ^(.*\.txt)$
+      - id: check-yaml
+        args: ['--unsafe']  # Allow custom YAML tags
+      - id: check-json
+        exclude: ^(package-lock\.json|tsconfig\.json)$
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+      - id: check-toml
+
+  # Python: Ruff - Fast linter and formatter (replaces black, isort, flake8)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      # Run the linter
+      - id: ruff
+        args: [--fix]
+        files: ^backend/
+      # Run the formatter
+      - id: ruff-format
+        files: ^backend/
+
+  # Python: Type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        files: ^backend/
+        args: [
+          '--ignore-missing-imports',
+          '--warn-redundant-casts',
+          '--warn-unused-ignores',
+          '--no-strict-optional'
+        ]
+        additional_dependencies: [
+          'types-requests',
+          'types-PyYAML',
+          'pydantic',
+        ]
+
+  # Frontend: Prettier for formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        files: ^frontend/
+        types_or: [javascript, jsx, ts, tsx, json, yaml, css, scss, markdown]
+        args: [
+          '--write',
+          '--print-width=80',
+          '--single-quote',
+          '--trailing-comma=es5'
+        ]
+        exclude: |
+          (?x)^(
+            frontend/node_modules/|
+            frontend/dist/|
+            frontend/package-lock\.json|
+            frontend/storybook-static/
+          )
+
+  # Frontend: ESLint for linting
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.17.0
+    hooks:
+      - id: eslint
+        files: ^frontend/src/.*\.(ts|tsx|js|jsx)$
+        args: ['--fix', '--max-warnings=0']
+        additional_dependencies:
+          - eslint@8.56.0
+          - '@typescript-eslint/eslint-plugin@7.11.0'
+          - '@typescript-eslint/parser@7.11.0'
+          - typescript@5.4.4
+
+  # Docker: Dockerfile linting
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        args: [
+          '--ignore', 'DL3008',  # Pin versions in apt-get install
+          '--ignore', 'DL3009',  # Delete apt cache
+          '--ignore', 'DL3018',  # Pin versions in apk add
+        ]
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [
+          '-d',
+          '{extends: default, rules: {line-length: {max: 120}, document-start: disable, truthy: {check-keys: false}}}'
+        ]
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.43.0
+    hooks:
+      - id: markdownlint
+        args: ['--fix']
+        exclude: |
+          (?x)^(
+            node_modules/|
+            MIGRATION_COMPLETE\.md
+          )
+
+# Configuration for individual commit checks
+default_language_version:
+  python: python3.11
+
+# Fail fast on first error
+fail_fast: false
+
+# Exclude specific directories
+exclude: |
+  (?x)^(
+    .*/__pycache__/.*|
+    .*/node_modules/.*|
+    .*/dist/.*|
+    .*\.pyc$|
+    backend/import_pipeline/nltk_data/.*|
+    local_image_bucket/.*|
+    thoughts/.*|
+    .*\.lock$
+  )

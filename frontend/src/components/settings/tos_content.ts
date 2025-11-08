@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-import { styles } from "./tos_content.scss";
+import { styles } from './tos_content.scss';
 
 /** TOS content. */
-@customElement("tos-content")
+@customElement('tos-content')
 export class TOSContent extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -74,6 +74,6 @@ export class TOSContent extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "tos-content": TOSContent;
+    'tos-content': TOSContent;
   }
 }

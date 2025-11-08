@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-import { areArraysEqual } from "./utils";
-import { expect } from "@esm-bundle/chai";
+import { areArraysEqual } from './utils';
+import { expect } from '@esm-bundle/chai';
 
-describe("areArraysEqual", () => {
-  it("should return true for two equal arrays of numbers", () => {
+describe('areArraysEqual', () => {
+  it('should return true for two equal arrays of numbers', () => {
     expect(areArraysEqual([1, 2, 3], [1, 2, 3])).to.equal(true);
   });
 
-  it("should return true for two equal arrays of strings", () => {
-    expect(areArraysEqual(["a", "b", "c"], ["a", "b", "c"])).to.equal(true);
+  it('should return true for two equal arrays of strings', () => {
+    expect(areArraysEqual(['a', 'b', 'c'], ['a', 'b', 'c'])).to.equal(true);
   });
 
-  it("should return false for two different arrays of the same length", () => {
+  it('should return false for two different arrays of the same length', () => {
     expect(areArraysEqual([1, 2, 3], [1, 2, 4])).to.equal(false);
   });
 
-  it("should return false for two arrays of different lengths", () => {
+  it('should return false for two arrays of different lengths', () => {
     expect(areArraysEqual([1, 2, 3], [1, 2])).to.equal(false);
   });
 
-  it("should return true for two empty arrays", () => {
+  it('should return true for two empty arrays', () => {
     expect(areArraysEqual([], [])).to.equal(true);
   });
 
-  it("should return false when comparing an empty array to a non-empty array", () => {
+  it('should return false when comparing an empty array to a non-empty array', () => {
     expect(areArraysEqual([], [1])).to.equal(false);
   });
 });

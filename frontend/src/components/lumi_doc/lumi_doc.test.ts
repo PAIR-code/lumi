@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import { fixture, html } from "@open-wc/testing";
-import { expect } from "@esm-bundle/chai";
-import * as sinon from "sinon";
+import { fixture, html } from '@open-wc/testing';
+import { expect } from '@esm-bundle/chai';
+import * as sinon from 'sinon';
 
-import { LumiDocManager } from "../../shared/lumi_doc_manager";
-import { CollapseManager } from "../../shared/collapse_manager";
-import { HighlightManager } from "../../shared/highlight_manager";
+import { LumiDocManager } from '../../shared/lumi_doc_manager';
+import { CollapseManager } from '../../shared/collapse_manager';
+import { HighlightManager } from '../../shared/highlight_manager';
 
-import "./lumi_doc";
-import "../multi_icon_toggle/multi_icon_toggle";
-import { LumiDoc } from "../../shared/lumi_doc";
+import './lumi_doc';
+import '../multi_icon_toggle/multi_icon_toggle';
+import { LumiDoc } from '../../shared/lumi_doc';
 
 class MockLumiDocManager extends LumiDocManager {
   constructor(lumiDoc: any) {
@@ -36,7 +36,7 @@ class MockLumiDocManager extends LumiDocManager {
 class MockCollapseManager extends CollapseManager {}
 class MockHighlightManager extends HighlightManager {}
 
-describe("lumi-doc", () => {
+describe('lumi-doc', () => {
   let lumiDocManager: LumiDocManager;
   let collapseManager: CollapseManager;
   let highlightManager: HighlightManager;
@@ -44,13 +44,13 @@ describe("lumi-doc", () => {
   beforeEach(() => {
     const lumiDoc: LumiDoc = {
       metadata: {
-        paperId: "12345",
-        title: "Test Paper",
-        authors: ["Author 1", "Author 2"],
-        publishedTimestamp: "2025-07-11",
-        version: "1",
-        summary: "summary",
-        updatedTimestamp: "",
+        paperId: '12345',
+        title: 'Test Paper',
+        authors: ['Author 1', 'Author 2'],
+        publishedTimestamp: '2025-07-11',
+        version: '1',
+        summary: 'summary',
+        updatedTimestamp: '',
       },
       abstract: { contents: [] },
       sections: [],
@@ -60,9 +60,9 @@ describe("lumi-doc", () => {
         contentSummaries: [],
         spanSummaries: [],
       },
-      markdown: "",
+      markdown: '',
       concepts: [],
-      loadingStatus: "SUCCESS",
+      loadingStatus: 'SUCCESS',
     };
     lumiDocManager = new MockLumiDocManager(lumiDoc);
     collapseManager = new MockCollapseManager(lumiDocManager);
@@ -73,7 +73,7 @@ describe("lumi-doc", () => {
     sinon.restore();
   });
 
-  it("renders the initial state", async () => {
+  it('renders the initial state', async () => {
     const el = await fixture(
       html`<lumi-doc
         .lumiDocManager=${lumiDocManager}
@@ -82,8 +82,8 @@ describe("lumi-doc", () => {
       ></lumi-doc>`
     );
 
-    const title = el.querySelector("h1");
+    const title = el.querySelector('h1');
     expect(title).to.exist;
-    expect(title!.textContent).to.contain("Test Paper");
+    expect(title!.textContent).to.contain('Test Paper');
   });
 });

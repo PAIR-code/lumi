@@ -15,50 +15,50 @@
  * limitations under the License.
  */
 
-import { expect } from "@esm-bundle/chai";
-import { HighlightManager } from "./highlight_manager";
-import { Highlight } from "./lumi_doc";
+import { expect } from '@esm-bundle/chai';
+import { HighlightManager } from './highlight_manager';
+import { Highlight } from './lumi_doc';
 
-describe("HighlightManager", () => {
+describe('HighlightManager', () => {
   let highlightManager: HighlightManager;
 
   beforeEach(() => {
     highlightManager = new HighlightManager();
   });
 
-  it("should follow the highlight lifecycle: add, remove, and clear", () => {
+  it('should follow the highlight lifecycle: add, remove, and clear', () => {
     // 1. Instantiate
     expect(highlightManager.highlightedSpans.size).to.equal(0);
 
     // 2. Add highlights
     const highlightsToAdd: Highlight[] = [
-      { color: "yellow", spanId: "span-1" },
-      { color: "cyan", spanId: "span-1" },
-      { color: "green", spanId: "span-2" },
+      { color: 'yellow', spanId: 'span-1' },
+      { color: 'cyan', spanId: 'span-1' },
+      { color: 'green', spanId: 'span-2' },
     ];
     highlightManager.addHighlights(highlightsToAdd);
 
     // 3. Assert addition
     expect(highlightManager.highlightedSpans.size).to.equal(2);
-    expect(highlightManager.getSpanHighlights("span-1")).to.have.lengthOf(2);
-    expect(highlightManager.getSpanHighlights("span-2")).to.have.lengthOf(1);
-    expect(highlightManager.getSpanHighlights("span-1")[0].color).to.equal(
-      "yellow"
+    expect(highlightManager.getSpanHighlights('span-1')).to.have.lengthOf(2);
+    expect(highlightManager.getSpanHighlights('span-2')).to.have.lengthOf(1);
+    expect(highlightManager.getSpanHighlights('span-1')[0].color).to.equal(
+      'yellow'
     );
 
     // 4. Remove a highlight
-    highlightManager.removeHighlights(["span-1"]);
+    highlightManager.removeHighlights(['span-1']);
 
     // 5. Assert removal
     expect(highlightManager.highlightedSpans.size).to.equal(1);
-    expect(highlightManager.getSpanHighlights("span-1")).to.be.empty;
-    expect(highlightManager.getSpanHighlights("span-2")).to.have.lengthOf(1);
+    expect(highlightManager.getSpanHighlights('span-1')).to.be.empty;
+    expect(highlightManager.getSpanHighlights('span-2')).to.have.lengthOf(1);
 
     // 6. Clear all highlights
     highlightManager.clearHighlights();
 
     // 7. Assert clear
     expect(highlightManager.highlightedSpans.size).to.equal(0);
-    expect(highlightManager.getSpanHighlights("span-2")).to.be.empty;
+    expect(highlightManager.getSpanHighlights('span-2')).to.be.empty;
   });
 });

@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import "./icon";
+import './icon';
 
-import { CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
+import { CSSResultGroup, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
-import { styles as sharedStyles } from "./shared.scss";
-import type { ComponentColor, ComponentSize, ComponentVariant } from "./types";
+import { styles as sharedStyles } from './shared.scss';
+import type { ComponentColor, ComponentSize, ComponentVariant } from './types';
 
-import { styles } from "./icon_button.scss";
+import { styles } from './icon_button.scss';
 
 /**
  * Icon button.
@@ -36,7 +36,7 @@ import { styles } from "./icon_button.scss";
  *   loading spinner in place of the text
  *   (e.g., if it's a Save button and the content is currently saving)
  */
-@customElement("pr-icon-button")
+@customElement('pr-icon-button')
 export class IconButton extends LitElement {
   static override styles: CSSResultGroup = [sharedStyles, styles];
 
@@ -44,41 +44,41 @@ export class IconButton extends LitElement {
   @property({ type: Boolean }) filled = false; // if icon should have filled style
   @property({ type: Boolean }) disabled = false;
   @property({ type: Boolean }) loading = false;
-  @property({ type: String }) icon = "favorite";
+  @property({ type: String }) icon = 'favorite';
 
   // Custom styles
-  @property({ type: String }) color: ComponentColor = "primary";
-  @property({ type: String }) padding: ComponentSize = "small";
-  @property({ type: String }) size: ComponentSize = "small";
-  @property({ type: String }) variant: ComponentVariant = "filled";
+  @property({ type: String }) color: ComponentColor = 'primary';
+  @property({ type: String }) padding: ComponentSize = 'small';
+  @property({ type: String }) size: ComponentSize = 'small';
+  @property({ type: String }) variant: ComponentVariant = 'filled';
 
   override render() {
     const classes = classMap({
-      "body-size-small": this.size === "small",
-      "body-size-medium": this.size === "medium",
-      "body-size-large": this.size === "large",
-      "padding-small": this.padding === "small",
-      "padding-medium": this.padding === "medium",
-      "padding-large": this.padding === "large",
-      "palette-primary": this.color === "primary",
-      "palette-secondary": this.color === "secondary",
-      "palette-tertiary": this.color === "tertiary",
-      "palette-neutral": this.color === "neutral",
-      "palette-error": this.color === "error",
-      "variant-default": this.variant === "default",
-      "variant-filled": this.variant === "filled",
-      "variant-outlined": this.variant === "outlined",
-      "variant-tonal": this.variant === "tonal",
+      'body-size-small': this.size === 'small',
+      'body-size-medium': this.size === 'medium',
+      'body-size-large': this.size === 'large',
+      'padding-small': this.padding === 'small',
+      'padding-medium': this.padding === 'medium',
+      'padding-large': this.padding === 'large',
+      'palette-primary': this.color === 'primary',
+      'palette-secondary': this.color === 'secondary',
+      'palette-tertiary': this.color === 'tertiary',
+      'palette-neutral': this.color === 'neutral',
+      'palette-error': this.color === 'error',
+      'variant-default': this.variant === 'default',
+      'variant-filled': this.variant === 'filled',
+      'variant-outlined': this.variant === 'outlined',
+      'variant-tonal': this.variant === 'tonal',
     });
 
     const renderButtonContent = () => {
       const iconClasses = classMap({
-        "button-slot": true,
+        'button-slot': true,
         hidden: this.loading,
       });
 
       const loadingSpinnerClasses = classMap({
-        "loading-spinner-wrapper": true,
+        'loading-spinner-wrapper': true,
         hidden: !this.loading,
       });
 
@@ -112,6 +112,6 @@ export class IconButton extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "pr-icon-button": IconButton;
+    'pr-icon-button': IconButton;
   }
 }

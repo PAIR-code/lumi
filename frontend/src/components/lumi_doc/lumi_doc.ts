@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-import { html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { HighlightSelection } from "../../shared/selection_utils";
+import { html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { HighlightSelection } from '../../shared/selection_utils';
 
-import "./lumi_abstract";
-import "./lumi_references";
-import "./lumi_footnotes";
-import "./lumi_section";
-import "../lumi_span/lumi_span";
-import "../../pair-components/icon_button";
-import "../multi_icon_toggle/multi_icon_toggle";
+import './lumi_abstract';
+import './lumi_references';
+import './lumi_footnotes';
+import './lumi_section';
+import '../lumi_span/lumi_span';
+import '../../pair-components/icon_button';
+import '../multi_icon_toggle/multi_icon_toggle';
 
-import { styles } from "./lumi_doc.scss";
-import { LumiDocManager } from "../../shared/lumi_doc_manager";
-import { CollapseManager } from "../../shared/collapse_manager";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
+import { styles } from './lumi_doc.scss';
+import { LumiDocManager } from '../../shared/lumi_doc_manager';
+import { CollapseManager } from '../../shared/collapse_manager';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
 
-import { getArxivPaperUrl } from "../../services/router.service";
-import { LumiFootnote, LumiReference } from "../../shared/lumi_doc";
-import { LumiAnswer } from "../../shared/api";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
+import { getArxivPaperUrl } from '../../services/router.service';
+import { LumiFootnote, LumiReference } from '../../shared/lumi_doc';
+import { LumiAnswer } from '../../shared/api';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
 import {
   LumiContentRenderedEvent,
   LumiContentViz,
-} from "../lumi_content/lumi_content";
-import { createRef, ref, Ref } from "lit/directives/ref.js";
+} from '../lumi_content/lumi_content';
+import { createRef, ref, Ref } from 'lit/directives/ref.js';
 
 /**
  * Displays a Lumi Document.
  */
-@customElement("lumi-doc")
+@customElement('lumi-doc')
 export class LumiDocViz extends LightMobxLitElement {
   @property({ type: Object }) lumiDocManager!: LumiDocManager;
   @property({ type: Object }) collapseManager!: CollapseManager;
@@ -93,7 +93,7 @@ export class LumiDocViz extends LightMobxLitElement {
     const scrollableElement = this.scrollRef.value;
     if (!scrollableElement) {
       console.error(
-        "Lumi-doc scrollable element not found for IntersectionObserver"
+        'Lumi-doc scrollable element not found for IntersectionObserver'
       );
       return;
     }
@@ -133,7 +133,7 @@ export class LumiDocViz extends LightMobxLitElement {
       this.lumiDocManager.lumiDoc.metadata?.publishedTimestamp;
     const date = publishedTimestamp
       ? new Date(publishedTimestamp).toLocaleDateString()
-      : "";
+      : '';
     return html`
       <style>
         ${styles}
@@ -148,7 +148,7 @@ export class LumiDocViz extends LightMobxLitElement {
             <h1 class="main-column title">
               ${this.lumiDoc.metadata?.title}
               <a
-                href=${getArxivPaperUrl(this.lumiDoc.metadata?.paperId ?? "")}
+                href=${getArxivPaperUrl(this.lumiDoc.metadata?.paperId ?? '')}
                 class="arxiv-link"
                 rel="noopener noreferrer"
               >
@@ -163,7 +163,7 @@ export class LumiDocViz extends LightMobxLitElement {
             </h1>
             <div class="main-column date">Published: ${date}</div>
             <div class="main-column authors">
-              ${this.lumiDoc.metadata?.authors.join(", ")}
+              ${this.lumiDoc.metadata?.authors.join(', ')}
             </div>
           </div>
           <lumi-abstract
@@ -234,6 +234,6 @@ export class LumiDocViz extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-doc": LumiDocViz;
+    'lumi-doc': LumiDocViz;
   }
 }

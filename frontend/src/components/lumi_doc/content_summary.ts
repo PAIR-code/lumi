@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-import { html, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
-import { LumiContent, LumiSummary } from "../../shared/lumi_doc";
-import { FocusState } from "../../shared/types";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { LumiAnswer } from "../../shared/api";
-import { LumiFont } from "../../shared/types";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { styles } from "./content_summary.scss";
+import { html, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { LumiContent, LumiSummary } from '../../shared/lumi_doc';
+import { FocusState } from '../../shared/types';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { LumiAnswer } from '../../shared/api';
+import { LumiFont } from '../../shared/types';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { styles } from './content_summary.scss';
 
-import "../lumi_span/lumi_span";
-import "../../pair-components/icon";
-import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
+import '../lumi_span/lumi_span';
+import '../../pair-components/icon';
+import { getSpanHighlightsFromManagers } from '../lumi_span/lumi_span_utils';
 
-@customElement("lumi-content-summary")
+@customElement('lumi-content-summary')
 export class LumiContentSummary extends LightMobxLitElement {
   @property({ type: Object }) content!: LumiContent;
   @property({ type: Object }) summary!: LumiSummary | null;
@@ -59,8 +59,8 @@ export class LumiContentSummary extends LightMobxLitElement {
     const focusState = isFocused
       ? FocusState.FOCUSED
       : hasFocus
-      ? FocusState.UNFOCUSED
-      : FocusState.DEFAULT;
+        ? FocusState.UNFOCUSED
+        : FocusState.DEFAULT;
     return { isFocused, hasFocus, focusState };
   }
 
@@ -98,7 +98,7 @@ export class LumiContentSummary extends LightMobxLitElement {
         const { focusState } = this.getFocusState(spanIds);
 
         const classesObject: { [key: string]: boolean } = {
-          "span-summary": true,
+          'span-summary': true,
         };
 
         const handleSummaryMouseEnter = () => {
@@ -115,7 +115,7 @@ export class LumiContentSummary extends LightMobxLitElement {
           class=${classMap(classesObject)}
         >
           <lumi-span
-            .classMap=${{ "span-summary-text": true }}
+            .classMap=${{ 'span-summary-text': true }}
             .span=${summary.summary}
             .focusState=${focusState}
             .showFocusUnderline=${true}
@@ -135,7 +135,7 @@ export class LumiContentSummary extends LightMobxLitElement {
   private renderSummaries() {
     const summaryClasses = {
       summary: true,
-      "has-focused-span": !!this.focusedSpanId,
+      'has-focused-span': !!this.focusedSpanId,
     };
 
     return html`
@@ -144,7 +144,7 @@ export class LumiContentSummary extends LightMobxLitElement {
           ${this.summary
             ? html`<lumi-span
                 .classMap=${{
-                  "summary-span": true,
+                  'summary-span': true,
                 }}
                 .span=${this.summary.summary}
                 .highlights=${getSpanHighlightsFromManagers(
@@ -167,17 +167,17 @@ export class LumiContentSummary extends LightMobxLitElement {
     }
 
     const containerClasses = {
-      "content-summary-renderer-container": true,
+      'content-summary-renderer-container': true,
       collapsed: this.isCollapsed,
     };
 
     const innerSummaryClasses = {
-      "inner-summary": true,
-      ["collapsed"]: this.isCollapsed,
+      'inner-summary': true,
+      ['collapsed']: this.isCollapsed,
     };
 
-    const icon = this.isCollapsed ? "chevron_left" : "chevron_right";
-    const title = this.isCollapsed ? "Show summary" : "Hide summary";
+    const icon = this.isCollapsed ? 'chevron_left' : 'chevron_right';
+    const title = this.isCollapsed ? 'Show summary' : 'Hide summary';
 
     return html`
       <style>
@@ -202,6 +202,6 @@ export class LumiContentSummary extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-content-summary": LumiContentSummary;
+    'lumi-content-summary': LumiContentSummary;
   }
 }

@@ -14,18 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Options } from "@swc/core";
-import type { StorybookConfig } from "@storybook/web-components-webpack5";
+import type { Options } from '@swc/core';
+import type { StorybookConfig } from '@storybook/web-components-webpack5';
 
 const config: StorybookConfig = {
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [
-    "@storybook/addon-webpack5-compiler-swc",
-    "@storybook/addon-essentials",
-    "@storybook/addon-styling-webpack",
-    "@storybook/preset-scss",
+    '@storybook/addon-webpack5-compiler-swc',
+    '@storybook/addon-essentials',
+    '@storybook/addon-styling-webpack',
+    '@storybook/preset-scss',
     {
-      name: "@storybook/addon-styling-webpack",
+      name: '@storybook/addon-styling-webpack',
 
       options: {
         rules: [
@@ -33,9 +33,9 @@ const config: StorybookConfig = {
             test: /\.css$/,
             sideEffects: true,
             use: [
-              require.resolve("style-loader"),
+              require.resolve('style-loader'),
               {
-                loader: require.resolve("css-loader"),
+                loader: require.resolve('css-loader'),
                 options: {},
               },
             ],
@@ -43,17 +43,17 @@ const config: StorybookConfig = {
           {
             test: /_storybook_global_styles\.s[ac]ss$/i,
             use: [
-              require.resolve("style-loader"),
+              require.resolve('style-loader'),
               {
-                loader: require.resolve("css-loader"),
+                loader: require.resolve('css-loader'),
                 options: {
                   importLoaders: 1, // For sass-loader
                 },
               },
               {
-                loader: require.resolve("sass-loader"),
+                loader: require.resolve('sass-loader'),
                 options: {
-                  implementation: require("sass"),
+                  implementation: require('sass'),
                 },
               },
             ],
@@ -64,12 +64,12 @@ const config: StorybookConfig = {
             sideEffects: true,
             use: [
               {
-                loader: "./lit-css-loader.js",
+                loader: './lit-css-loader.js',
               },
               {
-                loader: require.resolve("sass-loader"),
+                loader: require.resolve('sass-loader'),
                 options: {
-                  implementation: require("sass"),
+                  implementation: require('sass'),
                 },
               },
             ],
@@ -79,10 +79,10 @@ const config: StorybookConfig = {
     },
   ],
   framework: {
-    name: "@storybook/web-components-webpack5",
+    name: '@storybook/web-components-webpack5',
     options: {},
   },
-  staticDirs: ["../../local_image_bucket", "test_images"],
+  staticDirs: ['../../local_image_bucket', 'test_images'],
   swc: (config: Options, options): Options => {
     const newConfig = {
       ...config,
@@ -90,7 +90,7 @@ const config: StorybookConfig = {
         ...config.jsc,
         parser: {
           ...config.jsc?.parser,
-          syntax: "typescript",
+          syntax: 'typescript',
           decorators: true,
         },
         transform: {

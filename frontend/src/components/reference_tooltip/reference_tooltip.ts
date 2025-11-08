@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-import { ReferenceTooltipProps } from "../../services/floating_panel_service";
-import "../lumi_span/lumi_span";
+import { ReferenceTooltipProps } from '../../services/floating_panel_service';
+import '../lumi_span/lumi_span';
 
-import { styles } from "./reference_tooltip.scss";
+import { styles } from './reference_tooltip.scss';
 
 /**
  * A component that renders a reference in a tooltip.
  */
-@customElement("reference-tooltip")
+@customElement('reference-tooltip')
 export class ReferenceTooltip extends MobxLitElement {
   static override styles = [styles];
 
@@ -48,6 +48,6 @@ export class ReferenceTooltip extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "reference-tooltip": ReferenceTooltip;
+    'reference-tooltip': ReferenceTooltip;
   }
 }

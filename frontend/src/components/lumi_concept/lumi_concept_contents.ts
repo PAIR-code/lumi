@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-import { html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { ConceptContent, LumiSpan } from "../../shared/lumi_doc";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { styles } from "./lumi_concept_contents.scss";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { LumiAnswer } from "../../shared/api";
+import { html, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { ConceptContent, LumiSpan } from '../../shared/lumi_doc';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { styles } from './lumi_concept_contents.scss';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { LumiAnswer } from '../../shared/api';
 
-import "../../pair-components/icon";
-import "../lumi_span/lumi_span";
-import { classMap } from "lit/directives/class-map.js";
-import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
-import { LUMI_CONCEPT_SPAN_ID_PREFIX } from "../../shared/constants";
+import '../../pair-components/icon';
+import '../lumi_span/lumi_span';
+import { classMap } from 'lit/directives/class-map.js';
+import { getSpanHighlightsFromManagers } from '../lumi_span/lumi_span_utils';
+import { LUMI_CONCEPT_SPAN_ID_PREFIX } from '../../shared/constants';
 
 /**
  * A component to render the contents of a LumiConcept.
  */
-@customElement("lumi-concept-contents")
+@customElement('lumi-concept-contents')
 export class LumiConceptContents extends LightMobxLitElement {
-  @property({ type: String }) conceptId: string = "";
+  @property({ type: String }) conceptId: string = '';
   @property({ type: Array }) contents: ConceptContent[] = [];
   @property({ type: Object }) highlightManager?: HighlightManager;
   @property({ type: Object }) answerHighlightManager?: AnswerHighlightManager;
@@ -60,8 +60,8 @@ export class LumiConceptContents extends LightMobxLitElement {
     const showButton = hasMoreContent && !this.showAll;
 
     const contentItemClasses = classMap({
-      "content-item": true,
-      "no-show-all-button": !showButton,
+      'content-item': true,
+      'no-show-all-button': !showButton,
     });
 
     return html`
@@ -76,7 +76,7 @@ export class LumiConceptContents extends LightMobxLitElement {
         };
 
         const spanClassMap = {
-          "concept-expand-text": index === 1,
+          'concept-expand-text': index === 1,
         };
 
         return html`
@@ -113,6 +113,6 @@ export class LumiConceptContents extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-concept-contents": LumiConceptContents;
+    'lumi-concept-contents': LumiConceptContents;
   }
 }

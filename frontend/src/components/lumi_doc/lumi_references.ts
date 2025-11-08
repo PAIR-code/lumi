@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-import { html, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
-import { LumiReference } from "../../shared/lumi_doc";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { LumiFont } from "../../shared/types";
-import { LumiAnswer } from "../../shared/api";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { styles } from "./lumi_references.scss";
+import { html, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { LumiReference } from '../../shared/lumi_doc';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { LumiFont } from '../../shared/types';
+import { LumiAnswer } from '../../shared/api';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { styles } from './lumi_references.scss';
 
-import "../lumi_span/lumi_span";
-import "../../pair-components/icon_button";
-import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
+import '../lumi_span/lumi_span';
+import '../../pair-components/icon_button';
+import { getSpanHighlightsFromManagers } from '../lumi_span/lumi_span_utils';
 
-@customElement("lumi-references")
+@customElement('lumi-references')
 export class LumiReferences extends LightMobxLitElement {
   @property({ type: Array }) references!: LumiReference[];
   @property({ type: Boolean }) isCollapsed = false;
@@ -76,8 +76,8 @@ export class LumiReferences extends LightMobxLitElement {
                 this.onCollapseChange(!this.isCollapsed);
               }}
               .icon=${this.isCollapsed
-                ? "chevron_right"
-                : "keyboard_arrow_down"}
+                ? 'chevron_right'
+                : 'keyboard_arrow_down'}
             ></pr-icon-button>
             References
           </h2>
@@ -94,6 +94,6 @@ export class LumiReferences extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-references": LumiReferences;
+    'lumi-references': LumiReferences;
   }
 }

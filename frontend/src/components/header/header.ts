@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-import "../../pair-components/button";
-import "../../pair-components/icon_button";
-import "../../pair-components/tooltip";
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement } from "lit/decorators.js";
+import '../../pair-components/button';
+import '../../pair-components/icon_button';
+import '../../pair-components/tooltip';
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
-import { core } from "../../core/core";
+import { core } from '../../core/core';
 import {
   DialogService,
   UserFeedbackDialogProps,
-} from "../../services/dialog.service";
-import { HomeService } from "../../services/home.service";
-import { Pages, RouterService } from "../../services/router.service";
+} from '../../services/dialog.service';
+import { HomeService } from '../../services/home.service';
+import { Pages, RouterService } from '../../services/router.service';
 
-import { APP_NAME, LOGO_ICON_NAME } from "../../shared/constants";
-import { styles } from "./header.scss";
+import { APP_NAME, LOGO_ICON_NAME } from '../../shared/constants';
+import { styles } from './header.scss';
 import {
   AnalyticsAction,
   AnalyticsService,
-} from "../../services/analytics.service";
+} from '../../services/analytics.service';
 
 /** Header component for app pages */
-@customElement("page-header")
+@customElement('page-header')
 export class Header extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -68,9 +68,9 @@ export class Header extends MobxLitElement {
       case Pages.COLLECTION:
         return APP_NAME;
       case Pages.SETTINGS:
-        return "Settings";
+        return 'Settings';
       default:
-        return "";
+        return '';
     }
   }
 
@@ -97,7 +97,7 @@ export class Header extends MobxLitElement {
       <pr-tooltip text="Home" position="BOTTOM_START">
         <pr-icon-button
           color="neutral"
-          icon=${activePage === Pages.SETTINGS ? "arrow_back" : LOGO_ICON_NAME}
+          icon=${activePage === Pages.SETTINGS ? 'arrow_back' : LOGO_ICON_NAME}
           variant="default"
           @click=${handleClick}
         >
@@ -162,6 +162,6 @@ export class Header extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "page-header": Header;
+    'page-header': Header;
   }
 }

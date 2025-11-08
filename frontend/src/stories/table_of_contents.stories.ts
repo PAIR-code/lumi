@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-import { html } from "lit";
+import { html } from 'lit';
 
-import { LumiSection } from "../shared/lumi_doc";
+import { LumiSection } from '../shared/lumi_doc';
 
-import "../components/table_of_contents/table_of_contents";
+import '../components/table_of_contents/table_of_contents';
 
 const mockSections: LumiSection[] = [
   {
-    id: "section-1",
-    heading: { headingLevel: 1, text: "Introduction" },
+    id: 'section-1',
+    heading: { headingLevel: 1, text: 'Introduction' },
     contents: [],
     subSections: [
       {
-        id: "section-1.1",
-        heading: { headingLevel: 2, text: "Background" },
+        id: 'section-1.1',
+        heading: { headingLevel: 2, text: 'Background' },
         contents: [],
       },
       {
-        id: "section-1.2",
-        heading: { headingLevel: 2, text: "Motivation" },
+        id: 'section-1.2',
+        heading: { headingLevel: 2, text: 'Motivation' },
         contents: [],
         subSections: [
           {
-            id: "section-1.2.1",
-            heading: { headingLevel: 3, text: "Problem Statement" },
+            id: 'section-1.2.1',
+            heading: { headingLevel: 3, text: 'Problem Statement' },
             contents: [],
           },
         ],
@@ -47,19 +47,19 @@ const mockSections: LumiSection[] = [
     ],
   },
   {
-    id: "section-2",
-    heading: { headingLevel: 1, text: "Methods" },
+    id: 'section-2',
+    heading: { headingLevel: 1, text: 'Methods' },
     contents: [],
   },
   {
-    id: "section-3",
-    heading: { headingLevel: 1, text: "Results" },
+    id: 'section-3',
+    heading: { headingLevel: 1, text: 'Results' },
     contents: [],
   },
 ];
 
 export default {
-  title: "Table of Contents",
+  title: 'Table of Contents',
 };
 
 export const Default = () =>

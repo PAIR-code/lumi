@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { expect } from "@esm-bundle/chai";
+import { expect } from '@esm-bundle/chai';
 import {
   getAllContents,
   getAllSpansFromContents,
   getReferencedSpanIdsFromContent,
-} from "./lumi_doc_utils";
-import { InnerTagName, LumiContent, LumiSection, LumiSpan } from "./lumi_doc";
+} from './lumi_doc_utils';
+import { InnerTagName, LumiContent, LumiSection, LumiSpan } from './lumi_doc';
 
 // Helper to create a mock LumiSpan with spanref tags
 const createSpanWithRefs = (id: string, refIds: string[]): LumiSpan => ({
@@ -43,9 +43,9 @@ const createSpanWithoutRefs = (id: string): LumiSpan => ({
 
 // Helper to create a mock LumiContent with spans
 const createContentWithSpans = (spans: LumiSpan[]): LumiContent => ({
-  id: "content-id",
+  id: 'content-id',
   textContent: {
-    tagName: "p",
+    tagName: 'p',
     spans: spans,
   },
   imageContent: null,
@@ -58,7 +58,7 @@ const createContentWithSpans = (spans: LumiSpan[]): LumiContent => ({
 const createMockContent = (id: string): LumiContent => ({
   id,
   textContent: {
-    tagName: "p",
+    tagName: 'p',
     spans: [{ id: `span-for-${id}`, text: `text for ${id}`, innerTags: [] }],
   },
   imageContent: null,
@@ -67,42 +67,42 @@ const createMockContent = (id: string): LumiContent => ({
   listContent: null,
 });
 
-describe("getReferencedSpanIdsFromContent", () => {
-  it("should return an empty array if there is no content", () => {
+describe('getReferencedSpanIdsFromContent', () => {
+  it('should return an empty array if there is no content', () => {
     expect(getReferencedSpanIdsFromContent([])).to.deep.equal([]);
   });
 
-  it("should return an empty array if content has no spans with refs", () => {
+  it('should return an empty array if content has no spans with refs', () => {
     const contents = [
       createContentWithSpans([
-        createSpanWithoutRefs("span-1"),
-        createSpanWithoutRefs("span-2"),
+        createSpanWithoutRefs('span-1'),
+        createSpanWithoutRefs('span-2'),
       ]),
     ];
     expect(getReferencedSpanIdsFromContent(contents)).to.deep.equal([]);
   });
 
-  it("should extract a single reference ID from textContent", () => {
+  it('should extract a single reference ID from textContent', () => {
     const contents = [
-      createContentWithSpans([createSpanWithRefs("span-1", ["ref-A"])]),
+      createContentWithSpans([createSpanWithRefs('span-1', ['ref-A'])]),
     ];
-    expect(getReferencedSpanIdsFromContent(contents)).to.deep.equal(["ref-A"]);
+    expect(getReferencedSpanIdsFromContent(contents)).to.deep.equal(['ref-A']);
   });
 
-  it("should extract multiple reference IDs from multiple contents", () => {
+  it('should extract multiple reference IDs from multiple contents', () => {
     const contents = [
-      createContentWithSpans([createSpanWithRefs("span-1", ["ref-A"])]),
-      createContentWithSpans([createSpanWithRefs("span-2", ["ref-B"])]),
+      createContentWithSpans([createSpanWithRefs('span-1', ['ref-A'])]),
+      createContentWithSpans([createSpanWithRefs('span-2', ['ref-B'])]),
     ];
     expect(getReferencedSpanIdsFromContent(contents)).to.have.members([
-      "ref-A",
-      "ref-B",
+      'ref-A',
+      'ref-B',
     ]);
   });
 
-  it("should extract unique reference IDs from listContent", () => {
+  it('should extract unique reference IDs from listContent', () => {
     const content: LumiContent = {
-      id: "list-content",
+      id: 'list-content',
       textContent: null,
       imageContent: null,
       htmlFigureContent: null,
@@ -110,12 +110,12 @@ describe("getReferencedSpanIdsFromContent", () => {
       listContent: {
         isOrdered: false,
         listItems: [
-          { spans: [createSpanWithRefs("span-1", ["ref-A", "ref-B"])] },
+          { spans: [createSpanWithRefs('span-1', ['ref-A', 'ref-B'])] },
           {
-            spans: [createSpanWithRefs("span-2", ["ref-A", "ref-C"])],
+            spans: [createSpanWithRefs('span-2', ['ref-A', 'ref-C'])],
             subListContent: {
               isOrdered: false,
-              listItems: [{ spans: [createSpanWithRefs("span-3", ["ref-D"])] }],
+              listItems: [{ spans: [createSpanWithRefs('span-3', ['ref-D'])] }],
             },
           },
         ],
@@ -123,67 +123,67 @@ describe("getReferencedSpanIdsFromContent", () => {
     };
     const result = getReferencedSpanIdsFromContent([content]);
     expect(result).to.have.lengthOf(4);
-    expect(result).to.have.members(["ref-A", "ref-B", "ref-C", "ref-D"]);
+    expect(result).to.have.members(['ref-A', 'ref-B', 'ref-C', 'ref-D']);
   });
 
-  it("should handle mixed content types", () => {
+  it('should handle mixed content types', () => {
     const contents: LumiContent[] = [
-      createContentWithSpans([createSpanWithRefs("span-1", ["ref-A"])]),
+      createContentWithSpans([createSpanWithRefs('span-1', ['ref-A'])]),
       {
-        id: "list-content",
+        id: 'list-content',
         textContent: null,
         imageContent: null,
         htmlFigureContent: null,
         listContent: {
           isOrdered: true,
-          listItems: [{ spans: [createSpanWithRefs("span-2", ["ref-B"])] }],
+          listItems: [{ spans: [createSpanWithRefs('span-2', ['ref-B'])] }],
         },
         figureContent: null,
       },
     ];
     expect(getReferencedSpanIdsFromContent(contents)).to.have.members([
-      "ref-A",
-      "ref-B",
+      'ref-A',
+      'ref-B',
     ]);
   });
 });
 
-describe("getAllContents", () => {
+describe('getAllContents', () => {
   it("should return the section's contents when there are no subsections", () => {
-    const content1 = createMockContent("c1");
+    const content1 = createMockContent('c1');
     const section: LumiSection = {
-      id: "s1",
-      heading: { headingLevel: 1, text: "Section 1" },
+      id: 's1',
+      heading: { headingLevel: 1, text: 'Section 1' },
       contents: [content1],
     };
     expect(getAllContents(section)).to.deep.equal([content1]);
   });
 
-  it("should return a flattened array from multiple levels of nested subsections", () => {
-    const c1 = createMockContent("c1");
-    const c2 = createMockContent("c2");
-    const c3 = createMockContent("c3");
-    const c4 = createMockContent("c4");
+  it('should return a flattened array from multiple levels of nested subsections', () => {
+    const c1 = createMockContent('c1');
+    const c2 = createMockContent('c2');
+    const c3 = createMockContent('c3');
+    const c4 = createMockContent('c4');
     const section: LumiSection = {
-      id: "s1",
-      heading: { headingLevel: 1, text: "Section 1" },
+      id: 's1',
+      heading: { headingLevel: 1, text: 'Section 1' },
       contents: [c1],
       subSections: [
         {
-          id: "s1-1",
-          heading: { headingLevel: 2, text: "Sub 1-1" },
+          id: 's1-1',
+          heading: { headingLevel: 2, text: 'Sub 1-1' },
           contents: [c2],
           subSections: [
             {
-              id: "s1-1-1",
-              heading: { headingLevel: 3, text: "Sub 1-1-1" },
+              id: 's1-1-1',
+              heading: { headingLevel: 3, text: 'Sub 1-1-1' },
               contents: [c3],
             },
           ],
         },
         {
-          id: "s1-2",
-          heading: { headingLevel: 2, text: "Sub 1-2" },
+          id: 's1-2',
+          heading: { headingLevel: 2, text: 'Sub 1-2' },
           contents: [c4],
         },
       ],
@@ -191,16 +191,16 @@ describe("getAllContents", () => {
     expect(getAllContents(section)).to.have.deep.members([c1, c2, c3, c4]);
   });
 
-  it("should handle sections with no contents of their own but with subsections that have contents", () => {
-    const c1 = createMockContent("c1");
+  it('should handle sections with no contents of their own but with subsections that have contents', () => {
+    const c1 = createMockContent('c1');
     const section: LumiSection = {
-      id: "s1",
-      heading: { headingLevel: 1, text: "Section 1" },
+      id: 's1',
+      heading: { headingLevel: 1, text: 'Section 1' },
       contents: [],
       subSections: [
         {
-          id: "s1-1",
-          heading: { headingLevel: 2, text: "Sub 1-1" },
+          id: 's1-1',
+          heading: { headingLevel: 2, text: 'Sub 1-1' },
           contents: [c1],
         },
       ],
@@ -208,10 +208,10 @@ describe("getAllContents", () => {
     expect(getAllContents(section)).to.deep.equal([c1]);
   });
 
-  it("should return an empty array for a section with no contents and no subsections", () => {
+  it('should return an empty array for a section with no contents and no subsections', () => {
     const section: LumiSection = {
-      id: "s1",
-      heading: { headingLevel: 1, text: "Section 1" },
+      id: 's1',
+      heading: { headingLevel: 1, text: 'Section 1' },
       contents: [],
       subSections: [],
     };
@@ -219,22 +219,22 @@ describe("getAllContents", () => {
   });
 });
 
-describe("getAllSpansFromContents", () => {
-  const span1: LumiSpan = { id: "s1", text: "one", innerTags: [] };
-  const span2: LumiSpan = { id: "s2", text: "two", innerTags: [] };
-  const span3: LumiSpan = { id: "s3", text: "three", innerTags: [] };
-  const span4: LumiSpan = { id: "s4", text: "four", innerTags: [] };
-  const span5: LumiSpan = { id: "s5", text: "five", innerTags: [] };
+describe('getAllSpansFromContents', () => {
+  const span1: LumiSpan = { id: 's1', text: 'one', innerTags: [] };
+  const span2: LumiSpan = { id: 's2', text: 'two', innerTags: [] };
+  const span3: LumiSpan = { id: 's3', text: 'three', innerTags: [] };
+  const span4: LumiSpan = { id: 's4', text: 'four', innerTags: [] };
+  const span5: LumiSpan = { id: 's5', text: 'five', innerTags: [] };
 
-  it("should return an empty array for empty content", () => {
+  it('should return an empty array for empty content', () => {
     expect(getAllSpansFromContents([])).to.deep.equal([]);
   });
 
-  it("should extract spans from textContent", () => {
+  it('should extract spans from textContent', () => {
     const contents: LumiContent[] = [
       {
-        id: "c1",
-        textContent: { tagName: "p", spans: [span1, span2] },
+        id: 'c1',
+        textContent: { tagName: 'p', spans: [span1, span2] },
         imageContent: null,
         figureContent: null,
         htmlFigureContent: null,
@@ -244,10 +244,10 @@ describe("getAllSpansFromContents", () => {
     expect(getAllSpansFromContents(contents)).to.deep.equal([span1, span2]);
   });
 
-  it("should extract spans from listContent, including nested lists", () => {
+  it('should extract spans from listContent, including nested lists', () => {
     const contents: LumiContent[] = [
       {
-        id: "c1",
+        id: 'c1',
         textContent: null,
         imageContent: null,
         figureContent: null,
@@ -274,16 +274,16 @@ describe("getAllSpansFromContents", () => {
     ]);
   });
 
-  it("should extract spans from various captions", () => {
+  it('should extract spans from various captions', () => {
     const contents: LumiContent[] = [
       {
-        id: "c1",
+        id: 'c1',
         textContent: null,
         imageContent: {
-          storagePath: "",
-          latexPath: "",
+          storagePath: '',
+          latexPath: '',
           caption: span1,
-          altText: "",
+          altText: '',
           width: 0,
           height: 0,
         },
@@ -292,7 +292,7 @@ describe("getAllSpansFromContents", () => {
         listContent: null,
       },
       {
-        id: "c2",
+        id: 'c2',
         textContent: null,
         imageContent: null,
         figureContent: { images: [], caption: span2 },
@@ -300,11 +300,11 @@ describe("getAllSpansFromContents", () => {
         listContent: null,
       },
       {
-        id: "c3",
+        id: 'c3',
         textContent: null,
         imageContent: null,
         figureContent: null,
-        htmlFigureContent: { html: "", caption: span3 },
+        htmlFigureContent: { html: '', caption: span3 },
         listContent: null,
       },
     ];
@@ -315,24 +315,24 @@ describe("getAllSpansFromContents", () => {
     ]);
   });
 
-  it("should handle mixed content types and collect all spans", () => {
+  it('should handle mixed content types and collect all spans', () => {
     const contents: LumiContent[] = [
       {
-        id: "c1",
-        textContent: { tagName: "p", spans: [span1] },
+        id: 'c1',
+        textContent: { tagName: 'p', spans: [span1] },
         imageContent: null,
         figureContent: null,
         htmlFigureContent: null,
         listContent: null,
       },
       {
-        id: "c2",
+        id: 'c2',
         textContent: null,
         imageContent: {
-          storagePath: "",
-          latexPath: "",
+          storagePath: '',
+          latexPath: '',
           caption: span2,
-          altText: "",
+          altText: '',
           width: 0,
           height: 0,
         },
@@ -341,7 +341,7 @@ describe("getAllSpansFromContents", () => {
         listContent: null,
       },
       {
-        id: "c3",
+        id: 'c3',
         textContent: null,
         imageContent: null,
         figureContent: null,

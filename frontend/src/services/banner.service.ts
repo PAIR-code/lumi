@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { computed, makeObservable, observable } from "mobx";
-import { Service } from "./service";
+import { computed, makeObservable, observable } from 'mobx';
+import { Service } from './service';
 
 /** Properties for the top banner. */
 export interface BannerProperties {

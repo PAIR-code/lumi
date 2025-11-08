@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { Service } from "./service";
-import { Highlight, HighlightColor, LumiDoc } from "../shared/lumi_doc";
-import { ScrollState } from "../contexts/scroll_context";
-import { HighlightManager } from "../shared/highlight_manager";
-import { CollapseManager } from "../shared/collapse_manager";
-import { LumiDocManager } from "../shared/lumi_doc_manager";
-import { action, makeObservable, observable } from "mobx";
-import { HighlightSelection } from "../shared/selection_utils";
-import { HistoryService } from "./history.service";
-import { LUMI_CONCEPT_SPAN_ID_PREFIX, SIDEBAR_TABS } from "../shared/constants";
+import { Service } from './service';
+import { Highlight, HighlightColor, LumiDoc } from '../shared/lumi_doc';
+import { ScrollState } from '../contexts/scroll_context';
+import { HighlightManager } from '../shared/highlight_manager';
+import { CollapseManager } from '../shared/collapse_manager';
+import { LumiDocManager } from '../shared/lumi_doc_manager';
+import { action, makeObservable, observable } from 'mobx';
+import { HighlightSelection } from '../shared/selection_utils';
+import { HistoryService } from './history.service';
+import { LUMI_CONCEPT_SPAN_ID_PREFIX, SIDEBAR_TABS } from '../shared/constants';
 
 interface ServiceProvider {
   historyService: HistoryService;
@@ -84,7 +84,7 @@ export class DocumentStateService extends Service {
 
   focusOnSpan(
     highlightedSpans: HighlightSelection[],
-    color: HighlightColor = "purple"
+    color: HighlightColor = 'purple'
   ) {
     if (
       !this.collapseManager ||

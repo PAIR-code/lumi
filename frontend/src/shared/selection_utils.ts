@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { CITATION_CLASSNAME, FOOTNOTE_CLASSNAME } from "./constants";
-import { Position } from "./lumi_doc";
+import { CITATION_CLASSNAME, FOOTNOTE_CLASSNAME } from './constants';
+import { Position } from './lumi_doc';
 
 // Helper to find a parent element matching a condition
 function findParent(
@@ -98,12 +98,12 @@ export function getSelectionInfo(selection: Selection): SelectionInfo | null {
 
   const startLumiSpan = findParent(
     range.startContainer,
-    (el) => el.tagName.toLowerCase() === "lumi-span"
+    (el) => el.tagName.toLowerCase() === 'lumi-span'
   );
 
   const endLumiSpan = findParent(
     range.endContainer,
-    (el) => el.tagName.toLowerCase() === "lumi-span"
+    (el) => el.tagName.toLowerCase() === 'lumi-span'
   );
 
   if (!startLumiSpan || !endLumiSpan || !startLumiSpan.id || !endLumiSpan.id) {
@@ -120,7 +120,7 @@ export function getSelectionInfo(selection: Selection): SelectionInfo | null {
       current = current.nextElementSibling;
       if (
         current instanceof HTMLElement &&
-        current.tagName.toLowerCase() === "lumi-span"
+        current.tagName.toLowerCase() === 'lumi-span'
       ) {
         allLumiSpans.push(current);
       }
@@ -150,7 +150,7 @@ export function getSelectionInfo(selection: Selection): SelectionInfo | null {
 
   const firstParentSpan = findParent(
     range.startContainer,
-    (el) => el.tagName.toLowerCase() === "span"
+    (el) => el.tagName.toLowerCase() === 'span'
   );
 
   if (!firstParentSpan) {

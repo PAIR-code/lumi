@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-import { CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
+import { CSSResultGroup, html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
-import { styles as sharedStyles } from "./shared.scss";
-import type { ComponentColor, ComponentSize } from "./types";
-import { getComponentClassName } from "./utils";
+import { styles as sharedStyles } from './shared.scss';
+import type { ComponentColor, ComponentSize } from './types';
+import { getComponentClassName } from './utils';
 
-import { styles } from "./textinput.scss";
-import { ifDefined } from "lit/directives/if-defined.js";
+import { styles } from './textinput.scss';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
 /**
  * Text input
  */
-@customElement("pr-textinput")
+@customElement('pr-textinput')
 export class TextInput extends LitElement {
   static override styles: CSSResultGroup = [sharedStyles, styles];
 
   // Component settings
-  @property({ type: String }) label = "";
-  @property({ type: String }) placeholder = "";
-  @property({ type: String }) value = "";
+  @property({ type: String }) label = '';
+  @property({ type: String }) placeholder = '';
+  @property({ type: String }) value = '';
   @property({ type: Boolean }) disabled = false;
   @property({ type: Boolean }) maxLength?: number;
   @property({ type: Object }) onChange = (e: InputEvent) => {};
   @property({ type: Object }) onKeydown = (e: KeyboardEvent) => {};
 
   // Custom styles
-  @property({ type: String }) color: ComponentColor = "primary";
-  @property({ type: String }) size: ComponentSize = "small";
+  @property({ type: String }) color: ComponentColor = 'primary';
+  @property({ type: String }) size: ComponentSize = 'small';
 
   static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -52,7 +52,7 @@ export class TextInput extends LitElement {
   };
 
   renderLabel() {
-    const sizeClass = getComponentClassName("label-size", this.size);
+    const sizeClass = getComponentClassName('label-size', this.size);
     return this.label.length > 0
       ? html`<label class=${sizeClass} for=${this.id}>${this.label}</label>`
       : html``;
@@ -60,14 +60,14 @@ export class TextInput extends LitElement {
 
   override render() {
     const classes = classMap({
-      "body-size-small": this.size === "small",
-      "body-size-medium": this.size === "medium",
-      "body-size-large": this.size === "large",
-      "palette-primary": this.color === "primary",
-      "palette-secondary": this.color === "secondary",
-      "palette-tertiary": this.color === "tertiary",
-      "palette-neutral": this.color === "neutral",
-      "palette-error": this.color === "error",
+      'body-size-small': this.size === 'small',
+      'body-size-medium': this.size === 'medium',
+      'body-size-large': this.size === 'large',
+      'palette-primary': this.color === 'primary',
+      'palette-secondary': this.color === 'secondary',
+      'palette-tertiary': this.color === 'tertiary',
+      'palette-neutral': this.color === 'neutral',
+      'palette-error': this.color === 'error',
     });
     return html` ${this.renderLabel()}
       <input
@@ -86,6 +86,6 @@ export class TextInput extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "pr-textinput": TextInput;
+    'pr-textinput': TextInput;
   }
 }

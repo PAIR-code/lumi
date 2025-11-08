@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@use "../../sass/common";
+@use '../../sass/common';
 
 .menu-wrapper {
   /* This wrapper is needed for md-menu to position itself correctly
      relative to its anchor element. */
   position: relative;
   --md-menu-container-elevation: 1;
-  
+
   &.has-flat-container {
     --md-menu-container-elevation: 0;
   }

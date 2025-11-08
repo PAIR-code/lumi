@@ -15,40 +15,40 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
-import { computed, makeObservable } from "mobx";
-import "../lumi_concept/lumi_concept";
-import "../lumi_questions/lumi_questions";
-import "../tab_component/tab_component";
-import "../table_of_contents/table_of_contents";
-import "./sidebar_header";
-import { styles } from "./sidebar.scss";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement, property, query } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { computed, makeObservable } from 'mobx';
+import '../lumi_concept/lumi_concept';
+import '../lumi_questions/lumi_questions';
+import '../tab_component/tab_component';
+import '../table_of_contents/table_of_contents';
+import './sidebar_header';
+import { styles } from './sidebar.scss';
 
-import { DocumentStateService } from "../../services/document_state.service";
-import { core } from "../../core/core";
-import { consume } from "@lit/context";
-import { scrollContext, ScrollState } from "../../contexts/scroll_context";
+import { DocumentStateService } from '../../services/document_state.service';
+import { core } from '../../core/core';
+import { consume } from '@lit/context';
+import { scrollContext, ScrollState } from '../../contexts/scroll_context';
 import {
   AnalyticsAction,
   AnalyticsService,
-} from "../../services/analytics.service";
-import { SIDEBAR_TABS } from "../../shared/constants";
+} from '../../services/analytics.service';
+import { SIDEBAR_TABS } from '../../shared/constants';
 import {
   AnswerHighlightTooltipProps,
   FloatingPanelService,
-} from "../../services/floating_panel_service";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { HistoryService } from "../../services/history.service";
-import { LumiAnswer } from "../../shared/api";
-import { createRef, Ref, ref } from "lit/directives/ref.js";
+} from '../../services/floating_panel_service';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { HistoryService } from '../../services/history.service';
+import { LumiAnswer } from '../../shared/api';
+import { createRef, Ref, ref } from 'lit/directives/ref.js';
 
 /**
  * A sidebar component that displays a list of concepts.
  */
-@customElement("lumi-sidebar")
+@customElement('lumi-sidebar')
 export class LumiSidebar extends LightMobxLitElement {
   private readonly documentStateService = core.getService(DocumentStateService);
   private readonly floatingPanelService = core.getService(FloatingPanelService);
@@ -56,7 +56,7 @@ export class LumiSidebar extends LightMobxLitElement {
   private readonly historyService = core.getService(HistoryService);
   private readonly collapseManager = this.documentStateService.collapseManager;
 
-  @query(".tabs-container")
+  @query('.tabs-container')
   private readonly tabsContainer!: HTMLDivElement;
 
   private scrollContainerRef: Ref<HTMLElement> = createRef();
@@ -102,7 +102,7 @@ export class LumiSidebar extends LightMobxLitElement {
           ${Object.values(SIDEBAR_TABS).map(
             (tab) => html`
               <button
-                class="tab-button ${selectedTab === tab ? "selected" : ""}"
+                class="tab-button ${selectedTab === tab ? 'selected' : ''}"
                 @click=${() => handleTabClick(tab)}
               >
                 ${tab}
@@ -116,7 +116,7 @@ export class LumiSidebar extends LightMobxLitElement {
 
   private renderQuestions() {
     const classes = {
-      "lumi-questions-container": true,
+      'lumi-questions-container': true,
     };
 
     return html`
@@ -182,8 +182,8 @@ export class LumiSidebar extends LightMobxLitElement {
 
   private renderContents() {
     const tabsContainerClasses = classMap({
-      ["tabs-container"]: true,
-      ["is-mobile-sidebar-collapsed"]:
+      ['tabs-container']: true,
+      ['is-mobile-sidebar-collapsed']:
         this.collapseManager?.isMobileSidebarCollapsed ?? true,
     });
 
@@ -206,8 +206,8 @@ export class LumiSidebar extends LightMobxLitElement {
 
   private renderMobileCollapseButton() {
     const icon = this.collapseManager?.isMobileSidebarCollapsed
-      ? "keyboard_arrow_down"
-      : "keyboard_arrow_up";
+      ? 'keyboard_arrow_down'
+      : 'keyboard_arrow_up';
     return html`
       <div
         class="mobile-collapse-button"
@@ -233,6 +233,6 @@ export class LumiSidebar extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lumi-sidebar": LumiSidebar;
+    'lumi-sidebar': LumiSidebar;
   }
 }

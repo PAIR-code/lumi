@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import "./tos_content";
-import "../../pair-components/dialog";
+import './tos_content';
+import '../../pair-components/dialog';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
-import { core } from "../../core/core";
-import { SettingsService } from "../../services/settings.service";
+import { core } from '../../core/core';
+import { SettingsService } from '../../services/settings.service';
 
-import { styles } from "./tos_dialog.scss";
-import { DialogService, TOSDialogProps } from "../../services/dialog.service";
+import { styles } from './tos_dialog.scss';
+import { DialogService, TOSDialogProps } from '../../services/dialog.service';
 
 /** Terms of service dialog. */
-@customElement("tos-dialog")
+@customElement('tos-dialog')
 export class TosDialog extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -76,6 +76,6 @@ export class TosDialog extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "tos-dialog": TosDialog;
+    'tos-dialog': TosDialog;
   }
 }

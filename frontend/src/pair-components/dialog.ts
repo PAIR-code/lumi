@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing, PropertyValues } from 'lit';
 
-import { customElement, property } from "lit/decorators.js";
-import { Ref, createRef, ref } from "lit/directives/ref.js";
+import { customElement, property } from 'lit/decorators.js';
+import { Ref, createRef, ref } from 'lit/directives/ref.js';
 
-import "./icon_button";
-import { styles } from "./dialog.scss";
+import './icon_button';
+import { styles } from './dialog.scss';
 
 /** Dialog component. */
-@customElement("pr-dialog")
+@customElement('pr-dialog')
 export class Dialog extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -60,7 +60,7 @@ export class Dialog extends MobxLitElement {
 
   override render() {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         if (this.enableEscape) {
           this.closeDialog();
         } else {
@@ -99,6 +99,6 @@ export class Dialog extends MobxLitElement {
 
 declare global {
   interface HtmlElementTagNameMap {
-    "pr-dialog": Dialog;
+    'pr-dialog': Dialog;
   }
 }

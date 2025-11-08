@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import { action, computed, makeObservable, observable } from "mobx";
-import { Service } from "./service";
-import { LumiAnswer } from "../shared/api";
-import { PaperData } from "../shared/types_local_storage";
-import { LocalStorageService } from "./local_storage.service";
-import { ArxivMetadata } from "../shared/lumi_doc";
-import { sortPaperDataByTimestamp } from "../shared/lumi_paper_utils";
-import { PERSONAL_SUMMARY_QUERY_NAME } from "../shared/constants";
-import { AnswerHighlightManager } from "../shared/answer_highlight_manager";
-import { HistoryCollapseManager } from "../shared/history_collapse_manager";
-import { ScrollState } from "../contexts/scroll_context";
-import { getAllSpansFromContents } from "../shared/lumi_doc_utils";
+import { action, computed, makeObservable, observable } from 'mobx';
+import { Service } from './service';
+import { LumiAnswer } from '../shared/api';
+import { PaperData } from '../shared/types_local_storage';
+import { LocalStorageService } from './local_storage.service';
+import { ArxivMetadata } from '../shared/lumi_doc';
+import { sortPaperDataByTimestamp } from '../shared/lumi_paper_utils';
+import { PERSONAL_SUMMARY_QUERY_NAME } from '../shared/constants';
+import { AnswerHighlightManager } from '../shared/answer_highlight_manager';
+import { HistoryCollapseManager } from '../shared/history_collapse_manager';
+import { ScrollState } from '../contexts/scroll_context';
+import { getAllSpansFromContents } from '../shared/lumi_doc_utils';
 
-const PAPER_KEY_PREFIX = "lumi-paper:";
+const PAPER_KEY_PREFIX = 'lumi-paper:';
 const INITIAL_SUMMARY_COLLAPSE_STATE = true;
 
 interface ServiceProvider {
@@ -163,7 +163,6 @@ export class HistoryService extends Service {
     for (const span of spans) {
       this.spanIdToAnswerIdMap.set(span.id, answer.id);
     }
-
   }
 
   /**
@@ -250,7 +249,7 @@ export class HistoryService extends Service {
     const newPaper: PaperData = {
       metadata,
       history: [],
-      status: "loading",
+      status: 'loading',
       addedTimestamp: Date.now(),
     };
     this.sp.localStorageService.setData(
@@ -269,7 +268,7 @@ export class HistoryService extends Service {
     // we just update its status. Otherwise, we create a new entry.
     const existingPaper = this.getPaperData(docId);
     if (existingPaper) {
-      existingPaper.status = "complete";
+      existingPaper.status = 'complete';
       this.sp.localStorageService.setData(
         `${PAPER_KEY_PREFIX}${docId}`,
         existingPaper
@@ -279,7 +278,7 @@ export class HistoryService extends Service {
       const newPaper: PaperData = {
         metadata,
         history: [],
-        status: "complete",
+        status: 'complete',
         addedTimestamp: Date.now(),
       };
       this.sp.localStorageService.setData(

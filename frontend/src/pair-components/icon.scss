@@ -23,11 +23,19 @@
 
 .icon {
   color: var(--pr-icon-color, var(--pr-palette));
-  font-family: "Material Symbols Outlined";
+  font-family: 'Material Symbols Outlined';
   font-size: var(--pr-icon-font-size, var(--pr-body-line-height, 24px));
-  font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 48;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 48;
 }
 
 .state-filled {
-  font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 48;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 48;
 }

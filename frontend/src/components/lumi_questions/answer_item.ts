@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-import { html, nothing, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
-import { LumiAnswer } from "../../shared/api";
-import { LumiContent, LumiSpan } from "../../shared/lumi_doc";
-import { getReferencedSpanIdsFromContent } from "../../shared/lumi_doc_utils";
-import { LumiDocManager } from "../../shared/lumi_doc_manager";
+import { html, nothing, PropertyValues } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { LumiAnswer } from '../../shared/api';
+import { LumiContent, LumiSpan } from '../../shared/lumi_doc';
+import { getReferencedSpanIdsFromContent } from '../../shared/lumi_doc_utils';
+import { LumiDocManager } from '../../shared/lumi_doc_manager';
 
-import "../../pair-components/icon";
-import "../../pair-components/icon_button";
-import "../../pair-components/circular_progress";
-import "../lumi_span/lumi_span";
-import "../lumi_content/lumi_content";
+import '../../pair-components/icon';
+import '../../pair-components/icon_button';
+import '../../pair-components/circular_progress';
+import '../lumi_span/lumi_span';
+import '../lumi_content/lumi_content';
 
-import { styles } from "./answer_item.scss";
+import { styles } from './answer_item.scss';
 
-import { HighlightSelection } from "../../shared/selection_utils";
-import { HighlightManager } from "../../shared/highlight_manager";
-import { HistoryCollapseManager } from "../../shared/history_collapse_manager";
-import { AnswerHighlightManager } from "../../shared/answer_highlight_manager";
-import { LightMobxLitElement } from "../light_mobx_lit_element/light_mobx_lit_element";
-import { getSpanHighlightsFromManagers } from "../lumi_span/lumi_span_utils";
-import { CollapseManager } from "../../shared/collapse_manager";
+import { HighlightSelection } from '../../shared/selection_utils';
+import { HighlightManager } from '../../shared/highlight_manager';
+import { HistoryCollapseManager } from '../../shared/history_collapse_manager';
+import { AnswerHighlightManager } from '../../shared/answer_highlight_manager';
+import { LightMobxLitElement } from '../light_mobx_lit_element/light_mobx_lit_element';
+import { getSpanHighlightsFromManagers } from '../lumi_span/lumi_span_utils';
+import { CollapseManager } from '../../shared/collapse_manager';
 
 /**
  * An answer item in the Lumi questions history.
  */
-@customElement("answer-item")
+@customElement('answer-item')
 export class AnswerItem extends LightMobxLitElement {
   @property({ type: Object }) answer!: LumiAnswer;
   @property({ type: Boolean }) isLoading = false;
@@ -64,7 +64,7 @@ export class AnswerItem extends LightMobxLitElement {
   @property() onDismiss?: (answerId: string) => void;
   @property()
   onInfoTooltipClick: (text: string, element: HTMLElement) => void = () => {};
-  @property() infoTooltipText: string = "";
+  @property() infoTooltipText: string = '';
 
   @state() private areReferencesShown = false;
   @state() private referencedSpans: LumiSpan[] = [];
@@ -84,7 +84,7 @@ export class AnswerItem extends LightMobxLitElement {
   }
 
   protected override updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has("answer")) {
+    if (_changedProperties.has('answer')) {
       if (!this.lumiDocManager) {
         return;
       }
@@ -96,7 +96,7 @@ export class AnswerItem extends LightMobxLitElement {
         .filter((span): span is LumiSpan => span !== undefined);
     }
 
-    if (_changedProperties.has("isLoading")) {
+    if (_changedProperties.has('isLoading')) {
       if (this.isLoading) {
         this.historyCollapseManager?.setAnswerCollapsed(this.answer.id, false);
       }
@@ -258,16 +258,16 @@ export class AnswerItem extends LightMobxLitElement {
     if (query) return query;
 
     if (image) {
-      return "Explain image";
+      return 'Explain image';
     }
 
-    if (!highlight) return "";
+    if (!highlight) return '';
 
     if (this.isCollapsed()) {
       return `Explain "${highlight}"`;
     }
 
-    return "Explain text";
+    return 'Explain text';
   }
 
   private renderInfoIcon() {
@@ -294,22 +294,22 @@ export class AnswerItem extends LightMobxLitElement {
     const isAnswerCollapsed = this.isCollapsed();
 
     const classes = {
-      "history-item": true,
+      'history-item': true,
     };
 
     const questionAnswerContainerStyles = {
-      "question-answer-container": true,
-      "are-references-shown": this.areReferencesShown,
+      'question-answer-container': true,
+      'are-references-shown': this.areReferencesShown,
     };
 
     const historyItemClasses = {
-      "history-item": true,
-      "is-collapsed": isAnswerCollapsed,
+      'history-item': true,
+      'is-collapsed': isAnswerCollapsed,
     };
 
     const questionTextClasses = {
-      "question-text": true,
-      "is-collapsed": isAnswerCollapsed,
+      'question-text': true,
+      'is-collapsed': isAnswerCollapsed,
     };
 
     return html`
@@ -322,7 +322,7 @@ export class AnswerItem extends LightMobxLitElement {
             <div class="left">
               <pr-icon-button
                 class="toggle-answer-button"
-                icon=${isAnswerCollapsed ? "chevron_right" : "expand_more"}
+                icon=${isAnswerCollapsed ? 'chevron_right' : 'expand_more'}
                 color="tertiary"
                 variant="default"
                 @click=${this.toggleAnswer}
@@ -348,8 +348,8 @@ export class AnswerItem extends LightMobxLitElement {
               >
                 <pr-icon
                   .icon=${this.areReferencesShown
-                    ? "keyboard_arrow_up"
-                    : "keyboard_arrow_down"}
+                    ? 'keyboard_arrow_up'
+                    : 'keyboard_arrow_down'}
                   color="tertiary"
                 ></pr-icon>
                 <span class="mentions-text"
@@ -366,6 +366,6 @@ export class AnswerItem extends LightMobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "answer-item": AnswerItem;
+    'answer-item': AnswerItem;
   }
 }

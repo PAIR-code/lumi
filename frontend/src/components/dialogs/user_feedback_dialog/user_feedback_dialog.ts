@@ -14,31 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "../../../pair-components/dialog";
-import "../../../pair-components/button";
-import "@material/web/textfield/outlined-text-field.js";
+import '../../../pair-components/dialog';
+import '../../../pair-components/button';
+import '@material/web/textfield/outlined-text-field.js';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, query, state } from "lit/decorators.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement, query, state } from 'lit/decorators.js';
 
-import { core } from "../../../core/core";
+import { core } from '../../../core/core';
 import {
   DialogService,
   UserFeedbackDialogProps,
-} from "../../../services/dialog.service";
-import { FirebaseService } from "../../../services/firebase.service";
-import { RouterService } from "../../../services/router.service";
-import { SnackbarService } from "../../../services/snackbar.service";
-import { saveUserFeedbackCallable } from "../../../shared/callables";
-import { styles } from "./user_feedback_dialog.scss";
-import { TextArea } from "../../../pair-components/textarea";
-import { isViewportSmall } from "../../../shared/responsive_utils";
+} from '../../../services/dialog.service';
+import { FirebaseService } from '../../../services/firebase.service';
+import { RouterService } from '../../../services/router.service';
+import { SnackbarService } from '../../../services/snackbar.service';
+import { saveUserFeedbackCallable } from '../../../shared/callables';
+import { styles } from './user_feedback_dialog.scss';
+import { TextArea } from '../../../pair-components/textarea';
+import { isViewportSmall } from '../../../shared/responsive_utils';
 
 /**
  * The user feedback dialog component.
  */
-@customElement("user-feedback-dialog")
+@customElement('user-feedback-dialog')
 export class UserFeedbackDialog extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -47,8 +47,8 @@ export class UserFeedbackDialog extends MobxLitElement {
   private readonly routerService = core.getService(RouterService);
   private readonly snackbarService = core.getService(SnackbarService);
 
-  @query("pr-textarea") private textarea?: TextArea;
-  @state() private feedbackText = "";
+  @query('pr-textarea') private textarea?: TextArea;
+  @state() private feedbackText = '';
   @state() private isLoading = false;
 
   private handleClose() {
@@ -67,12 +67,12 @@ export class UserFeedbackDialog extends MobxLitElement {
         userFeedbackText: this.feedbackText,
         arxivId,
       });
-      this.snackbarService.show("Feedback sent. Thank you!");
+      this.snackbarService.show('Feedback sent. Thank you!');
       this.handleClose();
-      this.feedbackText = "";
+      this.feedbackText = '';
     } catch (e) {
-      console.error("Error sending feedback:", e);
-      this.snackbarService.show("Error: Could not send feedback.");
+      console.error('Error sending feedback:', e);
+      this.snackbarService.show('Error: Could not send feedback.');
     } finally {
       this.isLoading = false;
     }
@@ -122,7 +122,7 @@ export class UserFeedbackDialog extends MobxLitElement {
         <div slot="actions-right" class="actions">
           <pr-button
             @click=${() => {
-              this.feedbackText = "";
+              this.feedbackText = '';
               this.handleClose();
             }}
             variant="default"
@@ -132,7 +132,7 @@ export class UserFeedbackDialog extends MobxLitElement {
           <pr-button
             @click=${this.handleSend}
             ?loading=${this.isLoading}
-            ?disabled=${this.feedbackText.trim() === ""}
+            ?disabled=${this.feedbackText.trim() === ''}
           >
             Send
           </pr-button>
@@ -144,6 +144,6 @@ export class UserFeedbackDialog extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "user-feedback-dialog": UserFeedbackDialog;
+    'user-feedback-dialog': UserFeedbackDialog;
   }
 }

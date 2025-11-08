@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import { fn } from "@storybook/test";
-import type { Meta, StoryObj } from "@storybook/web-components";
-import { html } from "lit";
+import { fn } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/web-components';
+import { html } from 'lit';
 
-import "../components/multi_icon_toggle/multi_icon_toggle";
+import '../components/multi_icon_toggle/multi_icon_toggle';
 
 const meta = {
-  title: "Components/MultiIconToggle",
-  tags: ["autodocs"],
+  title: 'Components/MultiIconToggle',
+  tags: ['autodocs'],
   render: (args) =>
     html`<multi-icon-toggle
       .selection=${args.selection}
@@ -32,13 +32,13 @@ const meta = {
     ></multi-icon-toggle>`,
   argTypes: {
     selection: {
-      control: { type: "radio" },
-      options: ["collapsed", "indeterminate", "expanded"],
+      control: { type: 'radio' },
+      options: ['collapsed', 'indeterminate', 'expanded'],
     },
   },
   args: {
-    onCollapseAll: fn(() => console.log("onCollapseAll")),
-    onExpandAll: fn(() => console.log("onExpandAll")),
+    onCollapseAll: fn(() => console.log('onCollapseAll')),
+    onExpandAll: fn(() => console.log('onExpandAll')),
   },
 } satisfies Meta;
 
@@ -47,18 +47,18 @@ type Story = StoryObj;
 
 export const Default: Story = {
   args: {
-    selection: "indeterminate",
+    selection: 'indeterminate',
   },
 };
 
 export const Collapsed: Story = {
   args: {
-    selection: "collapsed",
+    selection: 'collapsed',
   },
 };
 
 export const Expanded: Story = {
   args: {
-    selection: "expanded",
+    selection: 'expanded',
   },
 };

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Bytes } from "firebase/firestore";
+import { Bytes } from 'firebase/firestore';
 
 // Kept in sync with: functions/shared/lumi_doc.py
 export interface Position {
@@ -25,14 +25,14 @@ export interface Position {
 
 // Kept in sync with Color classes in lumi_span_renderer.scss
 export const HIGHLIGHT_COLORS = [
-  "cyan",
-  "green",
-  "yellow",
-  "orange",
-  "pink",
-  "purple",
-  "blue",
-  "gray",
+  'cyan',
+  'green',
+  'yellow',
+  'orange',
+  'pink',
+  'purple',
+  'blue',
+  'gray',
 ] as const;
 export type HighlightColor = (typeof HIGHLIGHT_COLORS)[number];
 
@@ -161,19 +161,19 @@ export interface LumiSpan {
 
 // TODO(ellenj): Update lumi_doc.py to match.
 export enum InnerTagName {
-  BOLD = "b", // Bold - Handled by lumi_span.scss class
-  ITALIC = "i", // Italic - Handled by lumi_span.scss class
-  STRONG = "strong", // Strong - Handled by lumi_span.scss class
-  EM = "em", // em tag - Handled by lumi_span.scss class
-  UNDERLINE = "u", // Underline - Handled by lumi_span.scss class
-  MATH = "math", // Renders as Latex
-  MATH_DISPLAY = "math_display", // Renders as Latex display equation
-  REFERENCE = "ref", // Renders as a linked citation
-  SPAN_REFERENCE = "spanref",
-  CONCEPT = "concept",
-  A = "a",
-  CODE = "code",
-  FOOTNOTE = "footnote",
+  BOLD = 'b', // Bold - Handled by lumi_span.scss class
+  ITALIC = 'i', // Italic - Handled by lumi_span.scss class
+  STRONG = 'strong', // Strong - Handled by lumi_span.scss class
+  EM = 'em', // em tag - Handled by lumi_span.scss class
+  UNDERLINE = 'u', // Underline - Handled by lumi_span.scss class
+  MATH = 'math', // Renders as Latex
+  MATH_DISPLAY = 'math_display', // Renders as Latex display equation
+  REFERENCE = 'ref', // Renders as a linked citation
+  SPAN_REFERENCE = 'spanref',
+  CONCEPT = 'concept',
+  A = 'a',
+  CODE = 'code',
+  FOOTNOTE = 'footnote',
 }
 
 export declare interface InnerTagMetadata {
@@ -222,19 +222,19 @@ export interface ArxivMetadata {
 }
 
 export enum LoadingStatus {
-  UNSET = "UNSET",
+  UNSET = 'UNSET',
   // Importing paper into LumiDoc
-  WAITING = "WAITING",
+  WAITING = 'WAITING',
   // Loading summaries after paper has been imported
-  SUMMARIZING = "SUMMARIZING",
-  SUCCESS = "SUCCESS",
-  ERROR_DOCUMENT_LOAD = "ERROR_DOCUMENT_LOAD",
-  ERROR_DOCUMENT_LOAD_INVALID_RESPONSE = "ERROR_DOCUMENT_LOAD_INVALID_RESPONSE",
-  ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED = "ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED",
-  ERROR_SUMMARIZING = "ERROR_SUMMARIZING",
-  ERROR_SUMMARIZING_INVALID_RESPONSE = "ERROR_SUMMARIZING_INVALID_RESPONSE",
-  ERROR_SUMMARIZING_QUOTA_EXCEEDED = "ERROR_SUMMARIZING_QUOTA_EXCEEDED",
-  TIMEOUT = "TIMEOUT",
+  SUMMARIZING = 'SUMMARIZING',
+  SUCCESS = 'SUCCESS',
+  ERROR_DOCUMENT_LOAD = 'ERROR_DOCUMENT_LOAD',
+  ERROR_DOCUMENT_LOAD_INVALID_RESPONSE = 'ERROR_DOCUMENT_LOAD_INVALID_RESPONSE',
+  ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED = 'ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED',
+  ERROR_SUMMARIZING = 'ERROR_SUMMARIZING',
+  ERROR_SUMMARIZING_INVALID_RESPONSE = 'ERROR_SUMMARIZING_INVALID_RESPONSE',
+  ERROR_SUMMARIZING_QUOTA_EXCEEDED = 'ERROR_SUMMARIZING_QUOTA_EXCEEDED',
+  TIMEOUT = 'TIMEOUT',
 }
 
 export const LOADING_STATUS_ERROR_STATES = [

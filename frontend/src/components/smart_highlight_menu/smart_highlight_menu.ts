@@ -15,39 +15,39 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, property, state, query } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement, property, state, query } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
-import { core } from "../../core/core";
+import { core } from '../../core/core';
 import {
   FloatingPanelService,
   SmartHighlightMenuProps,
-} from "../../services/floating_panel_service";
+} from '../../services/floating_panel_service';
 
-import "../../pair-components/button";
-import "../../pair-components/icon_button";
-import "../../pair-components/textinput";
+import '../../pair-components/button';
+import '../../pair-components/icon_button';
+import '../../pair-components/textinput';
 
-import { styles } from "./smart_highlight_menu.scss";
-import { TextInput } from "../../pair-components/textinput";
+import { styles } from './smart_highlight_menu.scss';
+import { TextInput } from '../../pair-components/textinput';
 import {
   AnalyticsAction,
   AnalyticsService,
-} from "../../services/analytics.service";
+} from '../../services/analytics.service';
 import {
   INPUT_DEBOUNCE_MS,
   MAX_QUERY_INPUT_LENGTH,
-} from "../../shared/constants";
-import { debounce } from "../../shared/utils";
-import { HistoryService } from "../../services/history.service";
-import { isViewportSmall } from "../../shared/responsive_utils";
+} from '../../shared/constants';
+import { debounce } from '../../shared/utils';
+import { HistoryService } from '../../services/history.service';
+import { isViewportSmall } from '../../shared/responsive_utils';
 
 /**
  * The menu that appears on text selection.
  */
-@customElement("smart-highlight-menu")
+@customElement('smart-highlight-menu')
 export class SmartHighlightMenu extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
   private readonly floatingPanelService = core.getService(FloatingPanelService);
@@ -57,8 +57,8 @@ export class SmartHighlightMenu extends MobxLitElement {
   @property({ type: Object }) props!: SmartHighlightMenuProps;
 
   @state() private isAsking = false; // If true, shows the `asking questions` UI
-  @state() private queryText = "";
-  @query("pr-textinput") private textInput?: TextInput;
+  @state() private queryText = '';
+  @query('pr-textinput') private textInput?: TextInput;
 
   private handleDefineClick() {
     this.analyticsService.trackAction(AnalyticsAction.MENU_EXPLAIN_CLICK);
@@ -91,8 +91,8 @@ export class SmartHighlightMenu extends MobxLitElement {
 
   private renderDefaultView() {
     const explainButtonName = this.props.imageInfo
-      ? "Explain image"
-      : "Explain text";
+      ? 'Explain image'
+      : 'Explain text';
     return html`
       <pr-button
         variant="default"
@@ -117,7 +117,7 @@ export class SmartHighlightMenu extends MobxLitElement {
   }, INPUT_DEBOUNCE_MS);
 
   private renderAskView() {
-    const inputSize = isViewportSmall() ? "medium" : "small";
+    const inputSize = isViewportSmall() ? 'medium' : 'small';
     return html`
       <pr-textinput
         size=${inputSize}
@@ -126,7 +126,7 @@ export class SmartHighlightMenu extends MobxLitElement {
           this.debouncedUpdate((e.target as HTMLInputElement).value);
         }}
         .onKeydown=${(e: KeyboardEvent) => {
-          if (e.key === "Enter") this.handleSendClick();
+          if (e.key === 'Enter') this.handleSendClick();
         }}
         ?disabled=${this.historyService.isAnswerLoading}
         placeholder="Ask Lumi"
@@ -145,8 +145,8 @@ export class SmartHighlightMenu extends MobxLitElement {
 
   override render() {
     const classes = {
-      "smart-highlight-menu": true,
-      "is-asking": this.isAsking,
+      'smart-highlight-menu': true,
+      'is-asking': this.isAsking,
     };
 
     return html`
@@ -159,6 +159,6 @@ export class SmartHighlightMenu extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "smart-highlight-menu": SmartHighlightMenu;
+    'smart-highlight-menu': SmartHighlightMenu;
   }
 }

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-@use "../../sass/colors";
-@use "../../sass/typescale";
-@use "../../sass/common";
+@use '../../sass/colors';
+@use '../../sass/typescale';
+@use '../../sass/common';
 
 lumi-span {
   display: inline;
@@ -46,7 +46,7 @@ lumi-span {
 }
 
 span.monospace {
-  font-family: "Roboto Mono", monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 13px;
 }
 
@@ -129,11 +129,11 @@ span.collapsed {
     }
 
     .monospace {
-      font-family: "Roboto Mono", monospace;
+      font-family: 'Roboto Mono', monospace;
     }
 
     &.code {
-      font-family: "Roboto Mono", monospace;
+      font-family: 'Roboto Mono', monospace;
       font-size: 14px;
       padding: common.$spacing-xs 0;
 

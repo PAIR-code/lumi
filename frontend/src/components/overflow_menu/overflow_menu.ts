@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-import "../../pair-components/icon";
+import '../../pair-components/icon';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { map } from "lit/directives/map.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { map } from 'lit/directives/map.js';
 
 import {
   OverflowMenuItem,
   OverflowMenuProps,
-} from "../../services/floating_panel_service";
-import { styles } from "./overflow_menu.scss";
+} from '../../services/floating_panel_service';
+import { styles } from './overflow_menu.scss';
 
 /**
  * A component that renders a list of menu items for an overflow menu.
  */
-@customElement("overflow-menu")
+@customElement('overflow-menu')
 export class OverflowMenu extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -61,6 +61,6 @@ export class OverflowMenu extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overflow-menu": OverflowMenu;
+    'overflow-menu': OverflowMenu;
   }
 }

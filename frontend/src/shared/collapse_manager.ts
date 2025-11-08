@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
-import { LumiSection } from "./lumi_doc";
-import { LumiDocManager } from "./lumi_doc_manager";
-import { isViewportSmall } from "./responsive_utils";
-import { INITIAL_SIDEBAR_TAB } from "./constants";
+import { action, makeObservable, observable } from 'mobx';
+import { LumiSection } from './lumi_doc';
+import { LumiDocManager } from './lumi_doc_manager';
+import { isViewportSmall } from './responsive_utils';
+import { INITIAL_SIDEBAR_TAB } from './constants';
 
 const INITIAL_SECTION_COLLAPSE_STATE = false;
 const INITIAL_REFERENCES_COLLAPSE_STATE = true;
@@ -28,7 +28,7 @@ const INITIAL_MOBILE_SUMMARY_COLLAPSE_STATE = true;
 const INITIAL_DESKTOP_SUMMARY_COLLAPSE_STATE = false;
 const INITIAL_MOBILE_SIDEBAR_COLLAPSED = true;
 
-export type CollapseState = "collapsed" | "expanded" | "indeterminate";
+export type CollapseState = 'collapsed' | 'expanded' | 'indeterminate';
 
 /**
  * Manages the collapse/expand state of sections in a document.

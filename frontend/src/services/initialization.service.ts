@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { observable } from "mobx";
+import { observable } from 'mobx';
 
-import { AnalyticsService } from "./analytics.service";
-import { FirebaseService } from "./firebase.service";
-import { RouterService } from "./router.service";
-import { Service } from "./service";
-import { HistoryService } from "./history.service";
+import { AnalyticsService } from './analytics.service';
+import { FirebaseService } from './firebase.service';
+import { RouterService } from './router.service';
+import { Service } from './service';
+import { HistoryService } from './history.service';
 
 interface ServiceProvider {
   analyticsService: AnalyticsService;
@@ -40,8 +40,10 @@ export class InitializationService extends Service {
   override async initialize() {
     this.sp.analyticsService.initialize();
     this.sp.firebaseService.initialize();
-    this.sp.routerService.initialize();
+    // Initialize HistoryService BEFORE RouterService so papers are loaded from localStorage
+    // before HomeService tries to read them
     this.sp.historyService.initialize();
+    this.sp.routerService.initialize();
 
     this.isAppInitialized = true;
   }

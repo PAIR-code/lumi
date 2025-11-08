@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-import "../../pair-components/textarea";
-import "../../pair-components/icon";
-import "../../pair-components/icon_button";
-import "../lumi_image/lumi_image";
+import '../../pair-components/textarea';
+import '../../pair-components/icon';
+import '../../pair-components/icon_button';
+import '../lumi_image/lumi_image';
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { Unsubscribe, doc, onSnapshot } from "firebase/firestore";
-import { classMap } from "lit/directives/class-map.js";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing, PropertyValues } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
-import { core } from "../../core/core";
-import { HomeService } from "../../services/home.service";
-import { HistoryService } from "../../services/history.service";
+import { core } from '../../core/core';
+import { HomeService } from '../../services/home.service';
+import { HistoryService } from '../../services/history.service';
 import {
   Pages,
   RouterService,
   getLumiPaperUrl,
-} from "../../services/router.service";
-import { FirebaseService } from "../../services/firebase.service";
-import { SnackbarService } from "../../services/snackbar.service";
+} from '../../services/router.service';
+import { ApiService } from '../../services/api.service';
+import { SnackbarService } from '../../services/snackbar.service';
 
 import {
   LumiDoc,
@@ -43,43 +42,43 @@ import {
   ArxivMetadata,
   LOADING_STATUS_ERROR_STATES,
   FeaturedImage,
-} from "../../shared/lumi_doc";
-import { ArxivCollection } from "../../shared/lumi_collection";
+} from '../../shared/lumi_doc';
+import { ArxivCollection } from '../../shared/lumi_collection';
 import {
   requestArxivDocImportCallable,
   RequestArxivDocImportResult,
-} from "../../shared/callables";
-import { extractArxivId } from "../../shared/string_utils";
+} from '../../shared/api_callables';
+import { extractArxivId } from '../../shared/string_utils';
 
-import { styles } from "./home_gallery.scss";
-import { makeObservable, observable, ObservableMap, toJS } from "mobx";
-import { PaperData } from "../../shared/types_local_storage";
-import { MAX_IMPORT_URL_LENGTH } from "../../shared/constants";
-import { GalleryView } from "../../shared/types";
-import { ifDefined } from "lit/directives/if-defined.js";
-import { DialogService, TOSDialogProps } from "../../services/dialog.service";
-import { SettingsService } from "../../services/settings.service";
+import { styles } from './home_gallery.scss';
+import { makeObservable, observable, ObservableMap, toJS } from 'mobx';
+import { PaperData } from '../../shared/types_local_storage';
+import { MAX_IMPORT_URL_LENGTH } from '../../shared/constants';
+import { GalleryView } from '../../shared/types';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { DialogService, TOSDialogProps } from '../../services/dialog.service';
+import { SettingsService } from '../../services/settings.service';
 
 function getStatusDisplayText(status: LoadingStatus) {
   switch (status) {
     case LoadingStatus.WAITING:
-      return "Loading";
+      return 'Loading';
     case LoadingStatus.SUMMARIZING:
-      return "Summarizing";
+      return 'Summarizing';
     default:
-      return "";
+      return '';
   }
 }
 
 /** Gallery for home/landing page */
-@customElement("home-gallery")
+@customElement('home-gallery')
 export class HomeGallery extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
   private readonly dialogService = core.getService(DialogService);
   private readonly homeService = core.getService(HomeService);
   private readonly routerService = core.getService(RouterService);
-  private readonly firebaseService = core.getService(FirebaseService);
+  private readonly apiService = core.getService(ApiService);
   private readonly historyService = core.getService(HistoryService);
   private readonly snackbarService = core.getService(SnackbarService);
   private readonly settingsService = core.getService(SettingsService);
@@ -87,14 +86,14 @@ export class HomeGallery extends MobxLitElement {
   @property() galleryView: GalleryView = GalleryView.LOCAL;
 
   // Paper URL or ID for text input box
-  @state() private paperInput: string = "";
+  @state() private paperInput: string = '';
   // Whether the last imported paper is still loading metadata
   // (if true, this blocks importing another paper)
   @state() private isLoadingMetadata = false;
 
-  @observable.shallow private unsubscribeListeners = new ObservableMap<
+  @observable.shallow private websockets = new ObservableMap<
     string,
-    Unsubscribe
+    WebSocket
   >();
   private loadingStatusMap = new ObservableMap<string, LoadingStatus>();
 
@@ -104,14 +103,14 @@ export class HomeGallery extends MobxLitElement {
   }
 
   get isLoadingDocument(): boolean {
-    return this.unsubscribeListeners.size > 0 || this.isLoadingMetadata;
+    return this.websockets.size > 0 || this.isLoadingMetadata;
   }
 
   override connectedCallback() {
     super.connectedCallback();
     this.historyService.paperMetadata.forEach((metadata, paperId) => {
       const paperData = this.historyService.getPaperData(paperId);
-      if (paperData && paperData.status === "loading") {
+      if (paperData && paperData.status === 'loading') {
         this.listenForDocReady(paperId, metadata);
       }
     });
@@ -119,8 +118,8 @@ export class HomeGallery extends MobxLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.unsubscribeListeners.forEach((unsubscribe) => unsubscribe());
-    this.unsubscribeListeners.clear();
+    this.websockets.forEach((ws) => ws.close());
+    this.websockets.clear();
   }
 
   protected override firstUpdated(_changedProperties: PropertyValues): void {
@@ -134,10 +133,7 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private async requestDocument(id: string) {
-    const response = await requestArxivDocImportCallable(
-      this.firebaseService.functions,
-      id
-    );
+    const response = await requestArxivDocImportCallable(this.apiService, id);
     return response;
   }
 
@@ -157,8 +153,8 @@ export class HomeGallery extends MobxLitElement {
     const foundPaper = existingPapers.find(
       (paper) => paper.metadata.paperId === paperId
     );
-    if (foundPaper && foundPaper.status === "complete") {
-      this.snackbarService.show("Paper already loaded.");
+    if (foundPaper && foundPaper.status === 'complete') {
+      this.snackbarService.show('Paper already loaded.');
     }
 
     try {
@@ -176,11 +172,11 @@ export class HomeGallery extends MobxLitElement {
     }
 
     // Reset paper input
-    this.paperInput = "";
+    this.paperInput = '';
 
     const metadata = response.metadata;
     if (!metadata || !metadata.version) {
-      this.snackbarService.show("Error: Document not found.");
+      this.snackbarService.show('Error: Document not found.');
       return;
     }
 
@@ -191,50 +187,82 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private listenForDocReady(paperId: string, metadata: ArxivMetadata) {
-    // If there's an existing listener for this paper, unsubscribe first.
-    if (this.unsubscribeListeners.has(paperId)) {
-      this.unsubscribeListeners.get(paperId)?.();
+    // If there's an existing WebSocket for this paper, close it first.
+    if (this.websockets.has(paperId)) {
+      this.websockets.get(paperId)?.close();
     }
 
-    const docPath = `arxiv_docs/${paperId}/versions/${metadata.version}`;
-    const unsubscribe = onSnapshot(
-      doc(this.firebaseService.firestore, docPath),
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.data() as LumiDoc;
+    // Connect to WebSocket for real-time updates
+    const ws = this.apiService.connectDocumentSocket(
+      paperId,
+      metadata.version,
+      (data) => {
+        // Handle WebSocket updates
+        const loadingStatus = data.loading_status || data.loadingStatus;
+        const loadingError = data.loading_error || data.loadingError;
 
-          if (data.metadata) {
-            this.loadingStatusMap.set(
-              data.metadata.paperId,
-              data.loadingStatus as LoadingStatus
-            );
-          }
+        console.log(`[HomeGallery] WebSocket update for ${paperId}:`, {
+          data,
+          loadingStatus,
+          loadingError,
+          paperId: metadata.paperId,
+          hasMetadataPaperId: !!metadata.paperId,
+          currentStatusInMap: this.loadingStatusMap.get(metadata.paperId),
+        });
 
-          // Once the document has loaded successfully, update its status
-          // to 'complete' and unsubscribe.
-          if (data.loadingStatus === LoadingStatus.SUCCESS) {
-            this.historyService.addPaper(paperId, metadata);
-            // Also update paper image (now that it's available in metadata)
-            this.homeService.loadMetadata([paperId], true);
-
-            this.unsubscribeListeners.get(paperId)?.();
-            this.unsubscribeListeners.delete(paperId);
-            this.snackbarService.show("Document loaded.");
-          } else if (
-            LOADING_STATUS_ERROR_STATES.includes(
-              data.loadingStatus as LoadingStatus
-            ) ||
-            data.loadingStatus === LoadingStatus.TIMEOUT
-          ) {
-            this.historyService.deletePaper(paperId);
-            this.unsubscribeListeners.get(paperId)?.();
-            this.unsubscribeListeners.delete(paperId);
-            this.snackbarService.show(`${data.loadingError}`);
-          }
+        if (metadata.paperId) {
+          this.loadingStatusMap.set(
+            metadata.paperId,
+            loadingStatus as LoadingStatus
+          );
+          console.log(
+            `[HomeGallery] Updated loadingStatusMap for ${metadata.paperId} to ${loadingStatus}`
+          );
+        } else {
+          console.warn(
+            `[HomeGallery] metadata.paperId is undefined, cannot update status`
+          );
         }
+
+        // Once the document has loaded successfully, update its status
+        // to 'complete' and close WebSocket.
+        if (loadingStatus === LoadingStatus.SUCCESS) {
+          console.log(
+            `[HomeGallery] Document loaded successfully for ${paperId}`
+          );
+          this.historyService.addPaper(paperId, metadata);
+          // Also update paper image (now that it's available in metadata)
+          this.homeService.loadMetadata([paperId], true);
+
+          this.websockets.get(paperId)?.close();
+          this.websockets.delete(paperId);
+          this.snackbarService.show('Document loaded.');
+        } else if (
+          LOADING_STATUS_ERROR_STATES.includes(
+            loadingStatus as LoadingStatus
+          ) ||
+          loadingStatus === LoadingStatus.TIMEOUT
+        ) {
+          console.log(
+            `[HomeGallery] Document loading failed for ${paperId}: ${loadingError}`
+          );
+          this.historyService.deletePaper(paperId);
+          this.websockets.get(paperId)?.close();
+          this.websockets.delete(paperId);
+          this.snackbarService.show(`${loadingError}`);
+        } else {
+          console.log(
+            `[HomeGallery] Document still loading for ${paperId}: ${loadingStatus}`
+          );
+        }
+      },
+      (error) => {
+        console.error('[HomeGallery] WebSocket error:', error);
+        this.websockets.delete(paperId);
       }
     );
-    this.unsubscribeListeners.set(paperId, unsubscribe);
+
+    this.websockets.set(paperId, ws);
   }
 
   override render() {
@@ -305,7 +333,7 @@ export class HomeGallery extends MobxLitElement {
                 this.paperInput = e.detail.value;
               }}
               @keydown=${(e: CustomEvent) => {
-                if (e.detail.key === "Enter") {
+                if (e.detail.key === 'Enter') {
                   submit();
                 }
               }}
@@ -327,7 +355,7 @@ export class HomeGallery extends MobxLitElement {
 
   private renderLoadingMessages(metadata: ArxivMetadata[]) {
     const loadingItems = metadata.filter((item) =>
-      this.unsubscribeListeners.get(item.paperId)
+      this.websockets.get(item.paperId)
     );
 
     const renderNewLoading = () => {
@@ -369,7 +397,7 @@ export class HomeGallery extends MobxLitElement {
 
   private renderLocalCollectionNavItem() {
     const classes = classMap({
-      "nav-item": true,
+      'nav-item': true,
       active: this.routerService.activePage === Pages.HOME,
     });
 
@@ -389,7 +417,7 @@ export class HomeGallery extends MobxLitElement {
     const isCurrent =
       collection.collectionId === this.homeService.currentCollectionId;
     const classes = classMap({
-      "nav-item": true,
+      'nav-item': true,
       active: isCurrent && this.routerService.activePage === Pages.COLLECTION,
     });
 
@@ -407,7 +435,7 @@ export class HomeGallery extends MobxLitElement {
   }
 
   private getImageUrl() {
-    return (path: string) => this.firebaseService.getDownloadUrl(path);
+    return (path: string) => this.apiService.getDownloadUrl(path);
   }
 
   private renderCollection(items: ArxivMetadata[]) {
@@ -420,6 +448,15 @@ export class HomeGallery extends MobxLitElement {
         metadata.paperId
       );
       const status = this.loadingStatusMap.get(metadata.paperId);
+      const statusText = status ? getStatusDisplayText(status) : '';
+
+      console.log(`[HomeGallery] Rendering card for ${metadata.paperId}:`, {
+        status,
+        statusText,
+        hasImage: !!image,
+        title: metadata.title,
+      });
+
       return html`
         <a
           href=${getLumiPaperUrl(metadata.paperId)}
@@ -427,7 +464,7 @@ export class HomeGallery extends MobxLitElement {
           rel="noopener noreferrer"
         >
           <paper-card
-            .status=${status ? getStatusDisplayText(status) : ""}
+            .status=${statusText}
             .metadata=${metadata}
             .image=${ifDefined(image)}
             .getImageUrl=${this.getImageUrl()}
@@ -450,7 +487,7 @@ export class HomeGallery extends MobxLitElement {
 }
 
 /** Paper preview card */
-@customElement("paper-card")
+@customElement('paper-card')
 export class PaperCard extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -458,7 +495,7 @@ export class PaperCard extends MobxLitElement {
   @property({ type: Object }) image: FeaturedImage | null = null;
   @property({ type: Boolean }) disabled = false;
   @property({ type: Number }) summaryMaxCharacters = 250;
-  @property({ type: String }) status = "";
+  @property({ type: String }) status = '';
   @property({ type: Object }) getImageUrl?: (path: string) => Promise<string>;
 
   private renderImage() {
@@ -482,7 +519,7 @@ export class PaperCard extends MobxLitElement {
       return nothing;
     }
 
-    const classes = { "preview-item": true, disabled: this.disabled };
+    const classes = { 'preview-item': true, disabled: this.disabled };
 
     // If summary is over max characters, abbreviate
     const summary =
@@ -490,7 +527,7 @@ export class PaperCard extends MobxLitElement {
         ? this.metadata.summary
         : `${this.metadata.summary.slice(0, this.summaryMaxCharacters)}...`;
 
-    const authors = this.metadata.authors.join(", ");
+    const authors = this.metadata.authors.join(', ');
     return html`
       <div class=${classMap(classes)}>
         ${this.renderImage()}
@@ -517,7 +554,7 @@ export class PaperCard extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-gallery": HomeGallery;
-    "paper-card": PaperCard;
+    'home-gallery': HomeGallery;
+    'paper-card': PaperCard;
   }
 }

@@ -15,35 +15,35 @@
  * limitations under the License.
  */
 
-import { expect } from "@esm-bundle/chai";
-import { HistoryCollapseManager } from "./history_collapse_manager";
+import { expect } from '@esm-bundle/chai';
+import { HistoryCollapseManager } from './history_collapse_manager';
 
-describe("HistoryCollapseManager", () => {
+describe('HistoryCollapseManager', () => {
   let collapseManager: HistoryCollapseManager;
 
   beforeEach(() => {
     collapseManager = new HistoryCollapseManager();
   });
 
-  it("should be created", () => {
+  it('should be created', () => {
     expect(collapseManager).to.exist;
   });
 
-  describe("Answer Collapse State Management", () => {
-    it("should return false (expanded) for an unknown answer by default", () => {
-      expect(collapseManager.isAnswerCollapsed("unknown-id")).to.be.false;
+  describe('Answer Collapse State Management', () => {
+    it('should return false (expanded) for an unknown answer by default', () => {
+      expect(collapseManager.isAnswerCollapsed('unknown-id')).to.be.false;
     });
 
-    it("should set the collapsed state of an answer", () => {
-      const answerId = "answer-1";
+    it('should set the collapsed state of an answer', () => {
+      const answerId = 'answer-1';
       collapseManager.setAnswerCollapsed(answerId, true);
       expect(collapseManager.isAnswerCollapsed(answerId)).to.be.true;
       collapseManager.setAnswerCollapsed(answerId, false);
       expect(collapseManager.isAnswerCollapsed(answerId)).to.be.false;
     });
 
-    it("should toggle the collapsed state of an answer", () => {
-      const answerId = "answer-1";
+    it('should toggle the collapsed state of an answer', () => {
+      const answerId = 'answer-1';
       expect(collapseManager.isAnswerCollapsed(answerId)).to.be.false;
       collapseManager.toggleAnswerCollapsed(answerId);
       expect(collapseManager.isAnswerCollapsed(answerId)).to.be.true;
@@ -51,10 +51,10 @@ describe("HistoryCollapseManager", () => {
       expect(collapseManager.isAnswerCollapsed(answerId)).to.be.false;
     });
 
-    it("should collapse all answers except the specified one", () => {
-      const answer1 = "answer-1";
-      const answer2 = "answer-2";
-      const answer3 = "answer-3";
+    it('should collapse all answers except the specified one', () => {
+      const answer1 = 'answer-1';
+      const answer2 = 'answer-2';
+      const answer3 = 'answer-3';
 
       // Set some initial states
       collapseManager.setAnswerCollapsed(answer1, false);

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@use "../../sass/common";
+@use '../../sass/common';
 
 .smart-highlight-menu {
   @include common.flex-row-align-center;

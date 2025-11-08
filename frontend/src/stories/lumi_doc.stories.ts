@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from "@storybook/web-components";
+import type { Meta, StoryObj } from '@storybook/web-components';
 
-import { LitElement, html } from "lit";
-import { customElement, state } from "lit/decorators.js";
-import { provide } from "@lit/context";
+import { LitElement, html } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import { provide } from '@lit/context';
 
 // Run the main_import_pdf_script.py to import a paper to use locally.
 // import { paper as paper_xxxx_xxxxx } from "../.examples/paper_xxxx.xxxxx";
 
-import "../components/lumi_doc/lumi_doc";
-import { InnerTagName, LumiDoc, LoadingStatus } from "../shared/lumi_doc";
-import { scrollContext, ScrollState } from "../contexts/scroll_context";
-import { Ref } from "lit/directives/ref";
-import { LumiDocManager } from "../shared/lumi_doc_manager";
-import { CollapseManager } from "../shared/collapse_manager";
-import { HighlightManager } from "../shared/highlight_manager";
+import '../components/lumi_doc/lumi_doc';
+import { InnerTagName, LumiDoc, LoadingStatus } from '../shared/lumi_doc';
+import { scrollContext, ScrollState } from '../contexts/scroll_context';
+import { Ref } from 'lit/directives/ref';
+import { LumiDocManager } from '../shared/lumi_doc_manager';
+import { CollapseManager } from '../shared/collapse_manager';
+import { HighlightManager } from '../shared/highlight_manager';
 
 const PAPERS: { [key: string]: LumiDoc } = {
   // "xxxx.xxxxx": paper_xxxx_xxxxx,
@@ -55,27 +55,27 @@ const TEST_TABLE_HTML = `<table>
 </table>`;
 
 const mockLumiDoc: LumiDoc = {
-  markdown: "",
+  markdown: '',
   loadingStatus: LoadingStatus.SUCCESS,
   metadata: {
-    title: "Mock Document for Testing",
-    authors: ["John Doe", "Jill Smith"],
-    paperId: "mock-id",
-    version: "1",
-    summary: "A mock document.",
-    updatedTimestamp: "",
-    publishedTimestamp: "",
+    title: 'Mock Document for Testing',
+    authors: ['John Doe', 'Jill Smith'],
+    paperId: 'mock-id',
+    version: '1',
+    summary: 'A mock document.',
+    updatedTimestamp: '',
+    publishedTimestamp: '',
   },
   abstract: {
     contents: [
       {
-        id: "abstract_content_1_1",
+        id: 'abstract_content_1_1',
         textContent: {
-          tagName: "p",
+          tagName: 'p',
           spans: [
             {
-              id: "abstract_span_1_1_1",
-              text: "This is the first sentence in the abstract. ",
+              id: 'abstract_span_1_1_1',
+              text: 'This is the first sentence in the abstract. ',
               innerTags: [
                 {
                   tagName: InnerTagName.FOOTNOTE,
@@ -84,14 +84,14 @@ const mockLumiDoc: LumiDoc = {
                     endIndex: 4,
                   },
                   metadata: {
-                    id: "1",
+                    id: '1',
                   },
                 },
               ],
             },
             {
-              id: "abstract_span_1_1_2",
-              text: "This is the second sentence in the abstract. ",
+              id: 'abstract_span_1_1_2',
+              text: 'This is the second sentence in the abstract. ',
               innerTags: [],
             },
           ],
@@ -106,44 +106,44 @@ const mockLumiDoc: LumiDoc = {
   concepts: [],
   footnotes: [
     {
-      id: "1",
+      id: '1',
       span: {
-        id: "footnote_span_1",
-        text: "What a footnote would say",
+        id: 'footnote_span_1',
+        text: 'What a footnote would say',
         innerTags: [],
       },
     },
   ],
   references: [
     {
-      id: "ref_1",
-      span: { id: "ref_span_1", text: "[1] A. N. Author", innerTags: [] },
+      id: 'ref_1',
+      span: { id: 'ref_span_1', text: '[1] A. N. Author', innerTags: [] },
     },
   ],
   summaries: {
-    abstractExcerptSpanId: "abstract_span_1_1_1",
+    abstractExcerptSpanId: 'abstract_span_1_1_1',
     sectionSummaries: [
       {
-        id: "section_1",
-        summary: { id: "s_sum_1", text: "This is section 1.", innerTags: [] },
+        id: 'section_1',
+        summary: { id: 's_sum_1', text: 'This is section 1.', innerTags: [] },
       },
     ],
     contentSummaries: [
       {
-        id: "content_1_1",
+        id: 'content_1_1',
         summary: {
-          id: "c_sum_1",
-          text: "This is a paragraph summary.",
+          id: 'c_sum_1',
+          text: 'This is a paragraph summary.',
           innerTags: [],
         },
       },
     ],
     spanSummaries: [
       {
-        id: "span_1_1_1",
+        id: 'span_1_1_1',
         summary: {
-          id: "sp_sum_1",
-          text: "This is a span summary.",
+          id: 'sp_sum_1',
+          text: 'This is a span summary.',
           innerTags: [],
         },
       },
@@ -151,29 +151,29 @@ const mockLumiDoc: LumiDoc = {
   },
   sections: [
     {
-      id: "section_1",
-      heading: { headingLevel: 2, text: "First Section" },
+      id: 'section_1',
+      heading: { headingLevel: 2, text: 'First Section' },
       contents: [
         {
-          id: "content_1_1",
+          id: 'content_1_1',
           textContent: {
-            tagName: "p",
+            tagName: 'p',
             spans: [
               {
-                id: "span_1_1_1",
+                id: 'span_1_1_1',
                 // Reference
-                text: "This is the first sentence with a reference [1]. ",
+                text: 'This is the first sentence with a reference [1]. ',
                 innerTags: [
                   {
                     tagName: InnerTagName.REFERENCE,
                     position: { startIndex: 43, endIndex: 46 },
-                    metadata: { referenceId: "ref_1" },
+                    metadata: { referenceId: 'ref_1' },
                   },
                 ],
               },
               {
-                id: "span_1_1_2",
-                text: "This is the second sentence.",
+                id: 'span_1_1_2',
+                text: 'This is the second sentence.',
                 innerTags: [],
               },
             ],
@@ -186,17 +186,17 @@ const mockLumiDoc: LumiDoc = {
       ],
     },
     {
-      id: "section_2",
-      heading: { headingLevel: 2, text: "Different content types" },
+      id: 'section_2',
+      heading: { headingLevel: 2, text: 'Different content types' },
       contents: [
         // List content
         {
-          id: "content_2_1",
+          id: 'content_2_1',
           listContent: {
             isOrdered: false,
             listItems: [
-              { spans: [{ id: "li_1", text: "Item 1", innerTags: [] }] },
-              { spans: [{ id: "li_2", text: "Item 2", innerTags: [] }] },
+              { spans: [{ id: 'li_1', text: 'Item 1', innerTags: [] }] },
+              { spans: [{ id: 'li_2', text: 'Item 2', innerTags: [] }] },
             ],
           },
           textContent: null,
@@ -206,12 +206,12 @@ const mockLumiDoc: LumiDoc = {
         },
         // Pre content
         {
-          id: "content_2_2",
+          id: 'content_2_2',
           textContent: {
-            tagName: "pre",
+            tagName: 'pre',
             spans: [
               {
-                id: "code_1",
+                id: 'code_1',
                 text: "const x = 'hello world';",
                 innerTags: [],
               },
@@ -224,15 +224,15 @@ const mockLumiDoc: LumiDoc = {
         },
         // HTML figure content
         {
-          id: "content_2_3",
+          id: 'content_2_3',
           listContent: null,
           textContent: null,
           imageContent: null,
           htmlFigureContent: {
             html: TEST_TABLE_HTML,
             caption: {
-              text: "Example html figure caption",
-              id: "html_caption_span_id",
+              text: 'Example html figure caption',
+              id: 'html_caption_span_id',
               innerTags: [],
             },
           },
@@ -240,20 +240,20 @@ const mockLumiDoc: LumiDoc = {
         },
         // Image content
         {
-          id: "content_2_4",
+          id: 'content_2_4',
           listContent: null,
           textContent: null,
           htmlFigureContent: null,
           figureContent: null,
           imageContent: {
-            storagePath: "lollipop.png",
-            latexPath: "",
-            altText: "",
+            storagePath: 'lollipop.png',
+            latexPath: '',
+            altText: '',
             width: 100,
             height: 100,
             caption: {
-              text: "Example image caption",
-              id: "image_caption_span_id",
+              text: 'Example image caption',
+              id: 'image_caption_span_id',
               innerTags: [],
             },
           },
@@ -272,7 +272,7 @@ class MockScrollState extends ScrollState {
 /**
  * A mock provider for the scroll context, for use in Storybook.
  */
-@customElement("mock-scroll-provider")
+@customElement('mock-scroll-provider')
 class MockScrollProvider extends LitElement {
   @provide({ context: scrollContext })
   @state()
@@ -285,8 +285,8 @@ class MockScrollProvider extends LitElement {
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 const meta = {
-  title: "Components/LumiDoc",
-  tags: ["autodocs"],
+  title: 'Components/LumiDoc',
+  tags: ['autodocs'],
   render: (args) => {
     const lumiDocManager = new LumiDocManager(args.lumiDoc);
     const collapseManager = new CollapseManager(lumiDocManager);
@@ -306,7 +306,7 @@ const meta = {
     paper: {
       options: Object.keys(PAPERS),
       mapping: PAPERS,
-      control: { type: "select" },
+      control: { type: 'select' },
     },
   },
 } satisfies Meta;
@@ -339,6 +339,6 @@ export const UsingImportedPaper: Story = {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "mock-scroll-provider": MockScrollProvider;
+    'mock-scroll-provider': MockScrollProvider;
   }
 }

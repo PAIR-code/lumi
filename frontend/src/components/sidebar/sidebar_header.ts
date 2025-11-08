@@ -15,35 +15,35 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { styles } from "./sidebar_header.scss";
-import { core } from "../../core/core";
-import { RouterService, Pages } from "../../services/router.service";
-import { APP_NAME, LOGO_ICON_NAME } from "../../shared/constants";
-import "../../pair-components/icon_button";
-import "../../pair-components/tooltip";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { styles } from './sidebar_header.scss';
+import { core } from '../../core/core';
+import { RouterService, Pages } from '../../services/router.service';
+import { APP_NAME, LOGO_ICON_NAME } from '../../shared/constants';
+import '../../pair-components/icon_button';
+import '../../pair-components/tooltip';
 import {
   AnalyticsAction,
   AnalyticsService,
-} from "../../services/analytics.service";
+} from '../../services/analytics.service';
 import {
   DialogService,
   HistoryDialogProps,
   TutorialDialogProps,
   UserFeedbackDialogProps,
-} from "../../services/dialog.service";
+} from '../../services/dialog.service';
 import {
   FloatingPanelService,
   OverflowMenuItem,
   OverflowMenuProps,
-} from "../../services/floating_panel_service";
+} from '../../services/floating_panel_service';
 
 /**
  * The header for the sidebar.
  */
-@customElement("sidebar-header")
+@customElement('sidebar-header')
 export class SidebarHeader extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
   private readonly analyticsService = core.getService(AnalyticsService);
@@ -51,7 +51,7 @@ export class SidebarHeader extends MobxLitElement {
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly routerService = core.getService(RouterService);
 
-  @property({type: Boolean}) includeAppName = false;
+  @property({ type: Boolean }) includeAppName = false;
 
   private handleFeedbackClick() {
     this.floatingPanelService.hide();
@@ -82,18 +82,18 @@ export class SidebarHeader extends MobxLitElement {
   private handleOverflowClick(e: Event) {
     const menuItems: OverflowMenuItem[] = [
       {
-        icon: "contextual_token",
-        label: "View Lumi history",
+        icon: 'contextual_token',
+        label: 'View Lumi history',
         onClick: this.onSeeHistoryClick.bind(this),
       },
       {
-        icon: "feedback",
-        label: "Send feedback",
+        icon: 'feedback',
+        label: 'Send feedback',
         onClick: this.handleFeedbackClick.bind(this),
       },
       {
-        icon: "help",
-        label: "Tutorial",
+        icon: 'help',
+        label: 'Tutorial',
         onClick: this.handleTutorialClick.bind(this),
       },
     ];
@@ -111,7 +111,9 @@ export class SidebarHeader extends MobxLitElement {
             @click=${this.navigateHome}
           ></pr-icon-button>
         </pr-tooltip>
-        ${this.includeAppName ? html`<div class="title">${APP_NAME}</div>` : nothing}
+        ${this.includeAppName
+          ? html`<div class="title">${APP_NAME}</div>`
+          : nothing}
       </div>
       <slot></slot>
       <div class="right-container">
@@ -137,6 +139,6 @@ export class SidebarHeader extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "sidebar-header": SidebarHeader;
+    'sidebar-header': SidebarHeader;
   }
 }

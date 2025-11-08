@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import { expect } from "@esm-bundle/chai";
-import { InnerTag, InnerTagName } from "../../shared/lumi_doc";
-import { flattenTags } from "./lumi_span_utils";
+import { expect } from '@esm-bundle/chai';
+import { InnerTag, InnerTagName } from '../../shared/lumi_doc';
+import { flattenTags } from './lumi_span_utils';
 
-describe("lumi_span_utils", () => {
-  describe("flattenTags", () => {
-    it("should return an empty array if given an empty array", () => {
+describe('lumi_span_utils', () => {
+  describe('flattenTags', () => {
+    it('should return an empty array if given an empty array', () => {
       expect(flattenTags([])).to.deep.equal([]);
     });
 
-    it("should handle a flat list of tags without children", () => {
+    it('should handle a flat list of tags without children', () => {
       const tags: InnerTag[] = [
         {
           tagName: InnerTagName.BOLD,
@@ -43,7 +43,7 @@ describe("lumi_span_utils", () => {
       expect(flattenTags(tags)).to.deep.equal(tags);
     });
 
-    it("should flatten a single level of nested tags", () => {
+    it('should flatten a single level of nested tags', () => {
       const tags: InnerTag[] = [
         {
           tagName: InnerTagName.BOLD,
@@ -77,7 +77,7 @@ describe("lumi_span_utils", () => {
       });
     });
 
-    it("should flatten multiple levels of nested tags", () => {
+    it('should flatten multiple levels of nested tags', () => {
       const tags: InnerTag[] = [
         {
           // Level 0: <b> (10-50)

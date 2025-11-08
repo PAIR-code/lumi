@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { MobxLitElement } from "@adobe/lit-mobx";
-import { CSSResultGroup, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { InfoTooltipProps } from "../../services/floating_panel_service";
-import { styles } from "./info_tooltip.scss";
+import { MobxLitElement } from '@adobe/lit-mobx';
+import { CSSResultGroup, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { InfoTooltipProps } from '../../services/floating_panel_service';
+import { styles } from './info_tooltip.scss';
 
 /**
  * A tooltip component for displaying informational text.
  */
-@customElement("info-tooltip")
+@customElement('info-tooltip')
 export class InfoTooltip extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -37,6 +37,6 @@ export class InfoTooltip extends MobxLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "info-tooltip": InfoTooltip;
+    'info-tooltip': InfoTooltip;
   }
 }

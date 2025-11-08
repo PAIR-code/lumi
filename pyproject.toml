@@ -1,0 +1,258 @@
+[project]
+name = "lumi-litellm"
+version = "1.0.0"
+description = "Lumi - Enhanced reading experience with LiteLLM"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Google PAIR"},
+]
+
+dependencies = [
+    # FastAPI and server
+    "fastapi==0.115.0",
+    "uvicorn[standard]==0.30.0",
+    "websockets>=10.4,<11.0",
+    "python-multipart==0.0.9",
+
+    # Configuration
+    "pydantic==2.9.0",
+    "pydantic-settings==2.5.0",
+    "python-dotenv==1.0.1",
+
+    # Database
+    "surrealdb==0.3.2",
+
+    # Storage
+    "boto3==1.35.0",
+    "botocore==1.35.0",
+
+    # Core dependencies
+    "aiohappyeyeballs==2.6.1",
+    "aiohttp==3.12.12",
+    "aiosignal==1.3.2",
+    "annotated-types==0.7.0",
+    "anyio==4.9.0",
+    "attrs>=22.2.0",
+    "beautifulsoup4==4.13.4",
+    "CacheControl==0.14.3",
+    "certifi==2025.4.26",
+    "chardet==5.2.0",
+    "charset-normalizer==3.4.2",
+    "click==8.2.0",
+    "cryptography==44.0.3",
+    "dacite==1.9.2",
+    "et-xmlfile==2.0.0",
+    "flask-cors==5.0.1",
+    "frozenlist==1.7.0",
+    "litellm==1.50.0",
+    "tenacity==9.0.0",
+    "httpcore==1.0.9",
+    "httplib2==0.22.0",
+    "httpx==0.28.1",
+    "idna==3.10",
+    "Jinja2==3.1.6",
+    "joblib==1.5.0",
+    "MarkupSafe==3.0.2",
+    "mistletoe==1.4.0",
+    "msgpack==1.1.0",
+    "multidict==6.4.4",
+    "nanoid==2.0.0",
+    "nltk==3.9.1",
+    "numpy==2.3.0",
+    "opencv-python-headless==4.11.0.86",
+    "openpyxl==3.1.5",
+    "packaging==25.0",
+    "pandas==2.3.0",
+    "parameterized==0.9.0",
+    "pdf2image==1.17.0",
+    "pdfminer-six==20250506",
+    "pillow==11.2.1",
+    "plasTeX==3.1",
+    "propcache==0.3.2",
+    "pycparser==2.22",
+    "pycryptodome==3.23.0",
+    "PyJWT==2.10.1",
+    "pyparsing==3.2.3",
+    "pypdf==6.1.3",
+    "pypdfium2==4.30.1",
+    "python-dateutil==2.9.0.post0",
+    "pytz==2025.2",
+    "PyYAML==6.0.2",
+    "regex==2024.11.6",
+    "requests==2.32.3",
+    "six==1.17.0",
+    "sniffio==1.3.1",
+    "soupsieve==2.7",
+    "tabulate==0.9.0",
+    "tqdm==4.67.1",
+    "typing-inspection==0.4.0",
+    "typing-extensions==4.13.2",
+    "tzdata==2025.2",
+    "Unidecode==1.4.0",
+    "uritemplate==4.1.1",
+    "urllib3==2.4.0",
+    "watchdog==6.0.0",
+    "Werkzeug==3.1.3",
+    "yarl==1.20.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Code formatting and linting
+    "black==24.10.0",
+    "isort==5.13.2",
+    "flake8==7.1.1",
+    "mypy==1.13.0",
+
+    # Pre-commit hooks
+    "pre-commit==4.0.1",
+
+    # Testing
+    "pytest==8.3.4",
+    "pytest-asyncio==0.24.0",
+    "pytest-cov==6.0.0",
+    "pytest-mock==3.14.0",
+
+    # Type stubs
+    "types-requests==2.32.0.20241016",
+    "types-PyYAML==6.0.12.20240917",
+
+    # Development utilities
+    "ipython==8.30.0",
+    "ipdb==0.13.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "backend",
+    "pyproject.toml",
+    "README.md",
+    "LICENSE",
+]
+exclude = [
+    "backend/__pycache__",
+    "**/__pycache__",
+    "**/*.pyc",
+    "backend/import_pipeline/nltk_data",
+    "backend/local_image_bucket",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | __pycache__
+  | nltk_data
+  | node_modules
+  | frontend
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip_gitignore = true
+known_first_party = ["backend"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+extend_skip_glob = ["frontend/*", "node_modules/*"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = [
+    'venv',
+    '.venv',
+    '__pycache__',
+    'nltk_data',
+    'frontend',
+    'node_modules',
+]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+python_files = ["*_test.py", "test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["backend"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+    "*/nltk_data/*",
+    "*/node_modules/*",
+    "frontend/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+extend-exclude = [
+    "frontend",
+    "node_modules",
+    "nltk_data",
+    "__pycache__",
+    ".venv",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]

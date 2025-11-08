@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-import { action, makeObservable, observable } from "mobx";
-import { Service } from "./service";
+import { action, makeObservable, observable } from 'mobx';
+import { Service } from './service';
 
-import { ColorMode } from "../shared/types";
+import { ColorMode } from '../shared/types';
 
 import {
   LocalStorageHelper,
   LocalStorageService,
-} from "./local_storage.service";
+} from './local_storage.service';
 
 interface ServiceProvider {
   localStorageService: LocalStorageService;
 }
 
-const TOS_CONFIRMED_LOCAL_STORAGE_KEY = "tosConfirmed";
-const TUTORIAL_CONFIRMED_LOCAL_STORAGE_KEY = "tutorialConfirmed";
-const API_KEY_LOCAL_STORAGE_KEY = "userApiKey";
+const TOS_CONFIRMED_LOCAL_STORAGE_KEY = 'tosConfirmed';
+const TUTORIAL_CONFIRMED_LOCAL_STORAGE_KEY = 'tutorialConfirmed';
+const API_KEY_LOCAL_STORAGE_KEY = 'userApiKey';
 
 /**
  * Settings service.
@@ -52,7 +52,7 @@ export class SettingsService extends Service {
       );
     this.apiKey = this.sp.localStorageService.makeLocalStorageHelper(
       API_KEY_LOCAL_STORAGE_KEY,
-      ""
+      ''
     );
   }
 

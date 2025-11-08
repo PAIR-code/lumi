@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import { LitElement, html, CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { getArxivPaperUrl } from "../../services/router.service";
-import { ArxivMetadata } from "../../shared/lumi_doc";
-import { styles } from "./loading_document.scss";
+import { LitElement, html, CSSResultGroup } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { getArxivPaperUrl } from '../../services/router.service';
+import { ArxivMetadata } from '../../shared/lumi_doc';
+import { styles } from './loading_document.scss';
 
-import "../../pair-components/circular_progress";
-import "../../pair-components/button";
-import "../../pair-components/icon_button";
+import '../../pair-components/circular_progress';
+import '../../pair-components/button';
+import '../../pair-components/icon_button';
 
 /**
  * A component to display document metadata while the full document is loading.
  */
-@customElement("loading-document")
+@customElement('loading-document')
 export class LoadingDocument extends LitElement {
   static override styles: CSSResultGroup = [styles];
 
@@ -72,7 +72,7 @@ export class LoadingDocument extends LitElement {
                 </a>
               </span>
             </h1>
-            <div class="authors">${this.metadata.authors.join(", ")}</div>
+            <div class="authors">${this.metadata.authors.join(', ')}</div>
             <div class="summary">${this.metadata.summary}</div>
           </div>
           <div class="footer">
@@ -88,6 +88,6 @@ export class LoadingDocument extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "loading-document": LoadingDocument;
+    'loading-document': LoadingDocument;
   }
 }

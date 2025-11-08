@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-import { html, render } from "lit";
-import "./app";
-import { core } from "./core/core";
-import { makeServiceProvider } from "./service_provider";
-import { InitializationService } from "./services/initialization.service";
+import { html, render } from 'lit';
+import './app';
+import { core } from './core/core';
+import { makeServiceProvider } from './service_provider';
+import { InitializationService } from './services/initialization.service';
 
 async function main() {
+  console.log('[Frontend] Application starting...', {
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+  });
+
   core.initialize(makeServiceProvider);
 
   // Initialize the global services, if necessary
   const initializationService = core.getService(InitializationService);
   await initializationService.initialize();
 
+  console.log('[Frontend] Application initialized, rendering app component');
   render(html`<lumi-app></lumi-app>`, document.body);
 }
 main();
