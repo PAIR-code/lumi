@@ -641,11 +641,6 @@ export class LumiReader extends LightMobxLitElement {
           .onConceptClick=${this.handleConceptClick.bind(this)}
           .onImageClick=${this.handleImageClick.bind(this)}
           .onScroll=${this.handleScroll.bind(this)}
-          .onFocusOnSpan=${(highlights: HighlightSelection[]) => {
-            this.documentStateService.focusOnSpan(highlights, {
-              color: "gray",
-            });
-          }}
           .onPaperReferenceClick=${this.handlePaperReferenceClick.bind(this)}
           .onFootnoteClick=${this.handleFootnoteClick.bind(this)}
           .onAnswerHighlightClick=${this.handleAnswerHighlightClick.bind(this)}
