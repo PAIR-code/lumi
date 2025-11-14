@@ -43,6 +43,7 @@ import {
 import { debounce } from "../../shared/utils";
 import { HistoryService } from "../../services/history.service";
 import { isViewportSmall } from "../../shared/responsive_utils";
+import { DocumentStateService } from "../../services/document_state.service";
 
 /**
  * The menu that appears on text selection.
@@ -52,6 +53,7 @@ export class SmartHighlightMenu extends MobxLitElement {
   static override styles: CSSResultGroup = [styles];
   private readonly floatingPanelService = core.getService(FloatingPanelService);
   private readonly analyticsService = core.getService(AnalyticsService);
+  private readonly documentStateService = core.getService(DocumentStateService);
   private readonly historyService = core.getService(HistoryService);
 
   @property({ type: Object }) props!: SmartHighlightMenuProps;
@@ -73,6 +75,12 @@ export class SmartHighlightMenu extends MobxLitElement {
   private handleAskClick() {
     this.analyticsService.trackAction(AnalyticsAction.MENU_ASK_CLICK);
     this.isAsking = true;
+
+    this.documentStateService.focusOnSpan(this.props.highlightedSpans, {
+      shouldScroll: false,
+      color: "green-light",
+    });
+
     this.updateComplete.then(() => {
       this.textInput?.focus();
     });

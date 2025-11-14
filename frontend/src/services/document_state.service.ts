@@ -26,6 +26,11 @@ import { HighlightSelection } from "../shared/selection_utils";
 import { HistoryService } from "./history.service";
 import { LUMI_CONCEPT_SPAN_ID_PREFIX, SIDEBAR_TABS } from "../shared/constants";
 
+interface SpanFocusOptions {
+  color?: HighlightColor;
+  shouldScroll?: boolean;
+}
+
 interface ServiceProvider {
   historyService: HistoryService;
 }
@@ -84,7 +89,7 @@ export class DocumentStateService extends Service {
 
   focusOnSpan(
     highlightedSpans: HighlightSelection[],
-    color: HighlightColor = "purple"
+    { color = "purple", shouldScroll = true }: SpanFocusOptions = {}
   ) {
     if (
       !this.collapseManager ||
@@ -121,8 +126,10 @@ export class DocumentStateService extends Service {
       }
     }
 
-    window.setTimeout(() => {
-      this.scrollToSpan(spanId);
-    });
+    if (shouldScroll) {
+      window.setTimeout(() => {
+        this.scrollToSpan(spanId);
+      });
+    }
   }
 }

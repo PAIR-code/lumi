@@ -149,6 +149,10 @@ span.collapsed {
       background-color: var(--md-sys-color-highlight-green);
     }
 
+    &.green-light {
+      background-color: var(--md-sys-color-highlight-green-light);
+    }
+
     &.yellow {
       background-color: var(--md-sys-color-highlight-yellow);
     }
