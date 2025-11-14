@@ -23,10 +23,11 @@ export interface Position {
   endIndex: number;
 }
 
-// Kept in sync with Color classes in lumi_span_renderer.scss
+// Kept in sync with Color classes in lumi_span.scss
 export const HIGHLIGHT_COLORS = [
   "cyan",
   "green",
+  "green-light",
   "yellow",
   "orange",
   "pink",

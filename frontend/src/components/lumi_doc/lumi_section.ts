@@ -80,9 +80,6 @@ export class LumiSectionViz extends LightMobxLitElement {
   @property({ type: Object }) highlightManager!: HighlightManager;
   @property({ type: Object }) answerHighlightManager!: AnswerHighlightManager;
   @property({ type: Object }) collapseManager!: CollapseManager;
-  @property({ type: Object }) onFocusOnSpan: (
-    highlightedSpans: HighlightSelection[]
-  ) => void = () => {};
   @property({ type: Object }) onPaperReferenceClick: (
     reference: LumiReference,
     target: HTMLElement
@@ -239,7 +236,6 @@ export class LumiSectionViz extends LightMobxLitElement {
           .highlightManager=${this.highlightManager}
           .answerHighlightManager=${this.answerHighlightManager}
           .collapseManager=${this.collapseManager}
-          .onFocusOnSpan=${this.onFocusOnSpan}
           .onPaperReferenceClick=${this.onPaperReferenceClick}
           .onFootnoteClick=${this.onFootnoteClick}
           .onImageClick=${this.onImageClick}
