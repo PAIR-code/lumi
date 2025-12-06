@@ -92,7 +92,7 @@ typing_extensions==4.13.2
 tzdata==2025.2
 Unidecode==1.4.0
 uritemplate==4.1.1
-urllib3==2.4.0
+urllib3==2.6.0
 watchdog==6.0.0
 websockets==15.0.1
 Werkzeug==3.1.3
