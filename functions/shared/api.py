@@ -59,7 +59,12 @@ class QueryLog:
     """Schema for logging user queries to Firestore."""
 
     created_timestamp: (
-        Any  # Firestore timestamp created with firestore_v1.SERVER_TIMESTAMP
+        Any  # Firestore timestamp (created with firestore_v1.SERVER_TIMESTAMP)
+    )
+    expire_timestamp: (
+        # Firestore timestamp (created with Python datetime library, converts
+        # to Firestore timestamp when written)
+        Any
     )
     answer: LumiAnswer
     arxiv_id: str

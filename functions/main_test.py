@@ -16,6 +16,7 @@
 import unittest
 from dataclasses import asdict
 from unittest.mock import patch, ANY, MagicMock
+from datetime import timedelta, datetime, timezone
 
 # Third-party library imports
 from functions_framework import create_app
@@ -103,9 +104,14 @@ class TestMainGetLumiResponse(unittest.TestCase):
             "get_lumi_response", "main.py"
         ).test_client()
 
+    @patch("main.datetime")
     @patch("main.firestore")
     @patch("main.answers")
-    def test_get_lumi_response(self, mock_answers_module, mock_firestore):
+    def test_get_lumi_response(self, mock_answers_module, mock_firestore, mock_datetime):
+        # Arrange: Mock datetime.now to return a fixed time for deterministic testing.
+        fixed_now = datetime(2026, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+        mock_datetime.now.return_value = fixed_now
+
         # Arrange: Mock the business logic to return a LumiAnswer instance.
         mock_request_obj = LumiAnswerRequest(query="What is the abstract?")
         mock_answer_obj = LumiAnswer(
@@ -152,8 +158,11 @@ class TestMainGetLumiResponse(unittest.TestCase):
         # Assert: Check that the logging function was called correctly
         mock_firestore.client.assert_called_once()
         mock_db.collection.assert_called_once_with("query_logs")
+        # 90 days after Jan 15, 2026 = April 15, 2026
+        expected_expire_timestamp = datetime(2026, 4, 15, 12, 0, 0, tzinfo=timezone.utc)
         expected_log_data = {
             "created_timestamp": SERVER_TIMESTAMP,
+            "expire_timestamp": expected_expire_timestamp,
             "answer": asdict(mock_answer_obj),
             "arxiv_id": mock_doc_obj.metadata.paper_id,
             "version": str(mock_doc_obj.metadata.version),

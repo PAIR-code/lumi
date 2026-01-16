@@ -21,6 +21,7 @@
 # Standard library imports
 import os
 import time
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from dataclasses import asdict, dataclass
 from unittest.mock import MagicMock
@@ -510,7 +511,7 @@ def get_arxiv_metadata(req: https_fn.CallableRequest) -> dict:
 
 def _log_query(doc: LumiDoc, lumi_answer: LumiAnswer):
     """
-    Logs a query to the `logs_query` collection in Firestore.
+    Logs a query to the `query_logs` collection in Firestore.
 
     Args:
         doc (LumiDoc): The document related to the query.
@@ -518,8 +519,10 @@ def _log_query(doc: LumiDoc, lumi_answer: LumiAnswer):
     """
     try:
         db = firestore.client()
+        expire_timestamp = datetime.now(timezone.utc) + timedelta(days=90)
         query_log = QueryLog(
             created_timestamp=SERVER_TIMESTAMP,
+            expire_timestamp=expire_timestamp,
             answer=lumi_answer,
             arxiv_id=doc.metadata.paper_id,
             version=doc.metadata.version,
