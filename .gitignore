@@ -203,6 +203,7 @@ functions/papers
 
 # Local scripts
 functions/.script*
+angular_test
 
 # GCA
 GEMINI.md
