@@ -17,6 +17,7 @@
 
 import { Core } from "./core/core";
 import { AnalyticsService } from "./services/analytics.service";
+import { AppConfigService } from "./services/app_config.service";
 import { BannerService } from "./services/banner.service";
 import { DialogService } from "./services/dialog.service";
 import { DocumentStateService } from "./services/document_state.service";
@@ -37,6 +38,9 @@ export function makeServiceProvider(self: Core) {
   const serviceProvider = {
     get analyticsService() {
       return self.getService(AnalyticsService);
+    },
+    get appConfigService() {
+      return self.getService(AppConfigService);
     },
     get bannerService() {
       return self.getService(BannerService);

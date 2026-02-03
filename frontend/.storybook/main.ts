@@ -16,6 +16,7 @@
  */
 import type { Options } from "@swc/core";
 import type { StorybookConfig } from "@storybook/web-components-webpack5";
+import * as webpack from "webpack";
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
@@ -104,5 +105,15 @@ const config: StorybookConfig = {
 
     return newConfig;
   },
+  webpackFinal: async (config) => {
+    config.plugins = config.plugins || [];
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        APP_MODE: JSON.stringify("public"),
+      }),
+    );
+    return config;
+  },
 };
 export default config;
+
