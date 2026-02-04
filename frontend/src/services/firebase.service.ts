@@ -16,6 +16,7 @@
  */
 
 import { FirebaseApp, initializeApp } from "firebase/app";
+import { Auth, connectAuthEmulator, getAuth } from "firebase/auth";
 import {
   type Firestore,
   Unsubscribe,
@@ -57,6 +58,11 @@ export class FirebaseService extends Service {
     this.functions = getFunctions(this.app);
     this.storage = getStorage(this.app);
 
+    // Initialize Auth only in internal mode
+    if (APP_MODE === "internal") {
+      this.auth = getAuth(this.app);
+    }
+
     // Only register emulators if in dev mode
     if (process.env.NODE_ENV === "development") {
       this.registerEmulators();
@@ -67,24 +73,32 @@ export class FirebaseService extends Service {
   firestore: Firestore;
   functions: Functions;
   storage: FirebaseStorage;
+  auth: Auth | null = null;
   unsubscribe: Unsubscribe[] = [];
 
   registerEmulators() {
     connectFirestoreEmulator(
       this.firestore,
       "localhost",
-      FIREBASE_LOCAL_HOST_PORT_FIRESTORE
+      FIREBASE_LOCAL_HOST_PORT_FIRESTORE,
     );
     connectStorageEmulator(
       this.storage,
       "localhost",
-      FIREBASE_LOCAL_HOST_PORT_STORAGE
+      FIREBASE_LOCAL_HOST_PORT_STORAGE,
     );
     connectFunctionsEmulator(
       this.functions,
       "localhost",
-      FIREBASE_LOCAL_HOST_PORT_FUNCTIONS
+      FIREBASE_LOCAL_HOST_PORT_FUNCTIONS,
     );
+    // Connect Auth emulator if auth is initialized
+    if (this.auth) {
+      connectAuthEmulator(
+        this.auth,
+        `http://localhost:${FIREBASE_LOCAL_HOST_PORT_AUTH}`,
+      );
+    }
   }
 
   // Returns the download URL of the given storage file.

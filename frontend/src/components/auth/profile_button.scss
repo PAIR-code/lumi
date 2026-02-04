@@ -14,18 +14,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-declare module "*.scss";
-
-declare module "*.css" {
-  export const styles: CSSResult;
-}
-
-// Webpack define plugin values
-declare const GIT_VERSION: string;
-declare const GIT_COMMIT_HASH: string;
-declare const GIT_BRANCH: string;
-declare const GIT_LAST_COMMIT_DATETIME: string;
-
-/** App deployment mode: 'public' or 'internal' */
-declare const APP_MODE: "public" | "internal";
+@use "../../sass/common";

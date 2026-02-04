@@ -64,6 +64,10 @@
     @include common.flex-row-align-center;
     gap: common.$spacing-small;
   }
+
+  profile-button {
+    margin-left: common.$spacing-medium;
+  }
 }
 
 h1 {

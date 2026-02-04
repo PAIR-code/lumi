@@ -24,6 +24,7 @@ import "./components/floating_panel_host/floating_panel_host";
 import "./components/smart_highlight_menu/smart_highlight_menu";
 import "./components/dialogs/dialogs";
 import "./components/banner/banner";
+import "./components/auth/login_page";
 import "lit-toast/lit-toast.js";
 
 import { MobxLitElement } from "@adobe/lit-mobx";
@@ -33,6 +34,8 @@ import { createRef, ref, Ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
 
 import { core } from "./core/core";
+import { AppConfigService } from "./services/app_config.service";
+import { AuthService } from "./services/auth.service";
 import { Pages, RouterService } from "./services/router.service";
 import { SettingsService } from "./services/settings.service";
 import { SnackbarService } from "./services/snackbar.service";
@@ -43,16 +46,20 @@ import { styles } from "./app.scss";
 import { LightMobxLitElement } from "./components/light_mobx_lit_element/light_mobx_lit_element";
 
 import { GalleryView } from "./shared/types";
+import { FloatingPanelService } from "./services/floating_panel_service";
 
 /** App main component. */
 @customElement("lumi-app")
 export class App extends LightMobxLitElement {
   static override styles: CSSResultGroup = [styles];
 
+  private readonly appConfigService = core.getService(AppConfigService);
+  private readonly authService = core.getService(AuthService);
   private readonly bannerService = core.getService(BannerService);
   private readonly routerService = core.getService(RouterService);
   private readonly settingsService = core.getService(SettingsService);
   private readonly snackbarService = core.getService(SnackbarService);
+  private readonly floatingPanelService = core.getService(FloatingPanelService);
 
   private readonly toastRef: Ref<any> = createRef<any>();
 
@@ -121,6 +128,21 @@ export class App extends LightMobxLitElement {
   }
 
   override render() {
+    // In internal mode, require authentication before showing app content
+    if (
+      this.appConfigService.features.authentication &&
+      !this.authService.isAuthenticated
+    ) {
+      return html`
+        <style>
+          ${styles}
+        </style>
+        <div class="app-wrapper mode--${this.settingsService.colorMode}">
+          <login-page></login-page>
+        </div>
+      `;
+    }
+
     const mainStyles = styleMap({
       height: this.bannerService.isBannerOpen
         ? `calc(100% - ${BANNER_HEIGHT}px)`
@@ -131,7 +153,10 @@ export class App extends LightMobxLitElement {
       <style>
         ${styles}
       </style>
-      <div class="app-wrapper mode--${this.settingsService.colorMode}">
+      <div
+        class="app-wrapper mode--${this.settingsService.colorMode}"
+        @mousedown=${() => this.floatingPanelService.hide()}
+      >
         ${this.renderBanner()}
         <main style=${mainStyles}>
           <div class="content-wrapper">${this.renderPageContent()}</div>
