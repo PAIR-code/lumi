@@ -48,12 +48,13 @@ export class OverflowMenu extends MobxLitElement {
         (item) => html`
           <div
             class="menu-item"
+            @mousedown=${(e: Event) => e.stopPropagation()}
             @click=${() => void this.handleItemClick(item)}
           >
             <pr-icon .icon=${item.icon}></pr-icon>
             <span class="label">${item.label}</span>
           </div>
-        `
+        `,
       )}
     `;
   }
