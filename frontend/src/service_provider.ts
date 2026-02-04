@@ -18,6 +18,7 @@
 import { Core } from "./core/core";
 import { AnalyticsService } from "./services/analytics.service";
 import { AppConfigService } from "./services/app_config.service";
+import { AuthService } from "./services/auth.service";
 import { BannerService } from "./services/banner.service";
 import { DialogService } from "./services/dialog.service";
 import { DocumentStateService } from "./services/document_state.service";
@@ -41,6 +42,9 @@ export function makeServiceProvider(self: Core) {
     },
     get appConfigService() {
       return self.getService(AppConfigService);
+    },
+    get authService() {
+      return self.getService(AuthService);
     },
     get bannerService() {
       return self.getService(BannerService);
