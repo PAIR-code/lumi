@@ -114,6 +114,25 @@ class LatexUtilsTest(unittest.TestCase):
                 r"\documentclass{article}",
                 "main.tex",
             ),
+            (
+                "multiple_main_one_with_input",
+                ["first.tex", "second.tex"],
+                [
+                    r"\documentclass{article}",
+                    r"\documentclass{article}\n\input{section1}"
+                ],
+                "second.tex",
+            ),
+            (
+                "multiple_main_one_with_input_without_figures",
+                ["first.tex", "second.tex", "third.tex"],
+                [
+                    r"\documentclass{article}\n\input{section1}\n\documentclass[tikz,border=2pt]{standalone}",
+                    r"\documentclass{article}",
+                    r"\documentclass{article}\n\input{section1}"
+                ],
+                "third.tex",
+            ),
         ]
 
         for name, file_paths, content, expected in test_cases:
@@ -123,19 +142,25 @@ class LatexUtilsTest(unittest.TestCase):
                 os.makedirs(sub_test_dir, exist_ok=True)
 
                 # Write content to all specified files
-                for file_path in file_paths:
-                    full_path = os.path.join(sub_test_dir, file_path)
-                    os.makedirs(os.path.dirname(full_path), exist_ok=True)
-                    with open(full_path, "w") as f:
-                        f.write(content)
+                if isinstance(content, list):
+                    for file_path, file_content in zip(file_paths, content):
+                        full_path = os.path.join(sub_test_dir, file_path)
+                        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                        with open(full_path, "w") as f:
+                            f.write(file_content)
+                else:
+                    for file_path in file_paths:
+                        full_path = os.path.join(sub_test_dir, file_path)
+                        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                        with open(full_path, "w") as f:
+                            f.write(content)
 
                 if isinstance(expected, type) and issubclass(expected, Exception):
                     with self.assertRaises(expected):
                         latex_utils.find_main_tex_file(sub_test_dir)
                 else:
                     result = latex_utils.find_main_tex_file(sub_test_dir)
-                    self.assertEqual(result, os.path.join(sub_test_dir, expected))
-
+                    self.assertEqual(os.path.normpath(result), os.path.normpath(os.path.join(sub_test_dir, expected)))
                 # Cleanup sub-directory
                 shutil.rmtree(sub_test_dir)
 

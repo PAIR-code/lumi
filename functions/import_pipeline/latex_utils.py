@@ -18,9 +18,20 @@ import os
 import re
 import tarfile
 import warnings
+from typing import Set
 from import_pipeline import latex_inline_command
 
 PREFERRED_MAIN_FILE_NAMES = ["main.tex", "ms.tex"]
+INCLUDE_COMMANDS: Set[str] = {
+    r"\input{",
+    r"\include{",
+}
+EXCLUDED_DOCUMENT_CLASSES: Set[str] = {
+    "standalone",
+    "tikz",
+    "figure",
+    "subfile",
+}
 
 
 def extract_tar_gz(source_bytes: bytes, destination_path: str):
@@ -51,7 +62,7 @@ def find_main_tex_file(source_path: str) -> str:
     Raises:
         ValueError: If zero or more than one .tex file with `\\documentclass` is found.
     """
-    valid_main_paths = []
+    valid_main_files = []
     for root, _, files in os.walk(source_path):
         for file in files:
             if file.endswith(".tex"):
@@ -61,27 +72,49 @@ def find_main_tex_file(source_path: str) -> str:
                         # Read file to check for \documentclass
                         content = f.read()
                         if r"\documentclass" in content:
-                            valid_main_paths.append(full_path)
+                            valid_main_files.append([full_path, content])
                 except Exception:
                     # Ignore files that can't be opened or read
                     continue
-    if len(valid_main_paths) == 0:
+    if len(valid_main_files) == 0:
         raise ValueError(f"Could not find a main .tex file in {source_path}")
 
-    if len(valid_main_paths) > 1:
-        # Check for 'main.tex' or 'ms.tex' as a tie-breaker
+    if len(valid_main_files) > 1:
+        # Rule 1: Check for 'main.tex' or 'ms.tex' as a tie-breaker
         preferred_files = [
-            p
-            for p in valid_main_paths
-            if os.path.basename(p) in PREFERRED_MAIN_FILE_NAMES
+            path
+            for path, content in valid_main_files
+            if os.path.basename(path) in PREFERRED_MAIN_FILE_NAMES
         ]
         if len(preferred_files) == 1:
             return preferred_files[0]
+            
+        # Rule 2: Check for \input or \include
+        filtered_by_input = [
+            (path, content)
+            for path, content in valid_main_files
+            if any(cmd in content for cmd in INCLUDE_COMMANDS)
+        ]
+        if len(filtered_by_input) == 1:
+            return filtered_by_input[0][0]
+        elif len(filtered_by_input) > 1:
+            # Rule 3: Exclude files using classes typically for figures or parts (e.g. 'standalone', 'tikz')
+            filtered_by_class = [
+                (path, content)
+                for path, content in filtered_by_input
+                if not any(
+                    f"\\documentclass{{{cls}}}" in content or f"\\documentclass[{cls}" in content
+                    for cls in EXCLUDED_DOCUMENT_CLASSES
+                )
+            ]
+            if len(filtered_by_class) == 1:
+                return filtered_by_class[0][0]
+        
         raise ValueError(
-            f"Found multiple competing main .tex files: {valid_main_paths}"
+            f"Found multiple competing main .tex files: {[x[0] for x in valid_main_files]}"
         )
 
-    return valid_main_paths[0]
+    return valid_main_files[0][0]
 
 
 def inline_tex_files(
