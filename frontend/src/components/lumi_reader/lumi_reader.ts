@@ -209,7 +209,7 @@ export class LumiReader extends LightMobxLitElement {
     try {
       metadata = await getArxivMetadata(
         this.firebaseService.functions,
-        this.documentId
+        this.documentId,
       );
     } catch (error) {
       console.error("Warning: Document metadata or version not found.", error);
@@ -255,11 +255,11 @@ export class LumiReader extends LightMobxLitElement {
 
           if (
             LOADING_STATUS_ERROR_STATES.includes(
-              data.loadingStatus as LoadingStatus
+              data.loadingStatus as LoadingStatus,
             )
           ) {
             this.snackbarService.show(
-              `Error loading document: ${this.documentId}`
+              `Error loading document: ${this.documentId}`,
             );
           }
         } else {
@@ -269,7 +269,7 @@ export class LumiReader extends LightMobxLitElement {
       (error) => {
         this.snackbarService.show(`Error loading document: ${error.message}`);
         console.error(error);
-      }
+      },
     );
   }
 
@@ -289,13 +289,13 @@ export class LumiReader extends LightMobxLitElement {
         .filter(
           (paper) =>
             paper.metadata.paperId !== this.documentId &&
-            paper.status === "complete"
+            paper.status === "complete",
         );
       const summaryAnswer = await getPersonalSummaryCallable(
         this.firebaseService.functions,
         currentDoc,
         pastPapers,
-        this.settingsService.apiKey.value
+        this.settingsService.apiKey.value,
       );
 
       this.historyService.addPersonalSummary(this.documentId, summaryAnswer);
@@ -327,7 +327,7 @@ export class LumiReader extends LightMobxLitElement {
   private readonly handleDefine = async (
     text: string,
     highlightedSpans: HighlightSelection[],
-    imageInfo?: ImageInfo
+    imageInfo?: ImageInfo,
   ) => {
     if (!this.documentStateService.lumiDocManager) return;
 
@@ -348,7 +348,7 @@ export class LumiReader extends LightMobxLitElement {
         this.firebaseService.functions,
         this.documentStateService.lumiDocManager.lumiDoc,
         request,
-        this.settingsService.apiKey.value
+        this.settingsService.apiKey.value,
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
@@ -374,7 +374,7 @@ export class LumiReader extends LightMobxLitElement {
     highlightedText: string,
     query: string,
     highlightedSpans: HighlightSelection[],
-    imageInfo?: ImageInfo
+    imageInfo?: ImageInfo,
   ) => {
     const currentDoc = this.documentStateService.lumiDocManager?.lumiDoc;
     if (!currentDoc) return;
@@ -396,7 +396,7 @@ export class LumiReader extends LightMobxLitElement {
         this.firebaseService.functions,
         currentDoc,
         request,
-        this.settingsService.apiKey.value
+        this.settingsService.apiKey.value,
       );
       this.historyService.addAnswer(this.documentId, response);
     } catch (e) {
@@ -433,14 +433,14 @@ export class LumiReader extends LightMobxLitElement {
       selectionInfo.selectedText,
       selectionInfo.highlightSelection,
       this.handleDefine.bind(this),
-      this.handleAsk.bind(this)
+      this.handleAsk.bind(this),
     );
 
     if (isViewportSmall()) {
       if (this.mobileSmartHighlightContainerRef.value) {
         this.floatingPanelService.show(
           props,
-          this.mobileSmartHighlightContainerRef.value
+          this.mobileSmartHighlightContainerRef.value,
         );
       }
     } else {
@@ -450,7 +450,7 @@ export class LumiReader extends LightMobxLitElement {
 
   private readonly handleImageClick = (
     info: ImageInfo,
-    target: HTMLElement
+    target: HTMLElement,
   ) => {
     this.analyticsService.trackAction(AnalyticsAction.READER_IMAGE_CLICK);
 
@@ -459,17 +459,17 @@ export class LumiReader extends LightMobxLitElement {
       [],
       this.handleDefine.bind(this),
       this.handleAsk.bind(this),
-      info
+      info,
     );
     this.floatingPanelService.show(props, target);
     this.documentStateService.highlightManager?.addImageHighlight(
-      info.imageStoragePath
+      info.imageStoragePath,
     );
   };
 
   private readonly handlePaperReferenceClick = (
     reference: LumiReference,
-    target: HTMLElement
+    target: HTMLElement,
   ) => {
     const props = new ReferenceTooltipProps(reference);
     this.floatingPanelService.show(props, target);
@@ -477,7 +477,7 @@ export class LumiReader extends LightMobxLitElement {
 
   private readonly handleFootnoteClick = (
     footnote: LumiFootnote,
-    target: HTMLElement
+    target: HTMLElement,
   ) => {
     const props = new FootnoteTooltipProps(footnote);
     this.floatingPanelService.show(props, target);
@@ -485,7 +485,7 @@ export class LumiReader extends LightMobxLitElement {
 
   private readonly handleAnswerHighlightClick = (
     answer: LumiAnswer,
-    target: HTMLElement
+    target: HTMLElement,
   ) => {
     const props = new AnswerHighlightTooltipProps(answer);
     this.floatingPanelService.show(props, target);
@@ -586,8 +586,7 @@ export class LumiReader extends LightMobxLitElement {
     `;
   }
 
-  private clearHighlightsAndMenus() {
-    this.floatingPanelService.hide();
+  private clearHighlights() {
     this.documentStateService.highlightManager?.clearHighlights();
   }
 
@@ -602,7 +601,7 @@ export class LumiReader extends LightMobxLitElement {
 
     if (this.loadingStatus === LoadingStatus.WAITING) {
       return this.renderWithStyles(
-        this.renderImportingDocumentLoadingState(this.metadata)
+        this.renderImportingDocumentLoadingState(this.metadata),
       );
     }
 
@@ -629,7 +628,7 @@ export class LumiReader extends LightMobxLitElement {
       <div
         class="doc-wrapper"
         @mousedown=${() => {
-          this.clearHighlightsAndMenus();
+          this.clearHighlights();
         }}
       >
         <lumi-doc

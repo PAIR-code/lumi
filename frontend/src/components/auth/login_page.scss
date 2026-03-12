@@ -1,0 +1,75 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use "../../sass/common";
+@use "../../sass/typescale";
+
+.login-page {
+  @include common.flex-row-align-center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(
+    135deg,
+    var(--md-sys-color-primary-container) 0%,
+    var(--md-sys-color-surface) 100%
+  );
+}
+
+.login-card {
+  @include common.flex-column;
+  align-items: center;
+  gap: common.$spacing-xxl;
+  padding: 36px;
+
+  background: var(--md-sys-color-surface);
+  border: 3px solid var(--md-sys-color-primary-container-high);
+  border-radius: common.$border-radius-large;
+
+  min-width: 320px;
+}
+
+.header {
+  @include common.flex-column;
+  align-items: center;
+  gap: common.$spacing-medium;
+}
+
+h1 {
+  @include typescale.headline-large;
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+}
+
+.subtitle {
+  @include typescale.body-small;
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-style: italic;
+}
+
+.loading {
+  @include typescale.body-small;
+  color: var(--md-sys-color-on-surface-variant);
+  font-style: italic;
+}
+
+.error {
+  @include typescale.body-small;
+  color: var(--md-sys-color-error);
+  margin: 0;
+}
