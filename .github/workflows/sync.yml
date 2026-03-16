@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Clean issue notice
         uses: actions-cool/issues-helper@v3
@@ -25,15 +27,24 @@ jobs:
           actions: 'close-issues'
           labels: '🚨 Sync Fail'
 
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Sync upstream changes
-        id: sync
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
-        with:
-          upstream_sync_repo: PAIR-code/lumi
-          upstream_sync_branch: main
-          target_sync_branch: main
-          target_repo_token: ${{ secrets.PAT }} # automatically generated, no need to set
-          test_mode: false
+        run: |
+          git remote add upstream https://github.com/PAIR-code/lumi.git
+          git fetch upstream main
+          git checkout -B main origin/main
+
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "Fork already contains upstream/main; no sync needed."
+            exit 0
+          fi
+
+          git merge --no-edit upstream/main
+          git push origin HEAD:main
 
       - name: Sync check
         if: failure()
@@ -43,4 +54,6 @@ jobs:
           title: '🚨 Sync Fail'
           labels: '🚨 Sync Fail'
           body: |
-            Due to a change in the workflow file of the [LibreChat][lobechat] upstream repository, GitHub has automatically suspended the scheduled automatic update. You need to manually sync your fork. Please refer to the detailed [Tutorial][tutorial-en-US] for instructions.
+            The scheduled upstream sync failed while merging `PAIR-code/lumi:main` into this fork's `main` branch.
+
+            Check the workflow logs for the exact git error. If the failure is a merge conflict, resolve it locally, push the merge commit to `main`, and rerun this workflow.
