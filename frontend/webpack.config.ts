@@ -68,8 +68,9 @@ const config: webpack.Configuration = {
       GIT_COMMIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
       GIT_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
       GIT_LAST_COMMIT_DATETIME: JSON.stringify(
-        gitRevisionPlugin.lastcommitdatetime()
+        gitRevisionPlugin.lastcommitdatetime(),
       ),
+      APP_MODE: JSON.stringify(process.env.APP_MODE || "public"),
     }),
     new webpack.ProvidePlugin({
       process: "process/browser",

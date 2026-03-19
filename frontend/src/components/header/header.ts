@@ -18,6 +18,7 @@
 import "../../pair-components/button";
 import "../../pair-components/icon_button";
 import "../../pair-components/tooltip";
+import "../auth/profile_button";
 import { MobxLitElement } from "@adobe/lit-mobx";
 import { CSSResultGroup, html, nothing } from "lit";
 import { customElement } from "lit/decorators.js";
@@ -83,6 +84,7 @@ export class Header extends MobxLitElement {
     return html`
       ${this.renderFeedbackButton()} ${this.renderSettingsButton()}
       ${this.renderImportButton()}
+      <profile-button></profile-button>
     `;
   }
 
