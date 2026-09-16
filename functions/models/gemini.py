@@ -29,6 +29,8 @@ QUERY_RESPONSE_MAX_OUTPUT_TOKENS = 4000
 
 T = TypeVar("T")
 
+FLASH_MODEL_ID = "gemini-3.6-flash"
+
 
 class GeminiInvalidResponseException(Exception):
     pass
@@ -36,7 +38,7 @@ class GeminiInvalidResponseException(Exception):
 
 def call_predict(
     query="The opposite of happy is",
-    model="gemini-2.5-flash",
+    model=FLASH_MODEL_ID,
     api_key: str | None = None,
 ) -> str:
     if not api_key:
@@ -61,7 +63,7 @@ def call_predict(
 def call_predict_with_image(
     prompt: str,
     image_bytes: bytes,
-    model="gemini-2.5-flash",
+    model=FLASH_MODEL_ID,
     api_key: str | None = None,
 ) -> str:
     """Calls Gemini with a prompt and an image."""
@@ -95,7 +97,7 @@ def call_predict_with_image(
 def call_predict_with_schema(
     query: str,
     response_schema: Type[T],
-    model="gemini-2.5-flash",
+    model=FLASH_MODEL_ID,
     api_key: str | None = None,
 ) -> T | List[T] | None:
     """Calls Gemini with a response schema for structured output."""
@@ -131,7 +133,7 @@ def format_pdf_with_latex(
     pdf_data: bytes,
     latex_string: str,
     concepts: List[LumiConcept],
-    model="gemini-2.5-pro",
+    model=FLASH_MODEL_ID,
 ) -> str:
     """
     Calls Gemini to format the pdf, using the latex source as additional context.
