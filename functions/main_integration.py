@@ -210,3 +210,32 @@ class TestMainRequestArxivDocImport(unittest.TestCase):
         error_doc = self._poll_for_status(doc_ref, LoadingStatus.ERROR_SUMMARIZING)
         self.assertEqual(error_doc["loadingStatus"], LoadingStatus.ERROR_SUMMARIZING)
         print("✅ Status ERROR verified.")
+
+    def test_request_arxiv_doc_import_retries_timeout(self):
+        # Arrange
+        mock_metadata = _make_mock_metadata()
+        self.mock_fetch_metadata.return_value = [mock_metadata]
+
+        doc_ref = (
+            self.db.collection(ARXIV_DOCS_COLLECTION)
+            .document("1234.5678")
+            .collection(VERSIONS_COLLECTION)
+            .document("1")
+        )
+        # Seed a doc left in TIMEOUT by a previous import attempt.
+        doc_ref.set(
+            {
+                "loadingStatus": LoadingStatus.TIMEOUT,
+                "loadingError": "This paper cannot be loaded (time limit exceeded)",
+            }
+        )
+
+        # Act
+        response = self.client.post("/", json={"data": {"arxiv_id": "1234.5678"}})
+
+        # Assert: the request is accepted and the import is re-run to SUCCESS.
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.get_json()["result"]["error"])
+        success_doc = self._poll_for_status(doc_ref, LoadingStatus.SUCCESS)
+        self.assertEqual(success_doc["loadingStatus"], LoadingStatus.SUCCESS)
+        print("✅ TIMEOUT doc retried to SUCCESS.")
