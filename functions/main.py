@@ -112,6 +112,7 @@ RELOAD_ERROR_STATES = [
     LoadingStatus.ERROR_DOCUMENT_LOAD_QUOTA_EXCEEDED,
     LoadingStatus.ERROR_SUMMARIZING_INVALID_RESPONSE,
     LoadingStatus.ERROR_SUMMARIZING_QUOTA_EXCEEDED,
+    LoadingStatus.TIMEOUT,
 ]
 
 initialize_app()
@@ -452,11 +453,6 @@ def _try_doc_write(metadata: ArxivMetadata, test_config: dict | None = None):
             lumi_doc = doc.to_dict()
             loading_status = lumi_doc.get("loadingStatus")
 
-            if loading_status == LoadingStatus.TIMEOUT:
-                raise https_fn.HttpsError(
-                    https_fn.FunctionsErrorCode.DEADLINE_EXCEEDED,
-                    "This paper cannot be loaded (time limit exceeded)",
-                )
             if loading_status not in RELOAD_ERROR_STATES:
                 return
 
