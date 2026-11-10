@@ -23,11 +23,18 @@ with default values, and nested command definitions.
 The main public function is `inline_custom_commands`.
 """
 
+import re
 from typing import List, Optional, Tuple
 
 # A list of command definition keywords that are supported. They are expected
 # to share the same syntax as \newcommand.
 _SUPPORTED_COMMAND_DEFS = [r"\newcommand", r"\DeclareRobustCommand", r"\def"]
+
+# Matches any supported definition keyword, but only as a complete control word
+# (e.g. `\def` but not `\definecolor` or `\default`).
+_COMMAND_DEF_PATTERN = re.compile(
+    "(" + "|".join(re.escape(cmd) for cmd in _SUPPORTED_COMMAND_DEFS) + r")(?![A-Za-z@])"
+)
 
 
 class Command:
@@ -198,17 +205,9 @@ class LatexParser:
 
 def _find_next_command_def(content: str, start_pos: int) -> Optional[Tuple[str, int]]:
     """Finds the earliest occurrence of any supported command definition."""
-    found_command = None
-    start_index = -1
-
-    for cmd in _SUPPORTED_COMMAND_DEFS:
-        idx = content.find(cmd, start_pos)
-        if idx != -1 and (start_index == -1 or idx < start_index):
-            start_index = idx
-            found_command = cmd
-
-    if found_command:
-        return found_command, start_index
+    match = _COMMAND_DEF_PATTERN.search(content, start_pos)
+    if match:
+        return match.group(1), match.start()
     return None
 
 
@@ -285,6 +284,8 @@ def find_and_parse_commands(content: str) -> List[Command]:
             command_details = _get_command_from_def_style(parser, found_command)
 
             if command_details is None:
+                # If parsing fails, advance past the command to avoid infinite loop.
+                i = start_index + len(found_command)
                 continue
 
             name, nargs, definition = command_details

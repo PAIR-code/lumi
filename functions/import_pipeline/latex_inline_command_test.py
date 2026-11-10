@@ -163,7 +163,21 @@ class LatexInlineCommandTest(unittest.TestCase):
             "def_style_with_single_non_letter_symbol": (
                 r"\def\1{\mathbf{1}} \1 is in bold",
                 r"\mathbf{1} is in bold",
-            )
+            ),
+            # Regression: commands that start with `\def` (e.g. \definecolor)
+            # previously caused an infinite loop.
+            "definecolor_is_not_def": (
+                r"\definecolor{blue}{RGB}{0,0,255} \def\R{\mathbb{R}} \R",
+                r"\definecolor{blue}{RGB}{0,0,255}  \mathbb{R}",
+            ),
+            "default_is_not_def": (
+                r"\default text \newcommand{\R}{\mathbb{R}} \R",
+                r"\default text  \mathbb{R}",
+            ),
+            "malformed_def_does_not_hang": (
+                r"Some text \def 123",
+                r"Some text \def 123",
+            ),
         }
 
         for name, (content, expected) in test_cases.items():
