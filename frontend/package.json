@@ -89,7 +89,7 @@
     "sinon": "^21.0.0",
     "stream-browserify": "^3.0.0",
     "tslib": "^2.6.2",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "vm-browserify": "^1.1.2"
   },
   "eslintConfig": {
