@@ -216,6 +216,14 @@ MATH_DISPLAY_PATTERN = re.compile(
 
 MATH_PATTERN = re.compile(r"(?<!\\)\$(?P<content>.*?)(?<!\\)\$", re.DOTALL)
 
+_ALLOWED_HREF_RE = re.compile(r"^(?:https?://|mailto:)", re.IGNORECASE)
+
+
+def _sanitize_href(href: str) -> str:
+    href = (href or "").strip()
+    return href if _ALLOWED_HREF_RE.match(href) else "#"
+
+
 TAG_DEFINITIONS = [
     {
         "name": InnerTagName.CONCEPT,
@@ -242,7 +250,7 @@ TAG_DEFINITIONS = [
         "pattern": re.compile(
             r'<a href="(?P<href>.*?)">(?P<content>.*?)</a>', re.DOTALL
         ),
-        "metadata_extractor": lambda m: {"href": m.group("href")},
+        "metadata_extractor": lambda m: {"href": _sanitize_href(m.group("href"))},
     },
     {
         "name": InnerTagName.CODE,
