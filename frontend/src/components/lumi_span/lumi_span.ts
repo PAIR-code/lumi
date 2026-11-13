@@ -219,11 +219,15 @@ export class LumiSpanViz extends LightMobxLitElement {
 
     if (classesObject[InnerTagName.A]) {
       const metadata = classesAndMetadata[InnerTagName.A];
-      const href = metadata["href"] || "#";
+      const rawHref = String(metadata["href"] ?? "").trim();
+      const safeHref = /^(?:https?:\/\/|mailto:)/i.test(rawHref)
+        ? rawHref
+        : "#";
       // Use a real <a> tag for links.
       return html`<a
-        href=${href}
+        href=${safeHref}
         target="_blank"
+        rel="noopener noreferrer"
         class=${classMap(classesObject)}
         >${character}</a
       >`;

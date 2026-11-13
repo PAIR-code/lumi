@@ -869,6 +869,82 @@ class ConvertHtmlToLumiTest(unittest.TestCase):
                 {},
             ),
             (
+                "paragraph_with_mailto_a_tag",
+                '<p>Contact <a href="mailto:test@example.com">us</a>.</p>',
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="Contact us.",
+                                            inner_tags=[
+                                                InnerTag(
+                                                    id="123",
+                                                    tag_name=InnerTagName.A,
+                                                    metadata={
+                                                        "href": "mailto:test@example.com"
+                                                    },
+                                                    position=Position(
+                                                        start_index=8, end_index=10
+                                                    ),
+                                                    children=[],
+                                                )
+                                            ],
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+            ),
+            (
+                "paragraph_with_unsupported_a_tag_scheme",
+                '<p>This is a <a href="javascript:void(0)">link</a>.</p>',
+                [
+                    LumiSection(
+                        id="123",
+                        sub_sections=[],
+                        heading=Heading(heading_level=1, text=""),
+                        contents=[
+                            LumiContent(
+                                id="123",
+                                text_content=TextContent(
+                                    tag_name="p",
+                                    spans=[
+                                        LumiSpan(
+                                            id="123",
+                                            text="This is a link.",
+                                            inner_tags=[
+                                                InnerTag(
+                                                    id="123",
+                                                    tag_name=InnerTagName.A,
+                                                    metadata={"href": "#"},
+                                                    position=Position(
+                                                        start_index=10, end_index=14
+                                                    ),
+                                                    children=[],
+                                                )
+                                            ],
+                                        )
+                                    ],
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                {},
+            ),
+            (
                 "paragraph_with_code_tag",
                 "<p>This is <code>inline code</code>.</p>",
                 [
