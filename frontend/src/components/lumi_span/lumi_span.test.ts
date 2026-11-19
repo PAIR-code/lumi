@@ -88,6 +88,20 @@ describe("lumi-span", () => {
       expect(linkEl!.href).to.equal("https://www.google.com/");
       expect(linkEl!.rel).to.equal("noopener noreferrer");
     });
+
+    // Verify clicks stop propagation (so parent wrappers with preventDefault
+    // like <lumi-content> do not cancel navigation) while keeping default navigation.
+    let parentClicked = false;
+    el.addEventListener("click", () => {
+      parentClicked = true;
+    });
+    const clickEvent = new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+    });
+    linkEls[0]!.dispatchEvent(clickEvent);
+    expect(parentClicked).to.be.false;
+    expect(clickEvent.defaultPrevented).to.be.false;
   });
 
   it("falls back to # for unsupported link schemes", async () => {
@@ -112,6 +126,13 @@ describe("lumi-span", () => {
       expect(linkEl.getAttribute("href")).to.equal("#");
       expect(linkEl.rel).to.equal("noopener noreferrer");
     });
+
+    const clickEvent = new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+    });
+    linkEls[0]!.dispatchEvent(clickEvent);
+    expect(clickEvent.defaultPrevented).to.be.true;
   });
 
   it("renders a span with a highlight", async () => {
