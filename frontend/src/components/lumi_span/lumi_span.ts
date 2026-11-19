@@ -223,12 +223,19 @@ export class LumiSpanViz extends LightMobxLitElement {
       const safeHref = /^(?:https?:\/\/|mailto:)/i.test(rawHref)
         ? rawHref
         : "#";
+      const onLinkClick = (e: MouseEvent) => {
+        e.stopPropagation();
+        if (safeHref === "#") {
+          e.preventDefault();
+        }
+      };
       // Use a real <a> tag for links.
       return html`<a
         href=${safeHref}
         target="_blank"
         rel="noopener noreferrer"
         class=${classMap(classesObject)}
+        @click=${onLinkClick}
         >${character}</a
       >`;
     }
