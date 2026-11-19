@@ -86,6 +86,31 @@ describe("lumi-span", () => {
       expect(linkEl).to.exist;
       expect(linkEl!.textContent).to.equal(expectedContent);
       expect(linkEl!.href).to.equal("https://www.google.com/");
+      expect(linkEl!.rel).to.equal("noopener noreferrer");
+    });
+  });
+
+  it("falls back to # for unsupported link schemes", async () => {
+    const span: LumiSpan = {
+      id: "s1",
+      text: "a link",
+      innerTags: [
+        {
+          tagName: InnerTagName.A,
+          position: { startIndex: 2, endIndex: 6 },
+          metadata: { href: "javascript:void(0)" },
+        },
+      ],
+    };
+
+    const el = await fixture<LumiSpanViz>(
+      html`<lumi-span .span=${span}></lumi-span>`
+    );
+    const linkEls = el.querySelectorAll("a");
+    expect(linkEls.length).to.equal(4);
+    linkEls.forEach((linkEl) => {
+      expect(linkEl.getAttribute("href")).to.equal("#");
+      expect(linkEl.rel).to.equal("noopener noreferrer");
     });
   });
 
