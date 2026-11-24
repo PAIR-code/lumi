@@ -2,7 +2,7 @@ aiohappyeyeballs==2.6.1
 aiohttp==3.13.3
 aiosignal==1.4.0
 annotated-types==0.7.0
-anyio==4.9.0
+anyio==4.14.2
 attrs==18.2.0
 beautifulsoup4==4.13.4
 blinker==1.9.0
