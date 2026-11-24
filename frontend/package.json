@@ -85,7 +85,7 @@
     "mobx": "^6.12.3",
     "router5": "^8.0.1",
     "router5-plugin-browser": "^8.0.1",
-    "sanitize-html": "^2.13.0",
+    "sanitize-html": "^2.18.1",
     "sinon": "^21.0.0",
     "stream-browserify": "^3.0.0",
     "tslib": "^2.6.2",
