@@ -103,7 +103,12 @@ def import_arxiv_latex_and_pdf(
             raise
 
         if len(latex_string) > MAX_LATEX_CHARACTER_COUNT:
-            raise ValueError(f"Document is too long")
+            raise ValueError(
+                f"Document is too long: {len(latex_string):,} characters "
+                f"(limit is {MAX_LATEX_CHARACTER_COUNT:,}). "
+                f"Consider using a shorter version of the paper or "
+                f"splitting it into sections."
+            )
 
         if existing_model_output_file:
             with open(existing_model_output_file, "r") as file:
